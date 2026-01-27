@@ -1,13 +1,57 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useState } from "react";
+import HeroSection from "@/components/landing/HeroSection";
+import ProblemPromiseSection from "@/components/landing/ProblemPromiseSection";
+import HowItWorksSection from "@/components/landing/HowItWorksSection";
+import WhatYouGetSection from "@/components/landing/WhatYouGetSection";
+import TestimonialsSection from "@/components/landing/TestimonialsSection";
+import WhyThisWorksSection from "@/components/landing/WhyThisWorksSection";
+import PricingSection from "@/components/landing/PricingSection";
+import FAQSection from "@/components/landing/FAQSection";
+import FinalCTASection from "@/components/landing/FinalCTASection";
+import Footer from "@/components/landing/Footer";
+import StickyBottomCTA from "@/components/landing/StickyBottomCTA";
+import EmailPopup from "@/components/landing/EmailPopup";
+import PaymentModal from "@/components/landing/PaymentModal";
 
 const Index = () => {
+  const [isEmailPopupOpen, setIsEmailPopupOpen] = useState(false);
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
-      </div>
-    </div>
+    <main className="min-h-screen">
+      <HeroSection 
+        onOpenPayment={() => setIsPaymentModalOpen(true)}
+        onOpenEmail={() => setIsEmailPopupOpen(true)}
+      />
+      <ProblemPromiseSection />
+      <HowItWorksSection onOpenPayment={() => setIsPaymentModalOpen(true)} />
+      <WhatYouGetSection onOpenPayment={() => setIsPaymentModalOpen(true)} />
+      <TestimonialsSection onOpenPayment={() => setIsPaymentModalOpen(true)} />
+      <WhyThisWorksSection />
+      <PricingSection 
+        onOpenPayment={() => setIsPaymentModalOpen(true)}
+        onOpenEmail={() => setIsEmailPopupOpen(true)}
+      />
+      <FAQSection />
+      <FinalCTASection 
+        onOpenPayment={() => setIsPaymentModalOpen(true)}
+        onOpenEmail={() => setIsEmailPopupOpen(true)}
+      />
+      <Footer />
+      
+      {/* Mobile Sticky CTA */}
+      <StickyBottomCTA onOpenPayment={() => setIsPaymentModalOpen(true)} />
+      
+      {/* Modals */}
+      <EmailPopup 
+        isOpen={isEmailPopupOpen} 
+        onClose={() => setIsEmailPopupOpen(false)} 
+      />
+      <PaymentModal 
+        isOpen={isPaymentModalOpen} 
+        onClose={() => setIsPaymentModalOpen(false)} 
+      />
+    </main>
   );
 };
 
