@@ -23,14 +23,14 @@ const WhyThisWorksSection = () => {
   ];
 
   return (
-    <section className="bg-background py-20">
+    <section className="bg-background py-10">
       <div className="container mx-auto px-4">
         <h2 className="font-heading font-bold text-3xl sm:text-4xl text-center text-gray-900 mb-2">
           Why This Works
         </h2>
-        <p className="text-center text-gray-600 mb-12">(When Nothing Else Did)</p>
+        <p className="text-center text-gray-600 mb-8">(When Nothing Else Did)</p>
 
-        <div className="grid md:grid-cols-3 gap-8 mb-12">
+        <div className="grid md:grid-cols-3 gap-6 mb-8">
           {reasons.map((reason, index) => {
             const Icon = reason.icon;
             return (

@@ -23,9 +23,9 @@ const PricingSection = ({ onOpenPayment, onOpenEmail }: PricingSectionProps) => 
   ];
 
   return (
-    <section id="pricing" className="bg-gradient-to-b from-primary/5 to-background py-20">
+    <section id="pricing" className="bg-gradient-to-b from-primary/5 to-background py-10">
       <div className="container mx-auto px-4">
-        <h2 className="font-heading font-bold text-3xl sm:text-4xl text-center text-gray-900 mb-12">
+        <h2 className="font-heading font-bold text-3xl sm:text-4xl text-center text-gray-900 mb-8">
           Start Today — Lock In Your Spot
         </h2>
 

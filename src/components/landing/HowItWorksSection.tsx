@@ -1,11 +1,11 @@
 import { Zap, TrendingUp, Award } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-interface HowItWorksSectionProps {
-  onOpenPayment: () => void;
-}
+const scrollToPricing = () => {
+  document.getElementById("pricing")?.scrollIntoView({ behavior: "smooth" });
+};
 
-const HowItWorksSection = ({ onOpenPayment }: HowItWorksSectionProps) => {
+const HowItWorksSection = () => {
   const steps = [
     {
       icon: Zap,
@@ -37,21 +37,21 @@ const HowItWorksSection = ({ onOpenPayment }: HowItWorksSectionProps) => {
   ];
 
   return (
-    <section className="bg-gradient-to-b from-background to-primary/5 py-20">
+    <section className="bg-gradient-to-b from-background to-primary/5 py-10">
       <div className="container mx-auto px-4">
-        <h2 className="font-heading font-bold text-3xl sm:text-4xl text-center text-gray-900 mb-12">
+        <h2 className="font-heading font-bold text-3xl sm:text-4xl text-center text-gray-900 mb-8">
           How It Works
         </h2>
 
-        <div className="grid md:grid-cols-3 gap-8 mb-12">
+        <div className="grid md:grid-cols-3 gap-6 mb-8">
           {steps.map((step, index) => {
             const Icon = step.icon;
             return (
               <div
                 key={index}
-                className="bg-card rounded-2xl shadow-lg hover:shadow-xl transition-shadow p-8 relative"
+                className="bg-card rounded-2xl shadow-lg hover:shadow-xl transition-shadow p-6 relative"
               >
-                <div className="flex items-start justify-between mb-4">
+                <div className="flex items-start justify-between mb-3">
                   <div className={`${step.iconBg} p-3 rounded-full`}>
                     <Icon className={`h-6 w-6 ${step.iconColor}`} />
                   </div>
@@ -63,10 +63,10 @@ const HowItWorksSection = ({ onOpenPayment }: HowItWorksSectionProps) => {
                 <h3 className="font-heading font-bold text-xl text-gray-900 mb-2">
                   {step.title}
                 </h3>
-                <p className="text-gray-600 mb-4">{step.description}</p>
+                <p className="text-gray-600 mb-3">{step.description}</p>
 
                 {step.price && (
-                  <div className={`border-2 ${step.hasBorder ? "border-primary" : "border-gray-200"} rounded-xl p-4 mt-4`}>
+                  <div className={`border-2 ${step.hasBorder ? "border-primary" : "border-gray-200"} rounded-xl p-3 mt-3`}>
                     <p className="font-bold text-lg text-gray-900">{step.price}</p>
                     <p className="text-sm text-gray-600">{step.priceNote}</p>
                   </div>
@@ -76,9 +76,9 @@ const HowItWorksSection = ({ onOpenPayment }: HowItWorksSectionProps) => {
           })}
         </div>
 
-        <div className="text-center space-y-4">
+        <div className="text-center space-y-3">
           <Button
-            onClick={onOpenPayment}
+            onClick={scrollToPricing}
             className="bg-primary hover:bg-primary-dark text-primary-foreground px-8 py-5 text-lg font-bold rounded-xl transition-all transform hover:scale-105 shadow-lg h-auto"
           >
             Start My 5-Day Reset — $27

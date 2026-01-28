@@ -20,13 +20,12 @@ const Index = () => {
   return (
     <main className="min-h-screen">
       <HeroSection 
-        onOpenPayment={() => setIsPaymentModalOpen(true)}
         onOpenEmail={() => setIsEmailPopupOpen(true)}
       />
       <ProblemPromiseSection />
-      <HowItWorksSection onOpenPayment={() => setIsPaymentModalOpen(true)} />
-      <WhatYouGetSection onOpenPayment={() => setIsPaymentModalOpen(true)} />
-      <TestimonialsSection onOpenPayment={() => setIsPaymentModalOpen(true)} />
+      <HowItWorksSection />
+      <WhatYouGetSection />
+      <TestimonialsSection />
       <WhyThisWorksSection />
       <PricingSection 
         onOpenPayment={() => setIsPaymentModalOpen(true)}
@@ -40,7 +39,7 @@ const Index = () => {
       <Footer />
       
       {/* Mobile Sticky CTA */}
-      <StickyBottomCTA onOpenPayment={() => setIsPaymentModalOpen(true)} />
+      <StickyBottomCTA />
       
       {/* Modals */}
       <EmailPopup 
