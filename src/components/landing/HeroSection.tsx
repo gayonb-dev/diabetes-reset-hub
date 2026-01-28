@@ -2,24 +2,27 @@ import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface HeroSectionProps {
-  onOpenPayment: () => void;
   onOpenEmail: () => void;
 }
 
-const HeroSection = ({ onOpenPayment, onOpenEmail }: HeroSectionProps) => {
+const scrollToPricing = () => {
+  document.getElementById("pricing")?.scrollIntoView({ behavior: "smooth" });
+};
+
+const HeroSection = ({ onOpenEmail }: HeroSectionProps) => {
   return (
-    <section className="relative bg-gradient-to-b from-secondary/20 to-background pt-12 pb-20 md:pt-20 md:pb-32 overflow-hidden">
+    <section className="relative bg-gradient-to-b from-secondary/20 to-background pt-8 pb-8 md:pt-12 md:pb-12 overflow-hidden">
       {/* Limited Time Offer Badge */}
-      <div className="absolute top-4 right-4 md:top-8 md:right-8 z-10">
+      <div className="absolute top-4 right-4 md:top-6 md:right-8 z-10">
         <span className="inline-flex items-center bg-primary text-primary-foreground px-4 py-2 rounded-full text-sm font-semibold animate-pulse-glow shadow-lg">
           Limited Time Offer
         </span>
       </div>
 
       <div className="container mx-auto px-4">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
+        <div className="grid lg:grid-cols-2 gap-8 items-center">
           {/* Text Column */}
-          <div className="space-y-6">
+          <div className="space-y-4">
             <h1 className="font-heading font-bold text-4xl sm:text-5xl lg:text-6xl text-gray-900 leading-tight">
               Reverse Diabetes.
               <br />
@@ -30,9 +33,9 @@ const HeroSection = ({ onOpenPayment, onOpenEmail }: HeroSectionProps) => {
               The 5-Day Diabetes Reset Challenge — quick wins that lower sugar, jumpstart weight loss, and restore your energy.
             </h2>
 
-            <div className="space-y-4">
+            <div className="space-y-3">
               <Button
-                onClick={onOpenPayment}
+                onClick={scrollToPricing}
                 className="w-full md:w-auto bg-primary hover:bg-primary-dark text-primary-foreground px-8 py-5 text-lg font-bold rounded-xl transition-all transform hover:scale-105 shadow-lg h-auto"
               >
                 Start My 5-Day Reset — $27
@@ -69,9 +72,9 @@ const HeroSection = ({ onOpenPayment, onOpenEmail }: HeroSectionProps) => {
             </div>
 
             {/* Floating Badge */}
-            <div className="absolute -bottom-6 -right-6 bg-background p-6 rounded-2xl shadow-xl border-4 border-primary">
-              <p className="text-3xl font-bold text-primary">5 Days</p>
-              <p className="text-sm text-gray-600">to reset your health</p>
+            <div className="absolute -bottom-4 -right-4 bg-background p-4 rounded-2xl shadow-xl border-4 border-primary">
+              <p className="text-2xl font-bold text-primary">5 Days</p>
+              <p className="text-xs text-gray-600">to reset your health</p>
             </div>
           </div>
         </div>
