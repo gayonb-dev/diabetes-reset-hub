@@ -55,6 +55,11 @@ const EmailPopup = ({ isOpen, onClose }: EmailPopupProps) => {
 
       if (error) throw error;
 
+      // Trigger email delivery (fire and forget)
+      supabase.functions.invoke("send-meal-plan", {
+        body: { name: name.trim(), email: email.trim().toLowerCase() },
+      }).catch((err) => console.error("Email send error:", err));
+
       setIsSuccess(true);
       setTimeout(() => {
         onClose();
