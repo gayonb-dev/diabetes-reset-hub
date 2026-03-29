@@ -1,4 +1,4 @@
-import { Star, TrendingDown, Battery, Heart } from "lucide-react";
+import { Star, TrendingDown, Battery, Heart, Quote } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const scrollToPricing = () => {
@@ -10,30 +10,30 @@ const TestimonialsSection = () => {
     {
       name: "Terry M.",
       initials: "TM",
-      title: "Type 2 Diabetes Reversal",
-      result: "30 lbs lost",
-      quote: "I was skeptical at first, but after the 5-Day Reset, I felt more energy than I had in years. The simple daily actions made all the difference.",
+      title: "Type 2 Diabetes",
+      result: "Lost 30 lbs in 6 weeks",
+      quote: "I was skeptical at first, but after the 5-Day Reset, I felt more energy than I had in years. The simple daily actions made all the difference. My doctor was shocked at my next checkup.",
     },
     {
       name: "Rachel S.",
       initials: "RS",
-      title: "Prediabetes Prevention",
-      result: "18 lbs lost",
-      quote: "This program taught me how to eat without feeling deprived. My blood sugar numbers improved within the first week!",
+      title: "Prediabetes",
+      result: "Lost 18 lbs, A1C dropped",
+      quote: "This program taught me how to eat without feeling deprived. My blood sugar numbers improved within the first week! I wish I'd found this sooner.",
     },
     {
       name: "Michael L.",
       initials: "ML",
-      title: "Metabolic Health Improvement",
-      result: "22 lbs lost",
-      quote: "After trying countless diets, this was the first program designed specifically for people like me. The results speak for themselves.",
+      title: "Metabolic Health",
+      result: "Lost 22 lbs, off 1 medication",
+      quote: "After trying countless diets, this was the first program designed specifically for people like me. The $27 challenge changed my life — I went on to do the full 12-week program.",
     },
   ];
 
   const stats = [
-    { icon: TrendingDown, text: "10–30 lbs typical loss in 6 weeks" },
-    { icon: Battery, text: "Better energy & mood" },
-    { icon: Heart, text: "Fewer cravings & crashes" },
+    { icon: TrendingDown, value: "10–30 lbs", label: "typical loss in 6 weeks" },
+    { icon: Battery, value: "87%", label: "report more energy" },
+    { icon: Heart, value: "5 days", label: "to see first results" },
   ];
 
   return (
@@ -43,14 +43,30 @@ const TestimonialsSection = () => {
           Real People. Real Results.
         </h2>
         <p className="text-center text-gray-600 mb-8">
-          Join 156+ people who've transformed their health in just 5 days
+          156+ people have transformed their health — here's what they're saying
         </p>
+
+        {/* Stats Bar */}
+        <div className="bg-card rounded-2xl shadow-md p-5 mb-8">
+          <div className="grid sm:grid-cols-3 gap-4 text-center">
+            {stats.map((stat, index) => {
+              const Icon = stat.icon;
+              return (
+                <div key={index} className="flex flex-col items-center gap-1">
+                  <Icon className="h-5 w-5 text-primary" />
+                  <span className="font-heading font-bold text-2xl text-gray-900">{stat.value}</span>
+                  <span className="text-gray-600 text-sm">{stat.label}</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
 
         <div className="grid md:grid-cols-3 gap-6 mb-8">
           {testimonials.map((testimonial, index) => (
             <div
               key={index}
-              className="bg-card rounded-2xl border-2 border-primary/20 shadow-lg hover:shadow-xl transition-shadow p-6"
+              className="bg-card rounded-2xl border-2 border-primary/20 shadow-lg hover:shadow-xl hover:border-primary/40 transition-all p-6"
             >
               {/* Stars */}
               <div className="flex gap-1 mb-3">
@@ -60,7 +76,7 @@ const TestimonialsSection = () => {
               </div>
 
               {/* Quote */}
-              <p className="text-gray-700 mb-4 text-sm">"{testimonial.quote}"</p>
+              <p className="text-gray-700 mb-4 text-sm leading-relaxed">"{testimonial.quote}"</p>
 
               {/* Avatar and Name */}
               <div className="flex items-center gap-3 mb-3">
@@ -74,26 +90,11 @@ const TestimonialsSection = () => {
               </div>
 
               {/* Result Badge */}
-              <div className="border-t border-gray-200 pt-3">
-                <p className="text-primary font-bold text-sm">{testimonial.result}</p>
+              <div className="bg-primary/10 rounded-lg px-3 py-2">
+                <p className="text-primary font-bold text-sm">✅ {testimonial.result}</p>
               </div>
             </div>
           ))}
-        </div>
-
-        {/* Stats Box */}
-        <div className="bg-card rounded-2xl shadow-md p-5 mb-8">
-          <div className="grid sm:grid-cols-3 gap-4">
-            {stats.map((stat, index) => {
-              const Icon = stat.icon;
-              return (
-                <div key={index} className="flex items-center gap-3">
-                  <Icon className="h-5 w-5 text-primary" />
-                  <span className="text-gray-700 text-sm">{stat.text}</span>
-                </div>
-              );
-            })}
-          </div>
         </div>
 
         <div className="text-center space-y-3">
@@ -101,10 +102,10 @@ const TestimonialsSection = () => {
             onClick={scrollToPricing}
             className="bg-primary hover:bg-primary-dark text-primary-foreground px-8 py-5 text-lg font-bold rounded-xl transition-all transform hover:scale-105 shadow-lg h-auto"
           >
-            Start My 5-Day Reset — $27
+            Join Them — Start My 5-Day Reset
           </Button>
           <p className="text-sm text-gray-600 italic">
-            Results vary. We provide education, not medical care.
+            Results vary. Educational coaching — not medical care.
           </p>
         </div>
       </div>

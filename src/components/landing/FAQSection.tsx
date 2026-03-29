@@ -6,33 +6,40 @@ const FAQSection = () => {
 
   const faqs = [
     {
-      question: "I've tried everything—will this work?",
-      answer: "Yes! The 5-Day Reset gives quick wins that build belief and momentum. It's specifically designed for people with diabetes, not a generic diet plan.",
+      question: "I've tried everything — will this actually work?",
+      answer: "We get it. Most programs aren't built for diabetics. The 5-Day Reset is different — it's designed specifically for Type 2 Diabetes and prediabetes. You'll see real wins within the first 5 days because the actions are small, specific, and proven. Plus, with our 30-day money-back guarantee, there's zero risk.",
     },
     {
-      question: "Do I need special foods or a gym?",
-      answer: "No. Real food, simple movement, home-based. Everything can be done with ingredients from your regular grocery store and exercises you can do at home.",
+      question: "Do I need special foods or a gym membership?",
+      answer: "Not at all. Everything uses real food from your regular grocery store and simple movements you can do at home — no equipment needed. If you can walk to your kitchen, you can do this program.",
     },
     {
-      question: "Can I do this with meds?",
-      answer: "Yes, but consult your doctor before adjusting anything. The program complements medical care and should not replace professional medical advice.",
+      question: "Can I do this while taking medications?",
+      answer: "Yes — this program is designed to complement your medical care, not replace it. Always consult your doctor before making changes to medications. Many participants have worked with their doctors to adjust medications as their health improved.",
     },
     {
-      question: "What's the time commitment?",
-      answer: "10–20 minutes a day. We've designed this to fit into even the busiest schedules because we know you have a life to live.",
+      question: "How much time does it take each day?",
+      answer: "Just 10–20 minutes a day for 5 days. That's it. We designed this to fit the busiest schedules because we know your life doesn't stop for a health program.",
     },
     {
-      question: "What's your refund policy?",
-      answer: "We stand behind our program with a 30-day money-back guarantee. No questions asked. If you're not completely satisfied with your results, we'll refund your full $27 investment. We're confident you'll see real wins with the 5-Day Reset, but there's zero risk on your end.",
+      question: "What happens after the 5 days?",
+      answer: "After seeing your results, you can continue your journey with our 6-Week Reset or 12-Week Transformation programs. And your $27 investment is credited toward the 6-Week Reset — so you're not paying extra, you're getting a head start.",
+    },
+    {
+      question: "What if it doesn't work for me?",
+      answer: "We stand behind this program with a 30-day money-back guarantee. No questions asked, no hoops to jump through. If you don't see results, email us and we'll refund every penny. We're that confident it works.",
     },
   ];
 
   return (
     <section className="bg-background py-10">
       <div className="container mx-auto px-4 max-w-3xl">
-        <h2 className="font-heading font-bold text-3xl sm:text-4xl text-center text-gray-900 mb-8">
-          Frequently Asked Questions
+        <h2 className="font-heading font-bold text-3xl sm:text-4xl text-center text-gray-900 mb-2">
+          Got Questions? We've Got Answers.
         </h2>
+        <p className="text-center text-gray-600 mb-8">
+          Still on the fence? These might help.
+        </p>
 
         <div className="space-y-4">
           {faqs.map((faq, index) => (
@@ -57,7 +64,7 @@ const FAQSection = () => {
               </button>
               {openIndex === index && (
                 <div className="px-6 pb-6">
-                  <p className="text-gray-600">{faq.answer}</p>
+                  <p className="text-gray-600 leading-relaxed">{faq.answer}</p>
                 </div>
               )}
             </div>

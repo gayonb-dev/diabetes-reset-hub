@@ -2,18 +2,26 @@ import { X, Check, ArrowRight } from "lucide-react";
 
 const ProblemPromiseSection = () => {
   const doesntWork = [
-    "Diets built for everyone, not for diabetics",
-    "Meds mask symptoms but don't fix the cause",
-    "Overwhelming plans kill momentum",
+    "Generic diets that spike your blood sugar",
+    "Meds that mask symptoms without fixing the root cause",
+    "Overwhelming 90-day plans that kill motivation by week 2",
+    "Cutting out entire food groups and feeling deprived",
+  ];
+
+  const doesWork = [
+    "Small, diabetes-specific actions you can start today",
+    "Meals that stabilize blood sugar AND taste good",
+    "10 minutes a day — not a lifestyle overhaul",
+    "Real results in 5 days that build belief and momentum",
   ];
 
   return (
     <section className="bg-background py-10">
       <div className="container mx-auto px-4 max-w-4xl">
         <h2 className="font-heading font-bold text-3xl sm:text-4xl text-center text-gray-900 mb-8">
-          Why Most Plans Fail
+          Why Most Diabetes Plans Fail
           <br />
-          <span className="text-gray-700">(and What Actually Works)</span>
+          <span className="text-primary">(and What Actually Works)</span>
         </h2>
 
         <div className="grid md:grid-cols-2 gap-8">
@@ -37,16 +45,21 @@ const ProblemPromiseSection = () => {
           <div className="bg-gradient-to-br from-primary/10 to-secondary/10 border-2 border-primary rounded-2xl p-6">
             <div className="flex items-center gap-2 mb-4">
               <Check className="h-6 w-6 text-primary" />
-              <h3 className="font-heading font-semibold text-lg">What Does Work</h3>
+              <h3 className="font-heading font-semibold text-lg">The 5-Day Reset Approach</h3>
             </div>
-            <p className="text-gray-700 mb-4">
-              The 5-Day Diabetes Reset is different. For Type 2 Diabetes, prediabetes, and blood sugar control, you'll reset hydration, plate, and movement the diabetic-friendly way — so you can see real wins fast.
-            </p>
+            <ul className="space-y-3 mb-4">
+              {doesWork.map((item, index) => (
+                <li key={index} className="flex items-start gap-3">
+                  <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                  <span className="text-gray-700">{item}</span>
+                </li>
+              ))}
+            </ul>
             <a
               href="#pricing"
               className="inline-flex items-center text-primary hover:text-primary-dark font-semibold transition-colors"
             >
-              See the pricing
+              Get started for just $27
               <ArrowRight className="ml-1 h-4 w-4" />
             </a>
           </div>
