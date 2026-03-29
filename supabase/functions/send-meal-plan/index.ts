@@ -32,7 +32,7 @@ serve(async (req) => {
         Authorization: `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: "The 5-Day Diabetes Reset <onboarding@resend.dev>",
+        from: "The 5-Day Diabetes Reset <hello@diabetesresetmethod.com>",
         to: [email],
         subject: "Your Free 2-Day Diabetic-Friendly Meal Plan 🍽️",
         html: `
