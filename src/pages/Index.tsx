@@ -10,18 +10,14 @@ import FAQSection from "@/components/landing/FAQSection";
 import FinalCTASection from "@/components/landing/FinalCTASection";
 import Footer from "@/components/landing/Footer";
 import StickyBottomCTA from "@/components/landing/StickyBottomCTA";
-import EmailPopup from "@/components/landing/EmailPopup";
 import PaymentModal from "@/components/landing/PaymentModal";
 
 const Index = () => {
-  const [isEmailPopupOpen, setIsEmailPopupOpen] = useState(false);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
 
   return (
     <main className="min-h-screen">
-      <HeroSection 
-        onOpenEmail={() => setIsEmailPopupOpen(true)}
-      />
+      <HeroSection />
       <ProblemPromiseSection />
       <HowItWorksSection />
       <WhatYouGetSection />
@@ -29,23 +25,17 @@ const Index = () => {
       <WhyThisWorksSection />
       <PricingSection 
         onOpenPayment={() => setIsPaymentModalOpen(true)}
-        onOpenEmail={() => setIsEmailPopupOpen(true)}
       />
       <FAQSection />
       <FinalCTASection 
         onOpenPayment={() => setIsPaymentModalOpen(true)}
-        onOpenEmail={() => setIsEmailPopupOpen(true)}
       />
       <Footer />
       
       {/* Mobile Sticky CTA */}
       <StickyBottomCTA />
       
-      {/* Modals */}
-      <EmailPopup 
-        isOpen={isEmailPopupOpen} 
-        onClose={() => setIsEmailPopupOpen(false)} 
-      />
+      {/* Payment Modal */}
       <PaymentModal 
         isOpen={isPaymentModalOpen} 
         onClose={() => setIsPaymentModalOpen(false)} 
