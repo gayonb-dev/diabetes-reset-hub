@@ -32,7 +32,7 @@ const PricingSection = ({ onOpenPayment }: PricingSectionProps) => {
         </p>
 
         <div className="max-w-md mx-auto">
-          <div className="bg-card rounded-3xl border-4 border-primary shadow-2xl overflow-hidden relative">
+          <div className="bg-card rounded-3xl border-4 border-primary shadow-2xl overflow-hidden relative mt-6">
             {/* Most Popular Badge */}
             <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-10">
               <span className="bg-secondary text-secondary-foreground px-5 py-1.5 rounded-full text-sm font-bold shadow-md">
