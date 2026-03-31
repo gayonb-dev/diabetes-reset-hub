@@ -41,7 +41,7 @@ const PricingSection = ({ onOpenPayment }: PricingSectionProps) => {
             </div>
 
             {/* Header */}
-            <div className="bg-gradient-to-r from-primary to-primary-dark p-6 text-center text-primary-foreground">
+            <div className="bg-gradient-to-r from-primary to-primary-dark p-6 pt-8 text-center text-primary-foreground">
               <h3 className="font-heading font-bold text-2xl mb-1">
                 5-Day Diabetes Reset Challenge
               </h3>
