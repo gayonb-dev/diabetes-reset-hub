@@ -1,0 +1,107 @@
+import { CheckCircle2, XCircle, ArrowRight, Mail, Clock } from "lucide-react";
+import { Button } from "@/components/ui/button";
+
+interface PaymentResultProps {
+  status: "success" | "cancelled";
+  onClose: () => void;
+  onRetry?: () => void;
+}
+
+const PaymentResult = ({ status, onClose, onRetry }: PaymentResultProps) => {
+  if (status === "success") {
+    return (
+      <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div className="bg-background rounded-2xl shadow-2xl max-w-lg w-full p-8 relative animate-in fade-in zoom-in duration-300 text-center">
+          <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+            <CheckCircle2 className="h-12 w-12 text-primary" />
+          </div>
+
+          <h2 className="font-heading font-bold text-3xl text-foreground mb-3">
+            You're In! 🎉
+          </h2>
+
+          <p className="text-muted-foreground text-lg mb-6">
+            Your 5-Day Diabetes Reset Challenge is confirmed. Get ready to transform your health!
+          </p>
+
+          <div className="bg-primary/5 border border-primary/20 rounded-xl p-5 mb-6 text-left space-y-3">
+            <h3 className="font-heading font-semibold text-foreground">What happens next:</h3>
+            <div className="flex items-start gap-3">
+              <Mail className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+              <p className="text-sm text-muted-foreground">
+                Check your inbox — your welcome email with Day 1 instructions is on the way.
+              </p>
+            </div>
+            <div className="flex items-start gap-3">
+              <Clock className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+              <p className="text-sm text-muted-foreground">
+                Your free 2-Day Meal Plan bonus is included in the email.
+              </p>
+            </div>
+            <div className="flex items-start gap-3">
+              <ArrowRight className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+              <p className="text-sm text-muted-foreground">
+                Each day you'll get a simple 10-minute action step — no overwhelm, just results.
+              </p>
+            </div>
+          </div>
+
+          <Button
+            onClick={onClose}
+            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-4 font-bold rounded-xl h-auto text-lg"
+          >
+            Got It — I'm Ready!
+          </Button>
+
+          <p className="text-xs text-muted-foreground mt-4">
+            Didn't get the email? Check your spam folder or contact support@diabetesresetmethod.com
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      <div className="bg-background rounded-2xl shadow-2xl max-w-lg w-full p-8 relative animate-in fade-in zoom-in duration-300 text-center">
+        <div className="w-20 h-20 bg-destructive/10 rounded-full flex items-center justify-center mx-auto mb-6">
+          <XCircle className="h-12 w-12 text-destructive" />
+        </div>
+
+        <h2 className="font-heading font-bold text-3xl text-foreground mb-3">
+          Payment Cancelled
+        </h2>
+
+        <p className="text-muted-foreground text-lg mb-6">
+          No worries — your spot is still available. Nothing was charged.
+        </p>
+
+        <div className="bg-muted/50 rounded-xl p-5 mb-6 text-left">
+          <p className="text-sm text-muted-foreground">
+            <span className="font-semibold text-foreground">Still thinking it over?</span> Remember, the 5-Day Reset comes with a
+            30-day money-back guarantee. If you don't see results, you get a full refund — no questions asked.
+          </p>
+        </div>
+
+        <div className="space-y-3">
+          <Button
+            onClick={onRetry}
+            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-4 font-bold rounded-xl h-auto text-lg"
+          >
+            Try Again — Start My Reset ($27)
+          </Button>
+
+          <Button
+            onClick={onClose}
+            variant="ghost"
+            className="w-full text-muted-foreground hover:text-foreground py-3 h-auto"
+          >
+            Maybe Later
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default PaymentResult;
