@@ -1,5 +1,6 @@
-import { CheckCircle2, XCircle, ArrowRight, Mail, Clock } from "lucide-react";
+import { CheckCircle2, XCircle, ArrowRight, Mail, Clock, ClipboardList, MessageCircle, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 interface PaymentResultProps {
   status: "success" | "cancelled";
@@ -8,52 +9,92 @@ interface PaymentResultProps {
 }
 
 const PaymentResult = ({ status, onClose, onRetry }: PaymentResultProps) => {
+  const navigate = useNavigate();
+
   if (status === "success") {
     return (
-      <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div className="bg-background rounded-2xl shadow-2xl max-w-lg w-full p-8 relative animate-in fade-in zoom-in duration-300 text-center">
-          <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
-            <CheckCircle2 className="h-12 w-12 text-primary" />
+      <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
+        <div className="bg-background rounded-2xl shadow-2xl max-w-lg w-full p-8 relative animate-in fade-in zoom-in duration-300 my-8">
+          <div className="text-center">
+            <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+              <CheckCircle2 className="h-12 w-12 text-primary" />
+            </div>
+
+            <h2 className="font-heading font-bold text-3xl text-foreground mb-3">
+              You're In! 🎉
+            </h2>
+
+            <p className="text-foreground text-lg font-medium mb-1">
+              Welcome to The Diabetes Reset Tiny Challenge.
+            </p>
+            <p className="text-muted-foreground mb-6">
+              Your payment was successful. This 5-day challenge is your first step toward lowering your blood sugar, losing weight, and feeling better in your body.
+            </p>
           </div>
 
-          <h2 className="font-heading font-bold text-3xl text-foreground mb-3">
-            You're In! 🎉
-          </h2>
-
-          <p className="text-muted-foreground text-lg mb-6">
-            Your 5-Day Diabetes Reset Challenge is confirmed. Get ready to transform your health!
-          </p>
-
           <div className="bg-primary/5 border border-primary/20 rounded-xl p-5 mb-6 text-left space-y-3">
-            <h3 className="font-heading font-semibold text-foreground">What happens next:</h3>
+            <h3 className="font-heading font-semibold text-foreground">Here's what happens next:</h3>
             <div className="flex items-start gap-3">
               <Mail className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
               <p className="text-sm text-muted-foreground">
-                Check your inbox — your welcome email with Day 1 instructions is on the way.
+                Check your email for your <strong className="text-foreground">Starter Kit</strong> with everything you need before Day 1.
               </p>
             </div>
             <div className="flex items-start gap-3">
-              <Clock className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+              <MessageCircle className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
               <p className="text-sm text-muted-foreground">
-                Your free 2-Day Meal Plan bonus is included in the email.
+                Check <strong className="text-foreground">WhatsApp</strong> for your welcome message — this is your main support channel.
               </p>
             </div>
             <div className="flex items-start gap-3">
-              <ArrowRight className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+              <ClipboardList className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
               <p className="text-sm text-muted-foreground">
-                Each day you'll get a simple 10-minute action step — no overwhelm, just results.
+                Complete your <strong className="text-foreground">intake form</strong> today so we can personalize your experience.
+              </p>
+            </div>
+            <div className="flex items-start gap-3">
+              <Calendar className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+              <p className="text-sm text-muted-foreground">
+                <strong className="text-foreground">Book your Day 1 session</strong> — 30–45 min daily sessions for 5 days.
               </p>
             </div>
           </div>
 
-          <Button
-            onClick={onClose}
-            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-4 font-bold rounded-xl h-auto text-lg"
-          >
-            Got It — I'm Ready!
-          </Button>
+          <p className="text-xs text-muted-foreground text-center mb-6">
+            You'll be starting a 5-day one-on-one challenge with daily support through WhatsApp. Sessions are 30–45 minutes each.
+          </p>
 
-          <p className="text-xs text-muted-foreground mt-4">
+          <div className="space-y-3">
+            <Button
+              onClick={() => { onClose(); navigate("/intake"); }}
+              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-4 font-bold rounded-xl h-auto text-lg"
+            >
+              <ClipboardList className="mr-2 h-5 w-5" />
+              Complete Your Intake Form
+            </Button>
+
+            <Button
+              asChild
+              variant="outline"
+              className="w-full py-3 font-semibold rounded-xl h-auto border-primary/30 hover:bg-primary/5"
+            >
+              <a href="https://wa.me/YOUR_NUMBER?text=Hi!%20I%20just%20purchased%20the%205-Day%20Reset!" target="_blank" rel="noopener noreferrer">
+                <MessageCircle className="mr-2 h-5 w-5" />
+                Check WhatsApp Now
+              </a>
+            </Button>
+
+            <Button
+              onClick={() => { onClose(); navigate("/book"); }}
+              variant="outline"
+              className="w-full py-3 font-semibold rounded-xl h-auto border-primary/30 hover:bg-primary/5"
+            >
+              <Calendar className="mr-2 h-5 w-5" />
+              Book Your First Session
+            </Button>
+          </div>
+
+          <p className="text-xs text-muted-foreground mt-4 text-center">
             Didn't get the email? Check your spam folder or contact support@diabetesresetmethod.com
           </p>
         </div>
