@@ -14,6 +14,89 @@ export type Database = {
   }
   public: {
     Tables: {
+      intake_submissions: {
+        Row: {
+          age: number
+          availability: string | null
+          coaching_agreement: boolean
+          country: string
+          created_at: string
+          current_medications: string | null
+          diabetes_duration: string | null
+          diabetes_type: string
+          email: string
+          full_name: string
+          health_goals: string | null
+          id: string
+          order_id: string | null
+          phone: string | null
+          preferred_start_date: string | null
+          preferred_time: string | null
+          status: string
+          timezone: string | null
+          updated_at: string
+          uses_insulin: boolean | null
+          why_now: string | null
+          willing_to_cook: boolean | null
+        }
+        Insert: {
+          age: number
+          availability?: string | null
+          coaching_agreement?: boolean
+          country: string
+          created_at?: string
+          current_medications?: string | null
+          diabetes_duration?: string | null
+          diabetes_type: string
+          email: string
+          full_name: string
+          health_goals?: string | null
+          id?: string
+          order_id?: string | null
+          phone?: string | null
+          preferred_start_date?: string | null
+          preferred_time?: string | null
+          status?: string
+          timezone?: string | null
+          updated_at?: string
+          uses_insulin?: boolean | null
+          why_now?: string | null
+          willing_to_cook?: boolean | null
+        }
+        Update: {
+          age?: number
+          availability?: string | null
+          coaching_agreement?: boolean
+          country?: string
+          created_at?: string
+          current_medications?: string | null
+          diabetes_duration?: string | null
+          diabetes_type?: string
+          email?: string
+          full_name?: string
+          health_goals?: string | null
+          id?: string
+          order_id?: string | null
+          phone?: string | null
+          preferred_start_date?: string | null
+          preferred_time?: string | null
+          status?: string
+          timezone?: string | null
+          updated_at?: string
+          uses_insulin?: boolean | null
+          why_now?: string | null
+          willing_to_cook?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "intake_submissions_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       leads: {
         Row: {
           created_at: string
