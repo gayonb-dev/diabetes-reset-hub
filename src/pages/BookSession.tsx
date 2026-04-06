@@ -67,7 +67,7 @@ const BookSession = () => {
               variant="outline"
               className="w-full py-3 font-semibold rounded-xl h-auto border-primary/30 hover:bg-primary/5"
             >
-              <a href="https://wa.me/YOUR_NUMBER?text=Hi!%20I%20just%20purchased%20the%205-Day%20Reset%20and%20would%20like%20to%20book%20my%20sessions." target="_blank" rel="noopener noreferrer">
+              <a href="https://wa.me/18768822547?text=Hi!%20I%20just%20purchased%20the%205-Day%20Reset%20and%20would%20like%20to%20book%20my%20sessions." target="_blank" rel="noopener noreferrer">
                 <MessageCircle className="mr-2 h-5 w-5" />
                 Message Us on WhatsApp
               </a>
