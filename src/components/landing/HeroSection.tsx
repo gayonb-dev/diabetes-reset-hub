@@ -9,19 +9,17 @@ const scrollToPricing = () => {
 const HeroSection = () => {
   return (
     <section className="relative bg-gradient-to-b from-secondary/20 to-background pt-8 pb-8 md:pt-12 md:pb-12 overflow-hidden">
-      {/* Limited Time Offer Badge */}
-      <div className="absolute top-4 right-4 md:top-6 md:right-8 z-10">
-        <span className="inline-flex items-center bg-primary text-primary-foreground px-4 py-2 rounded-full text-sm font-semibold animate-pulse-glow shadow-lg">
-          🔥 Limited Time — $27 (was $47)
-        </span>
-      </div>
-
       <div className="container mx-auto px-4">
         <div className="grid lg:grid-cols-2 gap-8 items-center">
           {/* Text Column */}
           <div className="space-y-4">
-            <p className="text-sm font-semibold tracking-widest uppercase text-primary mb-2">The Diabetes Reset Method</p>
-            <h1 className="font-heading font-bold text-4xl sm:text-5xl lg:text-6xl text-gray-900 leading-tight">
+            <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+              <p className="text-base font-bold tracking-widest uppercase text-primary">The Diabetes Reset Method</p>
+              <span className="inline-flex items-center bg-primary text-primary-foreground px-4 py-2 rounded-full text-sm font-semibold animate-pulse-glow shadow-lg">
+                🔥 Limited Time — $27 (was $47)
+              </span>
+            </div>
+            <h1 className="font-heading font-bold text-4xl sm:text-5xl lg:text-6xl text-foreground leading-tight">
               Reverse Diabetes.
               <br />
               Reclaim Your Life.
