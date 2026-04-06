@@ -36,6 +36,7 @@ const ProgressTracker = () => {
   const emailParam = searchParams.get("email") || "";
   const { toast } = useToast();
 
+  const [emailInput, setEmailInput] = useState(emailParam);
   const [email, setEmail] = useState(emailParam);
   const [isLoaded, setIsLoaded] = useState(false);
   const [entries, setEntries] = useState<Record<number, DayEntry>>({});
@@ -48,8 +49,8 @@ const ProgressTracker = () => {
   const [water, setWater] = useState(0);
 
   useEffect(() => {
-    if (email) loadProgress();
-  }, [email]);
+    if (emailParam) loadProgress();
+  }, []);
 
   useEffect(() => {
     const existing = entries[activeDay];
