@@ -68,10 +68,13 @@ const ProgressTracker = () => {
   }, [activeDay, entries]);
 
   const loadProgress = async () => {
+    const currentEmail = emailInput.toLowerCase().trim();
+    if (!currentEmail) return;
+    setEmail(currentEmail);
     const { data } = await supabase
       .from("challenge_progress")
       .select("*")
-      .eq("email", email.toLowerCase().trim());
+      .eq("email", currentEmail);
 
     if (data) {
       const map: Record<number, DayEntry> = {};
