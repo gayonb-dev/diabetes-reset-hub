@@ -328,7 +328,7 @@ const SixWeekReset = () => {
               <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
                 <div className="bg-primary/5 border border-primary/20 rounded-xl p-4 text-center">
                   <p className="text-sm font-medium text-foreground">
-                    {selectedPlan === "full" ? "One-time payment of $497" : "First payment of $267 today"}
+                    One-time payment of $497
                   </p>
                 </div>
                 <div>
