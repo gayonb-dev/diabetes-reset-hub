@@ -1,4 +1,4 @@
-import { ArrowLeft, Calendar, MessageCircle, Video, ExternalLink } from "lucide-react";
+import { ArrowLeft, Calendar, MessageCircle, Video, ExternalLink, Trophy } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 
@@ -100,6 +100,25 @@ const BookSession = () => {
                 </div>
               </div>
             </div>
+          </div>
+
+          {/* Progress Tracker CTA */}
+          <div className="bg-card border border-border rounded-2xl p-6 text-center">
+            <Trophy className="h-10 w-10 text-primary mx-auto mb-3" />
+            <h3 className="font-heading font-semibold text-lg text-foreground mb-2">
+              Track Your Daily Wins
+            </h3>
+            <p className="text-muted-foreground text-sm mb-4">
+              Log your mood, energy, water intake, and daily wins throughout the 5-day challenge.
+            </p>
+            <Button
+              onClick={() => navigate("/progress")}
+              variant="outline"
+              className="w-full py-3 font-semibold rounded-xl h-auto border-primary/30 hover:bg-primary/5"
+            >
+              <Trophy className="mr-2 h-5 w-5" />
+              Open Progress Tracker
+            </Button>
           </div>
         </div>
       </div>
