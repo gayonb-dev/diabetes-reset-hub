@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { CheckCircle2, Loader2, ClipboardList, Calendar, Trophy } from "lucide-react";
+import { CheckCircle2, Loader2, ClipboardList, Calendar, Trophy, MessageCircle } from "lucide-react";
 import { toast } from "sonner";
 
 const IntakeForm = () => {
@@ -108,7 +108,13 @@ const IntakeForm = () => {
           <div className="space-y-3">
             <Button asChild className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-4 font-bold rounded-xl h-auto text-lg">
               <a href="/book" target="_blank" rel="noopener noreferrer">
+                <Calendar className="mr-2 h-5 w-5" />
                 Book Your First Session
+              </a>
+            </Button>
+            <Button asChild variant="outline" className="w-full py-3 font-semibold rounded-xl h-auto border-primary/30 hover:bg-primary/5">
+              <a href="https://wa.me/18768822547?text=Hi!%20I%20just%20completed%20my%20intake%20form!" target="_blank" rel="noopener noreferrer">
+                <MessageCircle className="mr-2 h-4 w-4" /> Message Coach on WhatsApp
               </a>
             </Button>
             <Button asChild variant="outline" className="w-full py-3 font-semibold rounded-xl h-auto border-primary/30 hover:bg-primary/5">

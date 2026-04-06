@@ -131,12 +131,14 @@ const BookSession = () => {
               Log your mood, energy, water intake, and daily wins throughout the 5-day challenge.
             </p>
             <Button
-              onClick={() => navigate("/progress")}
+              asChild
               variant="outline"
               className="w-full py-3 font-semibold rounded-xl h-auto border-primary/30 hover:bg-primary/5"
             >
-              <Trophy className="mr-2 h-5 w-5" />
-              Open Progress Tracker
+              <a href="/progress" target="_blank" rel="noopener noreferrer">
+                <Trophy className="mr-2 h-5 w-5" />
+                Open Progress Tracker
+              </a>
             </Button>
           </div>
         </div>

@@ -51,7 +51,7 @@ const SixWeekReset = () => {
   const paymentStatus = searchParams.get("payment");
 
   const [showCheckout, setShowCheckout] = useState(false);
-  const [selectedPlan, setSelectedPlan] = useState<"full" | "installment">("full");
+  const [name, setName] = useState("");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -74,7 +74,7 @@ const SixWeekReset = () => {
           customerEmail: email.trim(),
           customerPhone: phone.trim() || undefined,
           productId: "six-week-reset-497",
-          paymentPlan: selectedPlan,
+          paymentPlan: "full",
         },
       });
       if (error) throw error;
@@ -317,7 +317,7 @@ const SixWeekReset = () => {
             {!showCheckout ? (
               <div className="space-y-3">
                 <Button
-                  onClick={() => { setSelectedPlan("full"); setShowCheckout(true); }}
+                  onClick={() => setShowCheckout(true)}
                   className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-4 font-bold rounded-xl h-auto text-lg shadow-lg"
                 >
                   Enroll Now — $497
