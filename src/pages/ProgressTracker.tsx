@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Trophy, Droplets, Zap, Smile, Send, CheckCircle2, Star, Calendar, ClipboardList } from "lucide-react";
+import { Trophy, Droplets, Zap, Smile, Send, CheckCircle2, Star, Calendar, ClipboardList, TrendingUp, ArrowRight } from "lucide-react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -42,6 +42,7 @@ const ProgressTracker = () => {
   const [entries, setEntries] = useState<Record<number, DayEntry>>({});
   const [activeDay, setActiveDay] = useState<number>(1);
   const [saving, setSaving] = useState(false);
+  const [showSummary, setShowSummary] = useState(false);
 
   const [winText, setWinText] = useState("");
   const [mood, setMood] = useState<number | null>(null);
@@ -82,9 +83,14 @@ const ProgressTracker = () => {
         map[row.day_number] = row;
       });
       setEntries(map);
-      const completed = Object.keys(map).map(Number);
-      const nextDay = completed.length > 0 ? Math.min(Math.max(...completed) + 1, 5) : 1;
-      setActiveDay(nextDay);
+      const completedCount = Object.keys(map).length;
+      if (completedCount === 5) {
+        setShowSummary(true);
+      } else {
+        const completed = Object.keys(map).map(Number);
+        const nextDay = completed.length > 0 ? Math.min(Math.max(...completed) + 1, 5) : 1;
+        setActiveDay(nextDay);
+      }
     }
     setIsLoaded(true);
   };
@@ -100,8 +106,9 @@ const ProgressTracker = () => {
     }
 
     setSaving(true);
+    const currentEmail = email || emailInput.toLowerCase().trim();
     const payload = {
-      email: email || emailInput.toLowerCase().trim(),
+      email: currentEmail,
       day_number: activeDay,
       win_text: winText.trim(),
       mood_rating: mood,
@@ -109,9 +116,10 @@ const ProgressTracker = () => {
       water_glasses: water,
     };
 
-    const { error } = entries[activeDay]
-      ? await supabase.from("challenge_progress").update(payload).eq("email", payload.email).eq("day_number", activeDay)
-      : await supabase.from("challenge_progress").insert(payload);
+    // Use upsert with the unique constraint
+    const { error } = await supabase
+      .from("challenge_progress")
+      .upsert(payload, { onConflict: "email,day_number" });
 
     setSaving(false);
 
@@ -120,15 +128,155 @@ const ProgressTracker = () => {
     } else {
       toast({ title: `Day ${activeDay} logged! 🎉`, description: "Your progress has been saved." });
       await loadProgress();
+
+      // If this was day 5, send summary to coach
+      const updatedEntries = { ...entries, [activeDay]: payload };
+      const completedCount = Object.keys(updatedEntries).length;
+      if (completedCount === 5) {
+        try {
+          await supabase.functions.invoke("send-progress-summary", {
+            body: { email: currentEmail },
+          });
+        } catch (err) {
+          console.error("Failed to send summary to coach:", err);
+        }
+      }
     }
   };
 
   const completedDays = Object.keys(entries).length;
 
+  // Calculate summary stats
+  const entryValues = Object.values(entries);
+  const avgMood = entryValues.filter(e => e.mood_rating).reduce((sum, e) => sum + (e.mood_rating || 0), 0) / (entryValues.filter(e => e.mood_rating).length || 1);
+  const avgEnergy = entryValues.filter(e => e.energy_rating).reduce((sum, e) => sum + (e.energy_rating || 0), 0) / (entryValues.filter(e => e.energy_rating).length || 1);
+  const totalWater = entryValues.reduce((sum, e) => sum + (e.water_glasses || 0), 0);
+
+  // Mood/energy trend (compare last 2 days vs first 2 days)
+  const earlyMood = [entries[1]?.mood_rating, entries[2]?.mood_rating].filter(Boolean) as number[];
+  const lateMood = [entries[4]?.mood_rating, entries[5]?.mood_rating].filter(Boolean) as number[];
+  const moodTrend = earlyMood.length && lateMood.length
+    ? (lateMood.reduce((a, b) => a + b, 0) / lateMood.length) - (earlyMood.reduce((a, b) => a + b, 0) / earlyMood.length)
+    : 0;
+
+  const earlyEnergy = [entries[1]?.energy_rating, entries[2]?.energy_rating].filter(Boolean) as number[];
+  const lateEnergy = [entries[4]?.energy_rating, entries[5]?.energy_rating].filter(Boolean) as number[];
+  const energyTrend = earlyEnergy.length && lateEnergy.length
+    ? (lateEnergy.reduce((a, b) => a + b, 0) / lateEnergy.length) - (earlyEnergy.reduce((a, b) => a + b, 0) / earlyEnergy.length)
+    : 0;
+
   if (!isLoaded && email) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="animate-pulse text-muted-foreground">Loading your progress...</div>
+      </div>
+    );
+  }
+
+  // Full Summary View after all 5 days
+  if (showSummary && completedDays === 5) {
+    return (
+      <div className="min-h-screen bg-background">
+        <div className="max-w-2xl mx-auto px-4 py-8">
+          <div className="text-center mb-8">
+            <p className="text-sm font-semibold tracking-widest uppercase text-primary mb-3">The Diabetes Reset Method</p>
+            <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Trophy className="h-10 w-10 text-primary" />
+            </div>
+            <h1 className="font-heading font-bold text-3xl text-foreground mb-2">
+              🎉 Challenge Complete!
+            </h1>
+            <p className="text-muted-foreground text-lg">
+              You did it — 5 days of real progress. Here's your full journey.
+            </p>
+          </div>
+
+          {/* Stats Overview */}
+          <div className="grid grid-cols-3 gap-3 mb-6">
+            <div className="bg-card border border-border rounded-2xl p-4 text-center">
+              <Smile className="h-6 w-6 text-primary mx-auto mb-1" />
+              <p className="font-heading font-bold text-2xl text-primary">{avgMood.toFixed(1)}</p>
+              <p className="text-xs text-muted-foreground">Avg Mood</p>
+              {moodTrend > 0 && (
+                <p className="text-xs text-primary font-medium mt-1 flex items-center justify-center gap-1">
+                  <TrendingUp className="h-3 w-3" /> +{moodTrend.toFixed(1)}
+                </p>
+              )}
+            </div>
+            <div className="bg-card border border-border rounded-2xl p-4 text-center">
+              <Zap className="h-6 w-6 text-primary mx-auto mb-1" />
+              <p className="font-heading font-bold text-2xl text-primary">{avgEnergy.toFixed(1)}</p>
+              <p className="text-xs text-muted-foreground">Avg Energy</p>
+              {energyTrend > 0 && (
+                <p className="text-xs text-primary font-medium mt-1 flex items-center justify-center gap-1">
+                  <TrendingUp className="h-3 w-3" /> +{energyTrend.toFixed(1)}
+                </p>
+              )}
+            </div>
+            <div className="bg-card border border-border rounded-2xl p-4 text-center">
+              <Droplets className="h-6 w-6 text-primary mx-auto mb-1" />
+              <p className="font-heading font-bold text-2xl text-primary">{totalWater}</p>
+              <p className="text-xs text-muted-foreground">Total Glasses</p>
+            </div>
+          </div>
+
+          {/* Day-by-Day Journey */}
+          <div className="bg-card border border-border rounded-2xl p-6 mb-6">
+            <h3 className="font-heading font-semibold text-lg text-foreground mb-4 flex items-center gap-2">
+              <Star className="h-5 w-5 text-primary" /> Your 5-Day Journey
+            </h3>
+            <div className="space-y-3">
+              {DAYS.map((d) => {
+                const entry = entries[d.day];
+                if (!entry) return null;
+                return (
+                  <div key={d.day} className="flex items-start gap-3 p-3 bg-muted/30 rounded-xl">
+                    <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-bold flex-shrink-0">
+                      {d.day}
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-foreground">{d.title}</p>
+                      <p className="text-sm text-muted-foreground mt-1">{entry.win_text}</p>
+                      <div className="flex gap-3 mt-2 text-xs text-muted-foreground">
+                        {entry.mood_rating && (
+                          <span>{MOODS.find(m => m.value === entry.mood_rating)?.emoji} {MOODS.find(m => m.value === entry.mood_rating)?.label}</span>
+                        )}
+                        {entry.energy_rating && <span>⚡ Energy: {entry.energy_rating}/5</span>}
+                        {entry.water_glasses > 0 && <span>💧 {entry.water_glasses} glasses</span>}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Edit button */}
+          <Button
+            variant="outline"
+            onClick={() => { setShowSummary(false); setActiveDay(1); }}
+            className="w-full mb-4 rounded-xl border-primary/30 hover:bg-primary/5"
+          >
+            Edit My Entries
+          </Button>
+
+          {/* Upsell CTA */}
+          <div className="bg-primary/5 border-2 border-primary rounded-2xl p-6 text-center">
+            <h2 className="font-heading font-bold text-xl text-foreground mb-2">
+              You proved you can do this.
+            </h2>
+            <p className="text-muted-foreground mb-4">
+              In 5 days you built real habits. Imagine what 6 weeks of personalized coaching could do.
+            </p>
+            <Button
+              onClick={() => navigate("/6-week-reset")}
+              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-4 font-bold rounded-xl h-auto text-lg"
+            >
+              See the 6-Week Reset
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </Button>
+          </div>
+        </div>
       </div>
     );
   }
@@ -236,6 +384,9 @@ const ProgressTracker = () => {
               Day {activeDay}: {DAYS[activeDay - 1].title}
             </h2>
             <p className="text-sm text-muted-foreground mt-1">{DAYS[activeDay - 1].description}</p>
+            {entries[activeDay] && (
+              <p className="text-xs text-primary font-medium mt-2">✅ Already logged — you can update it below</p>
+            )}
           </div>
 
           {/* Win */}
@@ -361,15 +512,11 @@ const ProgressTracker = () => {
 
             {completedDays === 5 && (
               <div className="mt-6 text-center">
-                <p className="text-lg font-bold text-foreground mb-2">🎉 You completed the 5-Day Challenge!</p>
-                <p className="text-muted-foreground text-sm mb-4">
-                  You've proven you can make changes. Ready to go deeper?
-                </p>
                 <Button
-                  onClick={() => navigate("/6-week-reset")}
+                  onClick={() => setShowSummary(true)}
                   className="bg-primary hover:bg-primary/90 text-primary-foreground py-3 px-8 font-bold rounded-xl h-auto text-lg"
                 >
-                  See the 6-Week Reset →
+                  View Your Full Results 🎉
                 </Button>
               </div>
             )}
