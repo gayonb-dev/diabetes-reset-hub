@@ -303,7 +303,6 @@ const SixWeekReset = () => {
                 <span className="text-foreground font-heading font-bold text-lg">Your Price</span>
                 <div className="text-right">
                   <span className="font-heading font-extrabold text-4xl text-primary">$497</span>
-                  <p className="text-xs text-muted-foreground">or 2 payments of $267</p>
                 </div>
               </div>
             </div>
@@ -323,13 +322,6 @@ const SixWeekReset = () => {
                 >
                   Enroll Now — $497
                   <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
-                <Button
-                  onClick={() => { setSelectedPlan("installment"); setShowCheckout(true); }}
-                  variant="outline"
-                  className="w-full py-3 font-semibold rounded-xl h-auto border-primary/30 hover:bg-primary/5"
-                >
-                  2 Easy Payments of $267
                 </Button>
               </div>
             ) : (
