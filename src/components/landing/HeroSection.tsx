@@ -1,5 +1,6 @@
 import { ArrowRight, Shield, Users, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import heroImage from "@/assets/hero-diabetes-reset.jpg";
 
 const scrollToPricing = () => {
   document.getElementById("pricing")?.scrollIntoView({ behavior: "smooth" });
