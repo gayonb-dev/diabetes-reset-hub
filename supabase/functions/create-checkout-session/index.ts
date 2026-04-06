@@ -11,18 +11,33 @@ interface CheckoutRequest {
   customerName: string;
   customerEmail: string;
   customerPhone?: string;
+  productId?: string;
+  paymentPlan?: "full" | "installment";
 }
 
+const PRODUCTS: Record<string, { name: string; description: string; amount: number; installmentAmount?: number; installmentCount?: number }> = {
+  "five-day-reset-27": {
+    name: "5-Day Diabetes Reset Challenge",
+    description: "Quick wins that lower sugar, jumpstart weight loss, and restore your energy in just 5 days.",
+    amount: 2700,
+  },
+  "six-week-reset-497": {
+    name: "6-Week Diabetes Reset Program",
+    description: "Full transformation: 12 coaching sessions, custom meal plans, daily WhatsApp support, and more.",
+    amount: 49700,
+    installmentAmount: 26700,
+    installmentCount: 2,
+  },
+};
+
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const { customerName, customerEmail, customerPhone }: CheckoutRequest = await req.json();
+    const { customerName, customerEmail, customerPhone, productId = "five-day-reset-27", paymentPlan = "full" }: CheckoutRequest = await req.json();
 
-    // Validate required fields
     if (!customerName || !customerEmail) {
       return new Response(
         JSON.stringify({ error: "Customer name and email are required" }),
@@ -30,7 +45,6 @@ serve(async (req) => {
       );
     }
 
-    // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(customerEmail)) {
       return new Response(
@@ -39,32 +53,50 @@ serve(async (req) => {
       );
     }
 
-    // Initialize Stripe
+    const product = PRODUCTS[productId];
+    if (!product) {
+      return new Response(
+        JSON.stringify({ error: "Invalid product" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
       apiVersion: "2025-08-27.basil",
     });
 
-    // Initialize Supabase with service role for database operations
     const supabaseAdmin = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
     );
 
-    // Check if a Stripe customer already exists
-    const customers = await stripe.customers.list({ 
-      email: customerEmail.toLowerCase(), 
-      limit: 1 
+    const customers = await stripe.customers.list({
+      email: customerEmail.toLowerCase(),
+      limit: 1,
     });
-    
+
     let customerId: string | undefined;
     if (customers.data.length > 0) {
       customerId = customers.data[0].id;
     }
 
-    // Get the origin for redirect URLs
     const origin = req.headers.get("origin") || "https://lovable.dev";
 
-    // Create Stripe Checkout session
+    // Determine amount and checkout mode
+    const isInstallment = paymentPlan === "installment" && product.installmentAmount;
+    const amount = isInstallment ? product.installmentAmount! : product.amount;
+    const productName = isInstallment
+      ? `${product.name} — Payment 1 of ${product.installmentCount}`
+      : product.name;
+
+    // Set redirect based on product
+    const successUrl = productId === "six-week-reset-497"
+      ? `${origin}/6-week-reset?payment=success`
+      : `${origin}?payment=success`;
+    const cancelUrl = productId === "six-week-reset-497"
+      ? `${origin}/6-week-reset?payment=cancelled`
+      : `${origin}?payment=cancelled`;
+
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       customer_email: customerId ? undefined : customerEmail.toLowerCase(),
@@ -74,41 +106,41 @@ serve(async (req) => {
           price_data: {
             currency: "usd",
             product_data: {
-              name: "5-Day Diabetes Reset Challenge",
-              description: "Quick wins that lower sugar, jumpstart weight loss, and restore your energy in just 5 days.",
+              name: productName,
+              description: product.description,
             },
-            unit_amount: 2700, // $27.00 in cents
+            unit_amount: amount,
           },
           quantity: 1,
         },
       ],
       mode: "payment",
-      success_url: `${origin}?payment=success`,
-      cancel_url: `${origin}?payment=cancelled`,
+      success_url: successUrl,
+      cancel_url: cancelUrl,
       metadata: {
         customerName,
         customerPhone: customerPhone || "",
+        productId,
+        paymentPlan,
       },
     });
 
-    // Save pending order to database
     const { error: insertError } = await supabaseAdmin
       .from("orders")
       .insert({
         customer_name: customerName,
         customer_email: customerEmail.toLowerCase(),
         customer_phone: customerPhone || null,
-        amount: 2700,
+        amount,
         currency: "usd",
         status: "pending",
-        product_name: "5-Day Diabetes Reset Challenge",
-        product_id: "five-day-reset-27",
+        product_name: productName,
+        product_id: productId,
         stripe_session_id: session.id,
       });
 
     if (insertError) {
       console.error("Error saving order:", insertError);
-      // Don't fail the checkout, just log the error
     }
 
     return new Response(

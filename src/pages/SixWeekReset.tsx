@@ -1,6 +1,10 @@
-import { ArrowLeft, CheckCircle2, Star, Shield, TrendingDown, Heart, Utensils, Dumbbell, Brain, Users, MessageCircle, ArrowRight, Clock, Zap } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { ArrowLeft, CheckCircle2, Star, Shield, TrendingDown, Heart, Utensils, Dumbbell, Brain, Users, MessageCircle, ArrowRight, Clock, Zap, Loader2 } from "lucide-react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 const RESULTS = [
   { stat: "15–30 pts", label: "Average blood sugar drop in 6 weeks" },
@@ -43,10 +47,80 @@ const TESTIMONIALS = [
 
 const SixWeekReset = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const paymentStatus = searchParams.get("payment");
+
+  const [showCheckout, setShowCheckout] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState<"full" | "installment">("full");
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const scrollToPrice = () => {
     document.getElementById("pricing")?.scrollIntoView({ behavior: "smooth" });
   };
+
+  const handleCheckout = async () => {
+    if (!name.trim() || !email.trim()) {
+      toast.error("Please enter your name and email.");
+      return;
+    }
+    setLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("create-checkout-session", {
+        body: {
+          customerName: name.trim(),
+          customerEmail: email.trim(),
+          customerPhone: phone.trim() || undefined,
+          productId: "six-week-reset-497",
+          paymentPlan: selectedPlan,
+        },
+      });
+      if (error) throw error;
+      if (data?.url) {
+        window.location.href = data.url;
+      }
+    } catch (err) {
+      console.error("Checkout error:", err);
+      toast.error("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Payment success state
+  if (paymentStatus === "success") {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+        <div className="max-w-md w-full text-center space-y-6">
+          <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
+            <CheckCircle2 className="h-12 w-12 text-primary" />
+          </div>
+          <h1 className="font-heading font-bold text-3xl text-foreground">Welcome to the 6-Week Reset! 🎉</h1>
+          <p className="text-muted-foreground text-lg">
+            Your enrollment is confirmed. You'll receive a welcome email and WhatsApp message within the next few hours with everything you need to get started.
+          </p>
+          <div className="bg-primary/5 border border-primary/20 rounded-xl p-5 text-left space-y-3">
+            <h3 className="font-heading font-semibold text-foreground">What happens next:</h3>
+            <p className="text-sm text-muted-foreground">✅ Check your email for your welcome package</p>
+            <p className="text-sm text-muted-foreground">✅ Look for a WhatsApp message from your coach</p>
+            <p className="text-sm text-muted-foreground">✅ Your personalized plan starts within 48 hours</p>
+          </div>
+          <Button
+            asChild
+            variant="outline"
+            className="w-full py-3 font-semibold rounded-xl h-auto border-primary/30 hover:bg-primary/5"
+          >
+            <a href="https://wa.me/18768822547?text=Hi!%20I%20just%20enrolled%20in%20the%206-Week%20Reset!" target="_blank" rel="noopener noreferrer">
+              <MessageCircle className="mr-2 h-5 w-5" />
+              Message Your Coach on WhatsApp
+            </a>
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -239,15 +313,79 @@ const SixWeekReset = () => {
               </p>
             </div>
 
-            <Button
-              asChild
-              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-4 font-bold rounded-xl h-auto text-lg shadow-lg"
-            >
-              <a href="https://wa.me/18768822547?text=Hi!%20I%20completed%20the%205-Day%20Challenge%20and%20I'm%20ready%20to%20join%20the%206-Week%20Reset!" target="_blank" rel="noopener noreferrer">
-                <MessageCircle className="mr-2 h-5 w-5" />
-                Message Me to Enroll
-              </a>
-            </Button>
+            {/* Payment Plan Toggle */}
+            {!showCheckout ? (
+              <div className="space-y-3">
+                <Button
+                  onClick={() => { setSelectedPlan("full"); setShowCheckout(true); }}
+                  className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-4 font-bold rounded-xl h-auto text-lg shadow-lg"
+                >
+                  Enroll Now — $497
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+                <Button
+                  onClick={() => { setSelectedPlan("installment"); setShowCheckout(true); }}
+                  variant="outline"
+                  className="w-full py-3 font-semibold rounded-xl h-auto border-primary/30 hover:bg-primary/5"
+                >
+                  2 Easy Payments of $267
+                </Button>
+              </div>
+            ) : (
+              <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
+                <div className="bg-primary/5 border border-primary/20 rounded-xl p-4 text-center">
+                  <p className="text-sm font-medium text-foreground">
+                    {selectedPlan === "full" ? "One-time payment of $497" : "First payment of $267 today"}
+                  </p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-foreground mb-1 block">Full Name *</label>
+                  <Input
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="Your full name"
+                    className="rounded-xl"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-foreground mb-1 block">Email Address *</label>
+                  <Input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="your@email.com"
+                    className="rounded-xl"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-foreground mb-1 block">Phone (optional)</label>
+                  <Input
+                    type="tel"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    placeholder="+1 (876) 000-0000"
+                    className="rounded-xl"
+                  />
+                </div>
+                <Button
+                  onClick={handleCheckout}
+                  disabled={loading}
+                  className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-4 font-bold rounded-xl h-auto text-lg shadow-lg"
+                >
+                  {loading ? (
+                    <><Loader2 className="mr-2 h-5 w-5 animate-spin" /> Processing...</>
+                  ) : (
+                    <>Proceed to Checkout <ArrowRight className="ml-2 h-5 w-5" /></>
+                  )}
+                </Button>
+                <button
+                  onClick={() => setShowCheckout(false)}
+                  className="w-full text-sm text-muted-foreground hover:text-foreground text-center py-2"
+                >
+                  ← Back to options
+                </button>
+              </div>
+            )}
 
             <p className="text-xs text-muted-foreground text-center mt-3">
               Limited to 5 clients per month for personalized attention
