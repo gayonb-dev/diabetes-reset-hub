@@ -30,7 +30,7 @@ const HeroSection = () => {
             </h2>
 
             {/* Social Proof Mini-Bar */}
-            <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600">
+            <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
               <span className="flex items-center gap-1">
                 <Users className="h-4 w-4 text-primary" />
                 <strong>156+</strong> people transformed
@@ -50,7 +50,7 @@ const HeroSection = () => {
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
 
-              <div className="flex flex-wrap items-center gap-3 text-sm text-gray-600">
+              <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
                 <span className="flex items-center gap-1">
                   <Shield className="h-4 w-4 text-primary" />
                   30-day money-back guarantee
@@ -78,7 +78,7 @@ const HeroSection = () => {
             {/* Floating Badge */}
             <div className="absolute -bottom-4 -right-4 bg-background p-4 rounded-2xl shadow-xl border-4 border-primary">
               <p className="text-2xl font-bold text-primary">5 Days</p>
-              <p className="text-xs text-gray-600">to reset your health</p>
+              <p className="text-xs text-muted-foreground">to reset your health</p>
             </div>
           </div>
         </div>
