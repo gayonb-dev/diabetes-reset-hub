@@ -1,4 +1,4 @@
-import { ArrowLeft, Calendar, MessageCircle, Video, ExternalLink, Trophy } from "lucide-react";
+import { Calendar, MessageCircle, Video, ExternalLink, Trophy, ClipboardList } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 
@@ -8,9 +8,28 @@ const BookSession = () => {
   return (
     <div className="min-h-screen bg-background">
       <div className="max-w-2xl mx-auto px-4 py-12">
-        <button onClick={() => navigate("/")} className="flex items-center text-muted-foreground hover:text-foreground mb-8 transition-colors">
-          <ArrowLeft className="mr-2 h-4 w-4" /> Back to Home
-        </button>
+        <div className="flex gap-3 mb-8">
+          <Button
+            asChild
+            variant="outline"
+            size="sm"
+            className="rounded-xl border-primary/30 hover:bg-primary/5"
+          >
+            <a href="/intake" target="_blank" rel="noopener noreferrer">
+              <ClipboardList className="mr-2 h-4 w-4" /> Intake Form
+            </a>
+          </Button>
+          <Button
+            asChild
+            variant="outline"
+            size="sm"
+            className="rounded-xl border-primary/30 hover:bg-primary/5"
+          >
+            <a href="/progress" target="_blank" rel="noopener noreferrer">
+              <Trophy className="mr-2 h-4 w-4" /> Progress Tracker
+            </a>
+          </Button>
+        </div>
 
         <div className="text-center mb-10">
           <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
