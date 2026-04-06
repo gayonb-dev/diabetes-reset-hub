@@ -45,7 +45,7 @@ const ProblemPromiseSection = () => {
           <div className="bg-gradient-to-br from-primary/10 to-secondary/10 border-2 border-primary rounded-2xl p-6">
             <div className="flex items-center gap-2 mb-4">
               <Check className="h-6 w-6 text-primary" />
-              <h3 className="font-heading font-semibold text-lg">The 5-Day Reset Approach</h3>
+              <h3 className="font-heading font-semibold text-lg">The Diabetes Reset Method</h3>
             </div>
             <ul className="space-y-3 mb-4">
               {doesWork.map((item, index) => (

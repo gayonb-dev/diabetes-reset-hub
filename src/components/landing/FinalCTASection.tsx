@@ -13,6 +13,7 @@ const FinalCTASection = ({ onOpenPayment }: FinalCTASectionProps) => {
       <div className="absolute bottom-0 right-0 w-96 h-96 bg-secondary/10 rounded-full blur-3xl translate-x-1/2 translate-y-1/2" />
 
       <div className="container mx-auto px-4 text-center relative z-10">
+        <p className="text-sm font-semibold tracking-widest uppercase text-primary-foreground/70 mb-3">The Diabetes Reset Method</p>
         <h2 className="font-heading font-bold text-4xl sm:text-5xl text-primary-foreground mb-4">
           This is your moment.
         </h2>

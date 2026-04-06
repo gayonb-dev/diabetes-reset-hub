@@ -26,7 +26,7 @@ const WhyThisWorksSection = () => {
     <section className="bg-background py-10">
       <div className="container mx-auto px-4">
         <h2 className="font-heading font-bold text-3xl sm:text-4xl text-center text-gray-900 mb-2">
-          Why This Works
+          Why The Diabetes Reset Method Works
         </h2>
         <p className="text-center text-gray-600 mb-8">(When Nothing Else Did)</p>
 
