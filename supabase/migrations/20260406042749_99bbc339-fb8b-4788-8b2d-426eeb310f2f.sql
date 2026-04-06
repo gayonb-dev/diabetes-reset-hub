@@ -1,0 +1,1 @@
+ALTER TABLE public.challenge_progress ADD CONSTRAINT challenge_progress_email_day_unique UNIQUE (email, day_number);
