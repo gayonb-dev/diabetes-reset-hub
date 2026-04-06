@@ -52,7 +52,6 @@ const SixWeekReset = () => {
 
   const [showCheckout, setShowCheckout] = useState(false);
   const [name, setName] = useState("");
-  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [loading, setLoading] = useState(false);
