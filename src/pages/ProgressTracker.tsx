@@ -101,7 +101,7 @@ const ProgressTracker = () => {
 
     setSaving(true);
     const payload = {
-      email: email.toLowerCase().trim(),
+      email: email || emailInput.toLowerCase().trim(),
       day_number: activeDay,
       win_text: winText.trim(),
       mood_rating: mood,
