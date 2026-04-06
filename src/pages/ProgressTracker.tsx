@@ -90,7 +90,7 @@ const ProgressTracker = () => {
   };
 
   const handleSave = async () => {
-    if (!email.trim()) {
+    if (!email && !emailInput.trim()) {
       toast({ title: "Email required", description: "Please enter the email you used at checkout.", variant: "destructive" });
       return;
     }
