@@ -90,12 +90,8 @@ serve(async (req) => {
       : product.name;
 
     // Set redirect based on product
-    const successUrl = productId === "six-week-reset-497"
-      ? `${origin}/6-week-reset?payment=success`
-      : `${origin}?payment=success`;
-    const cancelUrl = productId === "six-week-reset-497"
-      ? `${origin}/6-week-reset?payment=cancelled`
-      : `${origin}?payment=cancelled`;
+    const successUrl = `${origin}/payment-success`;
+    const cancelUrl = `${origin}/payment-cancelled`;
 
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
