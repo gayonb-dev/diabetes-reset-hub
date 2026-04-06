@@ -7,7 +7,7 @@ const FAQSection = () => {
   const faqs = [
     {
       question: "I've tried everything — will this actually work?",
-      answer: "We get it. Most programs aren't built for diabetics. The 5-Day Reset is different — it's designed specifically for Type 2 Diabetes and prediabetes. You'll see real wins within the first 5 days because the actions are small, specific, and proven. Plus, with our 30-day money-back guarantee, there's zero risk.",
+      answer: "We get it. Most programs aren't built for diabetics. The Diabetes Reset Method is different — it's designed specifically for Type 2 Diabetes and prediabetes. You'll see real wins within the first 5 days because the actions are small, specific, and proven. Plus, with our 30-day money-back guarantee, there's zero risk.",
     },
     {
       question: "Do I need special foods or a gym membership?",

@@ -133,6 +133,7 @@ const SixWeekReset = () => {
           </button>
 
           <div className="text-center">
+            <p className="text-sm font-semibold tracking-widest uppercase text-primary mb-4">The Diabetes Reset Method</p>
             <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium mb-6">
               <Zap className="h-4 w-4" />
               You completed the 5-Day Challenge — Here's your next step
@@ -405,7 +406,7 @@ const SixWeekReset = () => {
         <div className="max-w-3xl mx-auto px-4 py-14 text-center">
           <h2 className="font-heading font-bold text-3xl text-foreground mb-4">
             Your 5 days proved it's possible.<br />
-            6 weeks will make it permanent.
+            The Diabetes Reset Method will make it permanent.
           </h2>
           <p className="text-muted-foreground text-lg mb-8 max-w-lg mx-auto">
             Stop managing diabetes. Start reversing it.

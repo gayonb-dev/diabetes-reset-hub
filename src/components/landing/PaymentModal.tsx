@@ -133,11 +133,12 @@ const PaymentModal = forwardRef<HTMLDivElement, PaymentModalProps>(
             </div>
           ) : (
             <>
+              <p className="text-xs font-semibold tracking-widest uppercase text-primary mb-1">The Diabetes Reset Method</p>
               <h3 className="font-heading font-bold text-2xl text-center text-gray-900 mb-2">
                 Complete Your Order
               </h3>
               <p className="text-center text-gray-600 mb-6">
-                Secure checkout for 5-Day Diabetes Reset Challenge - $27
+                5-Day Diabetes Reset Challenge — $27
               </p>
 
               {errors.general && (

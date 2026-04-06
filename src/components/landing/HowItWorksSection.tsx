@@ -39,6 +39,7 @@ const HowItWorksSection = () => {
   return (
     <section className="bg-gradient-to-b from-background to-primary/5 py-10">
       <div className="container mx-auto px-4">
+        <p className="text-sm font-semibold tracking-widest uppercase text-primary text-center mb-2">The Diabetes Reset Method</p>
         <h2 className="font-heading font-bold text-3xl sm:text-4xl text-center text-gray-900 mb-2">
           Your Path to Reversal
         </h2>

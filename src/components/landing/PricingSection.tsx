@@ -25,10 +25,10 @@ const PricingSection = ({ onOpenPayment }: PricingSectionProps) => {
     <section id="pricing" className="bg-gradient-to-b from-primary/5 to-background py-10">
       <div className="container mx-auto px-4">
         <h2 className="font-heading font-bold text-3xl sm:text-4xl text-center text-gray-900 mb-2">
-          Start Today — Lock In Your Spot
+          Start Your Reset Today
         </h2>
         <p className="text-center text-gray-600 mb-8">
-          Join 156+ people who've already transformed their health
+          Join 156+ people who've transformed their health with The Diabetes Reset Method
         </p>
 
         <div className="max-w-md mx-auto">
