@@ -7,9 +7,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 const RESULTS = [
-  { stat: "15–30 pts", label: "Average blood sugar drop in 6 weeks" },
-  { stat: "5–12 lbs", label: "Average weight loss during the program" },
-  { stat: "90%", label: "Of clients report more energy by Week 2" },
+  { stat: "6 Weeks", label: "Of personalized, hands-on coaching" },
+  { stat: "12 Sessions", label: "One-on-one deep dive calls with your coach" },
+  { stat: "Daily", label: "WhatsApp support — you're never alone" },
 ];
 
 const WEEKS = [
@@ -128,9 +128,8 @@ const SixWeekReset = () => {
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-secondary/10" />
         <div className="relative max-w-4xl mx-auto px-4 py-12 md:py-20">
-          <button onClick={() => navigate("/")} className="flex items-center text-muted-foreground hover:text-foreground mb-8 transition-colors">
-            <ArrowLeft className="mr-2 h-4 w-4" /> Back to Home
-          </button>
+
+
 
           <div className="text-center">
             <p className="text-sm font-semibold tracking-widest uppercase text-primary mb-4">The Diabetes Reset Method</p>
