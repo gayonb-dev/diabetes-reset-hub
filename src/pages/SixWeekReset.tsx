@@ -79,7 +79,8 @@ const SixWeekReset = () => {
       });
       if (error) throw error;
       if (data?.url) {
-        window.location.href = data.url;
+        window.open(data.url, "_blank");
+        toast.success("Redirecting to checkout...");
       }
     } catch (err) {
       console.error("Checkout error:", err);
@@ -302,7 +303,6 @@ const SixWeekReset = () => {
                 <span className="text-foreground font-heading font-bold text-lg">Your Price</span>
                 <div className="text-right">
                   <span className="font-heading font-extrabold text-4xl text-primary">$497</span>
-                  <p className="text-xs text-muted-foreground">or 2 payments of $267</p>
                 </div>
               </div>
             </div>
@@ -323,19 +323,12 @@ const SixWeekReset = () => {
                   Enroll Now — $497
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
-                <Button
-                  onClick={() => { setSelectedPlan("installment"); setShowCheckout(true); }}
-                  variant="outline"
-                  className="w-full py-3 font-semibold rounded-xl h-auto border-primary/30 hover:bg-primary/5"
-                >
-                  2 Easy Payments of $267
-                </Button>
               </div>
             ) : (
               <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
                 <div className="bg-primary/5 border border-primary/20 rounded-xl p-4 text-center">
                   <p className="text-sm font-medium text-foreground">
-                    {selectedPlan === "full" ? "One-time payment of $497" : "First payment of $267 today"}
+                    One-time payment of $497
                   </p>
                 </div>
                 <div>
