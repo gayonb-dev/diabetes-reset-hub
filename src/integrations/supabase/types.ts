@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      challenge_progress: {
+        Row: {
+          created_at: string
+          day_number: number
+          email: string
+          energy_rating: number | null
+          id: string
+          mood_rating: number | null
+          water_glasses: number | null
+          win_text: string
+        }
+        Insert: {
+          created_at?: string
+          day_number: number
+          email: string
+          energy_rating?: number | null
+          id?: string
+          mood_rating?: number | null
+          water_glasses?: number | null
+          win_text: string
+        }
+        Update: {
+          created_at?: string
+          day_number?: number
+          email?: string
+          energy_rating?: number | null
+          id?: string
+          mood_rating?: number | null
+          water_glasses?: number | null
+          win_text?: string
+        }
+        Relationships: []
+      }
       intake_submissions: {
         Row: {
           age: number
