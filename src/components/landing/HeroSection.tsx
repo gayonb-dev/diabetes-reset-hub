@@ -20,6 +20,7 @@ const HeroSection = () => {
         <div className="grid lg:grid-cols-2 gap-8 items-center">
           {/* Text Column */}
           <div className="space-y-4">
+            <p className="text-sm font-semibold tracking-widest uppercase text-primary mb-2">The Diabetes Reset Method</p>
             <h1 className="font-heading font-bold text-4xl sm:text-5xl lg:text-6xl text-gray-900 leading-tight">
               Reverse Diabetes.
               <br />
