@@ -79,7 +79,8 @@ const SixWeekReset = () => {
       });
       if (error) throw error;
       if (data?.url) {
-        window.location.href = data.url;
+        window.open(data.url, "_blank");
+        toast.success("Redirecting to checkout...");
       }
     } catch (err) {
       console.error("Checkout error:", err);
