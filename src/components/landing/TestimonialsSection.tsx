@@ -43,7 +43,7 @@ const TestimonialsSection = () => {
           Real People. Real Results.
         </h2>
         <p className="text-center text-gray-600 mb-8">
-          156+ people have transformed their health — here's what they're saying
+          156+ people have transformed their health with The Diabetes Reset Method
         </p>
 
         {/* Stats Bar */}

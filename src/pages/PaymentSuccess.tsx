@@ -10,12 +10,14 @@ const PaymentSuccess = () => {
             <CheckCircle2 className="h-12 w-12 text-primary" />
           </div>
 
+          <p className="text-sm font-semibold tracking-widest uppercase text-primary mb-3">The Diabetes Reset Method</p>
+
           <h1 className="font-heading font-bold text-4xl text-foreground mb-3">
             You're In! 🎉
           </h1>
 
           <p className="text-foreground text-lg font-medium mb-1">
-            Welcome to The Diabetes Reset Tiny Challenge.
+            Welcome to The Diabetes Reset Challenge.
           </p>
           <p className="text-muted-foreground max-w-md mx-auto">
             Your payment was successful. This 5-day challenge is your first step toward lowering your blood sugar, losing weight, and feeling better in your body.

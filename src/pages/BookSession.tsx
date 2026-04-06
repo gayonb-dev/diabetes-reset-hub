@@ -32,6 +32,7 @@ const BookSession = () => {
         </div>
 
         <div className="text-center mb-10">
+          <p className="text-sm font-semibold tracking-widest uppercase text-primary mb-3">The Diabetes Reset Method</p>
           <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
             <Calendar className="h-8 w-8 text-primary" />
           </div>
