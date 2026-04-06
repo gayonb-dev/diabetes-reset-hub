@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { CheckCircle2, Loader2, ArrowLeft, ClipboardList } from "lucide-react";
+import { CheckCircle2, Loader2, ClipboardList, Calendar, Trophy } from "lucide-react";
 import { toast } from "sonner";
 
 const IntakeForm = () => {
@@ -106,11 +106,15 @@ const IntakeForm = () => {
             Thank you! Your information has been received. We'll review it and reach out via WhatsApp to confirm your schedule.
           </p>
           <div className="space-y-3">
-            <Button onClick={() => navigate("/book")} className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-4 font-bold rounded-xl h-auto text-lg">
-              Book Your First Session
+            <Button asChild className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-4 font-bold rounded-xl h-auto text-lg">
+              <a href="/book" target="_blank" rel="noopener noreferrer">
+                Book Your First Session
+              </a>
             </Button>
-            <Button onClick={() => navigate("/")} variant="ghost" className="w-full text-muted-foreground">
-              <ArrowLeft className="mr-2 h-4 w-4" /> Back to Home
+            <Button asChild variant="outline" className="w-full py-3 font-semibold rounded-xl h-auto border-primary/30 hover:bg-primary/5">
+              <a href="/progress" target="_blank" rel="noopener noreferrer">
+                <Trophy className="mr-2 h-4 w-4" /> Open Progress Tracker
+              </a>
             </Button>
           </div>
         </div>
@@ -124,9 +128,28 @@ const IntakeForm = () => {
   return (
     <div className="min-h-screen bg-background">
       <div className="max-w-2xl mx-auto px-4 py-12">
-        <button onClick={() => navigate("/")} className="flex items-center text-muted-foreground hover:text-foreground mb-8 transition-colors">
-          <ArrowLeft className="mr-2 h-4 w-4" /> Back to Home
-        </button>
+        <div className="flex gap-3 mb-8">
+          <Button
+            asChild
+            variant="outline"
+            size="sm"
+            className="rounded-xl border-primary/30 hover:bg-primary/5"
+          >
+            <a href="/book" target="_blank" rel="noopener noreferrer">
+              <Calendar className="mr-2 h-4 w-4" /> Book Sessions
+            </a>
+          </Button>
+          <Button
+            asChild
+            variant="outline"
+            size="sm"
+            className="rounded-xl border-primary/30 hover:bg-primary/5"
+          >
+            <a href="/progress" target="_blank" rel="noopener noreferrer">
+              <Trophy className="mr-2 h-4 w-4" /> Progress Tracker
+            </a>
+          </Button>
+        </div>
 
         <div className="text-center mb-10">
           <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">

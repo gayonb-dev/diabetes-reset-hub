@@ -1,6 +1,5 @@
-import { CheckCircle2, XCircle, ArrowRight, Mail, Clock, ClipboardList, MessageCircle, Calendar, Trophy } from "lucide-react";
+import { CheckCircle2, XCircle, Mail, ClipboardList, MessageCircle, Calendar, Trophy } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
 
 interface PaymentResultProps {
   status: "success" | "cancelled";
@@ -9,8 +8,6 @@ interface PaymentResultProps {
 }
 
 const PaymentResult = ({ status, onClose, onRetry }: PaymentResultProps) => {
-  const navigate = useNavigate();
-
   if (status === "success") {
     return (
       <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
@@ -72,11 +69,13 @@ const PaymentResult = ({ status, onClose, onRetry }: PaymentResultProps) => {
 
           <div className="space-y-3">
             <Button
-              onClick={() => { onClose(); navigate("/intake"); }}
+              asChild
               className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-4 font-bold rounded-xl h-auto text-lg"
             >
-              <ClipboardList className="mr-2 h-5 w-5" />
-              Complete Your Intake Form
+              <a href="/intake" target="_blank" rel="noopener noreferrer">
+                <ClipboardList className="mr-2 h-5 w-5" />
+                Complete Your Intake Form
+              </a>
             </Button>
 
             <Button
@@ -91,21 +90,25 @@ const PaymentResult = ({ status, onClose, onRetry }: PaymentResultProps) => {
             </Button>
 
             <Button
-              onClick={() => { onClose(); navigate("/book"); }}
+              asChild
               variant="outline"
               className="w-full py-3 font-semibold rounded-xl h-auto border-primary/30 hover:bg-primary/5"
             >
-              <Calendar className="mr-2 h-5 w-5" />
-              Book Your First Session
+              <a href="/book" target="_blank" rel="noopener noreferrer">
+                <Calendar className="mr-2 h-5 w-5" />
+                Book Your First Session
+              </a>
             </Button>
 
             <Button
-              onClick={() => { onClose(); navigate("/progress"); }}
+              asChild
               variant="outline"
               className="w-full py-3 font-semibold rounded-xl h-auto border-primary/30 hover:bg-primary/5"
             >
-              <Trophy className="mr-2 h-5 w-5" />
-              Open Progress Tracker
+              <a href="/progress" target="_blank" rel="noopener noreferrer">
+                <Trophy className="mr-2 h-5 w-5" />
+                Open Progress Tracker
+              </a>
             </Button>
           </div>
 

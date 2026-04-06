@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ArrowLeft, Trophy, Droplets, Zap, Smile, Send, CheckCircle2, Star } from "lucide-react";
+import { Trophy, Droplets, Zap, Smile, Send, CheckCircle2, Star, Calendar, ClipboardList } from "lucide-react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -136,9 +136,28 @@ const ProgressTracker = () => {
   return (
     <div className="min-h-screen bg-background">
       <div className="max-w-2xl mx-auto px-4 py-8">
-        <button onClick={() => navigate("/")} className="flex items-center text-muted-foreground hover:text-foreground mb-6 transition-colors">
-          <ArrowLeft className="mr-2 h-4 w-4" /> Back to Home
-        </button>
+        <div className="flex gap-3 mb-6">
+          <Button
+            asChild
+            variant="outline"
+            size="sm"
+            className="rounded-xl border-primary/30 hover:bg-primary/5"
+          >
+            <a href="/book" target="_blank" rel="noopener noreferrer">
+              <Calendar className="mr-2 h-4 w-4" /> Book Sessions
+            </a>
+          </Button>
+          <Button
+            asChild
+            variant="outline"
+            size="sm"
+            className="rounded-xl border-primary/30 hover:bg-primary/5"
+          >
+            <a href="/intake" target="_blank" rel="noopener noreferrer">
+              <ClipboardList className="mr-2 h-4 w-4" /> Intake Form
+            </a>
+          </Button>
+        </div>
 
         {/* Header */}
         <div className="text-center mb-8">
