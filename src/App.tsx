@@ -8,6 +8,8 @@ import IntakeForm from "./pages/IntakeForm";
 import BookSession from "./pages/BookSession";
 import ProgressTracker from "./pages/ProgressTracker";
 import SixWeekReset from "./pages/SixWeekReset";
+import PaymentSuccess from "./pages/PaymentSuccess";
+import PaymentCancelled from "./pages/PaymentCancelled";
 import AdminDashboard from "./pages/AdminDashboard";
 import NotFound from "./pages/NotFound";
 
@@ -21,6 +23,8 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
+          <Route path="/payment-success" element={<PaymentSuccess />} />
+          <Route path="/payment-cancelled" element={<PaymentCancelled />} />
           <Route path="/intake" element={<IntakeForm />} />
           <Route path="/book" element={<BookSession />} />
           <Route path="/progress" element={<ProgressTracker />} />
