@@ -25,7 +25,7 @@ const HeroSection = () => {
               Reclaim Your Life.
             </h1>
             
-            <h2 className="font-body text-xl sm:text-2xl text-gray-700 leading-relaxed">
+            <h2 className="font-body text-xl sm:text-2xl text-muted-foreground leading-relaxed">
               Join the 5-Day Diabetes Reset Challenge — quick wins that lower blood sugar, jumpstart weight loss, and restore your energy.
             </h2>
 
