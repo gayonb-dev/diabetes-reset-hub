@@ -58,6 +58,12 @@ const PaymentResult = ({ status, onClose, onRetry }: PaymentResultProps) => {
                 <strong className="text-foreground">Book your Day 1 session</strong> — 30–45 min daily sessions for 5 days.
               </p>
             </div>
+            <div className="flex items-start gap-3">
+              <Trophy className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+              <p className="text-sm text-muted-foreground">
+                Use the <strong className="text-foreground">Progress Tracker</strong> to log your daily wins and build momentum.
+              </p>
+            </div>
           </div>
 
           <p className="text-xs text-muted-foreground text-center mb-6">
@@ -91,6 +97,15 @@ const PaymentResult = ({ status, onClose, onRetry }: PaymentResultProps) => {
             >
               <Calendar className="mr-2 h-5 w-5" />
               Book Your First Session
+            </Button>
+
+            <Button
+              onClick={() => { onClose(); navigate("/progress"); }}
+              variant="outline"
+              className="w-full py-3 font-semibold rounded-xl h-auto border-primary/30 hover:bg-primary/5"
+            >
+              <Trophy className="mr-2 h-5 w-5" />
+              Open Progress Tracker
             </Button>
           </div>
 
