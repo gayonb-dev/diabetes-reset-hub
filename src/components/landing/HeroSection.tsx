@@ -1,5 +1,6 @@
 import { ArrowRight, Shield, Users, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import heroImage from "@/assets/hero-diabetes-reset.jpg";
 
 const scrollToPricing = () => {
   document.getElementById("pricing")?.scrollIntoView({ behavior: "smooth" });
@@ -67,12 +68,11 @@ const HeroSection = () => {
           <div className="relative">
             <div className="aspect-square rounded-3xl overflow-hidden shadow-2xl bg-gradient-to-br from-primary/20 to-secondary/20">
               <img
-                src="https://images.pexels.com/photos/6646918/pexels-photo-6646918.jpeg"
-                alt="Healthy meal preparation with glucose monitor"
+                src={heroImage}
+                alt="Woman confidently preparing a healthy meal with fresh vegetables and a glucose monitor"
                 className="w-full h-full object-cover"
-                loading="lazy"
-                srcSet="https://images.pexels.com/photos/6646918/pexels-photo-6646918.jpeg?auto=compress&cs=tinysrgb&w=400 400w, https://images.pexels.com/photos/6646918/pexels-photo-6646918.jpeg?auto=compress&cs=tinysrgb&w=800 800w, https://images.pexels.com/photos/6646918/pexels-photo-6646918.jpeg?auto=compress&cs=tinysrgb&w=1200 1200w"
-                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 50vw"
+                width={1024}
+                height={1024}
               />
             </div>
 
