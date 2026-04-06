@@ -36,6 +36,7 @@ const ProgressTracker = () => {
   const emailParam = searchParams.get("email") || "";
   const { toast } = useToast();
 
+  const [emailInput, setEmailInput] = useState(emailParam);
   const [email, setEmail] = useState(emailParam);
   const [isLoaded, setIsLoaded] = useState(false);
   const [entries, setEntries] = useState<Record<number, DayEntry>>({});
@@ -48,8 +49,8 @@ const ProgressTracker = () => {
   const [water, setWater] = useState(0);
 
   useEffect(() => {
-    if (email) loadProgress();
-  }, [email]);
+    if (emailParam) loadProgress();
+  }, []);
 
   useEffect(() => {
     const existing = entries[activeDay];
@@ -67,10 +68,13 @@ const ProgressTracker = () => {
   }, [activeDay, entries]);
 
   const loadProgress = async () => {
+    const currentEmail = emailInput.toLowerCase().trim();
+    if (!currentEmail) return;
+    setEmail(currentEmail);
     const { data } = await supabase
       .from("challenge_progress")
       .select("*")
-      .eq("email", email.toLowerCase().trim());
+      .eq("email", currentEmail);
 
     if (data) {
       const map: Record<number, DayEntry> = {};
@@ -86,7 +90,7 @@ const ProgressTracker = () => {
   };
 
   const handleSave = async () => {
-    if (!email.trim()) {
+    if (!email && !emailInput.trim()) {
       toast({ title: "Email required", description: "Please enter the email you used at checkout.", variant: "destructive" });
       return;
     }
@@ -97,7 +101,7 @@ const ProgressTracker = () => {
 
     setSaving(true);
     const payload = {
-      email: email.toLowerCase().trim(),
+      email: email || emailInput.toLowerCase().trim(),
       day_number: activeDay,
       win_text: winText.trim(),
       mood_rating: mood,
@@ -156,8 +160,9 @@ const ProgressTracker = () => {
             <div className="flex gap-2">
               <input
                 type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                value={emailInput}
+                onChange={(e) => setEmailInput(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && loadProgress()}
                 placeholder="your@email.com"
                 className="flex-1 rounded-xl border border-input bg-background px-4 py-2 text-sm"
               />
