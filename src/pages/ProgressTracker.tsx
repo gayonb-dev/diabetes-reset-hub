@@ -160,8 +160,9 @@ const ProgressTracker = () => {
             <div className="flex gap-2">
               <input
                 type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                value={emailInput}
+                onChange={(e) => setEmailInput(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && loadProgress()}
                 placeholder="your@email.com"
                 className="flex-1 rounded-xl border border-input bg-background px-4 py-2 text-sm"
               />
