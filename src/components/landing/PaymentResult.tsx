@@ -1,4 +1,4 @@
-import { CheckCircle2, XCircle, ArrowRight, Mail, Clock, ClipboardList, MessageCircle, Calendar } from "lucide-react";
+import { CheckCircle2, XCircle, ArrowRight, Mail, Clock, ClipboardList, MessageCircle, Calendar, Trophy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 
