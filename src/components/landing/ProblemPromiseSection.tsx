@@ -1,4 +1,5 @@
 import { X, Check, ArrowRight } from "lucide-react";
+import ScrollReveal from "./ScrollReveal";
 
 const ProblemPromiseSection = () => {
   const doesntWork = [
@@ -18,51 +19,55 @@ const ProblemPromiseSection = () => {
   return (
     <section className="bg-background py-10">
       <div className="container mx-auto px-4 max-w-4xl">
-        <h2 className="font-heading font-bold text-3xl sm:text-4xl text-center text-gray-900 mb-8">
-          Why Most Diabetes Plans Fail
-          <br />
-          <span className="text-primary">(and What Actually Works)</span>
-        </h2>
+        <ScrollReveal>
+          <h2 className="font-heading font-bold text-3xl sm:text-4xl text-center text-foreground mb-8">
+            Why Most Diabetes Plans Fail
+            <br />
+            <span className="text-primary">(and What Actually Works)</span>
+          </h2>
+        </ScrollReveal>
 
         <div className="grid md:grid-cols-2 gap-8">
-          {/* What Doesn't Work */}
-          <div className="space-y-4">
-            <div className="flex items-center gap-2 mb-4">
-              <X className="h-6 w-6 text-destructive" />
-              <h3 className="font-heading font-semibold text-lg">What Doesn't Work</h3>
+          <ScrollReveal delay={0.1} direction="left">
+            <div className="space-y-4">
+              <div className="flex items-center gap-2 mb-4">
+                <X className="h-6 w-6 text-destructive" />
+                <h3 className="font-heading font-semibold text-lg">What Doesn't Work</h3>
+              </div>
+              <ul className="space-y-3">
+                {doesntWork.map((item, index) => (
+                  <li key={index} className="flex items-start gap-3">
+                    <X className="h-5 w-5 text-destructive mt-0.5 flex-shrink-0" />
+                    <span className="text-muted-foreground">{item}</span>
+                  </li>
+                ))}
+              </ul>
             </div>
-            <ul className="space-y-3">
-              {doesntWork.map((item, index) => (
-                <li key={index} className="flex items-start gap-3">
-                  <X className="h-5 w-5 text-destructive mt-0.5 flex-shrink-0" />
-                  <span className="text-gray-700">{item}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
+          </ScrollReveal>
 
-          {/* What Does Work */}
-          <div className="bg-gradient-to-br from-primary/10 to-secondary/10 border-2 border-primary rounded-2xl p-6">
-            <div className="flex items-center gap-2 mb-4">
-              <Check className="h-6 w-6 text-primary" />
-              <h3 className="font-heading font-semibold text-lg">The Diabetes Reset Method</h3>
+          <ScrollReveal delay={0.2} direction="right">
+            <div className="bg-gradient-to-br from-primary/10 to-secondary/10 border-2 border-primary rounded-2xl p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <Check className="h-6 w-6 text-primary" />
+                <h3 className="font-heading font-semibold text-lg">The Diabetes Reset Method</h3>
+              </div>
+              <ul className="space-y-3 mb-4">
+                {doesWork.map((item, index) => (
+                  <li key={index} className="flex items-start gap-3">
+                    <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                    <span className="text-muted-foreground">{item}</span>
+                  </li>
+                ))}
+              </ul>
+              <a
+                href="#pricing"
+                className="inline-flex items-center text-primary hover:text-primary-dark font-semibold transition-colors"
+              >
+                Get started for just $27
+                <ArrowRight className="ml-1 h-4 w-4" />
+              </a>
             </div>
-            <ul className="space-y-3 mb-4">
-              {doesWork.map((item, index) => (
-                <li key={index} className="flex items-start gap-3">
-                  <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                  <span className="text-gray-700">{item}</span>
-                </li>
-              ))}
-            </ul>
-            <a
-              href="#pricing"
-              className="inline-flex items-center text-primary hover:text-primary-dark font-semibold transition-colors"
-            >
-              Get started for just $27
-              <ArrowRight className="ml-1 h-4 w-4" />
-            </a>
-          </div>
+          </ScrollReveal>
         </div>
       </div>
     </section>

@@ -1,5 +1,6 @@
-import { Star, TrendingDown, Battery, Heart, Quote } from "lucide-react";
+import { Star, TrendingDown, Battery, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import ScrollReveal from "./ScrollReveal";
 
 const scrollToPricing = () => {
   document.getElementById("pricing")?.scrollIntoView({ behavior: "smooth" });
@@ -39,75 +40,80 @@ const TestimonialsSection = () => {
   return (
     <section className="bg-gradient-to-b from-primary/5 to-background py-10">
       <div className="container mx-auto px-4">
-        <h2 className="font-heading font-bold text-3xl sm:text-4xl text-center text-gray-900 mb-2">
-          Real People. Real Results.
-        </h2>
-        <p className="text-center text-gray-600 mb-8">
-          156+ people have transformed their health with The Diabetes Reset Method
-        </p>
+        <ScrollReveal>
+          <h2 className="font-heading font-bold text-3xl sm:text-4xl text-center text-foreground mb-2">
+            Real People. Real Results.
+          </h2>
+          <p className="text-center text-muted-foreground mb-8">
+            156+ people have transformed their health with The Diabetes Reset Method
+          </p>
+        </ScrollReveal>
 
         {/* Stats Bar */}
-        <div className="bg-card rounded-2xl shadow-md p-5 mb-8">
-          <div className="grid sm:grid-cols-3 gap-4 text-center">
-            {stats.map((stat, index) => {
-              const Icon = stat.icon;
-              return (
-                <div key={index} className="flex flex-col items-center gap-1">
-                  <Icon className="h-5 w-5 text-primary" />
-                  <span className="font-heading font-bold text-2xl text-gray-900">{stat.value}</span>
-                  <span className="text-gray-600 text-sm">{stat.label}</span>
-                </div>
-              );
-            })}
+        <ScrollReveal>
+          <div className="bg-card rounded-2xl shadow-md p-5 mb-8">
+            <div className="grid sm:grid-cols-3 gap-4 text-center">
+              {stats.map((stat, index) => {
+                const Icon = stat.icon;
+                return (
+                  <div key={index} className="flex flex-col items-center gap-1">
+                    <Icon className="h-5 w-5 text-primary" />
+                    <span className="font-heading font-bold text-2xl text-foreground">{stat.value}</span>
+                    <span className="text-muted-foreground text-sm">{stat.label}</span>
+                  </div>
+                );
+              })}
+            </div>
           </div>
-        </div>
+        </ScrollReveal>
 
         <div className="grid md:grid-cols-3 gap-6 mb-8">
           {testimonials.map((testimonial, index) => (
-            <div
-              key={index}
-              className="bg-card rounded-2xl border-2 border-primary/20 shadow-lg hover:shadow-xl hover:border-primary/40 transition-all p-6"
-            >
-              {/* Stars */}
-              <div className="flex gap-1 mb-3">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="h-4 w-4 fill-secondary text-secondary" />
-                ))}
-              </div>
-
-              {/* Quote */}
-              <p className="text-gray-700 mb-4 text-sm leading-relaxed">"{testimonial.quote}"</p>
-
-              {/* Avatar and Name */}
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-primary-dark flex items-center justify-center text-primary-foreground font-bold text-sm">
-                  {testimonial.initials}
+            <ScrollReveal key={index} delay={index * 0.15}>
+              <div className="bg-card rounded-2xl border-2 border-primary/20 shadow-lg hover:shadow-xl hover:border-primary/40 transition-all p-6 h-full">
+                {/* Stars */}
+                <div className="flex gap-1 mb-3">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="h-4 w-4 fill-secondary text-secondary" />
+                  ))}
                 </div>
-                <div>
-                  <p className="font-semibold text-gray-900 text-sm">{testimonial.name}</p>
-                  <p className="text-xs text-gray-600">{testimonial.title}</p>
+
+                {/* Quote */}
+                <p className="text-muted-foreground mb-4 text-sm leading-relaxed">"{testimonial.quote}"</p>
+
+                {/* Avatar and Name */}
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-primary-dark flex items-center justify-center text-primary-foreground font-bold text-sm">
+                    {testimonial.initials}
+                  </div>
+                  <div>
+                    <p className="font-semibold text-foreground text-sm">{testimonial.name}</p>
+                    <p className="text-xs text-muted-foreground">{testimonial.title}</p>
+                  </div>
+                </div>
+
+                {/* Result Badge */}
+                <div className="bg-primary/10 rounded-lg px-3 py-2">
+                  <p className="text-primary font-bold text-sm">✅ {testimonial.result}</p>
                 </div>
               </div>
-
-              {/* Result Badge */}
-              <div className="bg-primary/10 rounded-lg px-3 py-2">
-                <p className="text-primary font-bold text-sm">✅ {testimonial.result}</p>
-              </div>
-            </div>
+            </ScrollReveal>
           ))}
         </div>
 
-        <div className="text-center space-y-3">
-          <Button
-            onClick={scrollToPricing}
-            className="bg-primary hover:bg-primary-dark text-primary-foreground px-8 py-5 text-lg font-bold rounded-xl transition-all transform hover:scale-105 shadow-lg h-auto"
-          >
-            Join Them — Start My 5-Day Reset
-          </Button>
-          <p className="text-sm text-gray-600 italic">
-            Results vary. Educational coaching — not medical care.
-          </p>
-        </div>
+        <ScrollReveal>
+          <div className="text-center space-y-3">
+            <Button
+              onClick={scrollToPricing}
+              className="bg-primary hover:bg-primary-dark text-primary-foreground px-8 py-5 text-lg font-bold rounded-xl transition-all transform hover:scale-105 shadow-lg h-auto"
+            >
+              Join Them — Start My 5-Day Reset
+            </Button>
+            <p className="text-sm text-muted-foreground italic">
+              Results vary. Educational coaching — not medical care.
+            </p>
+          </div>
+        </ScrollReveal>
       </div>
     </section>
   );

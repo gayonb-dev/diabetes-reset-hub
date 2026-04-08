@@ -1,5 +1,6 @@
 import { ArrowRight, Shield, Users, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { motion } from "framer-motion";
 import heroImage from "@/assets/hero-diabetes-reset.jpg";
 
 const scrollToPricing = () => {
@@ -12,7 +13,12 @@ const HeroSection = () => {
       <div className="container mx-auto px-4">
         <div className="grid lg:grid-cols-2 gap-8 items-center">
           {/* Text Column */}
-          <div className="space-y-4">
+          <motion.div
+            className="space-y-4"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, ease: [0.25, 0.4, 0.25, 1] }}
+          >
             <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
               <p className="text-base font-bold tracking-widest uppercase text-primary">The Diabetes Reset Method</p>
               <span className="inline-flex items-center bg-primary text-primary-foreground px-4 py-2 rounded-full text-sm font-semibold animate-pulse-glow shadow-lg">
@@ -61,10 +67,15 @@ const HeroSection = () => {
                 <span>No risk</span>
               </div>
             </div>
-          </div>
+          </motion.div>
 
           {/* Image Column */}
-          <div className="relative">
+          <motion.div
+            className="relative"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, delay: 0.2, ease: [0.25, 0.4, 0.25, 1] }}
+          >
             <div className="aspect-square rounded-3xl overflow-hidden shadow-2xl bg-gradient-to-br from-primary/20 to-secondary/20">
               <img
                 src={heroImage}
@@ -76,11 +87,16 @@ const HeroSection = () => {
             </div>
 
             {/* Floating Badge */}
-            <div className="absolute -bottom-4 -right-4 bg-background p-4 rounded-2xl shadow-xl border-4 border-primary">
+            <motion.div
+              className="absolute -bottom-4 -right-4 bg-background p-4 rounded-2xl shadow-xl border-4 border-primary"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5, delay: 0.6 }}
+            >
               <p className="text-2xl font-bold text-primary">5 Days</p>
               <p className="text-xs text-muted-foreground">to reset your health</p>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
         </div>
       </div>
     </section>

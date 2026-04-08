@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { ChevronDown } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import ScrollReveal from "./ScrollReveal";
 
 const FAQSection = () => {
   const [openIndex, setOpenIndex] = useState<number>(0);
@@ -34,40 +36,53 @@ const FAQSection = () => {
   return (
     <section className="bg-background py-10">
       <div className="container mx-auto px-4 max-w-3xl">
-        <h2 className="font-heading font-bold text-3xl sm:text-4xl text-center text-gray-900 mb-2">
-          Got Questions? We've Got Answers.
-        </h2>
-        <p className="text-center text-gray-600 mb-8">
-          Still on the fence? These might help.
-        </p>
+        <ScrollReveal>
+          <h2 className="font-heading font-bold text-3xl sm:text-4xl text-center text-foreground mb-2">
+            Got Questions? We've Got Answers.
+          </h2>
+          <p className="text-center text-muted-foreground mb-8">
+            Still on the fence? These might help.
+          </p>
+        </ScrollReveal>
 
         <div className="space-y-4">
           {faqs.map((faq, index) => (
-            <div
-              key={index}
-              className={`bg-card rounded-xl border-2 transition-colors shadow-md ${
-                openIndex === index ? "border-primary" : "border-gray-100 hover:border-primary"
-              }`}
-            >
-              <button
-                onClick={() => setOpenIndex(openIndex === index ? -1 : index)}
-                className="w-full flex items-center justify-between p-6 text-left"
+            <ScrollReveal key={index} delay={index * 0.05}>
+              <div
+                className={`bg-card rounded-xl border-2 transition-colors shadow-md ${
+                  openIndex === index ? "border-primary" : "border-border hover:border-primary"
+                }`}
               >
-                <span className="font-heading font-semibold text-gray-900 pr-4">
-                  {faq.question}
-                </span>
-                <ChevronDown
-                  className={`h-5 w-5 text-gray-500 flex-shrink-0 transition-transform ${
-                    openIndex === index ? "rotate-180" : ""
-                  }`}
-                />
-              </button>
-              {openIndex === index && (
-                <div className="px-6 pb-6">
-                  <p className="text-gray-600 leading-relaxed">{faq.answer}</p>
-                </div>
-              )}
-            </div>
+                <button
+                  onClick={() => setOpenIndex(openIndex === index ? -1 : index)}
+                  className="w-full flex items-center justify-between p-6 text-left"
+                >
+                  <span className="font-heading font-semibold text-foreground pr-4">
+                    {faq.question}
+                  </span>
+                  <ChevronDown
+                    className={`h-5 w-5 text-muted-foreground flex-shrink-0 transition-transform ${
+                      openIndex === index ? "rotate-180" : ""
+                    }`}
+                  />
+                </button>
+                <AnimatePresence>
+                  {openIndex === index && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.3 }}
+                      className="overflow-hidden"
+                    >
+                      <div className="px-6 pb-6">
+                        <p className="text-muted-foreground leading-relaxed">{faq.answer}</p>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            </ScrollReveal>
           ))}
         </div>
       </div>
