@@ -141,14 +141,14 @@ const ProgressTracker = () => {
       toast({ title: "Error saving", description: error.message, variant: "destructive" });
     } else {
       toast({ title: `Day ${activeDay} logged! 🎉`, description: "Your progress has been saved." });
-      await loadProgress();
 
-      // If this was day 5, send summary to coach
+      // If this was day 5, send summary to coach before reloading
       const updatedEntries = { ...entries, [activeDay]: payload };
       const completedCount = Object.keys(updatedEntries).length;
       if (completedCount === 5) {
-        sendSummaryEmail(currentEmail);
+        await sendSummaryEmail(currentEmail);
       }
+      await loadProgress();
     }
   };
 

@@ -144,7 +144,7 @@ const AdminDashboard = () => {
             { key: "orders" as Tab, label: "Orders", icon: ShoppingCart, count: orders.length },
             { key: "leads" as Tab, label: "Leads", icon: Users, count: leads.length },
             { key: "intakes" as Tab, label: "Intake Forms", icon: ClipboardList, count: intakes.length },
-            { key: "progress" as Tab, label: "Challenge Progress", icon: Trophy, count: progress.length },
+            { key: "progress" as Tab, label: "Challenge Progress", icon: Trophy, count: uniqueProgressEmails.length },
           ]).map((tab) => (
             <button
               key={tab.key}
