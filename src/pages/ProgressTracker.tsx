@@ -69,6 +69,18 @@ const ProgressTracker = () => {
     }
   }, [activeDay, entries]);
 
+  const sendSummaryEmail = async (targetEmail: string) => {
+    if (summarySent) return;
+    setSummarySent(true);
+    try {
+      await supabase.functions.invoke("send-progress-summary", {
+        body: { email: targetEmail },
+      });
+    } catch (err) {
+      console.error("Failed to send summary to coach:", err);
+    }
+  };
+
   const loadProgress = async () => {
     const currentEmail = emailInput.toLowerCase().trim();
     if (!currentEmail) return;
