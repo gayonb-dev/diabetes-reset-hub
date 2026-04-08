@@ -1,5 +1,6 @@
-import { Clock, UtensilsCrossed, Activity, Bell, Target, Check, Gift } from "lucide-react";
+import { Clock, UtensilsCrossed, Activity, Bell, Target, Gift } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import ScrollReveal from "./ScrollReveal";
 
 const scrollToPricing = () => {
   document.getElementById("pricing")?.scrollIntoView({ behavior: "smooth" });
@@ -18,50 +19,55 @@ const WhatYouGetSection = () => {
   return (
     <section className="bg-background py-10">
       <div className="container mx-auto px-4">
-        <h2 className="font-heading font-bold text-3xl sm:text-4xl text-center text-gray-900 mb-2">
-          Everything Inside the 5-Day Reset
-        </h2>
-        <p className="text-center text-gray-600 mb-8">
-          All of this for just $27 — less than a single doctor's copay
-        </p>
+        <ScrollReveal>
+          <h2 className="font-heading font-bold text-3xl sm:text-4xl text-center text-foreground mb-2">
+            Everything Inside the 5-Day Reset
+          </h2>
+          <p className="text-center text-muted-foreground mb-8">
+            All of this for just $27 — less than a single doctor's copay
+          </p>
+        </ScrollReveal>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
           {benefits.map((benefit, index) => {
             const Icon = benefit.icon;
             const isBonus = index === benefits.length - 1;
             return (
-              <div
-                key={index}
-                className={`rounded-xl p-5 transition-all hover:shadow-md ${
-                  isBonus 
-                    ? "bg-gradient-to-br from-secondary/30 to-secondary/10 border-2 border-secondary" 
-                    : "bg-gradient-to-br from-primary/10 to-secondary/10 border-2 border-primary/20 hover:border-primary"
-                }`}
-              >
-                <div className="flex items-start gap-3">
-                  <div className={`p-2 rounded-lg flex-shrink-0 ${isBonus ? "bg-secondary" : "bg-primary"}`}>
-                    <Icon className={`h-5 w-5 ${isBonus ? "text-secondary-foreground" : "text-primary-foreground"}`} />
-                  </div>
-                  <div>
-                    <p className="font-semibold text-gray-900 mb-1">
-                      {isBonus && "🎁 "}{benefit.title}
-                    </p>
-                    <p className="text-sm text-gray-600">{benefit.description}</p>
+              <ScrollReveal key={index} delay={index * 0.1}>
+                <div
+                  className={`rounded-xl p-5 transition-all hover:shadow-md h-full ${
+                    isBonus 
+                      ? "bg-gradient-to-br from-secondary/30 to-secondary/10 border-2 border-secondary" 
+                      : "bg-gradient-to-br from-primary/10 to-secondary/10 border-2 border-primary/20 hover:border-primary"
+                  }`}
+                >
+                  <div className="flex items-start gap-3">
+                    <div className={`p-2 rounded-lg flex-shrink-0 ${isBonus ? "bg-secondary" : "bg-primary"}`}>
+                      <Icon className={`h-5 w-5 ${isBonus ? "text-secondary-foreground" : "text-primary-foreground"}`} />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-foreground mb-1">
+                        {isBonus && "🎁 "}{benefit.title}
+                      </p>
+                      <p className="text-sm text-muted-foreground">{benefit.description}</p>
+                    </div>
                   </div>
                 </div>
-              </div>
+              </ScrollReveal>
             );
           })}
         </div>
 
-        <div className="text-center">
-          <Button
-            onClick={scrollToPricing}
-            className="bg-primary hover:bg-primary-dark text-primary-foreground px-8 py-5 text-lg font-bold rounded-xl transition-all transform hover:scale-105 shadow-lg h-auto"
-          >
-            Get All of This for $27
-          </Button>
-        </div>
+        <ScrollReveal>
+          <div className="text-center">
+            <Button
+              onClick={scrollToPricing}
+              className="bg-primary hover:bg-primary-dark text-primary-foreground px-8 py-5 text-lg font-bold rounded-xl transition-all transform hover:scale-105 shadow-lg h-auto"
+            >
+              Get All of This for $27
+            </Button>
+          </div>
+        </ScrollReveal>
       </div>
     </section>
   );
