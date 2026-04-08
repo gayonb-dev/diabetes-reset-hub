@@ -43,6 +43,7 @@ const ProgressTracker = () => {
   const [activeDay, setActiveDay] = useState<number>(1);
   const [saving, setSaving] = useState(false);
   const [showSummary, setShowSummary] = useState(false);
+  const [summarySent, setSummarySent] = useState(false);
 
   const [winText, setWinText] = useState("");
   const [mood, setMood] = useState<number | null>(null);
@@ -68,6 +69,18 @@ const ProgressTracker = () => {
     }
   }, [activeDay, entries]);
 
+  const sendSummaryEmail = async (targetEmail: string) => {
+    if (summarySent) return;
+    setSummarySent(true);
+    try {
+      await supabase.functions.invoke("send-progress-summary", {
+        body: { email: targetEmail },
+      });
+    } catch (err) {
+      console.error("Failed to send summary to coach:", err);
+    }
+  };
+
   const loadProgress = async () => {
     const currentEmail = emailInput.toLowerCase().trim();
     if (!currentEmail) return;
@@ -86,6 +99,7 @@ const ProgressTracker = () => {
       const completedCount = Object.keys(map).length;
       if (completedCount === 5) {
         setShowSummary(true);
+        sendSummaryEmail(currentEmail);
       } else {
         const completed = Object.keys(map).map(Number);
         const nextDay = completed.length > 0 ? Math.min(Math.max(...completed) + 1, 5) : 1;
@@ -133,13 +147,7 @@ const ProgressTracker = () => {
       const updatedEntries = { ...entries, [activeDay]: payload };
       const completedCount = Object.keys(updatedEntries).length;
       if (completedCount === 5) {
-        try {
-          await supabase.functions.invoke("send-progress-summary", {
-            body: { email: currentEmail },
-          });
-        } catch (err) {
-          console.error("Failed to send summary to coach:", err);
-        }
+        sendSummaryEmail(currentEmail);
       }
     }
   };
