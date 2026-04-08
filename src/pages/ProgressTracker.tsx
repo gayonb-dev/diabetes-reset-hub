@@ -147,13 +147,7 @@ const ProgressTracker = () => {
       const updatedEntries = { ...entries, [activeDay]: payload };
       const completedCount = Object.keys(updatedEntries).length;
       if (completedCount === 5) {
-        try {
-          await supabase.functions.invoke("send-progress-summary", {
-            body: { email: currentEmail },
-          });
-        } catch (err) {
-          console.error("Failed to send summary to coach:", err);
-        }
+        sendSummaryEmail(currentEmail);
       }
     }
   };
