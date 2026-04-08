@@ -87,6 +87,7 @@ const ProgressTracker = () => {
       const completedCount = Object.keys(map).length;
       if (completedCount === 5) {
         setShowSummary(true);
+        sendSummaryEmail(currentEmail);
       } else {
         const completed = Object.keys(map).map(Number);
         const nextDay = completed.length > 0 ? Math.min(Math.max(...completed) + 1, 5) : 1;
