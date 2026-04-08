@@ -43,6 +43,7 @@ const ProgressTracker = () => {
   const [activeDay, setActiveDay] = useState<number>(1);
   const [saving, setSaving] = useState(false);
   const [showSummary, setShowSummary] = useState(false);
+  const [summarySent, setSummarySent] = useState(false);
 
   const [winText, setWinText] = useState("");
   const [mood, setMood] = useState<number | null>(null);
