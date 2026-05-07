@@ -11,6 +11,7 @@ import SixWeekReset from "./pages/SixWeekReset";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import PaymentCancelled from "./pages/PaymentCancelled";
 import AdminDashboard from "./pages/AdminDashboard";
+import LLMInfo from "./pages/LLMInfo";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -30,6 +31,8 @@ const App = () => (
           <Route path="/progress" element={<ProgressTracker />} />
           <Route path="/6-week-reset" element={<SixWeekReset />} />
           <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/llm-info" element={<LLMInfo />} />
+          <Route path="/llms.txt" element={<LLMInfo />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
