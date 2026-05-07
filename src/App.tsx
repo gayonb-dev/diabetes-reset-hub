@@ -11,6 +11,7 @@ import SixWeekReset from "./pages/SixWeekReset";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import PaymentCancelled from "./pages/PaymentCancelled";
 import AdminDashboard from "./pages/AdminDashboard";
+import LLMInfo from "./pages/LLMInfo";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
