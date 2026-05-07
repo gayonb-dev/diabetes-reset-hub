@@ -31,6 +31,8 @@ const App = () => (
           <Route path="/progress" element={<ProgressTracker />} />
           <Route path="/6-week-reset" element={<SixWeekReset />} />
           <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/llm-info" element={<LLMInfo />} />
+          <Route path="/llms.txt" element={<LLMInfo />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
