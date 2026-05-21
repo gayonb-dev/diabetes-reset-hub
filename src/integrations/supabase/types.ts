@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      broadcast_log: {
+        Row: {
+          audience: string
+          body: string
+          channel: string
+          created_at: string
+          id: string
+          metadata: Json
+          recipients_count: number
+          sent_at: string
+          sent_by: string | null
+          subject: string | null
+        }
+        Insert: {
+          audience: string
+          body: string
+          channel: string
+          created_at?: string
+          id?: string
+          metadata?: Json
+          recipients_count?: number
+          sent_at?: string
+          sent_by?: string | null
+          subject?: string | null
+        }
+        Update: {
+          audience?: string
+          body?: string
+          channel?: string
+          created_at?: string
+          id?: string
+          metadata?: Json
+          recipients_count?: number
+          sent_at?: string
+          sent_by?: string | null
+          subject?: string | null
+        }
+        Relationships: []
+      }
       challenge_progress: {
         Row: {
           created_at: string
@@ -44,6 +83,87 @@ export type Database = {
           mood_rating?: number | null
           water_glasses?: number | null
           win_text?: string
+        }
+        Relationships: []
+      }
+      content_items: {
+        Row: {
+          body: string | null
+          created_at: string
+          day_unlock: number
+          hero_image: string | null
+          id: string
+          is_active: boolean
+          metadata: Json
+          slug: string
+          sort_order: number
+          summary: string | null
+          title: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          day_unlock?: number
+          hero_image?: string | null
+          id?: string
+          is_active?: boolean
+          metadata?: Json
+          slug: string
+          sort_order?: number
+          summary?: string | null
+          title: string
+          type: string
+          updated_at?: string
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          day_unlock?: number
+          hero_image?: string | null
+          id?: string
+          is_active?: boolean
+          metadata?: Json
+          slug?: string
+          sort_order?: number
+          summary?: string | null
+          title?: string
+          type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      dunning_attempts: {
+        Row: {
+          attempt_number: number
+          attempted_at: string
+          created_at: string
+          failure_reason: string | null
+          id: string
+          status: string
+          stripe_invoice_id: string | null
+          user_id: string
+        }
+        Insert: {
+          attempt_number?: number
+          attempted_at?: string
+          created_at?: string
+          failure_reason?: string | null
+          id?: string
+          status: string
+          stripe_invoice_id?: string | null
+          user_id: string
+        }
+        Update: {
+          attempt_number?: number
+          attempted_at?: string
+          created_at?: string
+          failure_reason?: string | null
+          id?: string
+          status?: string
+          stripe_invoice_id?: string | null
+          user_id?: string
         }
         Relationships: []
       }
@@ -154,6 +274,36 @@ export type Database = {
         }
         Relationships: []
       }
+      member_progress: {
+        Row: {
+          completed_at: string
+          created_at: string
+          day_number: number
+          id: string
+          metadata: Json
+          notes: string | null
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string
+          created_at?: string
+          day_number: number
+          id?: string
+          metadata?: Json
+          notes?: string | null
+          user_id: string
+        }
+        Update: {
+          completed_at?: string
+          created_at?: string
+          day_number?: number
+          id?: string
+          metadata?: Json
+          notes?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       orders: {
         Row: {
           amount: number
@@ -202,12 +352,189 @@ export type Database = {
         }
         Relationships: []
       }
+      qa_monthly_usage: {
+        Row: {
+          created_at: string
+          id: string
+          period_month: string
+          points_used: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          period_month: string
+          points_used?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          period_month?: string
+          points_used?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      qa_submissions: {
+        Row: {
+          answer: string | null
+          answered_at: string | null
+          category: string | null
+          created_at: string
+          id: string
+          points_cost: number
+          publish_anonymously: boolean
+          question: string
+          question_type: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          answer?: string | null
+          answered_at?: string | null
+          category?: string | null
+          created_at?: string
+          id?: string
+          points_cost: number
+          publish_anonymously?: boolean
+          question: string
+          question_type: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          answer?: string | null
+          answered_at?: string | null
+          category?: string | null
+          created_at?: string
+          id?: string
+          points_cost?: number
+          publish_anonymously?: boolean
+          question?: string
+          question_type?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      subscriptions: {
+        Row: {
+          cancel_at_period_end: boolean
+          created_at: string
+          current_period_end: string | null
+          day_number: number
+          id: string
+          last_active_at: string | null
+          status: string
+          stripe_customer_id: string
+          stripe_subscription_id: string
+          tier: string
+          trial_end_date: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          cancel_at_period_end?: boolean
+          created_at?: string
+          current_period_end?: string | null
+          day_number?: number
+          id?: string
+          last_active_at?: string | null
+          status: string
+          stripe_customer_id: string
+          stripe_subscription_id: string
+          tier?: string
+          trial_end_date?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          cancel_at_period_end?: boolean
+          created_at?: string
+          current_period_end?: string | null
+          day_number?: number
+          id?: string
+          last_active_at?: string | null
+          status?: string
+          stripe_customer_id?: string
+          stripe_subscription_id?: string
+          tier?: string
+          trial_end_date?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      whatsapp_consent: {
+        Row: {
+          created_at: string
+          id: string
+          opt_in_ip: string | null
+          opted_in_at: string
+          phone_number: string
+          revoke_reason: string | null
+          revoked_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          opt_in_ip?: string | null
+          opted_in_at?: string
+          phone_number: string
+          revoke_reason?: string | null
+          revoked_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          opt_in_ip?: string | null
+          opted_in_at?: string
+          phone_number?: string
+          revoke_reason?: string | null
+          revoked_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: { p_role: string; p_user_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never
