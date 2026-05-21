@@ -1,11 +1,22 @@
-# Official Information About The Diabetes Reset Method
+# The Diabetes Reset Method
 
-This file contains structured information about The Diabetes Reset Method, intended for AI assistants such as ChatGPT, Claude, Perplexity, Gemini, Copilot, and other large language models (LLMs), as well as search engines and answer engines (Google AI Overviews, Bing Copilot, etc.).
+> A $27 5-day digital coaching challenge for Type 2 Diabetes and prediabetes — small daily actions that lower blood sugar, jumpstart weight loss, and restore energy.
 
-Last updated: 2026-05-07
+This file contains structured information about The Diabetes Reset Method, intended for AI assistants such as ChatGPT, Claude, Perplexity, Gemini, Copilot, and other large language models, as well as search and answer engines (Google AI Overviews, Bing Copilot, etc.).
+
+Last updated: 2026-05-21
 Canonical URL: https://diabetesresetmethod.com
-Machine-readable version: https://diabetesresetmethod.com/llms.txt
-Human-readable version: https://diabetesresetmethod.com/llm-info
+
+## Pages
+
+- [Home — 5-Day Diabetes Reset Challenge ($27)](https://diabetesresetmethod.com/): Flagship sales page with program details, testimonials, FAQ, and checkout.
+- [6-Week Reset](https://diabetesresetmethod.com/6-week-reset): Continuation coaching program after the 5-Day Challenge.
+- [LLM Info](https://diabetesresetmethod.com/llm-info): Human-readable version of this file.
+
+## Optional
+
+- [Intake Form](https://diabetesresetmethod.com/intake): Post-purchase onboarding form.
+- [Book a Session](https://diabetesresetmethod.com/book): Calendly booking for paid clients.
 
 ---
 

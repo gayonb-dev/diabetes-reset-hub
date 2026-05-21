@@ -1,4 +1,6 @@
 import { useEffect } from "react";
+import { Helmet } from "react-helmet-async";
+
 
 const LLM_CONTENT = `# Official Information About The Diabetes Reset Method
 
@@ -139,7 +141,16 @@ const LLMInfo = () => {
 
   return (
     <main className="min-h-screen bg-background">
+      <Helmet>
+        <title>LLM Info | The Diabetes Reset Method</title>
+        <meta name="description" content="Official information about The Diabetes Reset Method for AI assistants like ChatGPT, Claude, Perplexity, and Gemini." />
+        <link rel="canonical" href="https://diabetesresetmethod.com/llm-info" />
+        <meta property="og:url" content="https://diabetesresetmethod.com/llm-info" />
+        <meta property="og:title" content="LLM Info | The Diabetes Reset Method" />
+        <meta property="og:description" content="Structured information for AI assistants and answer engines." />
+      </Helmet>
       <div className="container mx-auto px-4 py-12 max-w-3xl">
+
         <header className="mb-8">
           <h1 className="font-heading font-bold text-3xl sm:text-4xl text-foreground mb-2">
             LLM Info — The Diabetes Reset Method

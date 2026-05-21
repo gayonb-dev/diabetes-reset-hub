@@ -1,5 +1,7 @@
 import { useState } from "react";
+import { Helmet } from "react-helmet-async";
 import { ArrowLeft, CheckCircle2, Star, Shield, TrendingDown, Heart, Utensils, Dumbbell, Brain, Users, MessageCircle, ArrowRight, Clock, Zap, Loader2 } from "lucide-react";
+
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -124,6 +126,23 @@ const SixWeekReset = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <Helmet>
+        <title>The 6-Week Reset — Personalized Diabetes Coaching</title>
+        <meta name="description" content="6 weeks of one-on-one coaching for Type 2 Diabetes: 12 sessions, daily WhatsApp support, custom meal plans. $497." />
+        <link rel="canonical" href="https://diabetesresetmethod.com/6-week-reset" />
+        <meta property="og:url" content="https://diabetesresetmethod.com/6-week-reset" />
+        <meta property="og:title" content="The 6-Week Reset — Personalized Diabetes Coaching" />
+        <meta property="og:description" content="12 one-on-one sessions, daily WhatsApp support, and a custom plan to reset your health in 6 weeks." />
+        <script type="application/ld+json">{JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Product",
+          name: "The 6-Week Reset",
+          description: "Six weeks of personalized, one-on-one diabetes coaching with 12 sessions and daily WhatsApp support.",
+          brand: { "@type": "Brand", name: "The Diabetes Reset Method" },
+          offers: { "@type": "Offer", price: "497.00", priceCurrency: "USD", availability: "https://schema.org/InStock", url: "https://diabetesresetmethod.com/6-week-reset" },
+        })}</script>
+      </Helmet>
+
       {/* Hero */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-secondary/10" />

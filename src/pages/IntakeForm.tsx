@@ -1,5 +1,7 @@
 import { useState } from "react";
+import { Helmet } from "react-helmet-async";
 import { useNavigate, useSearchParams } from "react-router-dom";
+
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -133,6 +135,16 @@ const IntakeForm = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <Helmet>
+        <title>Client Intake — The Diabetes Reset Method</title>
+        <meta name="description" content="Complete your client intake form to start your personalized Diabetes Reset coaching journey." />
+        <link rel="canonical" href="https://diabetesresetmethod.com/intake" />
+        <meta property="og:url" content="https://diabetesresetmethod.com/intake" />
+        <meta property="og:title" content="Client Intake — The Diabetes Reset Method" />
+        <meta property="og:description" content="Share your health background so we can personalize your coaching." />
+        <meta name="robots" content="noindex" />
+      </Helmet>
+
       <div className="max-w-2xl mx-auto px-4 py-12">
         <div className="flex gap-3 mb-8">
           <Button
