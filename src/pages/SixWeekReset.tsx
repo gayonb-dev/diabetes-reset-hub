@@ -1,5 +1,7 @@
 import { useState } from "react";
+import { Helmet } from "react-helmet-async";
 import { ArrowLeft, CheckCircle2, Star, Shield, TrendingDown, Heart, Utensils, Dumbbell, Brain, Users, MessageCircle, ArrowRight, Clock, Zap, Loader2 } from "lucide-react";
+
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
