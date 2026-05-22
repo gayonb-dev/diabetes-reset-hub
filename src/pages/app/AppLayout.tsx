@@ -70,9 +70,13 @@ export default function AppLayout() {
             <NavLink to="/app/ask" className={navClass}>
               <MessageCircleQuestion className="h-4 w-4" /> Ask
             </NavLink>
+            <NavLink to="/app/coaching-waitlist" className={navClass}>
+              <Sparkles className="h-4 w-4" /> 1:1 Coaching
+            </NavLink>
             <NavLink to="/app/billing" className={navClass}>
               <Settings className="h-4 w-4" /> Billing
             </NavLink>
+
             {isAdmin && (
               <NavLink to="/admin" className={navClass}>
                 <Shield className="h-4 w-4" /> Admin
