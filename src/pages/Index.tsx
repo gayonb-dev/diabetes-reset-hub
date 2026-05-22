@@ -15,9 +15,9 @@ import StickyBottomCTA from "@/components/landing/StickyBottomCTA";
 import PaymentModal from "@/components/landing/PaymentModal";
 
 const FAQS = [
-  { q: "What exactly am I paying for at $27?", a: "Your $27 unlocks immediate access to the Diabetes Reset Method membership: the 7-Day Reset Sprint, the recipe library, coach Q&A, and 14 days of full access. After 14 days the membership renews at $67/month unless you cancel." },
-  { q: "What happens after the 14-day trial?", a: "If you do nothing, your membership renews at $67/month and continues until you cancel. You can cancel anytime in one click. If you cancel during the trial, no monthly charges are made and you keep your $27 7-Day Reset program." },
-  { q: "Is there a money-back guarantee?", a: "Yes. 30-day money-back guarantee on every charge — including the initial $27 and any monthly renewal." },
+  { q: "What exactly am I paying for at $27?", a: "Your $27 unlocks immediate access to the Diabetes Reset Method membership: the 7-Day Reset Sprint, the recipe library (unlocks Day 6), coach Q&A, and 14 days of full access. After 14 days the membership renews at $67/month unless you cancel before day 15." },
+  { q: "What happens after my 14 days of full access?", a: "If you do nothing, your membership continues at $67/month, charged automatically. You can cancel anytime before day 15 from your member dashboard — one click, no call required. If you cancel inside the 14 days, no monthly charges are made and you keep your $27 7-Day Reset program." },
+  { q: "Is there a money-back guarantee?", a: "Yes. 30-day money-back guarantee on every charge — including the initial $27 and any monthly renewal. Email Info@diabetesresetmethod.com and we refund within 5 business days." },
   { q: "Do I need special foods, supplements, or a gym?", a: "No. Everything uses real food from your regular grocery store and simple at-home movements." },
   { q: "Can I do this while taking diabetes medication?", a: "Yes. The program complements medical care. Always consult your doctor before changing medications." },
   { q: "Is this for Type 1 Diabetes?", a: "No. The Diabetes Reset Method is built specifically for Type 2 Diabetes and prediabetes." },
