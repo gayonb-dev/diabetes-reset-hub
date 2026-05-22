@@ -42,22 +42,38 @@ serve(async (req) => {
     const origin =
       req.headers.get("origin") || Deno.env.get("APP_URL") || "https://diabetesresetmethod.com";
 
-    // Reuse customer if exists
     const customers = await stripe.customers.list({ email, limit: 1 });
     const customerId = customers.data.length > 0 ? customers.data[0].id : undefined;
 
+    // One-time $27 line item (charged immediately) + recurring $67/mo line item with 14-day trial.
+    // Per Stripe: in subscription mode, one-time line items are charged at checkout completion,
+    // while the recurring price is held in trial.
     const session = await stripe.checkout.sessions.create({
       mode: "subscription",
       customer: customerId,
       customer_email: customerId ? undefined : email,
       customer_creation: customerId ? undefined : "always",
-      line_items: [{ price: priceId, quantity: 1 }],
+      line_items: [
+        {
+          price_data: {
+            currency: "usd",
+            product: productId,
+            unit_amount: 2700,
+            tax_behavior: "inclusive",
+          },
+          quantity: 1,
+        },
+        { price: priceId, quantity: 1 },
+      ],
       subscription_data: {
         trial_period_days: 14,
         trial_settings: { end_behavior: { missing_payment_method: "cancel" } },
-        metadata: { source: "landing_page", customerName: customerName.trim() },
+        metadata: {
+          source: "landing_page",
+          customer_name: customerName.trim(),
+          customer_phone: customerPhone?.trim() || "",
+        },
       },
-      // $27 upfront trial fee (charged immediately at checkout)
       payment_method_collection: "always",
       payment_method_types: ["card"],
       allow_promotion_codes: true,
@@ -65,21 +81,12 @@ serve(async (req) => {
       cancel_url: `${origin}/payment-cancelled`,
       metadata: {
         source: "landing_page",
-        customerName: customerName.trim(),
-        customerPhone: customerPhone?.trim() || "",
+        customer_name: customerName.trim(),
+        customer_phone: customerPhone?.trim() || "",
       },
     });
 
-    // Add the $27 upfront fee to the first invoice (trial fee)
-    if (session.subscription) {
-      // Subscription not yet created at this point — handled via add_invoice_items in mode below
-    }
-
-    // Re-create with add_invoice_items now that we know the approach (single call below)
-    // Stripe API requires add_invoice_items in the original create call, so do that:
-    // (Recreating because we need add_invoice_items inside subscription_data — done in proper form below.)
-
-    // Best-effort log into orders table for unified admin view
+    // Log pending order for unified admin view
     await supabaseAdmin.from("orders").insert({
       customer_name: customerName.trim(),
       customer_email: email,
