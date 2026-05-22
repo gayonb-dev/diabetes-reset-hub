@@ -27,6 +27,10 @@ const Footer = () => {
           </p>
           <p className="text-background/40 text-sm text-center">
             © {currentYear} The Diabetes Reset Method. All rights reserved. ·{" "}
+            <a href="/login" className="hover:text-background/70 underline underline-offset-4">
+              Member login
+            </a>{" "}
+            ·{" "}
             <a href="/llm-info" className="hover:text-background/70 underline underline-offset-4">
               LLM Info
             </a>
