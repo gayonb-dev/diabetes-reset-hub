@@ -74,7 +74,7 @@ const TestimonialsSection = () => {
           </div>
         </ScrollReveal>
 
-        <div className="grid md:grid-cols-3 gap-6 mb-8">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {testimonials.map((testimonial, index) => (
             <ScrollReveal key={index} delay={index * 0.15}>
               <div className="bg-card rounded-2xl border-2 border-primary/20 shadow-lg hover:shadow-xl hover:border-primary/40 transition-all p-6 h-full">
