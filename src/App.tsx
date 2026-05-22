@@ -97,6 +97,8 @@ const App = () => (
               <Route path="library" element={<Library />} />
               <Route path="ask" element={<Ask />} />
               <Route path="billing" element={<Billing />} />
+              <Route path="coaching-waitlist" element={<CoachingWaitlist />} />
+
             </Route>
 
             <Route path="*" element={<NotFound />} />
