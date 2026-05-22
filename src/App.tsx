@@ -50,7 +50,6 @@ const App = () => (
             <Route path="/book" element={<BookSession />} />
             <Route path="/progress" element={<ProgressTracker />} />
             <Route path="/6-week-reset" element={<SixWeekReset />} />
-            <Route path="/admin" element={<AdminDashboard />} />
             <Route
               path="/admin"
               element={
@@ -59,12 +58,14 @@ const App = () => (
                 </AuthGuard>
               }
             >
+              <Route index element={<AdminDashboard />} />
               <Route path="subscriptions" element={<AdminSubscriptions />} />
               <Route path="qa-queue" element={<AdminQaQueue />} />
               <Route path="content" element={<AdminContent />} />
               <Route path="broadcasts" element={<AdminBroadcasts />} />
               <Route path="waitlist" element={<AdminWaitlist />} />
             </Route>
+
             <Route path="/llm-info" element={<LLMInfo />} />
             <Route path="/llms.txt" element={<LLMInfo />} />
             <Route path="/login" element={<Login />} />
