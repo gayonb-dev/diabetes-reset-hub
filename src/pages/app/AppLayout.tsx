@@ -9,8 +9,10 @@ import {
   LogOut,
   Calendar,
   Shield,
+  Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+
 
 function navClass({ isActive }: { isActive: boolean }) {
   return `flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${
