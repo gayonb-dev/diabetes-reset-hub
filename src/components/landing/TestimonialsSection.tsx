@@ -100,8 +100,8 @@ const TestimonialsSection = () => {
                 </div>
 
                 {/* Result Badge */}
-                <div className="bg-primary/10 rounded-lg px-3 py-2">
-                  <p className="text-primary font-bold text-sm">✅ {testimonial.result}</p>
+                <div className="bg-primary/15 border border-primary/30 rounded-lg px-3 py-2.5">
+                  <p className="text-primary font-bold text-base leading-snug">✅ {testimonial.result}</p>
                 </div>
               </div>
             </ScrollReveal>
