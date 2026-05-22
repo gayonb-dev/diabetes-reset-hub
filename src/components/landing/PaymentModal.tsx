@@ -57,11 +57,11 @@ const PaymentModal = forwardRef<HTMLDivElement, PaymentModalProps>(
       setIsSubmitting(true);
       
       try {
-        const { data, error } = await supabase.functions.invoke("create-checkout-session", {
+        const { data, error } = await supabase.functions.invoke("create-subscription-checkout", {
           body: {
             customerName: fullName.trim(),
             customerEmail: email.trim().toLowerCase(),
-            customerPhone: phone.trim() || null,
+            customerPhone: phone.trim() || undefined,
           },
         });
 

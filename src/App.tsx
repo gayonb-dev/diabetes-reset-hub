@@ -3,6 +3,8 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "@/hooks/useAuth";
+import AuthGuard from "@/components/AuthGuard";
 import Index from "./pages/Index";
 import IntakeForm from "./pages/IntakeForm";
 import BookSession from "./pages/BookSession";
@@ -13,6 +15,15 @@ import PaymentCancelled from "./pages/PaymentCancelled";
 import AdminDashboard from "./pages/AdminDashboard";
 import LLMInfo from "./pages/LLMInfo";
 import NotFound from "./pages/NotFound";
+import Login from "./pages/Login";
+import AuthCallback from "./pages/AuthCallback";
+import AppLayout from "./pages/app/AppLayout";
+import Dashboard from "./pages/app/Dashboard";
+import DayDetail from "./pages/app/DayDetail";
+import Library from "./pages/app/Library";
+import Ask from "./pages/app/Ask";
+import Billing from "./pages/app/Billing";
+import Onboarding from "./pages/app/Onboarding";
 
 const queryClient = new QueryClient();
 
@@ -22,20 +33,51 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/payment-success" element={<PaymentSuccess />} />
-          <Route path="/payment-cancelled" element={<PaymentCancelled />} />
-          <Route path="/intake" element={<IntakeForm />} />
-          <Route path="/book" element={<BookSession />} />
-          <Route path="/progress" element={<ProgressTracker />} />
-          <Route path="/6-week-reset" element={<SixWeekReset />} />
-          <Route path="/admin" element={<AdminDashboard />} />
-          <Route path="/llm-info" element={<LLMInfo />} />
-          <Route path="/llms.txt" element={<LLMInfo />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <AuthProvider>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/payment-success" element={<PaymentSuccess />} />
+            <Route path="/payment-cancelled" element={<PaymentCancelled />} />
+            <Route path="/intake" element={<IntakeForm />} />
+            <Route path="/book" element={<BookSession />} />
+            <Route path="/progress" element={<ProgressTracker />} />
+            <Route path="/6-week-reset" element={<SixWeekReset />} />
+            <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/llm-info" element={<LLMInfo />} />
+            <Route path="/llms.txt" element={<LLMInfo />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/auth/callback" element={<AuthCallback />} />
+
+            {/* Onboarding (auth required, no active sub needed yet) */}
+            <Route
+              path="/app/onboarding"
+              element={
+                <AuthGuard requireActiveSub={false}>
+                  <Onboarding />
+                </AuthGuard>
+              }
+            />
+
+            {/* Member app */}
+            <Route
+              path="/app"
+              element={
+                <AuthGuard>
+                  <AppLayout />
+                </AuthGuard>
+              }
+            >
+              <Route index element={<Dashboard />} />
+              <Route path="today" element={<Dashboard />} />
+              <Route path="day/:day" element={<DayDetail />} />
+              <Route path="library" element={<Library />} />
+              <Route path="ask" element={<Ask />} />
+              <Route path="billing" element={<Billing />} />
+            </Route>
+
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
