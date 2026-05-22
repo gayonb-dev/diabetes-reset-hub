@@ -83,7 +83,7 @@ const PaymentResult = ({ status, onClose, onRetry }: PaymentResultProps) => {
               variant="outline"
               className="w-full py-3 font-semibold rounded-xl h-auto border-primary/30 hover:bg-primary/5"
             >
-              <a href="https://wa.me/18768822547?text=Hi!%20I%20just%20purchased%20the%205-Day%20Reset!" target="_blank" rel="noopener noreferrer">
+              <a href="https://wa.me/18768822547?text=Hi!%20I%20just%20joined%20the%20Diabetes%20Reset%20Method!" target="_blank" rel="noopener noreferrer">
                 <MessageCircle className="mr-2 h-5 w-5" />
                 Check WhatsApp Now
               </a>
