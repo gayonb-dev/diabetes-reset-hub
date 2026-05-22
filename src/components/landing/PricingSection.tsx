@@ -1,4 +1,4 @@
-import { Check, Lock, MessageCircle, Zap, Gift, Shield } from "lucide-react";
+import { Check, Lock, MessageCircle, Zap, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ScrollReveal from "./ScrollReveal";
 
@@ -8,17 +8,17 @@ interface PricingSectionProps {
 
 const PricingSection = ({ onOpenPayment }: PricingSectionProps) => {
   const features = [
-    { text: "Daily 10-min action steps for 5 days" },
-    { text: "Diabetic-friendly plate guide" },
-    { text: "Safe, joint-friendly movement plan" },
-    { text: "Daily accountability nudges" },
-    { text: "Quick Wins Tracker worksheet" },
-    { text: "BONUS: 2-Day Meal Plan included free" },
+    { text: "7-Day Reset Sprint (daily 10-min actions)" },
+    { text: "Full recipe & plate-method library" },
+    { text: "Safe, joint-friendly movement plans" },
+    { text: "Coach Q&A — ask anything, get answers" },
+    { text: "WhatsApp accountability broadcasts" },
+    { text: "Priority waitlist for live coaching cohorts" },
   ];
 
   const trustBadges = [
     { icon: Lock, text: "Secure Checkout" },
-    { icon: MessageCircle, text: "24/7 Support" },
+    { icon: MessageCircle, text: "Email Support" },
     { icon: Zap, text: "Instant Access" },
   ];
 
@@ -30,45 +30,40 @@ const PricingSection = ({ onOpenPayment }: PricingSectionProps) => {
             Start Your Reset Today
           </h2>
           <p className="text-center text-muted-foreground mb-8">
-            Join 156+ people who've transformed their health with The Diabetes Reset Method
+            One simple price. Full access. Cancel anytime.
           </p>
         </ScrollReveal>
 
         <ScrollReveal>
           <div className="max-w-md mx-auto">
             <div className="bg-card rounded-3xl border-4 border-primary shadow-2xl relative mt-6">
-              {/* Most Popular Badge */}
               <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-10">
                 <span className="bg-secondary text-secondary-foreground px-5 py-1.5 rounded-full text-sm font-bold shadow-md">
                   Most Popular
                 </span>
               </div>
 
-              {/* Header */}
               <div className="bg-gradient-to-r from-primary to-primary-dark p-6 pt-8 text-center text-primary-foreground rounded-t-[1.25rem]">
                 <h3 className="font-heading font-bold text-2xl mb-1">
-                  5-Day Diabetes Reset Challenge
+                  Diabetes Reset Method Membership
                 </h3>
-                <p className="opacity-90">Everything you need to start seeing results</p>
+                <p className="opacity-90">Everything you need, for as long as you need it.</p>
               </div>
 
-              {/* Price */}
               <div className="p-8 text-center">
-                <div className="mb-1">
-                  <span className="text-2xl text-muted-foreground line-through">$47</span>
-                  <span className="ml-2 text-sm font-semibold text-primary bg-primary/10 px-2 py-1 rounded">SAVE 43%</span>
-                </div>
-                <div className="flex items-center justify-center gap-2 mb-1">
+                <div className="flex items-baseline justify-center gap-2 mb-1">
                   <span className="text-6xl font-bold text-primary">$27</span>
+                  <span className="text-lg text-muted-foreground">today</span>
                 </div>
-                <p className="text-muted-foreground">one-time payment</p>
-                <p className="text-sm text-primary font-medium mt-2 flex items-center justify-center gap-1">
-                  <Gift className="h-4 w-4" />
-                  This $27 is credited toward the 6-Week Reset
+                <p className="text-muted-foreground">
+                  Then <strong className="text-foreground">$67/month</strong> after a{" "}
+                  <strong className="text-foreground">14-day full-access trial</strong>
+                </p>
+                <p className="text-sm text-primary font-medium mt-3">
+                  Cancel during the trial and keep your $27 program — no further charges.
                 </p>
               </div>
 
-              {/* Features */}
               <div className="px-8 pb-6">
                 <ul className="space-y-3">
                   {features.map((feature, index) => (
@@ -76,33 +71,31 @@ const PricingSection = ({ onOpenPayment }: PricingSectionProps) => {
                       <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
                         <Check className="h-3.5 w-3.5 text-primary-foreground" />
                       </div>
-                      <span className={`text-muted-foreground ${index === features.length - 1 ? "font-semibold text-primary" : ""}`}>
-                        {feature.text}
-                      </span>
+                      <span className="text-muted-foreground">{feature.text}</span>
                     </li>
                   ))}
                 </ul>
               </div>
 
-              {/* CTA */}
               <div className="px-8 pb-4">
                 <Button
                   onClick={onOpenPayment}
                   className="w-full bg-primary hover:bg-primary-dark text-primary-foreground py-6 text-xl font-bold rounded-xl transition-all transform hover:scale-105 shadow-lg h-auto"
                 >
-                  Start My 5-Day Reset — $27
+                  Start My Reset — $27
                 </Button>
+                <p className="text-center text-xs text-muted-foreground mt-2">
+                  Secure checkout via Stripe • Opens in a new tab
+                </p>
               </div>
 
-              {/* Guarantee */}
               <div className="px-8 pb-4">
                 <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
                   <Shield className="h-4 w-4 text-primary" />
-                  <span>30-day money-back guarantee — zero risk</span>
+                  <span>30-day money-back guarantee on every charge</span>
                 </div>
               </div>
 
-              {/* Trust Badges */}
               <div className="px-8 pb-8">
                 <div className="grid grid-cols-3 gap-4">
                   {trustBadges.map((badge, index) => {
@@ -117,6 +110,13 @@ const PricingSection = ({ onOpenPayment }: PricingSectionProps) => {
                 </div>
               </div>
             </div>
+
+            <p className="text-center text-sm text-muted-foreground mt-6">
+              Already a member?{" "}
+              <a href="/login" className="text-primary font-semibold hover:underline">
+                Log in here
+              </a>
+            </p>
           </div>
         </ScrollReveal>
       </div>

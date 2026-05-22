@@ -8,40 +8,56 @@ const FAQSection = () => {
 
   const faqs = [
     {
-      question: "I've tried everything — will this actually work?",
-      answer: "We get it. Most programs aren't built for diabetics. The Diabetes Reset Method is different — it's designed specifically for Type 2 Diabetes and prediabetes. You'll see real wins within the first 5 days because the actions are small, specific, and proven. Plus, with our 30-day money-back guarantee, there's zero risk.",
+      question: "What exactly am I paying for at $27?",
+      answer:
+        "Your $27 unlocks immediate access to the Diabetes Reset Method membership: the 7-Day Reset Sprint, the recipe and plate-method library (unlocks Day 6), coach Q&A, and 14 days of full access. After 14 days the membership renews at $67/month — unless you cancel during the trial.",
     },
     {
-      question: "Do I need special foods or a gym membership?",
-      answer: "Not at all. Everything uses real food from your regular grocery store and simple movements you can do at home — no equipment needed. If you can walk to your kitchen, you can do this program.",
+      question: "What happens after the 14-day trial?",
+      answer:
+        "If you do nothing, your membership renews at $67/month and continues until you cancel. You can cancel anytime in one click from your member dashboard. If you cancel during the trial, no monthly charges are made and you still keep your $27 7-Day Reset program.",
     },
     {
-      question: "Can I do this while taking medications?",
-      answer: "Yes — this program is designed to complement your medical care, not replace it. Always consult your doctor before making changes to medications. Many participants have worked with their doctors to adjust medications as their health improved.",
+      question: "Is there a money-back guarantee?",
+      answer:
+        "Yes — we offer a 30-day money-back guarantee on every charge, including the initial $27 and any monthly renewal. Email us within 30 days of the charge and we refund it. No hoops.",
+    },
+    {
+      question: "Do I need special foods, supplements, or a gym?",
+      answer:
+        "No. Everything uses real food from your regular grocery store and simple movements you can do at home. No equipment, no supplements, no fads.",
+    },
+    {
+      question: "Can I do this while taking diabetes medication?",
+      answer:
+        "Yes. The membership is designed to complement your medical care, not replace it. Always consult your doctor before changing any medications. Many members work with their doctor to adjust as their numbers improve.",
+    },
+    {
+      question: "Is this for Type 1 Diabetes?",
+      answer:
+        "No. The Diabetes Reset Method is built specifically for Type 2 Diabetes and prediabetes.",
+    },
+    {
+      question: "How do I log in after I sign up?",
+      answer:
+        "We use one-click magic-link login — no passwords to remember. Go to the login page, enter your email, and we'll send you a secure link.",
     },
     {
       question: "How much time does it take each day?",
-      answer: "Just 10–20 minutes a day for 5 days. That's it. We designed this to fit the busiest schedules because we know your life doesn't stop for a health program.",
-    },
-    {
-      question: "What happens after the 5 days?",
-      answer: "After seeing your results, you can continue your journey with our 6-Week Reset or 12-Week Transformation programs. And your $27 investment is credited toward the 6-Week Reset — so you're not paying extra, you're getting a head start.",
-    },
-    {
-      question: "What if it doesn't work for me?",
-      answer: "We stand behind this program with a 30-day money-back guarantee. No questions asked, no hoops to jump through. If you don't see results, email us and we'll refund every penny. We're that confident it works.",
+      answer:
+        "10–20 minutes a day. The Reset is built for busy people. If you can walk to your kitchen, you can do this.",
     },
   ];
 
   return (
-    <section className="bg-background py-10">
+    <section id="faq" className="bg-background py-10">
       <div className="container mx-auto px-4 max-w-3xl">
         <ScrollReveal>
           <h2 className="font-heading font-bold text-3xl sm:text-4xl text-center text-foreground mb-2">
-            Got Questions? We've Got Answers.
+            Questions? We've Got Answers.
           </h2>
           <p className="text-center text-muted-foreground mb-8">
-            Still on the fence? These might help.
+            Straight answers about pricing, billing, and how the membership works.
           </p>
         </ScrollReveal>
 

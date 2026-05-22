@@ -98,7 +98,7 @@ export default function Login() {
         <div className="mt-6 text-center text-sm text-muted-foreground">
           Not a member yet?{" "}
           <Link to="/#pricing" className="text-primary font-semibold hover:underline">
-            Start the 5-Day Reset
+            Start for $27
           </Link>
         </div>
       </div>

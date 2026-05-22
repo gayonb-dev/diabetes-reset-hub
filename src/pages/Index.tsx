@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Helmet } from "react-helmet-async";
+import SiteHeader from "@/components/landing/SiteHeader";
 import HeroSection from "@/components/landing/HeroSection";
 import ProblemPromiseSection from "@/components/landing/ProblemPromiseSection";
 import HowItWorksSection from "@/components/landing/HowItWorksSection";
@@ -14,12 +15,12 @@ import StickyBottomCTA from "@/components/landing/StickyBottomCTA";
 import PaymentModal from "@/components/landing/PaymentModal";
 
 const FAQS = [
-  { q: "I've tried everything — will this actually work?", a: "The Diabetes Reset Method is designed specifically for Type 2 Diabetes and prediabetes. You'll see real wins within 5 days because the actions are small, specific, and proven. Plus, with our 30-day money-back guarantee, there's zero risk." },
-  { q: "Do I need special foods or a gym membership?", a: "No. Everything uses real food from your regular grocery store and simple at-home movements — no equipment needed." },
-  { q: "Can I do this while taking medications?", a: "Yes — the program complements medical care. Always consult your doctor before changing medications." },
-  { q: "How much time does it take each day?", a: "Just 10–20 minutes a day for 5 days." },
-  { q: "What happens after the 5 days?", a: "You can continue with our 6-Week Reset or 12-Week Transformation. Your $27 is credited toward the 6-Week Reset." },
-  { q: "What if it doesn't work for me?", a: "30-day money-back guarantee. No questions, no hoops — email us and we refund every penny." },
+  { q: "What exactly am I paying for at $27?", a: "Your $27 unlocks immediate access to the Diabetes Reset Method membership: the 7-Day Reset Sprint, the recipe library, coach Q&A, and 14 days of full access. After 14 days the membership renews at $67/month unless you cancel." },
+  { q: "What happens after the 14-day trial?", a: "If you do nothing, your membership renews at $67/month and continues until you cancel. You can cancel anytime in one click. If you cancel during the trial, no monthly charges are made and you keep your $27 7-Day Reset program." },
+  { q: "Is there a money-back guarantee?", a: "Yes. 30-day money-back guarantee on every charge — including the initial $27 and any monthly renewal." },
+  { q: "Do I need special foods, supplements, or a gym?", a: "No. Everything uses real food from your regular grocery store and simple at-home movements." },
+  { q: "Can I do this while taking diabetes medication?", a: "Yes. The program complements medical care. Always consult your doctor before changing medications." },
+  { q: "Is this for Type 1 Diabetes?", a: "No. The Diabetes Reset Method is built specifically for Type 2 Diabetes and prediabetes." },
 ];
 
 const Index = () => {
@@ -28,19 +29,40 @@ const Index = () => {
   return (
     <main className="min-h-screen">
       <Helmet>
-        <title>Diabetes Reset Method - Reverse Diabetes in 5 Days</title>
-        <meta name="description" content="The 5-Day Diabetes Reset Challenge: lower blood sugar, jumpstart weight loss, restore energy. Start today for $27." />
+        <title>Diabetes Reset Method — Lower Blood Sugar Membership ($27 Trial)</title>
+        <meta
+          name="description"
+          content="Membership built for Type 2 Diabetes and prediabetes. Start for $27 today, full 14-day trial, then $67/mo. 7-Day Reset Sprint, recipes, coach Q&A. Cancel anytime."
+        />
         <link rel="canonical" href="https://diabetesresetmethod.com/" />
         <meta property="og:url" content="https://diabetesresetmethod.com/" />
-        <meta property="og:title" content="Diabetes Reset Method - Reverse Diabetes in 5 Days" />
-        <meta property="og:description" content="The 5-Day Diabetes Reset Challenge for $27. Lower blood sugar, restore energy." />
+        <meta property="og:title" content="Diabetes Reset Method — Lower Blood Sugar Membership" />
+        <meta
+          property="og:description"
+          content="$27 today, 14-day full access trial, then $67/mo. A diabetes-specific membership for real results. Cancel anytime."
+        />
         <script type="application/ld+json">{JSON.stringify({
           "@context": "https://schema.org",
           "@type": "Product",
-          name: "5-Day Diabetes Reset Challenge",
-          description: "Quick wins that lower blood sugar, jumpstart weight loss, and restore energy in 5 days.",
+          name: "Diabetes Reset Method Membership",
+          description:
+            "Monthly membership for people with Type 2 Diabetes and prediabetes: 7-Day Reset Sprint, recipe library, coach Q&A, WhatsApp accountability. $27 to start with a 14-day trial, then $67/month.",
           brand: { "@type": "Brand", name: "The Diabetes Reset Method" },
-          offers: { "@type": "Offer", price: "27.00", priceCurrency: "USD", availability: "https://schema.org/InStock", url: "https://diabetesresetmethod.com/" },
+          offers: {
+            "@type": "Offer",
+            price: "27.00",
+            priceCurrency: "USD",
+            availability: "https://schema.org/InStock",
+            url: "https://diabetesresetmethod.com/",
+            priceSpecification: {
+              "@type": "UnitPriceSpecification",
+              price: "67.00",
+              priceCurrency: "USD",
+              billingDuration: "P1M",
+              billingIncrement: 1,
+              referenceQuantity: { "@type": "QuantitativeValue", value: 1, unitCode: "MON" },
+            },
+          },
           aggregateRating: { "@type": "AggregateRating", ratingValue: "4.9", reviewCount: "156" },
         })}</script>
         <script type="application/ld+json">{JSON.stringify({
@@ -54,26 +76,23 @@ const Index = () => {
         })}</script>
       </Helmet>
 
+      <SiteHeader />
       <HeroSection />
       <ProblemPromiseSection />
       <HowItWorksSection />
       <WhatYouGetSection />
       <TestimonialsSection />
       <WhyThisWorksSection />
-      <PricingSection 
-        onOpenPayment={() => setIsPaymentModalOpen(true)}
-      />
+      <PricingSection onOpenPayment={() => setIsPaymentModalOpen(true)} />
       <FAQSection />
-      <FinalCTASection 
-        onOpenPayment={() => setIsPaymentModalOpen(true)}
-      />
+      <FinalCTASection onOpenPayment={() => setIsPaymentModalOpen(true)} />
       <Footer />
-      
+
       <StickyBottomCTA />
-      
-      <PaymentModal 
-        isOpen={isPaymentModalOpen} 
-        onClose={() => setIsPaymentModalOpen(false)} 
+
+      <PaymentModal
+        isOpen={isPaymentModalOpen}
+        onClose={() => setIsPaymentModalOpen(false)}
       />
     </main>
   );

@@ -135,10 +135,13 @@ const PaymentModal = forwardRef<HTMLDivElement, PaymentModalProps>(
             <>
               <p className="text-xs font-semibold tracking-widest uppercase text-primary mb-1">The Diabetes Reset Method</p>
               <h3 className="font-heading font-bold text-2xl text-center text-gray-900 mb-2">
-                Complete Your Order
+                Start Your Membership
               </h3>
-              <p className="text-center text-gray-600 mb-6">
-                5-Day Diabetes Reset Challenge — $27
+              <p className="text-center text-gray-600 mb-1">
+                $27 today · 14-day full access · then $67/mo
+              </p>
+              <p className="text-center text-xs text-gray-500 mb-6">
+                Cancel anytime in the trial — keep your $27 Reset program.
               </p>
 
               {errors.general && (
@@ -216,7 +219,7 @@ const PaymentModal = forwardRef<HTMLDivElement, PaymentModalProps>(
                       Processing...
                     </>
                   ) : (
-                    "Continue to Payment — $27"
+                    "Continue to Secure Checkout — $27"
                   )}
                 </Button>
               </form>
