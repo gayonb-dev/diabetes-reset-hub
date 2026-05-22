@@ -24,6 +24,14 @@ import Library from "./pages/app/Library";
 import Ask from "./pages/app/Ask";
 import Billing from "./pages/app/Billing";
 import Onboarding from "./pages/app/Onboarding";
+import CoachingWaitlist from "./pages/app/CoachingWaitlist";
+import AdminLayout from "./pages/admin/AdminLayout";
+import AdminSubscriptions from "./pages/admin/AdminSubscriptions";
+import AdminQaQueue from "./pages/admin/AdminQaQueue";
+import AdminContent from "./pages/admin/AdminContent";
+import AdminBroadcasts from "./pages/admin/AdminBroadcasts";
+import AdminWaitlist from "./pages/admin/AdminWaitlist";
+
 
 const queryClient = new QueryClient();
 
