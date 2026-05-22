@@ -12,8 +12,8 @@ const PricingSection = ({ onOpenPayment }: PricingSectionProps) => {
     { text: "Full recipe & plate-method library" },
     { text: "Safe, joint-friendly movement plans" },
     { text: "Coach Q&A — ask anything, get answers" },
-    { text: "WhatsApp accountability broadcasts" },
-    { text: "Priority waitlist for live coaching cohorts" },
+    { text: "Optional WhatsApp accountability broadcasts (opt-in)" },
+    { text: "Priority access to 1-on-1 coaching (coming soon)" },
   ];
 
   const trustBadges = [
