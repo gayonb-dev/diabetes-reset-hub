@@ -5,19 +5,19 @@ const WhyThisWorksSection = () => {
   const reasons = [
     {
       icon: Flame,
-      title: "Insulin & Inflammation",
-      description: "Target the root cause — not just symptoms. Stabilize blood sugar swings and reduce chronic inflammation that drives diabetes progression.",
+      title: "Why Your Blood Sugar Spikes (And How to Stop It)",
+      description: "Target the root cause — not just symptoms. Stabilize blood sugar swings and reduce the chronic inflammation that drives diabetes progression.",
       gradient: "from-primary/15 to-primary/5",
     },
     {
       icon: Sprout,
-      title: "Gut & Hormones",
+      title: "Why You're Always Hungry (And How to Fix It)",
       description: "Support the gut-hormone connection that controls hunger, cravings, and energy. Better gut health = better blood sugar control.",
       gradient: "from-primary/10 to-secondary/10",
     },
     {
       icon: Target,
-      title: "Tiny Wins = Momentum",
+      title: "Why Tiny Wins Beat Willpower",
       description: "Small daily actions build unstoppable momentum. Each win proves change is possible — no willpower required, just a 10-minute commitment.",
       gradient: "from-secondary/15 to-secondary/5",
     },
