@@ -83,7 +83,7 @@ const PaymentResult = ({ status, onClose, onRetry }: PaymentResultProps) => {
               variant="outline"
               className="w-full py-3 font-semibold rounded-xl h-auto border-primary/30 hover:bg-primary/5"
             >
-              <a href="https://wa.me/18768822547?text=Hi!%20I%20just%20purchased%20the%205-Day%20Reset!" target="_blank" rel="noopener noreferrer">
+              <a href="https://wa.me/18768822547?text=Hi!%20I%20just%20joined%20the%20Diabetes%20Reset%20Method!" target="_blank" rel="noopener noreferrer">
                 <MessageCircle className="mr-2 h-5 w-5" />
                 Check WhatsApp Now
               </a>
@@ -137,7 +137,7 @@ const PaymentResult = ({ status, onClose, onRetry }: PaymentResultProps) => {
 
         <div className="bg-muted/50 rounded-xl p-5 mb-6 text-left">
           <p className="text-sm text-muted-foreground">
-            <span className="font-semibold text-foreground">Still thinking it over?</span> Remember, the 5-Day Reset comes with a
+            <span className="font-semibold text-foreground">Still thinking it over?</span> Remember, the Diabetes Reset Method comes with a
             30-day money-back guarantee. If you don't see results, you get a full refund — no questions asked.
           </p>
         </div>

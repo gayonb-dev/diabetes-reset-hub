@@ -25,7 +25,7 @@ const HowItWorksSection = () => {
       number: "02",
       title: "Full Library Unlocks",
       description:
-        "After Day 5 you unlock the recipe library, plate guides, and joint-friendly movements you can keep coming back to.",
+        "After Day 6 you unlock the recipe library, plate guides, and joint-friendly movements you can keep coming back to.",
     },
     {
       icon: MessageCircle,
@@ -34,7 +34,7 @@ const HowItWorksSection = () => {
       number: "03",
       title: "Ongoing Coaching Support",
       description:
-        "Submit questions to the coach Q&A library, get WhatsApp accountability nudges, and join the waitlist for live coaching cohorts.",
+        "Submit questions to the coach Q&A library, get optional WhatsApp accountability nudges, and get priority access to 1-on-1 coaching when you're ready.",
     },
   ];
 

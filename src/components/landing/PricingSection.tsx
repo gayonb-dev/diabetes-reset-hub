@@ -12,8 +12,8 @@ const PricingSection = ({ onOpenPayment }: PricingSectionProps) => {
     { text: "Full recipe & plate-method library" },
     { text: "Safe, joint-friendly movement plans" },
     { text: "Coach Q&A — ask anything, get answers" },
-    { text: "WhatsApp accountability broadcasts" },
-    { text: "Priority waitlist for live coaching cohorts" },
+    { text: "Optional WhatsApp accountability broadcasts (opt-in)" },
+    { text: "Priority access to 1-on-1 coaching (coming soon)" },
   ];
 
   const trustBadges = [
@@ -56,11 +56,11 @@ const PricingSection = ({ onOpenPayment }: PricingSectionProps) => {
                   <span className="text-lg text-muted-foreground">today</span>
                 </div>
                 <p className="text-muted-foreground">
-                  Then <strong className="text-foreground">$67/month</strong> after a{" "}
-                  <strong className="text-foreground">14-day full-access trial</strong>
+                  Then <strong className="text-foreground">$67/month</strong> after{" "}
+                  <strong className="text-foreground">14 days of full access</strong>
                 </p>
                 <p className="text-sm text-primary font-medium mt-3">
-                  Cancel during the trial and keep your $27 program — no further charges.
+                  Cancel during your 14 days and keep your $27 program — no further charges.
                 </p>
               </div>
 

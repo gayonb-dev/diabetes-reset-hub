@@ -10,17 +10,17 @@ const FAQSection = () => {
     {
       question: "What exactly am I paying for at $27?",
       answer:
-        "Your $27 unlocks immediate access to the Diabetes Reset Method membership: the 7-Day Reset Sprint, the recipe and plate-method library (unlocks Day 6), coach Q&A, and 14 days of full access. After 14 days the membership renews at $67/month — unless you cancel during the trial.",
+        "Your $27 unlocks immediate access to the Diabetes Reset Method membership: the 7-Day Reset Sprint, the recipe and plate-method library (unlocks Day 6), coach Q&A, and 14 days of full access to everything. After those 14 days the membership renews at $67/month — unless you cancel before day 15.",
     },
     {
-      question: "What happens after the 14-day trial?",
+      question: "What happens after my 14 days of full access?",
       answer:
-        "If you do nothing, your membership renews at $67/month and continues until you cancel. You can cancel anytime in one click from your member dashboard. If you cancel during the trial, no monthly charges are made and you still keep your $27 7-Day Reset program.",
+        "If you do nothing, your membership continues at $67/month, charged automatically. You can cancel anytime before day 15 from your member dashboard — one click, no call required, no email required. If you cancel inside the 14 days, no monthly charges are ever made and you still keep your $27 7-Day Reset program.",
     },
     {
       question: "Is there a money-back guarantee?",
       answer:
-        "Yes — we offer a 30-day money-back guarantee on every charge, including the initial $27 and any monthly renewal. Email us within 30 days of the charge and we refund it. No hoops.",
+        "Yes — we offer a 30-day money-back guarantee on every charge, including the initial $27 and any monthly renewal. Email Info@diabetesresetmethod.com within 30 days of the charge and we'll refund it in full within 5 business days. No hoops, no questions, no need to call.",
     },
     {
       question: "Do I need special foods, supplements, or a gym?",

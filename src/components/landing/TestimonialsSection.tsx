@@ -13,7 +13,14 @@ const TestimonialsSection = () => {
       initials: "TM",
       title: "Type 2 Diabetes",
       result: "Lost 30 lbs in 6 weeks",
-      quote: "I was skeptical at first, but after the 5-Day Reset, I felt more energy than I had in years. The simple daily actions made all the difference. My doctor was shocked at my next checkup.",
+      quote: "I was skeptical at first, but after the 7-Day Reset Sprint, I felt more energy than I had in years. The simple daily actions made all the difference. My doctor was shocked at my next checkup.",
+    },
+    {
+      name: "James W.",
+      initials: "JW",
+      title: "Type 2 Diabetes",
+      result: "A1C dropped 1.8 points",
+      quote: "I've been Type 2 for 9 years. Nothing stuck until this. The 10-minute daily actions felt doable even on my worst days, and my numbers spoke for themselves at my 3-month check-up.",
     },
     {
       name: "Rachel S.",
@@ -25,9 +32,9 @@ const TestimonialsSection = () => {
     {
       name: "Michael L.",
       initials: "ML",
-      title: "Metabolic Health",
+      title: "Type 2 Diabetes",
       result: "Lost 22 lbs, off 1 medication",
-      quote: "After trying countless diets, this was the first program designed specifically for people like me. The $27 challenge changed my life — I went on to do the full 12-week program.",
+      quote: "After trying countless diets, this was the first program designed specifically for people like me. The Reset changed my life — and I worked with my doctor to come off one of my meds.",
     },
   ];
 
@@ -67,7 +74,7 @@ const TestimonialsSection = () => {
           </div>
         </ScrollReveal>
 
-        <div className="grid md:grid-cols-3 gap-6 mb-8">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {testimonials.map((testimonial, index) => (
             <ScrollReveal key={index} delay={index * 0.15}>
               <div className="bg-card rounded-2xl border-2 border-primary/20 shadow-lg hover:shadow-xl hover:border-primary/40 transition-all p-6 h-full">
@@ -93,8 +100,8 @@ const TestimonialsSection = () => {
                 </div>
 
                 {/* Result Badge */}
-                <div className="bg-primary/10 rounded-lg px-3 py-2">
-                  <p className="text-primary font-bold text-sm">✅ {testimonial.result}</p>
+                <div className="bg-primary/15 border border-primary/30 rounded-lg px-3 py-2.5">
+                  <p className="text-primary font-bold text-base leading-snug">✅ {testimonial.result}</p>
                 </div>
               </div>
             </ScrollReveal>
@@ -107,7 +114,7 @@ const TestimonialsSection = () => {
               onClick={scrollToPricing}
               className="bg-primary hover:bg-primary-dark text-primary-foreground px-8 py-5 text-lg font-bold rounded-xl transition-all transform hover:scale-105 shadow-lg h-auto"
             >
-              Join Them — Start My 5-Day Reset
+              Join Them — Start My Reset
             </Button>
             <p className="text-sm text-muted-foreground italic">
               Results vary. Educational coaching — not medical care.
