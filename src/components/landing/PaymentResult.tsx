@@ -137,7 +137,7 @@ const PaymentResult = ({ status, onClose, onRetry }: PaymentResultProps) => {
 
         <div className="bg-muted/50 rounded-xl p-5 mb-6 text-left">
           <p className="text-sm text-muted-foreground">
-            <span className="font-semibold text-foreground">Still thinking it over?</span> Remember, the 5-Day Reset comes with a
+            <span className="font-semibold text-foreground">Still thinking it over?</span> Remember, the Diabetes Reset Method comes with a
             30-day money-back guarantee. If you don't see results, you get a full refund — no questions asked.
           </p>
         </div>
