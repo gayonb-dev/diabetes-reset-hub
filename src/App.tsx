@@ -51,10 +51,25 @@ const App = () => (
             <Route path="/progress" element={<ProgressTracker />} />
             <Route path="/6-week-reset" element={<SixWeekReset />} />
             <Route path="/admin" element={<AdminDashboard />} />
+            <Route
+              path="/admin"
+              element={
+                <AuthGuard requireAdmin requireActiveSub={false}>
+                  <AdminLayout />
+                </AuthGuard>
+              }
+            >
+              <Route path="subscriptions" element={<AdminSubscriptions />} />
+              <Route path="qa-queue" element={<AdminQaQueue />} />
+              <Route path="content" element={<AdminContent />} />
+              <Route path="broadcasts" element={<AdminBroadcasts />} />
+              <Route path="waitlist" element={<AdminWaitlist />} />
+            </Route>
             <Route path="/llm-info" element={<LLMInfo />} />
             <Route path="/llms.txt" element={<LLMInfo />} />
             <Route path="/login" element={<Login />} />
             <Route path="/auth/callback" element={<AuthCallback />} />
+
 
             {/* Onboarding (auth required, no active sub needed yet) */}
             <Route
