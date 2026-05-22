@@ -141,7 +141,7 @@ const PaymentModal = forwardRef<HTMLDivElement, PaymentModalProps>(
                 $27 today · 14-day full access · then $67/mo
               </p>
               <p className="text-center text-xs text-gray-500 mb-6">
-                Cancel anytime in the trial — keep your $27 Reset program.
+                Cancel anytime in your 14 days — keep your $27 Reset program.
               </p>
 
               {errors.general && (
