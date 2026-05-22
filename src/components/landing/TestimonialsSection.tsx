@@ -13,7 +13,14 @@ const TestimonialsSection = () => {
       initials: "TM",
       title: "Type 2 Diabetes",
       result: "Lost 30 lbs in 6 weeks",
-      quote: "I was skeptical at first, but after the 5-Day Reset, I felt more energy than I had in years. The simple daily actions made all the difference. My doctor was shocked at my next checkup.",
+      quote: "I was skeptical at first, but after the 7-Day Reset Sprint, I felt more energy than I had in years. The simple daily actions made all the difference. My doctor was shocked at my next checkup.",
+    },
+    {
+      name: "James W.",
+      initials: "JW",
+      title: "Type 2 Diabetes",
+      result: "A1C dropped 1.8 points",
+      quote: "I've been Type 2 for 9 years. Nothing stuck until this. The 10-minute daily actions felt doable even on my worst days, and my numbers spoke for themselves at my 3-month check-up.",
     },
     {
       name: "Rachel S.",
@@ -25,9 +32,9 @@ const TestimonialsSection = () => {
     {
       name: "Michael L.",
       initials: "ML",
-      title: "Metabolic Health",
+      title: "Type 2 Diabetes",
       result: "Lost 22 lbs, off 1 medication",
-      quote: "After trying countless diets, this was the first program designed specifically for people like me. The $27 challenge changed my life — I went on to do the full 12-week program.",
+      quote: "After trying countless diets, this was the first program designed specifically for people like me. The Reset changed my life — and I worked with my doctor to come off one of my meds.",
     },
   ];
 
