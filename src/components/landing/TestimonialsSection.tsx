@@ -114,7 +114,7 @@ const TestimonialsSection = () => {
               onClick={scrollToPricing}
               className="bg-primary hover:bg-primary-dark text-primary-foreground px-8 py-5 text-lg font-bold rounded-xl transition-all transform hover:scale-105 shadow-lg h-auto"
             >
-              Join Them — Start My 5-Day Reset
+              Join Them — Start My Reset
             </Button>
             <p className="text-sm text-muted-foreground italic">
               Results vary. Educational coaching — not medical care.
