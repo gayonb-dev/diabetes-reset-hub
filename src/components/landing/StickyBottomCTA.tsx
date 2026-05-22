@@ -11,7 +11,7 @@ const StickyBottomCTA = () => {
         onClick={scrollToPricing}
         className="w-full bg-primary hover:bg-primary-dark text-primary-foreground font-bold py-4 px-6 rounded-lg text-center transition-colors h-auto"
       >
-        Start My Reset — $27 (14-day trial)
+        Start My Reset — $27 (14 days full access)
       </Button>
     </div>
   );
