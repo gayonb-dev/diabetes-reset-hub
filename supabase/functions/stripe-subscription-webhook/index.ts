@@ -217,7 +217,6 @@ serve(async (req) => {
           await sb.from("subscriptions")
             .update({ status: "past_due", updated_at: new Date().toISOString() })
             .eq("stripe_subscription_id", inv.subscription as string);
-          // Record dunning attempt
           const { data: subRow } = await sb
             .from("subscriptions")
             .select("user_id")
@@ -231,10 +230,34 @@ serve(async (req) => {
               status: "failed",
               failure_reason: inv.last_finalization_error?.message || "Payment failed",
             });
+            // Email member about failed payment
+            if (RESEND) {
+              const { data: userData } = await sb.auth.admin.getUserById(subRow.user_id);
+              const email = userData?.user?.email;
+              const name = (userData?.user?.user_metadata?.full_name as string) || email?.split("@")[0] || "";
+              if (email) {
+                const portalUrl = `${APP_URL}/app/billing`;
+                const html = `
+                <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:24px;">
+                  <h1 style="color:#c44; font-size:22px;">Payment issue with your Diabetes Reset membership</h1>
+                  <p>Hi ${name},</p>
+                  <p>Your last payment didn't go through (attempt ${inv.attempt_count || 1}).
+                  Stripe will retry automatically, but your access will pause if it keeps failing.</p>
+                  <p style="text-align:center;margin:24px 0;">
+                    <a href="${portalUrl}" style="display:inline-block;background:#7DAF76;color:#fff;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:bold;">
+                      Update payment method →
+                    </a>
+                  </p>
+                  <p style="font-size:13px;color:#666;">Questions? Reply to this email.</p>
+                </div>`;
+                await sendEmail(RESEND, email, "Action needed: update your payment method", html);
+              }
+            }
           }
         }
         break;
       }
+
 
       default:
         console.log("[sub-webhook] unhandled:", event.type);

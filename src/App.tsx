@@ -24,6 +24,14 @@ import Library from "./pages/app/Library";
 import Ask from "./pages/app/Ask";
 import Billing from "./pages/app/Billing";
 import Onboarding from "./pages/app/Onboarding";
+import CoachingWaitlist from "./pages/app/CoachingWaitlist";
+import AdminLayout from "./pages/admin/AdminLayout";
+import AdminSubscriptions from "./pages/admin/AdminSubscriptions";
+import AdminQaQueue from "./pages/admin/AdminQaQueue";
+import AdminContent from "./pages/admin/AdminContent";
+import AdminBroadcasts from "./pages/admin/AdminBroadcasts";
+import AdminWaitlist from "./pages/admin/AdminWaitlist";
+
 
 const queryClient = new QueryClient();
 
@@ -42,11 +50,27 @@ const App = () => (
             <Route path="/book" element={<BookSession />} />
             <Route path="/progress" element={<ProgressTracker />} />
             <Route path="/6-week-reset" element={<SixWeekReset />} />
-            <Route path="/admin" element={<AdminDashboard />} />
+            <Route
+              path="/admin"
+              element={
+                <AuthGuard requireAdmin requireActiveSub={false}>
+                  <AdminLayout />
+                </AuthGuard>
+              }
+            >
+              <Route index element={<AdminDashboard />} />
+              <Route path="subscriptions" element={<AdminSubscriptions />} />
+              <Route path="qa-queue" element={<AdminQaQueue />} />
+              <Route path="content" element={<AdminContent />} />
+              <Route path="broadcasts" element={<AdminBroadcasts />} />
+              <Route path="waitlist" element={<AdminWaitlist />} />
+            </Route>
+
             <Route path="/llm-info" element={<LLMInfo />} />
             <Route path="/llms.txt" element={<LLMInfo />} />
             <Route path="/login" element={<Login />} />
             <Route path="/auth/callback" element={<AuthCallback />} />
+
 
             {/* Onboarding (auth required, no active sub needed yet) */}
             <Route
@@ -73,6 +97,8 @@ const App = () => (
               <Route path="library" element={<Library />} />
               <Route path="ask" element={<Ask />} />
               <Route path="billing" element={<Billing />} />
+              <Route path="coaching-waitlist" element={<CoachingWaitlist />} />
+
             </Route>
 
             <Route path="*" element={<NotFound />} />
