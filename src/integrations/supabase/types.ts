@@ -86,6 +86,45 @@ export type Database = {
         }
         Relationships: []
       }
+      coaching_waitlist: {
+        Row: {
+          created_at: string
+          eligible_at: string | null
+          email: string
+          full_name: string
+          id: string
+          phone: string | null
+          status: string
+          updated_at: string
+          user_id: string
+          why_now: string | null
+        }
+        Insert: {
+          created_at?: string
+          eligible_at?: string | null
+          email: string
+          full_name: string
+          id?: string
+          phone?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+          why_now?: string | null
+        }
+        Update: {
+          created_at?: string
+          eligible_at?: string | null
+          email?: string
+          full_name?: string
+          id?: string
+          phone?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+          why_now?: string | null
+        }
+        Relationships: []
+      }
       content_items: {
         Row: {
           body: string | null
