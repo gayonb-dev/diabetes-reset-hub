@@ -1,4 +1,4 @@
-import { Zap, TrendingUp, Award } from "lucide-react";
+import { Zap, BookOpen, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ScrollReveal from "./ScrollReveal";
 
@@ -13,27 +13,28 @@ const HowItWorksSection = () => {
       iconBg: "bg-primary",
       iconColor: "text-primary-foreground",
       number: "01",
-      title: "5-Day Tiny Challenge",
-      description: "Reset your habits with targeted food, movement, and mindset actions. See real wins fast.",
-      price: "Only $27",
-      priceNote: "Your $27 is credited toward the 6-Week Reset",
+      title: "7-Day Reset Sprint",
+      description:
+        "Daily 10-minute actions for food, movement, and mindset — designed specifically for Type 2 Diabetes. Get a tangible win by Day 3.",
       highlight: true,
     },
     {
-      icon: TrendingUp,
+      icon: BookOpen,
       iconBg: "bg-secondary",
       iconColor: "text-secondary-foreground",
       number: "02",
-      title: "6-Week Reset",
-      description: "Go deeper. Lose 10–30 lbs, lower blood sugar consistently, and regain lasting energy.",
+      title: "Full Library Unlocks",
+      description:
+        "After Day 5 you unlock the recipe library, plate guides, and joint-friendly movements you can keep coming back to.",
     },
     {
-      icon: Award,
+      icon: MessageCircle,
       iconBg: "bg-secondary",
       iconColor: "text-secondary-foreground",
       number: "03",
-      title: "12-Week Transformation",
-      description: "Full metabolic reset. Heal gut & hormones for lasting diabetes reversal.",
+      title: "Ongoing Coaching Support",
+      description:
+        "Submit questions to the coach Q&A library, get WhatsApp accountability nudges, and join the waitlist for live coaching cohorts.",
     },
   ];
 
@@ -41,12 +42,14 @@ const HowItWorksSection = () => {
     <section className="bg-gradient-to-b from-background to-primary/5 py-10">
       <div className="container mx-auto px-4">
         <ScrollReveal>
-          <p className="text-sm font-semibold tracking-widest uppercase text-primary text-center mb-2">The Diabetes Reset Method</p>
+          <p className="text-sm font-semibold tracking-widest uppercase text-primary text-center mb-2">
+            How the Membership Works
+          </p>
           <h2 className="font-heading font-bold text-3xl sm:text-4xl text-center text-foreground mb-2">
-            Your Path to Reversal
+            From First Win to Lasting Change
           </h2>
           <p className="text-center text-muted-foreground mb-8">
-            Start small, build momentum, transform your health
+            One $27 payment unlocks everything for 14 days. Stay only if it's working.
           </p>
         </ScrollReveal>
 
@@ -79,20 +82,7 @@ const HowItWorksSection = () => {
                   <h3 className="font-heading font-bold text-xl text-foreground mb-2">
                     {step.title}
                   </h3>
-                  <p className="text-muted-foreground mb-3 text-sm">{step.description}</p>
-
-                  {step.price && (
-                    <div className="border-2 border-primary rounded-xl p-3 mt-3 bg-primary/5">
-                      <p className="font-bold text-lg text-primary">{step.price}</p>
-                      <p className="text-sm text-muted-foreground">{step.priceNote}</p>
-                    </div>
-                  )}
-
-                  {!step.highlight && (
-                    <div className="mt-3">
-                      <span className="text-xs text-muted-foreground uppercase tracking-wide">Coming after the challenge</span>
-                    </div>
-                  )}
+                  <p className="text-muted-foreground text-sm">{step.description}</p>
                 </div>
               </ScrollReveal>
             );
@@ -105,7 +95,7 @@ const HowItWorksSection = () => {
               onClick={scrollToPricing}
               className="bg-primary hover:bg-primary-dark text-primary-foreground px-8 py-5 text-lg font-bold rounded-xl transition-all transform hover:scale-105 shadow-lg h-auto"
             >
-              Start With the 5-Day Challenge — $27
+              Start My Membership — $27
             </Button>
             <p className="text-sm text-muted-foreground italic">
               Always consult your doctor before changing medications.

@@ -4,7 +4,7 @@ import ScrollReveal from "./ScrollReveal";
 const ProblemPromiseSection = () => {
   const doesntWork = [
     "Generic diets that spike your blood sugar",
-    "Meds that mask symptoms without fixing the root cause",
+    "Apps that track everything and change nothing",
     "Overwhelming 90-day plans that kill motivation by week 2",
     "Cutting out entire food groups and feeling deprived",
   ];
@@ -13,7 +13,7 @@ const ProblemPromiseSection = () => {
     "Small, diabetes-specific actions you can start today",
     "Meals that stabilize blood sugar AND taste good",
     "10 minutes a day — not a lifestyle overhaul",
-    "Real results in 5 days that build belief and momentum",
+    "Coach Q&A and accountability when you need it most",
   ];
 
   return (
@@ -63,7 +63,7 @@ const ProblemPromiseSection = () => {
                 href="#pricing"
                 className="inline-flex items-center text-primary hover:text-primary-dark font-semibold transition-colors"
               >
-                Get started for just $27
+                Start for $27 today
                 <ArrowRight className="ml-1 h-4 w-4" />
               </a>
             </div>
