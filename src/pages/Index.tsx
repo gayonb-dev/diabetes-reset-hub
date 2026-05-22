@@ -29,24 +29,24 @@ const Index = () => {
   return (
     <main className="min-h-screen">
       <Helmet>
-        <title>Diabetes Reset Method — Lower Blood Sugar Membership ($27 Trial)</title>
+        <title>Diabetes Reset Method — Lower Blood Sugar Membership ($27)</title>
         <meta
           name="description"
-          content="Membership built for Type 2 Diabetes and prediabetes. Start for $27 today, full 14-day trial, then $67/mo. 7-Day Reset Sprint, recipes, coach Q&A. Cancel anytime."
+          content="Membership built for Type 2 Diabetes and prediabetes. Start for $27 today, 14 days of full access, then $67/mo. 7-Day Reset Sprint, recipes, coach Q&A. Cancel anytime."
         />
         <link rel="canonical" href="https://diabetesresetmethod.com/" />
         <meta property="og:url" content="https://diabetesresetmethod.com/" />
         <meta property="og:title" content="Diabetes Reset Method — Lower Blood Sugar Membership" />
         <meta
           property="og:description"
-          content="$27 today, 14-day full access trial, then $67/mo. A diabetes-specific membership for real results. Cancel anytime."
+          content="$27 today, 14 days of full access, then $67/mo. A diabetes-specific membership for real results. Cancel anytime."
         />
         <script type="application/ld+json">{JSON.stringify({
           "@context": "https://schema.org",
           "@type": "Product",
           name: "Diabetes Reset Method Membership",
           description:
-            "Monthly membership for people with Type 2 Diabetes and prediabetes: 7-Day Reset Sprint, recipe library, coach Q&A, WhatsApp accountability. $27 to start with a 14-day trial, then $67/month.",
+            "Monthly membership for people with Type 2 Diabetes and prediabetes: 7-Day Reset Sprint, recipe library, coach Q&A, WhatsApp accountability. $27 to start with 14 days of full access, then $67/month.",
           brand: { "@type": "Brand", name: "The Diabetes Reset Method" },
           offers: {
             "@type": "Offer",
