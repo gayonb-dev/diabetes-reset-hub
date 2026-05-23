@@ -11,9 +11,9 @@ const TestimonialsSection = () => {
     {
       name: "Terry H.",
       initials: "TH",
-      title: "Type 2 Diabetes, 6 years",
-      result: "Fasting glucose down from 168 → 112",
-      quote: "I'd tried keto, intermittent fasting, all of it — nothing stuck because it felt like punishment. The 7-Day Reset Sprint was the first time something asked me to do one small thing a day. By the end of week 2 my morning readings were the lowest they'd been since diagnosis.",
+      title: "Type 2 Diabetes, 8 years",
+      result: "Glucose down from 350 → 112 mg/dL",
+      quote: "My sugar would spike to 350 — I've been hospitalized more than once. I'd tried everything on my own and nothing held. What finally worked was having a real plan: small daily actions, the right way to use intermittent fasting, smarter food choices, and staying consistent with my meds. By week 2 my morning readings were the lowest they'd been since diagnosis. This program is genuinely helping me reverse my diabetes.",
     },
     {
       name: "James W.",
