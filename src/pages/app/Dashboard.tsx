@@ -6,7 +6,9 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ArrowRight, BookOpen, Lock, LineChart, MessageCircleQuestion } from "lucide-react";
 
-const DAYS: Record<number, { title: string; teaser: string }> = {
+type DayContent = { title: string; teaser: string };
+
+const FALLBACK_DAYS: Record<number, DayContent> = {
   1: { title: "Hydration Reset", teaser: "One glass of water before each meal. That's the whole assignment." },
   2: { title: "Plate Method Basics", teaser: "Build one plate today: ½ veg, ¼ protein, ¼ slow carbs." },
   3: { title: "Movement Snacks", teaser: "A 5-minute walk after your biggest meal." },
@@ -23,6 +25,7 @@ function startOfDay(d: Date) {
 export default function Dashboard() {
   const { user, subscription } = useAuth();
   const [completed, setCompleted] = useState<Set<number>>(new Set());
+  const [resetDays, setResetDays] = useState<Record<number, DayContent>>({});
 
   useEffect(() => {
     if (!user) return;
@@ -31,6 +34,21 @@ export default function Dashboard() {
       .select("day_number")
       .eq("user_id", user.id)
       .then(({ data }) => setCompleted(new Set((data || []).map((r) => r.day_number))));
+
+    supabase
+      .from("content_items")
+      .select("day_unlock, title, summary")
+      .eq("type", "reset_day")
+      .eq("is_active", true)
+      .then(({ data }) => {
+        const map: Record<number, DayContent> = {};
+        (data || []).forEach((r: any) => {
+          if (r.day_unlock >= 1 && r.day_unlock <= 7) {
+            map[r.day_unlock] = { title: r.title, teaser: r.summary || "" };
+          }
+        });
+        setResetDays(map);
+      });
   }, [user]);
 
   // Day X of 14 (membership day count)
@@ -44,7 +62,7 @@ export default function Dashboard() {
 
   // Sprint day: which day's action to surface (1–7)
   const sprintDay = Math.min(memberDay, 7);
-  const todays = DAYS[sprintDay];
+  const todays = resetDays[sprintDay] || FALLBACK_DAYS[sprintDay];
   const sprintDone = completed.size >= 7;
   const libraryUnlocked = memberDay >= 6 || completed.size >= 5;
 
