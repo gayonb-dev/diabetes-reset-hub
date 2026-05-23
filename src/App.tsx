@@ -97,6 +97,7 @@ const App = () => (
               <Route path="day/:day" element={<DayDetail />} />
               <Route path="library" element={<Library />} />
               <Route path="ask" element={<Ask />} />
+              <Route path="progress" element={<AppProgress />} />
               <Route path="billing" element={<Billing />} />
               <Route path="coaching-waitlist" element={<CoachingWaitlist />} />
 
