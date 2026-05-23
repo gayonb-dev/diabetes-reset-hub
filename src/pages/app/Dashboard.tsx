@@ -62,7 +62,7 @@ export default function Dashboard() {
 
   // Sprint day: which day's action to surface (1–7)
   const sprintDay = Math.min(memberDay, 7);
-  const todays = DAYS[sprintDay];
+  const todays = resetDays[sprintDay] || FALLBACK_DAYS[sprintDay];
   const sprintDone = completed.size >= 7;
   const libraryUnlocked = memberDay >= 6 || completed.size >= 5;
 
