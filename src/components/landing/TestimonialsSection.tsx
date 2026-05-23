@@ -9,16 +9,16 @@ const scrollToPricing = () => {
 const TestimonialsSection = () => {
   const testimonials = [
     {
-      name: "Terry M.",
-      initials: "TM",
-      title: "Type 2 Diabetes",
-      result: "Lost 30 lbs in 6 weeks",
-      quote: "I was skeptical at first, but after the 7-Day Reset Sprint, I felt more energy than I had in years. The simple daily actions made all the difference. My doctor was shocked at my next checkup.",
+      name: "Terry H.",
+      initials: "TH",
+      title: "Type 2 Diabetes, 6 years",
+      result: "Fasting glucose down from 168 → 112",
+      quote: "I'd tried keto, intermittent fasting, all of it — nothing stuck because it felt like punishment. The 7-Day Reset Sprint was the first time something asked me to do one small thing a day. By the end of week 2 my morning readings were the lowest they'd been since diagnosis.",
     },
     {
       name: "James W.",
       initials: "JW",
-      title: "Type 2 Diabetes",
+      title: "Type 2 Diabetes, 9 years",
       result: "A1C dropped 1.8 points",
       quote: "I've been Type 2 for 9 years. Nothing stuck until this. The 10-minute daily actions felt doable even on my worst days, and my numbers spoke for themselves at my 3-month check-up.",
     },
@@ -27,7 +27,7 @@ const TestimonialsSection = () => {
       initials: "RS",
       title: "Prediabetes",
       result: "Lost 18 lbs, A1C dropped",
-      quote: "This program taught me how to eat without feeling deprived. My blood sugar numbers improved within the first week! I wish I'd found this sooner.",
+      quote: "This program taught me how to eat without feeling deprived. My blood sugar numbers improved within the first week — I wish I'd found this sooner.",
     },
     {
       name: "Michael L.",
