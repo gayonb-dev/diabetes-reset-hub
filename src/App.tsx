@@ -25,6 +25,7 @@ import Ask from "./pages/app/Ask";
 import Billing from "./pages/app/Billing";
 import Onboarding from "./pages/app/Onboarding";
 import CoachingWaitlist from "./pages/app/CoachingWaitlist";
+import AppProgress from "./pages/app/Progress";
 import AdminLayout from "./pages/admin/AdminLayout";
 import AdminSubscriptions from "./pages/admin/AdminSubscriptions";
 import AdminQaQueue from "./pages/admin/AdminQaQueue";
