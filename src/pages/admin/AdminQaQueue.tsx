@@ -62,6 +62,10 @@ export default function AdminQaQueue() {
     if (error) toast.error(error.message);
     else {
       toast.success(publish ? "Published" : "Saved");
+      // Notify the member their question has been answered (fire-and-forget)
+      supabase.functions
+        .invoke("notify-qa-answered", { body: { submission_id: id } })
+        .catch((e) => console.warn("notify-qa-answered failed", e));
       load();
     }
   };
