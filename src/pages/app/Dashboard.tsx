@@ -4,20 +4,20 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { CheckCircle2, Circle, Lock, ArrowRight } from "lucide-react";
+import { ArrowRight, BookOpen, Lock, LineChart, MessageCircleQuestion } from "lucide-react";
 
-const DAYS = [
-  { n: 1, title: "Hydration Reset" },
-  { n: 2, title: "Plate Method Basics" },
-  { n: 3, title: "Movement Snacks" },
-  { n: 4, title: "Sugar Audit" },
-  { n: 5, title: "Build the Habit" },
-  { n: 6, title: "Consolidation" },
-  { n: 7, title: "Reflect & Plan" },
-];
+const DAYS: Record<number, { title: string; teaser: string }> = {
+  1: { title: "Hydration Reset", teaser: "One glass of water before each meal. That's the whole assignment." },
+  2: { title: "Plate Method Basics", teaser: "Build one plate today: ½ veg, ¼ protein, ¼ slow carbs." },
+  3: { title: "Movement Snacks", teaser: "A 5-minute walk after your biggest meal." },
+  4: { title: "Sugar Audit", teaser: "Read the label on three things you eat regularly. Just notice." },
+  5: { title: "Build the Habit", teaser: "Stack today's reset onto something you already do." },
+  6: { title: "Consolidation", teaser: "Library unlocks today. Pick one recipe that fits your life." },
+  7: { title: "Reflect & Plan", teaser: "Write one commitment for next week." },
+};
 
-function daysSince(start: string) {
-  return Math.floor((Date.now() - new Date(start).getTime()) / 86400000);
+function startOfDay(d: Date) {
+  return new Date(d.getFullYear(), d.getMonth(), d.getDate());
 }
 
 export default function Dashboard() {
@@ -30,125 +30,146 @@ export default function Dashboard() {
       .from("member_progress")
       .select("day_number")
       .eq("user_id", user.id)
-      .then(({ data }) => {
-        setCompleted(new Set((data || []).map((r) => r.day_number)));
-      });
+      .then(({ data }) => setCompleted(new Set((data || []).map((r) => r.day_number))));
   }, [user]);
 
-  const currentDay = useMemo(() => {
-    if (!subscription) return 1;
-    // Day number = days since signup + 1, capped at 7 for the sprint
-    const since = daysSince(subscription.trial_end_date
-      ? new Date(new Date(subscription.trial_end_date).getTime() - 14 * 86400000).toISOString()
-      : new Date().toISOString());
-    return Math.min(Math.max(since + 1, 1), 14);
+  // Day X of 14 (membership day count)
+  const memberDay = useMemo(() => {
+    const start = subscription?.created_at
+      ? new Date(subscription.created_at)
+      : new Date();
+    const diff = Math.floor((startOfDay(new Date()).getTime() - startOfDay(start).getTime()) / 86400000);
+    return Math.min(Math.max(diff + 1, 1), 14);
   }, [subscription]);
 
-  const sprintProgress = Math.round((completed.size / 7) * 100);
-  const libraryUnlocked = currentDay >= 6 || completed.size >= 5;
+  // Sprint day: which day's action to surface (1–7)
+  const sprintDay = Math.min(memberDay, 7);
+  const todays = DAYS[sprintDay];
+  const sprintDone = completed.size >= 7;
+  const libraryUnlocked = memberDay >= 6 || completed.size >= 5;
+
+  const firstName = user?.email?.split("@")[0] ?? "";
+  const greeting = (() => {
+    const h = new Date().getHours();
+    if (h < 12) return "Good morning";
+    if (h < 18) return "Good afternoon";
+    return "Good evening";
+  })();
 
   return (
     <div className="space-y-6">
+      {/* Header + progress */}
       <div>
-        <h1 className="font-heading font-bold text-3xl md:text-4xl text-foreground mb-1">
-          Welcome back 👋
-        </h1>
-        <p className="text-muted-foreground">
-          You're on <strong>Day {Math.min(currentDay, 7)}</strong> of your 7-Day Reset Sprint.
+        <p className="text-sm text-muted-foreground">
+          {greeting}{firstName ? `, ${firstName}` : ""}.
         </p>
-      </div>
-
-      {/* Progress bar */}
-      <Card className="p-5">
-        <div className="flex justify-between mb-2">
-          <span className="font-semibold text-sm">7-Day Reset Sprint</span>
-          <span className="text-sm text-muted-foreground">{completed.size}/7 complete</span>
+        <div className="mt-3 flex items-baseline justify-between">
+          <h1 className="font-heading font-semibold text-2xl text-foreground">
+            Day {memberDay} of 14
+          </h1>
+          <span className="text-sm text-muted-foreground">
+            {completed.size}/7 actions done
+          </span>
         </div>
-        <div className="h-3 bg-muted rounded-full overflow-hidden">
+        <div className="mt-2 h-1.5 bg-muted rounded-full overflow-hidden">
           <div
             className="h-full bg-primary transition-all"
-            style={{ width: `${sprintProgress}%` }}
+            style={{ width: `${(memberDay / 14) * 100}%` }}
           />
-        </div>
-      </Card>
-
-      {/* Today CTA */}
-      <Card className="p-6 border-2 border-primary bg-primary/5">
-        <p className="text-xs font-semibold uppercase tracking-wider text-primary mb-1">Today</p>
-        <h2 className="font-heading font-bold text-2xl mb-2">
-          Day {Math.min(currentDay, 7)}: {DAYS[Math.min(currentDay, 7) - 1].title}
-        </h2>
-        <p className="text-muted-foreground mb-4">
-          One small action today. 10 minutes max.
-        </p>
-        <Link to={`/app/day/${Math.min(currentDay, 7)}`}>
-          <Button className="bg-primary hover:bg-primary-dark text-primary-foreground">
-            Start Today's Reset <ArrowRight className="ml-2 h-4 w-4" />
-          </Button>
-        </Link>
-      </Card>
-
-      {/* Days timeline */}
-      <div>
-        <h3 className="font-heading font-bold text-lg mb-3">Your 7-Day Path</h3>
-        <div className="space-y-2">
-          {DAYS.map((d) => {
-            const isComplete = completed.has(d.n);
-            const isAvailable = d.n <= currentDay;
-            return (
-              <Link
-                key={d.n}
-                to={isAvailable ? `/app/day/${d.n}` : "#"}
-                className={`flex items-center gap-3 p-3 rounded-lg border ${
-                  isAvailable
-                    ? "hover:bg-primary/5 cursor-pointer"
-                    : "opacity-50 cursor-not-allowed"
-                } ${isComplete ? "bg-primary/5 border-primary/30" : ""}`}
-              >
-                {isComplete ? (
-                  <CheckCircle2 className="h-5 w-5 text-primary flex-shrink-0" />
-                ) : isAvailable ? (
-                  <Circle className="h-5 w-5 text-muted-foreground flex-shrink-0" />
-                ) : (
-                  <Lock className="h-5 w-5 text-muted-foreground flex-shrink-0" />
-                )}
-                <div className="flex-1">
-                  <p className="font-semibold text-sm">
-                    Day {d.n}: {d.title}
-                  </p>
-                </div>
-              </Link>
-            );
-          })}
         </div>
       </div>
 
-      {/* Library teaser */}
-      <Card className="p-5">
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <h3 className="font-heading font-bold mb-1">Recipe & Resource Library</h3>
-            <p className="text-sm text-muted-foreground">
-              {libraryUnlocked
-                ? "Unlocked — browse recipes, plate methods, and movement videos."
-                : "Unlocks after Day 5. Stay focused on the Sprint first."}
-            </p>
-          </div>
-          {libraryUnlocked ? (
-            <Link to="/app/library">
-              <Button variant="outline" size="sm">
-                Open <ArrowRight className="ml-1 h-3 w-3" />
-              </Button>
-            </Link>
-          ) : (
-            <Lock className="h-5 w-5 text-muted-foreground mt-1" />
-          )}
-        </div>
-      </Card>
+      {/* The one thing */}
+      {!sprintDone ? (
+        <Card className="p-6 md:p-8 border border-border shadow-sm">
+          <p className="text-xs font-medium uppercase tracking-wider text-primary mb-2">
+            Today's action
+          </p>
+          <h2 className="font-heading font-semibold text-2xl md:text-3xl mb-3 text-foreground">
+            Day {sprintDay}: {todays.title}
+          </h2>
+          <p className="text-muted-foreground mb-6 leading-relaxed">{todays.teaser}</p>
+          <Link to={`/app/day/${sprintDay}`}>
+            <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
+              Open today's action <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          </Link>
+        </Card>
+      ) : (
+        <Card className="p-6 md:p-8 border border-border shadow-sm">
+          <p className="text-xs font-medium uppercase tracking-wider text-primary mb-2">
+            Sprint complete
+          </p>
+          <h2 className="font-heading font-semibold text-2xl mb-3 text-foreground">
+            Keep the rhythm going
+          </h2>
+          <p className="text-muted-foreground mb-6 leading-relaxed">
+            Log today's numbers and browse the library when you have a question.
+          </p>
+          <Link to="/app/progress">
+            <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
+              Log today <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          </Link>
+        </Card>
+      )}
 
-      <p className="text-xs text-muted-foreground text-center">
-        Coaching content only, not medical advice. Always consult your healthcare provider.
+      {/* Secondary tabs */}
+      <div className="grid sm:grid-cols-3 gap-3">
+        <SecondaryTile
+          to="/app/progress"
+          icon={<LineChart className="h-4 w-4" />}
+          label="Progress"
+          sub="Log today"
+        />
+        <SecondaryTile
+          to={libraryUnlocked ? "/app/library" : "#"}
+          icon={libraryUnlocked ? <BookOpen className="h-4 w-4" /> : <Lock className="h-4 w-4" />}
+          label="Library"
+          sub={libraryUnlocked ? "Recipes · movement · guides" : "Opens on Day 6"}
+          disabled={!libraryUnlocked}
+        />
+        <SecondaryTile
+          to="/app/ask"
+          icon={<MessageCircleQuestion className="h-4 w-4" />}
+          label="Ask"
+          sub="Search answered questions"
+        />
+      </div>
+
+      <p className="text-xs text-muted-foreground text-center pt-2">
+        Educational only — not medical advice. Always consult your healthcare provider.
       </p>
     </div>
   );
+}
+
+function SecondaryTile({
+  to,
+  icon,
+  label,
+  sub,
+  disabled,
+}: {
+  to: string;
+  icon: React.ReactNode;
+  label: string;
+  sub: string;
+  disabled?: boolean;
+}) {
+  const inner = (
+    <Card
+      className={`p-4 border border-border transition-colors ${
+        disabled ? "opacity-60 cursor-not-allowed" : "hover:border-primary/40 hover:bg-primary/5"
+      }`}
+    >
+      <div className="flex items-center gap-2 text-foreground">
+        <span className="text-primary">{icon}</span>
+        <span className="font-medium text-sm">{label}</span>
+      </div>
+      <p className="text-xs text-muted-foreground mt-1">{sub}</p>
+    </Card>
+  );
+  if (disabled) return inner;
+  return <Link to={to}>{inner}</Link>;
 }

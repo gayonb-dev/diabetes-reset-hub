@@ -206,6 +206,42 @@ export type Database = {
         }
         Relationships: []
       }
+      health_logs: {
+        Row: {
+          blood_sugar: number | null
+          created_at: string
+          energy: number | null
+          id: string
+          log_date: string
+          notes: string | null
+          updated_at: string
+          user_id: string
+          weight: number | null
+        }
+        Insert: {
+          blood_sugar?: number | null
+          created_at?: string
+          energy?: number | null
+          id?: string
+          log_date?: string
+          notes?: string | null
+          updated_at?: string
+          user_id: string
+          weight?: number | null
+        }
+        Update: {
+          blood_sugar?: number | null
+          created_at?: string
+          energy?: number | null
+          id?: string
+          log_date?: string
+          notes?: string | null
+          updated_at?: string
+          user_id?: string
+          weight?: number | null
+        }
+        Relationships: []
+      }
       intake_submissions: {
         Row: {
           age: number

@@ -11,6 +11,7 @@ interface Subscription {
   day_number: number;
   stripe_customer_id: string;
   stripe_subscription_id: string;
+  created_at: string;
 }
 
 interface AuthCtx {
