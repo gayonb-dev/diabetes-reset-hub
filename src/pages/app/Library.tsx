@@ -19,7 +19,7 @@ interface ContentItem {
 const TABS: { key: string; label: string; types: string[] }[] = [
   { key: "recipes", label: "Recipes", types: ["recipe"] },
   { key: "movement", label: "Movement", types: ["movement"] },
-  { key: "resources", label: "Resources", types: ["guide", "resource", "plate_method"] },
+  { key: "resources", label: "Resources", types: ["article", "plate_method", "mini_challenge", "reset_day"] },
 ];
 
 export default function Library() {
