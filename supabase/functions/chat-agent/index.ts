@@ -211,6 +211,17 @@ Deno.serve(async (req) => {
       .order("created_at", { ascending: true })
       .limit(20);
 
+    // Returning-visitor signal: count prior conversations for this profile
+    const { count: priorConvoCount } = await supabase
+      .from("conversations")
+      .select("id", { count: "exact", head: true })
+      .eq("visitor_profile_id", profile.id);
+
+    const isReturning = (priorConvoCount ?? 0) > 1 || (history?.length ?? 0) > 1;
+    const contextNote = isReturning
+      ? `\n\nCONTEXT: This visitor has talked with you before (same browser, recognized via anonymous ID). If this looks like the first message of a new session, greet them like someone returning — brief, familiar, no re-introduction of the program. Example tone: "Hey, welcome back. Where'd we leave off — still thinking about getting started?" Don't be saccharine about it.`
+      : `\n\nCONTEXT: First time talking to this visitor.`;
+
     // Call Lovable AI for assistant reply
     const aiRes = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -221,7 +232,7 @@ Deno.serve(async (req) => {
       body: JSON.stringify({
         model: MODEL,
         messages: [
-          { role: "system", content: SYSTEM_PROMPT },
+          { role: "system", content: SYSTEM_PROMPT + contextNote },
           ...(history ?? []).map((m) => ({ role: m.role, content: m.content })),
         ],
       }),
