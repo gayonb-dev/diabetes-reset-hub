@@ -5,12 +5,46 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+function esc(s: string): string {
+  return String(s ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+// Best-effort in-memory rate limit: 1 request per IP per 60s
+const rateMap = new Map<string, number>();
+function rateLimited(ip: string): boolean {
+  const now = Date.now();
+  const last = rateMap.get(ip) ?? 0;
+  if (now - last < 60_000) return true;
+  rateMap.set(ip, now);
+  // periodic cleanup
+  if (rateMap.size > 5000) {
+    for (const [k, v] of rateMap) if (now - v > 60_000) rateMap.delete(k);
+  }
+  return false;
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
+    const ip =
+      req.headers.get("x-forwarded-for")?.split(",")[0].trim() ||
+      req.headers.get("cf-connecting-ip") ||
+      "unknown";
+    if (rateLimited(ip)) {
+      return new Response(
+        JSON.stringify({ error: "Too many requests. Please try again in a minute." }),
+        { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     const { name, email } = await req.json();
 
     // Validate inputs to prevent abuse of the email relay
