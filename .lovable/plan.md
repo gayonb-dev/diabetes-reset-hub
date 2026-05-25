@@ -6,7 +6,7 @@
 
 ---
 
-## Phase A — Foundation: Identity, Agent, and PHI Gate
+## Phase A — Foundation: Identity, Agent, and PHI Gate  ✅ SHIPPED
 
 **Goal:** Every visitor recognized, every conversation captured, every health data point handled lawfully.
 
