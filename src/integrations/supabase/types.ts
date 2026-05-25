@@ -252,6 +252,42 @@ export type Database = {
           },
         ]
       }
+      daily_digest: {
+        Row: {
+          actions_today: Json
+          anomalies: Json
+          conversation_count: number
+          created_at: string
+          digest_date: string
+          email_sent_at: string | null
+          id: string
+          numbers: Json
+          what_agent_heard: string | null
+        }
+        Insert: {
+          actions_today?: Json
+          anomalies?: Json
+          conversation_count?: number
+          created_at?: string
+          digest_date: string
+          email_sent_at?: string | null
+          id?: string
+          numbers?: Json
+          what_agent_heard?: string | null
+        }
+        Update: {
+          actions_today?: Json
+          anomalies?: Json
+          conversation_count?: number
+          created_at?: string
+          digest_date?: string
+          email_sent_at?: string | null
+          id?: string
+          numbers?: Json
+          what_agent_heard?: string | null
+        }
+        Relationships: []
+      }
       deletion_requests: {
         Row: {
           completed_at: string | null
@@ -829,6 +865,74 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      visitor_engagement_scores: {
+        Row: {
+          consistency_score: number
+          content_score: number
+          conversation_score: number
+          days_since_last_activity: number | null
+          draft_whatsapp_script: string | null
+          id: string
+          last_conversation_theme: string | null
+          last_purchase_at: string | null
+          open_unresolved_questions: Json
+          recency_score: number
+          refreshed_at: string
+          score: number
+          spend_score: number
+          talking_points: Json
+          total_paid_usd: number
+          user_id: string | null
+          visitor_profile_id: string | null
+        }
+        Insert: {
+          consistency_score?: number
+          content_score?: number
+          conversation_score?: number
+          days_since_last_activity?: number | null
+          draft_whatsapp_script?: string | null
+          id?: string
+          last_conversation_theme?: string | null
+          last_purchase_at?: string | null
+          open_unresolved_questions?: Json
+          recency_score?: number
+          refreshed_at?: string
+          score?: number
+          spend_score?: number
+          talking_points?: Json
+          total_paid_usd?: number
+          user_id?: string | null
+          visitor_profile_id?: string | null
+        }
+        Update: {
+          consistency_score?: number
+          content_score?: number
+          conversation_score?: number
+          days_since_last_activity?: number | null
+          draft_whatsapp_script?: string | null
+          id?: string
+          last_conversation_theme?: string | null
+          last_purchase_at?: string | null
+          open_unresolved_questions?: Json
+          recency_score?: number
+          refreshed_at?: string
+          score?: number
+          spend_score?: number
+          talking_points?: Json
+          total_paid_usd?: number
+          user_id?: string | null
+          visitor_profile_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "visitor_engagement_scores_visitor_profile_id_fkey"
+            columns: ["visitor_profile_id"]
+            isOneToOne: false
+            referencedRelation: "visitor_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       visitor_profiles: {
         Row: {
