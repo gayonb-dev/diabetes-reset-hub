@@ -13,9 +13,18 @@ serve(async (req) => {
   try {
     const { name, email } = await req.json();
 
-    if (!name || !email) {
+    // Validate inputs to prevent abuse of the email relay
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (
+      typeof name !== "string" ||
+      typeof email !== "string" ||
+      name.trim().length === 0 ||
+      name.length > 100 ||
+      email.length > 254 ||
+      !emailRegex.test(email)
+    ) {
       return new Response(
-        JSON.stringify({ error: "Name and email are required" }),
+        JSON.stringify({ error: "Valid name and email are required" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
@@ -79,7 +88,7 @@ serve(async (req) => {
   } catch (error) {
     console.error("Error sending meal plan email:", error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: "Internal server error" }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }

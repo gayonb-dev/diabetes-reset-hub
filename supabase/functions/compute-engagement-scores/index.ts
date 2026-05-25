@@ -26,6 +26,11 @@ function logNorm(x: number, cap = 2000) {
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
+
+  const cronSecret = Deno.env.get("CRON_SECRET");
+  if (!cronSecret || req.headers.get("x-cron-secret") !== cronSecret) {
+    return new Response(JSON.stringify({ error: "Forbidden" }), { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+  }
   try {
     const supabase = createClient(SUPABASE_URL, SERVICE_ROLE);
     const now = Date.now();
@@ -168,7 +173,7 @@ Deno.serve(async (req) => {
     });
   } catch (e) {
     console.error("compute-engagement-scores fatal", e);
-    return new Response(JSON.stringify({ error: (e as Error).message }), {
+    return new Response(JSON.stringify({ error: "Internal server error" }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });

@@ -20,6 +20,15 @@ const MODEL = "google/gemini-2.5-flash";
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
+  const internalSecret = Deno.env.get("INTERNAL_FUNCTION_SECRET");
+  if (!internalSecret || req.headers.get("x-internal-secret") !== internalSecret) {
+    return new Response(JSON.stringify({ error: "Forbidden" }), {
+      status: 403,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+
+
   try {
     const { conversation_id } = await req.json();
     if (!conversation_id) {
@@ -90,7 +99,7 @@ Deno.serve(async (req) => {
     });
   } catch (e) {
     console.error("summarize-conversation fatal", e);
-    return new Response(JSON.stringify({ error: (e as Error).message }), {
+    return new Response(JSON.stringify({ error: "Internal server error" }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });

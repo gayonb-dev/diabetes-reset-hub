@@ -22,9 +22,10 @@ serve(async (req) => {
   try {
     const { email } = await req.json();
 
-    if (!email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (typeof email !== "string" || email.length > 254 || !emailRegex.test(email)) {
       return new Response(
-        JSON.stringify({ error: "Email is required" }),
+        JSON.stringify({ error: "Valid email is required" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
@@ -34,14 +35,34 @@ serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
     );
 
+    const lowerEmail = email.toLowerCase();
+
+    // Only allow paid customers — prevents using this endpoint to spam the coach
+    const { data: paidOrder } = await supabaseAdmin
+      .from("orders")
+      .select("id")
+      .eq("customer_email", lowerEmail)
+      .eq("status", "completed")
+      .limit(1)
+      .maybeSingle();
+
+    if (!paidOrder) {
+      return new Response(
+        JSON.stringify({ error: "Not found" }),
+        { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     // Fetch all 5 days of progress
     const { data: entries, error: fetchError } = await supabaseAdmin
       .from("challenge_progress")
       .select("*")
-      .eq("email", email.toLowerCase())
+      .eq("email", lowerEmail)
       .order("day_number", { ascending: true });
 
     if (fetchError) throw fetchError;
+
+
 
     if (!entries || entries.length < 5) {
       return new Response(
@@ -137,7 +158,7 @@ serve(async (req) => {
     console.error("Progress summary error:", error);
     const msg = error instanceof Error ? error.message : "Unknown error";
     return new Response(
-      JSON.stringify({ error: msg }),
+      JSON.stringify({ error: "Internal server error" }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 500 }
     );
   }
