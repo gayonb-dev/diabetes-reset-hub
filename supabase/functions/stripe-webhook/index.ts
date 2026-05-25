@@ -116,19 +116,19 @@ function buildAdminNotificationEmail(name: string, email: string, phone: string,
         <table style="width: 100%; border-collapse: collapse;">
           <tr>
             <td style="padding: 8px 0; color: #666; font-size: 14px;">Name</td>
-            <td style="padding: 8px 0; color: #333; font-size: 14px; font-weight: bold;">${name}</td>
+            <td style="padding: 8px 0; color: #333; font-size: 14px; font-weight: bold;">${esc(name)}</td>
           </tr>
           <tr>
             <td style="padding: 8px 0; color: #666; font-size: 14px;">Email</td>
-            <td style="padding: 8px 0; color: #333; font-size: 14px; font-weight: bold;">${email}</td>
+            <td style="padding: 8px 0; color: #333; font-size: 14px; font-weight: bold;">${esc(email)}</td>
           </tr>
           <tr>
             <td style="padding: 8px 0; color: #666; font-size: 14px;">Phone</td>
-            <td style="padding: 8px 0; color: #333; font-size: 14px; font-weight: bold;">${phone || "Not provided"}</td>
+            <td style="padding: 8px 0; color: #333; font-size: 14px; font-weight: bold;">${esc(phone) || "Not provided"}</td>
           </tr>
           <tr>
             <td style="padding: 8px 0; color: #666; font-size: 14px;">Amount</td>
-            <td style="padding: 8px 0; color: #333; font-size: 14px; font-weight: bold;">${amount}</td>
+            <td style="padding: 8px 0; color: #333; font-size: 14px; font-weight: bold;">${esc(amount)}</td>
           </tr>
         </table>
       </div>
