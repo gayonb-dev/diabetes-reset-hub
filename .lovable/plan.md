@@ -6,7 +6,7 @@
 
 ---
 
-## Phase A — Foundation: Identity, Agent, and PHI Gate
+## Phase A — Foundation: Identity, Agent, and PHI Gate  ✅ SHIPPED
 
 **Goal:** Every visitor recognized, every conversation captured, every health data point handled lawfully.
 
@@ -75,26 +75,32 @@ Future scale: partition by month when the table crosses ~5M rows. Not yet.
 
 ---
 
-## Phase B — Recognition, Memory, and Hospitality Triggers
+## Phase B — Recognition, Memory, and Hospitality Triggers  🚧 IN PROGRESS
 
 **Goal:** The agent remembers who it's talking to and treats every returning visitor with unreasonable hospitality.
 
-### B1. Memory
-- Persistent conversation memory per `visitor_profile`
-- Summarization job collapses long histories into rolling summaries
-- Cross-session continuity, bounded by 730-day retention
-- Agent must confirm identity before referencing prior PHI
+### B1. Memory  ✅ shipped
+- Rolling `conversations.summary` updated by `summarize-conversation` edge function, triggered fire-and-forget from `chat-agent` every ~10 user turns.
+- `chat-agent` loads the 3 most recent prior conversations' summaries + auth user name/email into a MEMORY block in the system prompt.
+- Identity-confirmation rule in the system prompt: agent must confirm name once per session before referencing prior PHI from memory.
+- 730-day retention boundary inherited from the existing purge cron — purged history surfaces as "No prior history" in MEMORY (B2.6).
 
-### B2. Hospitality Triggers (named, distinct behaviors)
-1. **Greet returning visitor by name** — recognized auth visitor lands → personalized greeting referencing last topic
-2. **Birthday recognition** — `date_of_birth` on file → branded birthday email + optional gesture (no upsell that day)
-3. **Pricing-objection return** — visitor previously asked about price + didn't convert → value-framed return message
-4. **Paid-member routing** — active customer hits sales page → auto-redirect to dashboard
-5. **Long-absent member check-in** — paid member silent **N=21 days** (locked) → human-toned check-in, no offer attached
-6. **Re-engagement when history purged** — if visitor returns after 730-day purge, treat as new and explicitly say "we don't have history on you" rather than fake continuity
+### B2. Hospitality triggers
+1. **Greet returning visitor by name**  ✅ shipped — auth name + last-topic context injected by `chat-agent`.
+2. **Birthday recognition**  ✅ shipped (cron-ready) — `birthday-greetings` edge function. Idempotent via `birthday_email_sent` activity event. No upsell. **Schedule nightly via Cloud cron (00:30 visitor TZ → UTC equivalent).**
+3. **Pricing-objection return**  ✅ shipped — `chat-agent` scans prior `messages.classifier.objection_type='price'` for non-purchasers and injects value-framed nudge into system context.
+4. **Paid-member routing**  ✅ shipped — `usePaidMemberRedirect` hook on landing (`Index.tsx`); active/trialing/past_due → `/progress`.
+5. **Long-absent member check-in (N=21d)**  ✅ shipped (cron-ready) — `member-checkin` edge function reads `activity_events` per user. One email per 30d window. No offer. **Schedule nightly via Cloud cron.**
+6. **Re-engagement when history purged**  ✅ shipped — explicit MEMORY rule: "If MEMORY says 'no prior history', treat as first-time. NEVER fake continuity."
+
+### Cron schedules to enable in Cloud (Phase B operational)
+- `birthday-greetings` — daily at 13:00 UTC (08:00 ET)
+- `member-checkin` — daily at 14:00 UTC
+- `purge-inactive-visitors` — already specified, daily at 03:00 UTC
 
 ### Phase B graduation test
 Returning visitor in a new session gets contextually accurate recall on first message, with zero misattribution across 20 test cases. Each of the 6 hospitality triggers fires correctly in a staged scenario.
+
 
 ---
 

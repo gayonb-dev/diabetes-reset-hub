@@ -13,6 +13,7 @@ import FinalCTASection from "@/components/landing/FinalCTASection";
 import Footer from "@/components/landing/Footer";
 import StickyBottomCTA from "@/components/landing/StickyBottomCTA";
 import PaymentModal from "@/components/landing/PaymentModal";
+import { usePaidMemberRedirect } from "@/hooks/usePaidMemberRedirect";
 
 const FAQS = [
   { q: "What exactly am I paying for at $27?", a: "Your $27 unlocks immediate access to the Diabetes Reset Method membership: the 7-Day Reset Sprint, the recipe library (unlocks Day 6), coach Q&A, and 14 days of full access. After 14 days the membership renews at $67/month unless you cancel before day 15." },
@@ -25,6 +26,9 @@ const FAQS = [
 
 const Index = () => {
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  // B2.4 — active members go to the member area, not the sales page
+  usePaidMemberRedirect("/progress");
+
 
   return (
     <main className="min-h-screen">

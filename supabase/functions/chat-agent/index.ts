@@ -1,4 +1,4 @@
-// Phase A2 + patch: Conversational commerce agent
+// Phase A2 + Phase B1/B2: Conversational commerce agent with memory & hospitality
 // - Resolves/creates visitor_profile from anonymous_id (+ optional auth)
 // - Logs every turn to conversations + messages
 // - Calls Lovable AI Gateway (google/gemini-2.5-flash)
@@ -6,6 +6,10 @@
 // - Hard medical-question handoff (canned response)
 // - Returns optional `cta` object the widget renders as a button
 // - Writes activity_events for chat_turn (ranking + 730-day purge inputs)
+// - B1 Memory: pulls prior conversation summary + name into system context
+// - B1 Identity rule: agent must confirm name before referencing prior PHI
+// - B2.1 Returning-by-name; B2.3 Pricing-objection return; B2.6 No-fake-continuity
+// - Fires summarize-conversation async every ~10 user turns
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
 
@@ -51,6 +55,11 @@ If the user asks a medical question (dosage, "should I take X", "is this safe wi
 Always pivot back to lifestyle/program scope.
 
 When someone shares health info (A1C, meds, symptoms): acknowledge in ONE line, ask ONE clarifying question, then connect it to how the reset would help them specifically.
+
+MEMORY RULES (B1):
+- Only reference prior conversation details that appear in the MEMORY block below. Never invent past context.
+- Before referencing any PHI from memory (meds, A1C, conditions, symptoms), confirm identity first ("just so I'm not mixing you up — you're [name], right?"). One confirmation per session is enough.
+- If MEMORY says "no prior history", treat as a first-time visitor. NEVER fake continuity.
 
 CTA TRIGGER:
 When the conversation reaches a clear buying moment — they ask how to start, ask the price after you've explained value, say "okay let's do it" or similar — keep your reply SHORT and the backend will attach a one-tap checkout button below your message. Do not paste links yourself.`;
@@ -146,11 +155,18 @@ Deno.serve(async (req) => {
 
     // Resolve optional auth user
     let userId: string | null = null;
+    let authedEmail: string | null = null;
+    let authedName: string | null = null;
     const authHeader = req.headers.get("Authorization");
     if (authHeader?.startsWith("Bearer ")) {
       const token = authHeader.slice(7);
       const { data: userData } = await supabase.auth.getUser(token);
       userId = userData?.user?.id ?? null;
+      authedEmail = userData?.user?.email ?? null;
+      authedName =
+        (userData?.user?.user_metadata?.full_name as string | undefined) ??
+        (userData?.user?.user_metadata?.name as string | undefined) ??
+        null;
     }
 
     // Get or create visitor profile
@@ -270,7 +286,7 @@ Deno.serve(async (req) => {
       );
     }
 
-    // History
+    // Current conversation history
     const { data: history } = await supabase
       .from("messages")
       .select("role, content")
@@ -278,16 +294,74 @@ Deno.serve(async (req) => {
       .order("created_at", { ascending: true })
       .limit(20);
 
-    // Returning-visitor signal
-    const { count: priorConvoCount } = await supabase
+    // ===== B1 MEMORY: prior conversations & profile context =====
+    const { data: priorConvos } = await supabase
       .from("conversations")
-      .select("id", { count: "exact", head: true })
-      .eq("visitor_profile_id", profile.id);
+      .select("id, summary, last_message_at")
+      .eq("visitor_profile_id", profile.id)
+      .neq("id", conversationId)
+      .order("last_message_at", { ascending: false })
+      .limit(3);
 
-    const isReturning = (priorConvoCount ?? 0) > 1 || (history?.length ?? 0) > 1;
-    const contextNote = isReturning
-      ? `\n\nCONTEXT: Returning visitor (same browser). If this looks like the first message of a new session, greet them like someone returning — brief, familiar, no re-introduction. E.g. "Hey, welcome back. Where'd we leave off — still thinking about getting started?" Don't be saccharine.`
+    const hasPriorHistory = (priorConvos?.length ?? 0) > 0;
+
+    // B2.3 Pricing-objection return — did they object on price previously and never buy?
+    let pricingObjectionReturn = false;
+    if (hasPriorHistory && profile.user_id) {
+      const { data: pastObjections } = await supabase
+        .from("messages")
+        .select("classifier")
+        .eq("visitor_profile_id", profile.id)
+        .neq("conversation_id", conversationId)
+        .eq("role", "user")
+        .limit(50);
+      const objectedOnPrice = (pastObjections ?? []).some(
+        (m: { classifier: { objection_type?: string } | null }) =>
+          m.classifier?.objection_type === "price",
+      );
+      if (objectedOnPrice) {
+        const { data: orderRow } = await supabase
+          .from("orders")
+          .select("id")
+          .eq("status", "paid")
+          .eq("customer_email", authedEmail ?? "__none__")
+          .limit(1);
+        pricingObjectionReturn = !orderRow || orderRow.length === 0;
+      }
+    }
+
+    // Build memory block
+    const memoryLines: string[] = [];
+    if (authedName) memoryLines.push(`Visitor name: ${authedName}`);
+    if (authedEmail) memoryLines.push(`Visitor email: ${authedEmail}`);
+    if (hasPriorHistory) {
+      const summaries = (priorConvos ?? [])
+        .map((c, i) => (c.summary ? `- Prior chat ${i + 1}: ${c.summary}` : null))
+        .filter(Boolean)
+        .join("\n");
+      memoryLines.push(
+        summaries
+          ? `Prior conversation summaries:\n${summaries}`
+          : "Prior conversations exist but no summary yet — speak as if briefly catching up, do not invent details.",
+      );
+    } else {
+      memoryLines.push("No prior history.");
+    }
+    if (pricingObjectionReturn) {
+      memoryLines.push(
+        "SIGNAL: This person previously hesitated on price and did not buy. Lead with value framing — what $27 actually unlocks today, the 14-day full access, the keep-the-reset-if-you-cancel safety net. Do not discount.",
+      );
+    }
+
+    const isReturning =
+      hasPriorHistory || (history?.length ?? 0) > 1;
+    const greetingNote = isReturning
+      ? authedName
+        ? `\n\nCONTEXT: Returning authenticated visitor named ${authedName}. If this looks like the first message of a new session, greet by first name briefly ("Hey ${authedName.split(" ")[0]}, good to see you back").`
+        : `\n\nCONTEXT: Returning visitor (same browser). If this looks like the first message of a new session, greet like someone returning — brief, familiar, no re-introduction.`
       : `\n\nCONTEXT: First time talking to this visitor.`;
+
+    const memoryBlock = `\n\nMEMORY:\n${memoryLines.join("\n")}`;
 
     // Generate reply
     const aiRes = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
@@ -299,7 +373,7 @@ Deno.serve(async (req) => {
       body: JSON.stringify({
         model: MODEL,
         messages: [
-          { role: "system", content: SYSTEM_PROMPT + contextNote },
+          { role: "system", content: SYSTEM_PROMPT + greetingNote + memoryBlock },
           ...(history ?? []).map((m) => ({ role: m.role, content: m.content })),
         ],
       }),
@@ -340,6 +414,19 @@ Deno.serve(async (req) => {
       .from("conversations")
       .update({ last_message_at: nowIso })
       .eq("id", conversationId);
+
+    // Fire-and-forget summarizer every ~10 user turns
+    const userTurns = (history ?? []).filter((m) => m.role === "user").length + 1;
+    if (userTurns > 0 && userTurns % 10 === 0) {
+      fetch(`${SUPABASE_URL}/functions/v1/summarize-conversation`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${SERVICE_ROLE}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ conversation_id: conversationId }),
+      }).catch((e) => console.warn("summarize trigger failed", e));
+    }
 
     const cta = buildCta(classifier.intent, origin);
 

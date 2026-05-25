@@ -30,4 +30,14 @@ verify_jwt = false
 [functions.read-phi-data]
 verify_jwt = false
 
+[functions.summarize-conversation]
+verify_jwt = false
+
+[functions.birthday-greetings]
+verify_jwt = false
+
+[functions.member-checkin]
+verify_jwt = false
+
+
 
