@@ -14,3 +14,15 @@ verify_jwt = false
 
 [functions.send-magic-link]
 verify_jwt = false
+
+[functions.chat-agent]
+verify_jwt = false
+
+[functions.grant-phi-consent]
+verify_jwt = false
+
+[functions.request-data-deletion]
+verify_jwt = false
+
+[functions.purge-inactive-visitors]
+verify_jwt = false
