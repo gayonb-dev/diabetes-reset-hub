@@ -184,14 +184,15 @@ serve(async (req) => {
     switch (event.type) {
       case "checkout.session.completed": {
         const session = event.data.object as Stripe.Checkout.Session;
-        
+        const nowIso = new Date().toISOString();
+
         // Update order status
         const { error: updateError } = await supabaseAdmin
           .from("orders")
-          .update({ 
+          .update({
             status: "completed",
             stripe_payment_intent_id: session.payment_intent as string,
-            updated_at: new Date().toISOString(),
+            updated_at: nowIso,
           })
           .eq("stripe_session_id", session.id);
 
@@ -201,7 +202,51 @@ serve(async (req) => {
           console.log("Order completed for session:", session.id);
         }
 
-        // Get customer details from order
+        // Anon → auth merge: link the chat-widget visitor_profile to a user
+        const anonymousId = (session.metadata as Record<string, string> | null)?.anonymousId;
+        const customerEmail = session.customer_details?.email?.toLowerCase();
+
+        if (anonymousId) {
+          let linkedUserId: string | null = null;
+          if (customerEmail) {
+            // Look up auth user by email (admin API)
+            try {
+              const { data: usersList } = await supabaseAdmin.auth.admin.listUsers();
+              const match = usersList?.users?.find(
+                (u) => u.email?.toLowerCase() === customerEmail,
+              );
+              linkedUserId = match?.id ?? null;
+            } catch (lookupErr) {
+              console.error("user lookup failed", lookupErr);
+            }
+          }
+
+          const { data: profile } = await supabaseAdmin
+            .from("visitor_profiles")
+            .select("id, user_id")
+            .eq("anonymous_id", anonymousId)
+            .maybeSingle();
+
+          if (profile) {
+            await supabaseAdmin
+              .from("visitor_profiles")
+              .update({
+                user_id: linkedUserId ?? profile.user_id,
+                last_activity_at: nowIso,
+              })
+              .eq("id", profile.id);
+
+            // Activity event — purchase
+            await supabaseAdmin.from("activity_events").insert({
+              visitor_profile_id: profile.id,
+              user_id: linkedUserId ?? profile.user_id,
+              event_type: "purchase",
+              metadata: { stripe_session_id: session.id, amount: session.amount_total },
+            });
+          }
+        }
+
+        // Get customer details from order (for emails)
         const { data: orderData } = await supabaseAdmin
           .from("orders")
           .select("customer_name, customer_email, customer_phone, amount")
@@ -213,7 +258,6 @@ serve(async (req) => {
           const origin = session.success_url?.split("?")[0] || "https://diabetesresetmethod.com";
 
           if (RESEND_API_KEY) {
-            // Send welcome email to customer
             await sendEmail(
               RESEND_API_KEY,
               orderData.customer_email,
@@ -222,7 +266,6 @@ serve(async (req) => {
             );
             console.log("Welcome email sent to:", orderData.customer_email);
 
-            // Send admin notification
             await sendEmail(
               RESEND_API_KEY,
               ADMIN_EMAIL,

@@ -27,11 +27,16 @@ export default function AdminQaQueue() {
 
   const load = async () => {
     setLoading(true);
-    const { data } = await supabase
-      .from("qa_submissions")
-      .select("*")
-      .order("created_at", { ascending: false });
-    setRows((data as Q[]) || []);
+    // Audited PHI read — questions often contain meds, A1C, symptoms.
+    const { data, error } = await supabase.functions.invoke("read-phi-data", {
+      body: {
+        table: "qa_submissions",
+        reason: "Admin Q&A queue review",
+        order_by: { column: "created_at", ascending: false },
+      },
+    });
+    if (error) toast.error(error.message);
+    setRows(((data?.rows as Q[]) || []));
     setLoading(false);
   };
 

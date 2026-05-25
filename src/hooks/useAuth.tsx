@@ -59,12 +59,38 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     // 1) Set listener FIRST
-    const { data: { subscription: authSub } } = supabase.auth.onAuthStateChange((_event, s) => {
+    const { data: { subscription: authSub } } = supabase.auth.onAuthStateChange((event, s) => {
       setSession(s);
       setUser(s?.user ?? null);
       // Defer DB fetches
       if (s?.user) {
         setTimeout(() => loadUserData(s.user), 0);
+
+        // Activity event: login — link to chat anonymous_id when present
+        if (event === "SIGNED_IN") {
+          setTimeout(async () => {
+            const anonId = localStorage.getItem("drm_visitor_id");
+            try {
+              let profileId: string | null = null;
+              if (anonId) {
+                const { data: profile } = await supabase
+                  .from("visitor_profiles")
+                  .select("id")
+                  .eq("anonymous_id", anonId)
+                  .maybeSingle();
+                profileId = profile?.id ?? null;
+              }
+              await supabase.from("activity_events" as never).insert({
+                visitor_profile_id: profileId,
+                user_id: s.user.id,
+                event_type: "login",
+                metadata: {},
+              } as never);
+            } catch (e) {
+              console.warn("login activity event failed", e);
+            }
+          }, 0);
+        }
       } else {
         setIsAdmin(false);
         setSubscription(null);

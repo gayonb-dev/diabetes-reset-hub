@@ -13,6 +13,7 @@ interface CheckoutRequest {
   customerPhone?: string;
   productId?: string;
   paymentPlan?: "full" | "installment";
+  anonymousId?: string; // From chat widget localStorage — used to merge visitor_profile on webhook
 }
 
 const PRODUCTS: Record<string, { name: string; description: string; amount: number; installmentAmount?: number; installmentCount?: number }> = {
@@ -36,7 +37,7 @@ serve(async (req) => {
   }
 
   try {
-    const { customerName, customerEmail, customerPhone, productId = "five-day-reset-27", paymentPlan = "full" }: CheckoutRequest = await req.json();
+    const { customerName, customerEmail, customerPhone, productId = "five-day-reset-27", paymentPlan = "full", anonymousId }: CheckoutRequest = await req.json();
 
     if (!customerName || !customerEmail) {
       return new Response(
@@ -118,6 +119,7 @@ serve(async (req) => {
         customerPhone: customerPhone || "",
         productId,
         paymentPlan,
+        anonymousId: anonymousId || "",
       },
     });
 

@@ -62,6 +62,10 @@ const IntakeForm = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
+    // PHI gate — intake collects PHI (meds, diabetes type, etc.). Require the
+    // same explicit acknowledgement the chat does: the coaching_agreement
+    // checkbox above acts as the consent record. If they unchecked it,
+    // validate() already blocked them.
 
     setIsSubmitting(true);
     try {
@@ -83,9 +87,29 @@ const IntakeForm = () => {
         why_now: form.why_now.trim(),
         health_goals: form.health_goals.trim() || null,
         coaching_agreement: form.coaching_agreement,
+        phi_consent_required: true,
       });
 
       if (error) throw error;
+
+      // Best-effort: link the chat anonymous_id and log an activity_event.
+      const anonId = localStorage.getItem("drm_visitor_id");
+      if (anonId) {
+        const { data: profile } = await supabase
+          .from("visitor_profiles")
+          .select("id, user_id")
+          .eq("anonymous_id", anonId)
+          .maybeSingle();
+        if (profile) {
+          await supabase.from("activity_events" as never).insert({
+            visitor_profile_id: profile.id,
+            user_id: profile.user_id,
+            event_type: "intake_submit",
+            metadata: { email: form.email.trim().toLowerCase() },
+          } as never);
+        }
+      }
+
       setIsSubmitted(true);
       toast.success("Intake form submitted successfully!");
     } catch (err) {

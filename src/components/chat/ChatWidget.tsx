@@ -1,16 +1,18 @@
-// Phase A2 chat widget — floating bubble with PHI consent gate built in.
-// Persists anonymous_id in localStorage; survives across sessions.
+// Phase A2 chat widget — floating bubble with PHI consent gate + CTA button.
+// On mobile, the bubble lifts above the sticky bottom CTA so they don't overlap.
 
 import { useEffect, useRef, useState } from "react";
-import { MessageCircle, X, Send } from "lucide-react";
+import { MessageCircle, X, Send, ArrowRight } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const ANON_KEY = "drm_visitor_id";
 
-type Msg = { role: "user" | "assistant"; content: string };
+type Cta = { type: "checkout"; label: string; url: string } | null;
+type Msg = { role: "user" | "assistant"; content: string; cta?: Cta };
 
 function getOrCreateAnonId(): string {
   let id = localStorage.getItem(ANON_KEY);
@@ -22,6 +24,7 @@ function getOrCreateAnonId(): string {
 }
 
 export default function ChatWidget() {
+  const isMobile = useIsMobile();
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<Msg[]>([
     {
@@ -41,6 +44,21 @@ export default function ChatWidget() {
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
   }, [messages, sending]);
+
+  function handleCtaClick(cta: Cta) {
+    if (!cta) return;
+    // In-page hash → smooth scroll; otherwise open in a new tab.
+    if (cta.url.includes("#")) {
+      const hash = cta.url.split("#")[1];
+      const el = document.getElementById(hash);
+      if (el) {
+        setOpen(false);
+        el.scrollIntoView({ behavior: "smooth" });
+        return;
+      }
+    }
+    window.open(cta.url, "_blank", "noopener,noreferrer");
+  }
 
   async function send(text: string) {
     if (!text.trim() || sending) return;
@@ -68,16 +86,16 @@ export default function ChatWidget() {
           { role: "assistant", content: data.assistant_message },
         ]);
       } else if (data?.assistant_message) {
-        setMessages((m) => [...m, { role: "assistant", content: data.assistant_message }]);
+        setMessages((m) => [
+          ...m,
+          { role: "assistant", content: data.assistant_message, cta: data.cta ?? null },
+        ]);
       }
     } catch (e) {
       console.error(e);
       setMessages((m) => [
         ...m,
-        {
-          role: "assistant",
-          content: "Sorry, I hit a snag. Try again in a moment.",
-        },
+        { role: "assistant", content: "Sorry, I hit a snag. Try again in a moment." },
       ]);
     } finally {
       setSending(false);
@@ -94,7 +112,6 @@ export default function ChatWidget() {
       const toResend = pendingMessage;
       setPendingMessage(null);
       if (toResend) {
-        // The user already saw their message above; re-send to get a real reply now.
         const { data } = await supabase.functions.invoke("chat-agent", {
           body: {
             anonymous_id: anonId.current,
@@ -103,7 +120,10 @@ export default function ChatWidget() {
           },
         });
         if (data?.assistant_message) {
-          setMessages((m) => [...m, { role: "assistant", content: data.assistant_message }]);
+          setMessages((m) => [
+            ...m,
+            { role: "assistant", content: data.assistant_message, cta: data.cta ?? null },
+          ]);
         }
       }
     } catch (e) {
@@ -113,27 +133,31 @@ export default function ChatWidget() {
     }
   }
 
+  // On mobile (where StickyBottomCTA shows), lift the bubble + panel above it.
+  const bubbleBottom = isMobile ? "bottom-24" : "bottom-6";
+  const panelBottom = isMobile ? "bottom-44" : "bottom-24";
+
   return (
     <>
-      {/* Toggle button */}
       <button
         aria-label={open ? "Close chat" : "Open chat"}
         onClick={() => setOpen((o) => !o)}
         className={cn(
-          "fixed bottom-6 right-6 z-50 h-14 w-14 rounded-full shadow-lg",
+          "fixed right-6 z-50 h-14 w-14 rounded-full shadow-lg",
           "bg-primary text-primary-foreground flex items-center justify-center",
           "hover:scale-105 transition-transform",
+          bubbleBottom,
         )}
       >
         {open ? <X className="h-6 w-6" /> : <MessageCircle className="h-6 w-6" />}
       </button>
 
-      {/* Panel */}
       {open && (
         <div
           className={cn(
-            "fixed bottom-24 right-6 z-50 w-[min(380px,calc(100vw-3rem))] h-[min(560px,calc(100vh-8rem))]",
+            "fixed right-6 z-50 w-[min(380px,calc(100vw-3rem))] h-[min(560px,calc(100vh-12rem))]",
             "bg-card border border-border rounded-2xl shadow-2xl flex flex-col overflow-hidden",
+            panelBottom,
           )}
         >
           <div className="px-4 py-3 border-b border-border bg-primary text-primary-foreground">
@@ -143,13 +167,7 @@ export default function ChatWidget() {
 
           <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-3 space-y-3">
             {messages.map((m, i) => (
-              <div
-                key={i}
-                className={cn(
-                  "flex",
-                  m.role === "user" ? "justify-end" : "justify-start",
-                )}
-              >
+              <div key={i} className={cn("flex flex-col", m.role === "user" ? "items-end" : "items-start")}>
                 <div
                   className={cn(
                     "max-w-[85%] rounded-2xl px-3 py-2 text-sm",
@@ -166,6 +184,16 @@ export default function ChatWidget() {
                     <span className="whitespace-pre-wrap">{m.content}</span>
                   )}
                 </div>
+                {m.role === "assistant" && m.cta && (
+                  <Button
+                    size="sm"
+                    onClick={() => handleCtaClick(m.cta!)}
+                    className="mt-2 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold"
+                  >
+                    {m.cta.label}
+                    <ArrowRight className="ml-1.5 h-4 w-4" />
+                  </Button>
+                )}
               </div>
             ))}
             {sending && (
@@ -186,12 +214,7 @@ export default function ChatWidget() {
                 after 2 years of inactivity.
               </p>
               <div className="flex gap-2">
-                <Button
-                  size="sm"
-                  className="flex-1"
-                  onClick={grantConsentAndResend}
-                  disabled={sending}
-                >
+                <Button size="sm" className="flex-1" onClick={grantConsentAndResend} disabled={sending}>
                   I agree, continue
                 </Button>
                 <Button
