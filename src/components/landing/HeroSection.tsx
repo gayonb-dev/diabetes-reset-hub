@@ -20,7 +20,7 @@ const HeroSection = () => {
           >
             <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
               <p className="text-base font-bold tracking-widest uppercase text-primary">
-                The Diabetes Reset Method
+                Type 2 Diabetes &amp; Prediabetes Membership
               </p>
               <span className="inline-flex items-center bg-primary text-primary-foreground px-4 py-2 rounded-full text-sm font-semibold shadow-lg">
                 $27 today · 14 days full access · cancel anytime
