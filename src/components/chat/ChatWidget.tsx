@@ -138,7 +138,7 @@ export default function ChatWidget() {
         >
           <div className="px-4 py-3 border-b border-border bg-primary text-primary-foreground">
             <p className="font-semibold text-sm">The Diabetes Reset Method</p>
-            <p className="text-xs opacity-90">Coaching, not medical advice</p>
+            <p className="text-xs opacity-90">Educational, not medical advice</p>
           </div>
 
           <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-3 space-y-3">
