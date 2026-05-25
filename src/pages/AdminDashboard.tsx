@@ -24,16 +24,24 @@ const AdminDashboard = () => {
   const fetchData = async () => {
     setLoading(true);
     try {
+      // intake_submissions is PHI → route through audited read-phi-data.
+      // Orders, leads, progress are not PHI under our definition (purchase + lifestyle metrics only).
       const [ordersRes, leadsRes, intakesRes, progressRes] = await Promise.all([
         supabase.from("orders").select("*").order("created_at", { ascending: false }),
         supabase.from("leads").select("*").order("created_at", { ascending: false }),
-        supabase.from("intake_submissions").select("*").order("created_at", { ascending: false }),
+        supabase.functions.invoke("read-phi-data", {
+          body: {
+            table: "intake_submissions",
+            reason: "Admin dashboard intake list",
+            order_by: { column: "created_at", ascending: false },
+          },
+        }),
         supabase.from("challenge_progress").select("*").order("created_at", { ascending: false }),
       ]);
 
       if (ordersRes.data) setOrders(ordersRes.data);
       if (leadsRes.data) setLeads(leadsRes.data);
-      if (intakesRes.data) setIntakes(intakesRes.data);
+      if (intakesRes.data?.rows) setIntakes(intakesRes.data.rows);
       if (progressRes.data) setProgress(progressRes.data);
     } catch (err) {
       console.error("Error fetching data:", err);

@@ -25,11 +25,16 @@ export default function AdminWaitlist() {
 
   const load = async () => {
     setLoading(true);
-    const { data } = await supabase
-      .from("coaching_waitlist")
-      .select("*")
-      .order("created_at", { ascending: false });
-    setRows((data as Row[]) || []);
+    // Audited PHI read — why_now / phone are PHI-adjacent.
+    const { data, error } = await supabase.functions.invoke("read-phi-data", {
+      body: {
+        table: "coaching_waitlist",
+        reason: "Admin waitlist review",
+        order_by: { column: "created_at", ascending: false },
+      },
+    });
+    if (error) toast.error(error.message);
+    setRows(((data?.rows as Row[]) || []));
     setLoading(false);
   };
 

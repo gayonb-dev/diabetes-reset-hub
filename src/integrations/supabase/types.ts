@@ -14,6 +14,44 @@ export type Database = {
   }
   public: {
     Tables: {
+      activity_events: {
+        Row: {
+          created_at: string
+          event_at: string
+          event_type: string
+          id: string
+          metadata: Json
+          user_id: string | null
+          visitor_profile_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          event_at?: string
+          event_type: string
+          id?: string
+          metadata?: Json
+          user_id?: string | null
+          visitor_profile_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          event_at?: string
+          event_type?: string
+          id?: string
+          metadata?: Json
+          user_id?: string | null
+          visitor_profile_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "activity_events_visitor_profile_id_fkey"
+            columns: ["visitor_profile_id"]
+            isOneToOne: false
+            referencedRelation: "visitor_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       broadcast_log: {
         Row: {
           audience: string
@@ -345,6 +383,7 @@ export type Database = {
           health_goals: string | null
           id: string
           order_id: string | null
+          phi_consent_required: boolean
           phone: string | null
           preferred_start_date: string | null
           preferred_time: string | null
@@ -369,6 +408,7 @@ export type Database = {
           health_goals?: string | null
           id?: string
           order_id?: string | null
+          phi_consent_required?: boolean
           phone?: string | null
           preferred_start_date?: string | null
           preferred_time?: string | null
@@ -393,6 +433,7 @@ export type Database = {
           health_goals?: string | null
           id?: string
           order_id?: string | null
+          phi_consent_required?: boolean
           phone?: string | null
           preferred_start_date?: string | null
           preferred_time?: string | null
@@ -794,6 +835,7 @@ export type Database = {
           anonymous_id: string
           confidence: number
           created_at: string
+          date_of_birth: string | null
           first_seen_at: string
           id: string
           last_activity_at: string
@@ -806,6 +848,7 @@ export type Database = {
           anonymous_id: string
           confidence?: number
           created_at?: string
+          date_of_birth?: string | null
           first_seen_at?: string
           id?: string
           last_activity_at?: string
@@ -818,6 +861,7 @@ export type Database = {
           anonymous_id?: string
           confidence?: number
           created_at?: string
+          date_of_birth?: string | null
           first_seen_at?: string
           id?: string
           last_activity_at?: string

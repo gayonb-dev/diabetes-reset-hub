@@ -26,3 +26,8 @@ verify_jwt = false
 
 [functions.purge-inactive-visitors]
 verify_jwt = false
+
+[functions.read-phi-data]
+verify_jwt = false
+
+
