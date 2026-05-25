@@ -32,6 +32,8 @@ import AdminQaQueue from "./pages/admin/AdminQaQueue";
 import AdminContent from "./pages/admin/AdminContent";
 import AdminBroadcasts from "./pages/admin/AdminBroadcasts";
 import AdminWaitlist from "./pages/admin/AdminWaitlist";
+import Privacy from "./pages/Privacy";
+import ChatWidget from "./components/chat/ChatWidget";
 
 
 const queryClient = new QueryClient();
@@ -71,6 +73,9 @@ const App = () => (
             <Route path="/llms.txt" element={<LLMInfo />} />
             <Route path="/login" element={<Login />} />
             <Route path="/auth/callback" element={<AuthCallback />} />
+            <Route path="/privacy" element={<Privacy />} />
+
+
 
 
             {/* Onboarding (auth required, no active sub needed yet) */}
@@ -105,8 +110,10 @@ const App = () => (
 
             <Route path="*" element={<NotFound />} />
           </Routes>
+          <ChatWidget />
         </AuthProvider>
       </BrowserRouter>
+
     </TooltipProvider>
   </QueryClientProvider>
 );
