@@ -251,7 +251,7 @@ serve(async (req) => {
                 const html = `
                 <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:24px;">
                   <h1 style="color:#c44; font-size:22px;">Payment issue with your Diabetes Reset membership</h1>
-                  <p>Hi ${name},</p>
+                  <p>Hi ${esc(name)},</p>
                   <p>Your last payment didn't go through (attempt ${inv.attempt_count || 1}).
                   Stripe will retry automatically, but your access will pause if it keeps failing.</p>
                   <p style="text-align:center;margin:24px 0;">
