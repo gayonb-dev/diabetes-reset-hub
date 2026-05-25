@@ -39,7 +39,7 @@ async function sendEmail(apiKey: string, to: string, subject: string, html: stri
 function welcomeHtml(name: string, magicLink: string) {
   return `
   <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:24px;background:#ffffff;">
-    <h1 style="color:#7DAF76;font-size:24px;">Welcome to the Diabetes Reset Method, ${name}! 🎉</h1>
+    <h1 style="color:#7DAF76;font-size:24px;">Welcome to the Diabetes Reset Method, ${esc(name)}! 🎉</h1>
     <p style="font-size:16px;color:#333;line-height:1.6;">
       Your $27 is confirmed. You now have <strong>14 days of full app access</strong>, starting with the
       5-Day Diabetes Reset.
