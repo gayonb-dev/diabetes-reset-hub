@@ -51,7 +51,16 @@ serve(async (req) => {
       options: { redirectTo: `${APP_URL}/auth/callback?next=/app` },
     });
 
-    if (!error && linkData?.properties?.action_link) {
+    // Build our own confirm URL using token_hash. This avoids the
+    // Supabase /verify GET endpoint that email prefetchers/scanners
+    // (Gmail, Outlook safe-links, etc.) consume before the user clicks.
+    // verifyOtp runs as a client POST, so prefetchers can't burn the token.
+    const tokenHash = (linkData as any)?.properties?.hashed_token;
+    const loginUrl = tokenHash
+      ? `${APP_URL}/auth/callback?token_hash=${encodeURIComponent(tokenHash)}&type=magiclink&next=/app`
+      : (linkData as any)?.properties?.action_link;
+
+    if (!error && loginUrl) {
       await sendResend(
         cleanEmail,
         "Your login link — Diabetes Reset Method",
@@ -60,11 +69,11 @@ serve(async (req) => {
           <h2 style="color:#7DAF76;">Log in to your Reset dashboard</h2>
           <p style="font-size:16px;color:#333;line-height:1.6;">Click below to log in:</p>
           <p style="text-align:center;margin:24px 0;">
-            <a href="${linkData.properties.action_link}" style="display:inline-block;background:#7DAF76;color:#fff;padding:14px 28px;border-radius:8px;text-decoration:none;font-weight:bold;">
+            <a href="${loginUrl}" style="display:inline-block;background:#7DAF76;color:#fff;padding:14px 28px;border-radius:8px;text-decoration:none;font-weight:bold;">
               Log in →
             </a>
           </p>
-          <p style="font-size:13px;color:#666;">This link expires in 1 hour.</p>
+          <p style="font-size:13px;color:#666;">This link expires in 1 hour. For your security, only click it from the device you'll use to log in.</p>
         </div>`,
       );
     }

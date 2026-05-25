@@ -8,15 +8,35 @@ export default function AuthCallback() {
   const [params] = useSearchParams();
 
   useEffect(() => {
-    // Supabase handles the token via the URL hash on its own; we just wait
-    // briefly and then route to `next`.
     const next = params.get("next") || "/app";
-    const t = setTimeout(async () => {
+    const token_hash = params.get("token_hash");
+    const type = params.get("type") as
+      | "magiclink"
+      | "recovery"
+      | "signup"
+      | "invite"
+      | "email"
+      | null;
+
+    (async () => {
+      // New flow: token_hash in query string — verify via POST so email
+      // scanners that prefetch the GET link can't consume the token.
+      if (token_hash && type) {
+        const { error } = await supabase.auth.verifyOtp({ token_hash, type });
+        if (!error) {
+          navigate(next, { replace: true });
+          return;
+        }
+        navigate("/login?expired=1", { replace: true });
+        return;
+      }
+
+      // Legacy flow: hash-fragment session set by Supabase /verify redirect.
+      await new Promise((r) => setTimeout(r, 600));
       const { data } = await supabase.auth.getSession();
       if (data.session) navigate(next, { replace: true });
       else navigate("/login?expired=1", { replace: true });
-    }, 800);
-    return () => clearTimeout(t);
+    })();
   }, [navigate, params]);
 
   return (
