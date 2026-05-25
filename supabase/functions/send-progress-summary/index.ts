@@ -101,7 +101,7 @@ serve(async (req) => {
     const daysHtml = entries.map((e) => `
       <div style="background: #f0f7ef; border-radius: 8px; padding: 15px; margin-bottom: 10px;">
         <strong style="color: #7DAF76;">Day ${e.day_number}</strong>
-        <p style="margin: 5px 0; font-size: 14px; color: #333;">🏆 Win: ${e.win_text}</p>
+        <p style="margin: 5px 0; font-size: 14px; color: #333;">🏆 Win: ${esc(e.win_text)}</p>
         <p style="margin: 3px 0; font-size: 13px; color: #666;">
           ${e.mood_rating ? `Mood: ${MOODS[e.mood_rating]}` : ""} 
           ${e.energy_rating ? ` | Energy: ${e.energy_rating}/5` : ""} 
