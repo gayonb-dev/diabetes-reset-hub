@@ -27,7 +27,7 @@ export default function ChatWidget() {
     {
       role: "assistant",
       content:
-        "Hey — I'm here to help. Ask me anything about The Diabetes Reset Method, the program, pricing, or how it works for someone in your situation.",
+        "Hey — quick question to start: are you here for yourself, or someone else with type 2?",
     },
   ]);
   const [input, setInput] = useState("");
@@ -138,7 +138,7 @@ export default function ChatWidget() {
         >
           <div className="px-4 py-3 border-b border-border bg-primary text-primary-foreground">
             <p className="font-semibold text-sm">The Diabetes Reset Method</p>
-            <p className="text-xs opacity-90">Coaching, not medical advice</p>
+            <p className="text-xs opacity-90">Educational, not medical advice</p>
           </div>
 
           <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-3 space-y-3">
