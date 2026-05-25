@@ -26,6 +26,9 @@ const FAQS = [
 
 const Index = () => {
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  // B2.4 — active members go to the member area, not the sales page
+  usePaidMemberRedirect("/progress");
+
 
   return (
     <main className="min-h-screen">
