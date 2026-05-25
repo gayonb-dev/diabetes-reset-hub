@@ -2,7 +2,7 @@
 // Persists anonymous_id in localStorage; survives across sessions.
 
 import { useEffect, useRef, useState } from "react";
-import { MessageCircle, X, Send, Loader2 } from "lucide-react";
+import { MessageCircle, X, Send } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -170,9 +170,10 @@ export default function ChatWidget() {
             ))}
             {sending && (
               <div className="flex justify-start">
-                <div className="bg-muted text-foreground rounded-2xl px-3 py-2 text-sm flex items-center gap-2">
-                  <Loader2 className="h-3 w-3 animate-spin" />
-                  thinking…
+                <div className="bg-muted text-foreground rounded-2xl px-4 py-3 text-sm flex items-center gap-1">
+                  <span className="h-2 w-2 rounded-full bg-foreground/50 animate-bounce [animation-delay:-0.3s]" />
+                  <span className="h-2 w-2 rounded-full bg-foreground/50 animate-bounce [animation-delay:-0.15s]" />
+                  <span className="h-2 w-2 rounded-full bg-foreground/50 animate-bounce" />
                 </div>
               </div>
             )}
