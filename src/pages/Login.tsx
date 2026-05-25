@@ -48,8 +48,8 @@ export default function Login() {
 
         {expired && !sent && (
           <div className="bg-secondary/40 border border-secondary rounded-lg p-3 mb-4 text-sm text-secondary-foreground">
-            Your previous login link expired or your membership is no longer active. Enter your email
-            for a new link.
+            Your previous login link expired or was already used. Enter your email below and tap
+            <strong> Resend login link</strong> to get a fresh one.
           </div>
         )}
 
@@ -77,6 +77,7 @@ export default function Login() {
               autoComplete="email"
               required
               className="h-12"
+              autoFocus
             />
             <Button
               type="submit"
@@ -88,6 +89,8 @@ export default function Login() {
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Sending link...
                 </>
+              ) : expired ? (
+                "Resend login link"
               ) : (
                 "Email me a login link"
               )}
