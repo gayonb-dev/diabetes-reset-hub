@@ -423,6 +423,7 @@ Deno.serve(async (req) => {
         headers: {
           Authorization: `Bearer ${SERVICE_ROLE}`,
           "Content-Type": "application/json",
+          "x-internal-secret": Deno.env.get("INTERNAL_FUNCTION_SECRET") ?? "",
         },
         body: JSON.stringify({ conversation_id: conversationId }),
       }).catch((e) => console.warn("summarize trigger failed", e));
