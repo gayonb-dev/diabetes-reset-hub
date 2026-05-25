@@ -147,9 +147,8 @@ serve(async (req) => {
     );
   } catch (error) {
     console.error("Checkout session error:", error);
-    const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred";
     return new Response(
-      JSON.stringify({ error: errorMessage }),
+      JSON.stringify({ error: "Internal server error" }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 500 }
     );
   }
