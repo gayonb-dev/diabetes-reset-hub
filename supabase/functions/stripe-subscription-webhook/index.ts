@@ -9,6 +9,15 @@ const corsHeaders = {
 
 const ADMIN_EMAIL = "support@diabetesresetmethod.com";
 
+function esc(s: string): string {
+  return String(s ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 async function sendEmail(apiKey: string, to: string, subject: string, html: string) {
   try {
     const res = await fetch("https://api.resend.com/emails", {
