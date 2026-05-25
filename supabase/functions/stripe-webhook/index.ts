@@ -49,7 +49,7 @@ function buildWelcomeEmail(name: string, origin: string) {
       <h1 style="color: #7DAF76; font-size: 24px;">Welcome to The Diabetes Reset Tiny Challenge! 🎉</h1>
       
       <p style="font-size: 16px; color: #333; line-height: 1.6;">
-        Hi ${name},
+        Hi ${esc(name)},
       </p>
       
       <p style="font-size: 16px; color: #333; line-height: 1.6;">
