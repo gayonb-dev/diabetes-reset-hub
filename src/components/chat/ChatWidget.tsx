@@ -27,7 +27,7 @@ export default function ChatWidget() {
     {
       role: "assistant",
       content:
-        "Hey — I'm here to help. Ask me anything about The Diabetes Reset Method, the program, pricing, or how it works for someone in your situation.",
+        "Hey — quick question to start: are you here for yourself, or someone else with type 2?",
     },
   ]);
   const [input, setInput] = useState("");
