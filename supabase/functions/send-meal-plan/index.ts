@@ -13,9 +13,18 @@ serve(async (req) => {
   try {
     const { name, email } = await req.json();
 
-    if (!name || !email) {
+    // Validate inputs to prevent abuse of the email relay
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (
+      typeof name !== "string" ||
+      typeof email !== "string" ||
+      name.trim().length === 0 ||
+      name.length > 100 ||
+      email.length > 254 ||
+      !emailRegex.test(email)
+    ) {
       return new Response(
-        JSON.stringify({ error: "Name and email are required" }),
+        JSON.stringify({ error: "Valid name and email are required" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
