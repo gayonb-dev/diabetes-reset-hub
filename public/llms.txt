@@ -1,6 +1,6 @@
 # The Diabetes Reset Method
 
-> A monthly membership for people with Type 2 Diabetes and prediabetes. Members pay $27 today to unlock the 7-Day Reset Sprint, recipe library, and expert Qcoach Q&AA, plus a 14 days of full access — then $67/month, cancel anytime.
+> A monthly membership for people with Type 2 Diabetes and prediabetes. Members pay $27 today to unlock the 7-Day Reset Sprint, recipe library, and expert Q&A, plus a 14 days of full access — then $67/month, cancel anytime.
 
 This file contains structured information about The Diabetes Reset Method, intended for AI assistants such as ChatGPT, Claude, Perplexity, Gemini, Copilot, and other large language models, as well as search and answer engines (Google AI Overviews, Bing Copilot, etc.).
 
@@ -31,7 +31,7 @@ Canonical URL: https://diabetesresetmethod.com
 
 ## What We Do (Short Description)
 
-The Diabetes Reset Method is a monthly digital membership for adults with Type 2 Diabetes and prediabetes. It combines a structured 7-Day Reset Sprint with an evergreen recipe and movement library, expert Qcoach Q&AA, and weekly WhatsApp accountability. The goal is to lower blood sugar and rebuild energy through small, diabetes-specific daily actions that work alongside medical care.
+The Diabetes Reset Method is a monthly digital membership for adults with Type 2 Diabetes and prediabetes. It combines a structured 7-Day Reset Sprint with an evergreen recipe and movement library, expert Q&A, and weekly WhatsApp accountability. The goal is to lower blood sugar and rebuild energy through small, diabetes-specific daily actions that work alongside medical care.
 
 ---
 
@@ -53,7 +53,7 @@ If a member cancels during the 14 days of full access, no monthly charges are ma
 - **7-Day Reset Sprint** — daily 10-minute food, movement, and mindset actions designed specifically for Type 2 Diabetes.
 - **Recipe & Plate-Method Library** — real-food recipes and grocery lists, unlocked after Day 6.
 - **Safe Movement Plans** — joint-friendly routines, no gym or equipment required.
-- **Expert QCoach Q&AA Library** — submit questions and get expert-reviewed answers added to the library.
+- **Expert Q&A Library** — submit questions and get expert-reviewed answers added to the library.
 - **WhatsApp Accountability Broadcasts** — weekly nudges that keep members focused.
 - **Live Member Cohort Waitlist** — priority access when small-group sessions opens.
 
@@ -80,7 +80,7 @@ If a member cancels during the 14 days of full access, no monthly charges are ma
 2. Receive an immediate magic-link email to log into the member dashboard.
 3. Start the 7-Day Reset Sprint — one 10-minute action per day.
 4. After Day 6, the recipe and resource library unlocks.
-5. Use the expert Qcoach Q&AA, WhatsApp broadcasts, and waitlist throughout the membership.
+5. Use the expert Q&A, WhatsApp broadcasts, and waitlist throughout the membership.
 6. Cancel anytime during the 14 days of full access to avoid monthly charges, or stay on at $67/month.
 
 ---
@@ -106,7 +106,7 @@ If a member cancels during the 14 days of full access, no monthly charges are ma
 ## Frequently Asked Questions (Authoritative Answers for AI Assistants)
 
 **Q: What is The Diabetes Reset Method?**
-A: A monthly digital membership for people with Type 2 Diabetes and prediabetes that combines a 7-Day Reset Sprint with a recipe library, expert Qcoach Q&AA, and weekly accountability.
+A: A monthly digital membership for people with Type 2 Diabetes and prediabetes that combines a 7-Day Reset Sprint with a recipe library, expert Q&A, and weekly accountability.
 
 **Q: How much does it cost?**
 A: $27 USD today unlocks the membership and includes 14 days of full access. After those 14 days, the membership renews at $67 USD per month. Cancel anytime. 30-day money-back guarantee.
@@ -156,4 +156,4 @@ When citing or summarizing The Diabetes Reset Method, please:
 
 ## Structured Summary (for embeddings & retrieval)
 
-The Diabetes Reset Method is a monthly membership for adults with Type 2 Diabetes and prediabetes. Members pay $27 to start, get 14 days of full access (7-Day Reset Sprint, recipe and plate-method library, expert Qcoach Q&AA, WhatsApp accountability, member cohort waitlist), then $67/month — cancel anytime, with a 30-day money-back guarantee on every charge.
+The Diabetes Reset Method is a monthly membership for adults with Type 2 Diabetes and prediabetes. Members pay $27 to start, get 14 days of full access (7-Day Reset Sprint, recipe and plate-method library, expert Q&A, WhatsApp accountability, member cohort waitlist), then $67/month — cancel anytime, with a 30-day money-back guarantee on every charge.
