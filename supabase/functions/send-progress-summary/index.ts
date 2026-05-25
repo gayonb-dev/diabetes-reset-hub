@@ -6,6 +6,15 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+function esc(s: unknown): string {
+  return String(s ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 const MOODS: Record<number, string> = {
   1: "😫 Struggling",
   2: "😕 Low",
@@ -92,7 +101,7 @@ serve(async (req) => {
     const daysHtml = entries.map((e) => `
       <div style="background: #f0f7ef; border-radius: 8px; padding: 15px; margin-bottom: 10px;">
         <strong style="color: #7DAF76;">Day ${e.day_number}</strong>
-        <p style="margin: 5px 0; font-size: 14px; color: #333;">🏆 Win: ${e.win_text}</p>
+        <p style="margin: 5px 0; font-size: 14px; color: #333;">🏆 Win: ${esc(e.win_text)}</p>
         <p style="margin: 3px 0; font-size: 13px; color: #666;">
           ${e.mood_rating ? `Mood: ${MOODS[e.mood_rating]}` : ""} 
           ${e.energy_rating ? ` | Energy: ${e.energy_rating}/5` : ""} 
@@ -119,9 +128,9 @@ serve(async (req) => {
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
             <h1 style="color: #7DAF76; font-size: 22px;">5-Day Challenge Summary</h1>
             <div style="background: #fff; border: 1px solid #e0e0e0; border-radius: 12px; padding: 20px; margin-bottom: 20px;">
-              <h2 style="margin: 0 0 10px; font-size: 18px; color: #333;">Client: ${clientName}</h2>
-              <p style="margin: 3px 0; font-size: 14px; color: #666;">📧 ${email}</p>
-              <p style="margin: 3px 0; font-size: 14px; color: #666;">📱 ${clientPhone}</p>
+              <h2 style="margin: 0 0 10px; font-size: 18px; color: #333;">Client: ${esc(clientName)}</h2>
+              <p style="margin: 3px 0; font-size: 14px; color: #666;">📧 ${esc(email)}</p>
+              <p style="margin: 3px 0; font-size: 14px; color: #666;">📱 ${esc(clientPhone)}</p>
             </div>
 
             <h3 style="color: #333; font-size: 16px;">📊 Overall Stats</h3>

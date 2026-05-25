@@ -9,6 +9,15 @@ const corsHeaders = {
 
 const ADMIN_EMAIL = "support@diabetesresetmethod.com";
 
+function esc(s: string): string {
+  return String(s ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 async function sendEmail(apiKey: string, to: string, subject: string, html: string) {
   try {
     const res = await fetch("https://api.resend.com/emails", {
@@ -30,7 +39,7 @@ async function sendEmail(apiKey: string, to: string, subject: string, html: stri
 function welcomeHtml(name: string, magicLink: string) {
   return `
   <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:24px;background:#ffffff;">
-    <h1 style="color:#7DAF76;font-size:24px;">Welcome to the Diabetes Reset Method, ${name}! 🎉</h1>
+    <h1 style="color:#7DAF76;font-size:24px;">Welcome to the Diabetes Reset Method, ${esc(name)}! 🎉</h1>
     <p style="font-size:16px;color:#333;line-height:1.6;">
       Your $27 is confirmed. You now have <strong>14 days of full app access</strong>, starting with the
       5-Day Diabetes Reset.
@@ -61,8 +70,8 @@ function welcomeHtml(name: string, magicLink: string) {
 function adminNotifHtml(name: string, email: string, phone: string) {
   return `
   <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:24px;">
-    <h2 style="color:#7DAF76;">🎉 New Member: ${name}</h2>
-    <p>Email: ${email}<br>Phone: ${phone || "—"}<br>Plan: $27 trial → $67/mo</p>
+    <h2 style="color:#7DAF76;">🎉 New Member: ${esc(name)}</h2>
+    <p>Email: ${esc(email)}<br>Phone: ${esc(phone) || "—"}<br>Plan: $27 trial → $67/mo</p>
     <p><a href="${Deno.env.get("APP_URL") || "https://diabetesresetmethod.com"}/admin">View admin</a></p>
   </div>`;
 }
@@ -242,7 +251,7 @@ serve(async (req) => {
                 const html = `
                 <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:24px;">
                   <h1 style="color:#c44; font-size:22px;">Payment issue with your Diabetes Reset membership</h1>
-                  <p>Hi ${name},</p>
+                  <p>Hi ${esc(name)},</p>
                   <p>Your last payment didn't go through (attempt ${inv.attempt_count || 1}).
                   Stripe will retry automatically, but your access will pause if it keeps failing.</p>
                   <p style="text-align:center;margin:24px 0;">

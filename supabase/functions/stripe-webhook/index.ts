@@ -9,6 +9,15 @@ const corsHeaders = {
 
 const ADMIN_EMAIL = "support@diabetesresetmethod.com";
 
+function esc(s: string): string {
+  return String(s ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 async function sendEmail(apiKey: string, to: string, subject: string, html: string) {
   try {
     const res = await fetch("https://api.resend.com/emails", {
@@ -40,7 +49,7 @@ function buildWelcomeEmail(name: string, origin: string) {
       <h1 style="color: #7DAF76; font-size: 24px;">Welcome to The Diabetes Reset Tiny Challenge! 🎉</h1>
       
       <p style="font-size: 16px; color: #333; line-height: 1.6;">
-        Hi ${name},
+        Hi ${esc(name)},
       </p>
       
       <p style="font-size: 16px; color: #333; line-height: 1.6;">
@@ -107,19 +116,19 @@ function buildAdminNotificationEmail(name: string, email: string, phone: string,
         <table style="width: 100%; border-collapse: collapse;">
           <tr>
             <td style="padding: 8px 0; color: #666; font-size: 14px;">Name</td>
-            <td style="padding: 8px 0; color: #333; font-size: 14px; font-weight: bold;">${name}</td>
+            <td style="padding: 8px 0; color: #333; font-size: 14px; font-weight: bold;">${esc(name)}</td>
           </tr>
           <tr>
             <td style="padding: 8px 0; color: #666; font-size: 14px;">Email</td>
-            <td style="padding: 8px 0; color: #333; font-size: 14px; font-weight: bold;">${email}</td>
+            <td style="padding: 8px 0; color: #333; font-size: 14px; font-weight: bold;">${esc(email)}</td>
           </tr>
           <tr>
             <td style="padding: 8px 0; color: #666; font-size: 14px;">Phone</td>
-            <td style="padding: 8px 0; color: #333; font-size: 14px; font-weight: bold;">${phone || "Not provided"}</td>
+            <td style="padding: 8px 0; color: #333; font-size: 14px; font-weight: bold;">${esc(phone) || "Not provided"}</td>
           </tr>
           <tr>
             <td style="padding: 8px 0; color: #666; font-size: 14px;">Amount</td>
-            <td style="padding: 8px 0; color: #333; font-size: 14px; font-weight: bold;">${amount}</td>
+            <td style="padding: 8px 0; color: #333; font-size: 14px; font-weight: bold;">${esc(amount)}</td>
           </tr>
         </table>
       </div>
