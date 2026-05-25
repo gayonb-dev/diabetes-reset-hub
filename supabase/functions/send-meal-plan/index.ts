@@ -80,7 +80,7 @@ serve(async (req) => {
         subject: "Your Free 2-Day Diabetic-Friendly Meal Plan 🍽️",
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-            <h1 style="color: #7DAF76; font-size: 24px;">Hi ${name}! 👋</h1>
+            <h1 style="color: #7DAF76; font-size: 24px;">Hi ${esc(name)}! 👋</h1>
             <p style="font-size: 16px; color: #333; line-height: 1.6;">
               Thank you for your interest in taking control of your health! Here's your free 2-day diabetic-friendly meal plan.
             </p>
