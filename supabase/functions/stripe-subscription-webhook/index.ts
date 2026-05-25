@@ -70,8 +70,8 @@ function welcomeHtml(name: string, magicLink: string) {
 function adminNotifHtml(name: string, email: string, phone: string) {
   return `
   <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:24px;">
-    <h2 style="color:#7DAF76;">🎉 New Member: ${name}</h2>
-    <p>Email: ${email}<br>Phone: ${phone || "—"}<br>Plan: $27 trial → $67/mo</p>
+    <h2 style="color:#7DAF76;">🎉 New Member: ${esc(name)}</h2>
+    <p>Email: ${esc(email)}<br>Phone: ${esc(phone) || "—"}<br>Plan: $27 trial → $67/mo</p>
     <p><a href="${Deno.env.get("APP_URL") || "https://diabetesresetmethod.com"}/admin">View admin</a></p>
   </div>`;
 }
