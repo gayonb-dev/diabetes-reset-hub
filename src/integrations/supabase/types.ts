@@ -173,6 +173,94 @@ export type Database = {
         }
         Relationships: []
       }
+      conversations: {
+        Row: {
+          created_at: string
+          id: string
+          last_message_at: string
+          metadata: Json
+          started_at: string
+          summary: string | null
+          updated_at: string
+          visitor_profile_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          last_message_at?: string
+          metadata?: Json
+          started_at?: string
+          summary?: string | null
+          updated_at?: string
+          visitor_profile_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          last_message_at?: string
+          metadata?: Json
+          started_at?: string
+          summary?: string | null
+          updated_at?: string
+          visitor_profile_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "conversations_visitor_profile_id_fkey"
+            columns: ["visitor_profile_id"]
+            isOneToOne: false
+            referencedRelation: "visitor_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      deletion_requests: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          id: string
+          notes: string | null
+          requested_at: string
+          requested_email: string | null
+          status: string
+          updated_at: string
+          user_id: string | null
+          visitor_profile_id: string | null
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          requested_at?: string
+          requested_email?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+          visitor_profile_id?: string | null
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          requested_at?: string
+          requested_email?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+          visitor_profile_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "deletion_requests_visitor_profile_id_fkey"
+            columns: ["visitor_profile_id"]
+            isOneToOne: false
+            referencedRelation: "visitor_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       dunning_attempts: {
         Row: {
           attempt_number: number
@@ -379,6 +467,54 @@ export type Database = {
         }
         Relationships: []
       }
+      messages: {
+        Row: {
+          classifier: Json
+          contains_phi: boolean
+          content: string
+          conversation_id: string
+          created_at: string
+          id: string
+          role: string
+          visitor_profile_id: string
+        }
+        Insert: {
+          classifier?: Json
+          contains_phi?: boolean
+          content: string
+          conversation_id: string
+          created_at?: string
+          id?: string
+          role: string
+          visitor_profile_id: string
+        }
+        Update: {
+          classifier?: Json
+          contains_phi?: boolean
+          content?: string
+          conversation_id?: string
+          created_at?: string
+          id?: string
+          role?: string
+          visitor_profile_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_visitor_profile_id_fkey"
+            columns: ["visitor_profile_id"]
+            isOneToOne: false
+            referencedRelation: "visitor_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       orders: {
         Row: {
           amount: number
@@ -426,6 +562,91 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      phi_access_log: {
+        Row: {
+          accessed_at: string
+          actor_kind: string
+          actor_user_id: string | null
+          id: string
+          reason: string
+          row_id: string | null
+          table_name: string
+          visitor_profile_id: string | null
+        }
+        Insert: {
+          accessed_at?: string
+          actor_kind?: string
+          actor_user_id?: string | null
+          id?: string
+          reason: string
+          row_id?: string | null
+          table_name: string
+          visitor_profile_id?: string | null
+        }
+        Update: {
+          accessed_at?: string
+          actor_kind?: string
+          actor_user_id?: string | null
+          id?: string
+          reason?: string
+          row_id?: string | null
+          table_name?: string
+          visitor_profile_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "phi_access_log_visitor_profile_id_fkey"
+            columns: ["visitor_profile_id"]
+            isOneToOne: false
+            referencedRelation: "visitor_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      phi_consent: {
+        Row: {
+          consented_at: string
+          created_at: string
+          id: string
+          ip_address: string | null
+          policy_version: string
+          revoked_at: string | null
+          user_agent: string | null
+          user_id: string | null
+          visitor_profile_id: string
+        }
+        Insert: {
+          consented_at?: string
+          created_at?: string
+          id?: string
+          ip_address?: string | null
+          policy_version: string
+          revoked_at?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+          visitor_profile_id: string
+        }
+        Update: {
+          consented_at?: string
+          created_at?: string
+          id?: string
+          ip_address?: string | null
+          policy_version?: string
+          revoked_at?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+          visitor_profile_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "phi_consent_visitor_profile_id_fkey"
+            columns: ["visitor_profile_id"]
+            isOneToOne: false
+            referencedRelation: "visitor_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       qa_monthly_usage: {
         Row: {
@@ -565,6 +786,45 @@ export type Database = {
           id?: string
           role?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      visitor_profiles: {
+        Row: {
+          anonymous_id: string
+          confidence: number
+          created_at: string
+          first_seen_at: string
+          id: string
+          last_activity_at: string
+          metadata: Json
+          source: string | null
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          anonymous_id: string
+          confidence?: number
+          created_at?: string
+          first_seen_at?: string
+          id?: string
+          last_activity_at?: string
+          metadata?: Json
+          source?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          anonymous_id?: string
+          confidence?: number
+          created_at?: string
+          first_seen_at?: string
+          id?: string
+          last_activity_at?: string
+          metadata?: Json
+          source?: string | null
+          updated_at?: string
+          user_id?: string | null
         }
         Relationships: []
       }
