@@ -32,6 +32,8 @@ import AdminQaQueue from "./pages/admin/AdminQaQueue";
 import AdminContent from "./pages/admin/AdminContent";
 import AdminBroadcasts from "./pages/admin/AdminBroadcasts";
 import AdminWaitlist from "./pages/admin/AdminWaitlist";
+import AdminTopCustomers from "./pages/admin/AdminTopCustomers";
+import AdminDigest from "./pages/admin/AdminDigest";
 import Privacy from "./pages/Privacy";
 import ChatWidget from "./components/chat/ChatWidget";
 
@@ -62,6 +64,8 @@ const App = () => (
               }
             >
               <Route index element={<AdminDashboard />} />
+              <Route path="top-customers" element={<AdminTopCustomers />} />
+              <Route path="digest" element={<AdminDigest />} />
               <Route path="subscriptions" element={<AdminSubscriptions />} />
               <Route path="qa-queue" element={<AdminQaQueue />} />
               <Route path="content" element={<AdminContent />} />

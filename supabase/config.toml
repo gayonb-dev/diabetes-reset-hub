@@ -39,5 +39,13 @@ verify_jwt = false
 [functions.member-checkin]
 verify_jwt = false
 
+[functions.daily-digest]
+verify_jwt = false
+
+[functions.compute-engagement-scores]
+verify_jwt = false
+
+
+
 
 

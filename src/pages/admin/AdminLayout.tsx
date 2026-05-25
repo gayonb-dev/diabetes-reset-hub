@@ -1,10 +1,12 @@
 import { NavLink, Outlet } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
-import { LogOut, CreditCard, MessageSquare, BookOpen, Megaphone, UserPlus, BarChart3 } from "lucide-react";
+import { LogOut, CreditCard, MessageSquare, BookOpen, Megaphone, UserPlus, BarChart3, TrendingUp, FileText } from "lucide-react";
 
 const tabs = [
   { to: "/admin", label: "Legacy", icon: BarChart3, end: true },
+  { to: "/admin/top-customers", label: "Top Customers", icon: TrendingUp },
+  { to: "/admin/digest", label: "Daily Digest", icon: FileText },
   { to: "/admin/subscriptions", label: "Subscriptions", icon: CreditCard },
   { to: "/admin/qa-queue", label: "Q&A Queue", icon: MessageSquare },
   { to: "/admin/content", label: "Content", icon: BookOpen },
