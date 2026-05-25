@@ -28,7 +28,7 @@
 ### A3. PHI Gate (HARD PREREQUISITE — launch blocker)
 The agent collects Protected Health Information (A1C, meds, hospitalizations, complications). Before going live:
 - **Consent UI** — explicit opt-in before first health-related message; plain language; stored with timestamp + version
-- **Retention policy** — published, enforced: PHI auto-purged after N days (default 365) via scheduled job
+- **Retention policy — fixed at 730 days (2 years) from last meaningful activity.** Meaningful activity = any conversation turn, login, or purchase. The clock resets on each activity. Inactive-for-730-days profiles are auto-purged via scheduled job. This number is locked in the spec; changing it later means losing data we can't get back.
 - **Deletion endpoint** — user can request full purge; completes within 24h; logged
 - **Redaction** — PHI redacted in any logs/digests sent outside the secure DB
 - **Access logging** — every read of a PHI-bearing row logged with actor + reason
@@ -49,6 +49,7 @@ The agent collects Protected Health Information (A1C, meds, hospitalizations, co
 - Persistent conversation memory per visitor_profile
 - Summarization job collapses long histories into rolling summaries
 - Cross-session continuity ("Last time you mentioned your A1C was 8.2 — how's that going?")
+- Memory horizon bounded by the 730-day retention window
 - Misidentification hard stop reinforced: agent must confirm identity before referencing prior PHI
 
 ### B2. Hospitality Triggers (named, distinct behaviors)
@@ -152,7 +153,7 @@ A re-engagement send goes out, gets a reply, the agent handles the reply in-thre
 
 ## What I can build alone vs. what needs outside help
 
-**I can build:** every table, RLS policy, edge function, chat widget, classifier, digest job, top-100 list, consent UI, deletion endpoint, retention cron, segment engine, re-engagement sequences, offer rules engine + admin UI, product validation flow, admin controls.
+**I can build:** every table, RLS policy, edge function, chat widget, classifier, digest job, top-100 list, consent UI, deletion endpoint, retention cron (730-day rolling-activity window), segment engine, re-engagement sequences, offer rules engine + admin UI, product validation flow, admin controls.
 
 **You need outside help for one thing:** the 30-minute legal review in A3. Budget ~$150–400 USD.
 
