@@ -76,14 +76,16 @@ serve(async (req) => {
     });
     const signature = req.headers.get("stripe-signature");
     const webhookSecret = Deno.env.get("STRIPE_WEBHOOK_SECRET");
+    if (!webhookSecret) {
+      console.error("STRIPE_WEBHOOK_SECRET not configured");
+      return new Response("Webhook secret not configured", { status: 500, headers: corsHeaders });
+    }
     if (!signature) return new Response("No signature", { status: 400, headers: corsHeaders });
 
     const body = await req.text();
     let event: Stripe.Event;
     try {
-      event = webhookSecret
-        ? await stripe.webhooks.constructEventAsync(body, signature, webhookSecret)
-        : (JSON.parse(body) as Stripe.Event);
+      event = await stripe.webhooks.constructEventAsync(body, signature, webhookSecret);
     } catch (err) {
       console.error("Sig verify failed:", err);
       return new Response("bad sig", { status: 400, headers: corsHeaders });
