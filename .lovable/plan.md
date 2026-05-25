@@ -75,31 +75,41 @@ Future scale: partition by month when the table crosses ~5M rows. Not yet.
 
 ---
 
-## Phase B — Recognition, Memory, and Hospitality Triggers  🚧 IN PROGRESS
+## Phase B — Recognition, Memory, and Hospitality Triggers  ✅ SHIPPED
 
-**Goal:** The agent remembers who it's talking to and treats every returning visitor with unreasonable hospitality.
+Memory (B1) and all six hospitality triggers (B2.1–B2.6) shipped. Cron schedules active (see "Active crons" below).
 
-### B1. Memory  ✅ shipped
-- Rolling `conversations.summary` updated by `summarize-conversation` edge function, triggered fire-and-forget from `chat-agent` every ~10 user turns.
-- `chat-agent` loads the 3 most recent prior conversations' summaries + auth user name/email into a MEMORY block in the system prompt.
-- Identity-confirmation rule in the system prompt: agent must confirm name once per session before referencing prior PHI from memory.
-- 730-day retention boundary inherited from the existing purge cron — purged history surfaces as "No prior history" in MEMORY (B2.6).
+---
 
-### B2. Hospitality triggers
-1. **Greet returning visitor by name**  ✅ shipped — auth name + last-topic context injected by `chat-agent`.
-2. **Birthday recognition**  ✅ shipped (cron-ready) — `birthday-greetings` edge function. Idempotent via `birthday_email_sent` activity event. No upsell. **Schedule nightly via Cloud cron (00:30 visitor TZ → UTC equivalent).**
-3. **Pricing-objection return**  ✅ shipped — `chat-agent` scans prior `messages.classifier.objection_type='price'` for non-purchasers and injects value-framed nudge into system context.
-4. **Paid-member routing**  ✅ shipped — `usePaidMemberRedirect` hook on landing (`Index.tsx`); active/trialing/past_due → `/progress`.
-5. **Long-absent member check-in (N=21d)**  ✅ shipped (cron-ready) — `member-checkin` edge function reads `activity_events` per user. One email per 30d window. No offer. **Schedule nightly via Cloud cron.**
-6. **Re-engagement when history purged**  ✅ shipped — explicit MEMORY rule: "If MEMORY says 'no prior history', treat as first-time. NEVER fake continuity."
+## Phase C — Intelligence Core, Daily Digest, and Operator Tools  ✅ SHIPPED
 
-### Cron schedules to enable in Cloud (Phase B operational)
-- `birthday-greetings` — daily at 13:00 UTC (08:00 ET)
-- `member-checkin` — daily at 14:00 UTC
-- `purge-inactive-visitors` — already specified, daily at 03:00 UTC
+### C1. Daily digest  ✅
+- `daily-digest` edge function: map-reduce architecture.
+  - **MAP**: each conversation active yesterday → one PHI-redacted sentence via Lovable AI (`google/gemini-2.5-flash`).
+  - **REDUCE**: synthesizes all one-liners into `{actions_today[3], what_agent_heard, anomalies[]}` JSON.
+- Persisted to `daily_digest`; emailed to `DIGEST_RECIPIENT` (defaults to `hello@diabetesresetmethod.com` — set the secret to override).
+- `/admin/digest` page lists last 30 days with "Run now" button.
+- Idempotent per `digest_date`.
 
-### Phase B graduation test
-Returning visitor in a new session gets contextually accurate recall on first message, with zero misattribution across 20 test cases. Each of the 6 hospitality triggers fires correctly in a staged scenario.
+### C2. Top 100 Customers  ✅
+- `compute-engagement-scores` edge function applies the locked formula:
+  `score = 0.30·spend + 0.25·content + 0.20·conversation + 0.15·recency + 0.10·consistency`
+- Inputs: `activity_events` aggregations (90d window) + `orders.amount` (lifetime, log-normalized).
+- Recency = exp decay, half-life 14d. Consistency = distinct active days / 30.
+- Per-row card: last conversation theme, lifetime spend, days quiet, talking points, draft WhatsApp script, open questions.
+- `/admin/top-customers` reads pre-computed `visitor_engagement_scores` — instant load.
+- PHI ("View chats") routed through `read-phi-data` with required reason.
+
+### Active crons (scheduled in `cron.job`)
+- `purge-inactive-visitors-nightly` — 03:00 UTC daily
+- `compute-engagement-scores-nightly` — 05:30 UTC daily
+- `daily-digest-nightly` — 12:00 UTC daily (after scores ready)
+- `birthday-greetings-daily` — 13:00 UTC daily
+- `member-checkin-daily` — 14:00 UTC daily
+
+### Phase C graduation tests (in flight)
+1. Gayon answers "what did customers care about this week?" in 60s from the digest.
+2. 14 consecutive days of on-time digest delivery before Phase D begins.
 
 
 ---
