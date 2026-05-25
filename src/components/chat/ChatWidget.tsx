@@ -170,9 +170,10 @@ export default function ChatWidget() {
             ))}
             {sending && (
               <div className="flex justify-start">
-                <div className="bg-muted text-foreground rounded-2xl px-3 py-2 text-sm flex items-center gap-2">
-                  <Loader2 className="h-3 w-3 animate-spin" />
-                  thinking…
+                <div className="bg-muted text-foreground rounded-2xl px-4 py-3 text-sm flex items-center gap-1">
+                  <span className="h-2 w-2 rounded-full bg-foreground/50 animate-bounce [animation-delay:-0.3s]" />
+                  <span className="h-2 w-2 rounded-full bg-foreground/50 animate-bounce [animation-delay:-0.15s]" />
+                  <span className="h-2 w-2 rounded-full bg-foreground/50 animate-bounce" />
                 </div>
               </div>
             )}
