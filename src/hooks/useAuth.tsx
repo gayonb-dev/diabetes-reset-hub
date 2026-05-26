@@ -62,11 +62,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const { data: { subscription: authSub } } = supabase.auth.onAuthStateChange((event, s) => {
       setSession(s);
       setUser(s?.user ?? null);
-      // Defer DB fetches
-      if (s?.user) {
-        setTimeout(() => loadUserData(s.user), 0);
 
-        // Activity event: login — link to chat anonymous_id when present
+      if (s?.user) {
+        // Hold loading=true while we refresh isAdmin / subscription so
+        // AuthGuard doesn't redirect on a half-loaded auth state.
+        setLoading(true);
+        loadUserData(s.user).finally(() => setLoading(false));
+
+        // Activity event: login
         if (event === "SIGNED_IN") {
           setTimeout(async () => {
             const anonId = localStorage.getItem("drm_visitor_id");
