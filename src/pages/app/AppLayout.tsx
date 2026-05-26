@@ -5,30 +5,35 @@ import {
   BookOpen,
   MessageCircleQuestion,
   LineChart,
-  Settings,
+  Activity,
+  UtensilsCrossed,
+  Menu,
   LogOut,
   Shield,
-  Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 function navClass({ isActive }: { isActive: boolean }) {
-  return `flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-colors ${
+  return `flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] transition-colors ${
     isActive
-      ? "bg-primary/10 text-primary font-medium"
-      : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
+      ? "bg-white/15 text-white font-medium"
+      : "text-white/60 hover:text-white hover:bg-white/8"
   }`;
 }
 
 function mobileNavClass({ isActive }: { isActive: boolean }) {
-  return `flex flex-col items-center text-[11px] p-2 ${
-    isActive ? "text-primary" : "text-muted-foreground"
+  return `flex flex-col items-center text-[10px] gap-0.5 p-2 ${
+    isActive ? "text-primary" : "text-tertiary-fg"
   }`;
 }
 
 export default function AppLayout() {
   const { signOut, subscription, isAdmin, user } = useAuth();
   const navigate = useNavigate();
+
+  // TODO: pull these from real data later
+  const streakDays = 12;
+  const levelName = "Level 2: The Builder";
 
   const handleSignOut = async () => {
     await signOut();
@@ -38,10 +43,10 @@ export default function AppLayout() {
   const trialBanner =
     subscription?.status === "trialing" &&
     subscription.trial_end_date && (
-      <div className="bg-muted/60 text-foreground px-4 py-2 text-center text-xs">
+      <div className="bg-accent-muted text-foreground px-4 py-2 text-center text-xs">
         Trial — renews at $67/mo on{" "}
         {new Date(subscription.trial_end_date).toLocaleDateString()}.{" "}
-        <Link to="/app/billing" className="text-primary underline">
+        <Link to="/app/billing" className="text-primary underline font-medium">
           Manage
         </Link>
       </div>
@@ -62,15 +67,20 @@ export default function AppLayout() {
       {trialBanner}
       {pastDueBanner}
       <div className="flex flex-1">
-        {/* Sidebar */}
-        <aside className="hidden md:flex w-56 flex-col border-r border-border bg-card/40 p-4">
-          <Link
-            to="/app"
-            className="font-heading font-semibold text-base text-foreground mb-6 px-2"
-          >
-            Diabetes Reset
+        {/* Sidebar — dark green */}
+        <aside className="hidden md:flex w-[240px] flex-col bg-sidebar text-sidebar-foreground p-4 shrink-0">
+          <Link to="/app" className="block mb-4">
+            <p className="text-[10px] uppercase tracking-[0.1em] text-white/35">Diabetes Reset</p>
+            <p className="text-base font-semibold text-white">Method</p>
           </Link>
-          <nav className="flex-1 space-y-1">
+
+          {/* Streak badge */}
+          <div className="bg-accent/15 border border-accent/30 rounded-lg px-3 py-2 mb-5">
+            <p className="text-lg font-semibold text-accent leading-none">🔥 {streakDays}</p>
+            <p className="text-[10px] text-white/45 mt-1">day streak</p>
+          </div>
+
+          <nav className="flex-1 space-y-0.5">
             <NavLink to="/app" end className={navClass}>
               <Home className="h-4 w-4" /> Today
             </NavLink>
@@ -78,33 +88,37 @@ export default function AppLayout() {
               <LineChart className="h-4 w-4" /> Progress
             </NavLink>
             <NavLink to="/app/library" className={navClass}>
-              <BookOpen className="h-4 w-4" /> Library
+              <BookOpen className="h-4 w-4" /> Learn
+            </NavLink>
+            <NavLink to="/app/library?tab=workouts" className={navClass}>
+              <Activity className="h-4 w-4" /> Workouts
+            </NavLink>
+            <NavLink to="/app/library?tab=meals" className={navClass}>
+              <UtensilsCrossed className="h-4 w-4" /> Meals
             </NavLink>
             <NavLink to="/app/ask" className={navClass}>
               <MessageCircleQuestion className="h-4 w-4" /> Ask
             </NavLink>
-            <NavLink to="/app/coaching-waitlist" className={navClass}>
-              <Sparkles className="h-4 w-4" /> 1:1 Coaching
-            </NavLink>
             <NavLink to="/app/billing" className={navClass}>
-              <Settings className="h-4 w-4" /> Billing
+              <Menu className="h-4 w-4" /> More
             </NavLink>
-
             {isAdmin && (
               <NavLink to="/admin" className={navClass}>
                 <Shield className="h-4 w-4" /> Admin
               </NavLink>
             )}
           </nav>
-          <div className="border-t border-border pt-3 mt-3">
-            <p className="text-[11px] text-muted-foreground truncate px-2 mb-1">
-              {user?.email}
-            </p>
+
+          <div className="border-t border-white/10 pt-3 mt-3 space-y-2">
+            <p className="text-[10px] text-white/40 truncate">{user?.email}</p>
+            <span className="inline-block bg-accent/15 border border-accent/30 text-accent text-[10px] px-2 py-0.5 rounded-full">
+              {levelName}
+            </span>
             <Button
               variant="ghost"
               size="sm"
               onClick={handleSignOut}
-              className="w-full justify-start text-muted-foreground text-xs"
+              className="w-full justify-start text-white/50 hover:text-white hover:bg-white/10 text-xs px-2"
             >
               <LogOut className="h-3.5 w-3.5 mr-2" /> Sign out
             </Button>
@@ -114,29 +128,24 @@ export default function AppLayout() {
         {/* Mobile bottom nav */}
         <div className="md:hidden fixed bottom-0 left-0 right-0 bg-card border-t border-border z-40 flex justify-around py-1.5">
           <NavLink to="/app" end className={mobileNavClass}>
-            <Home className="h-5 w-5" />
-            Today
+            <Home className="h-5 w-5" /> Today
           </NavLink>
           <NavLink to="/app/progress" className={mobileNavClass}>
-            <LineChart className="h-5 w-5" />
-            Progress
+            <LineChart className="h-5 w-5" /> Progress
           </NavLink>
           <NavLink to="/app/library" className={mobileNavClass}>
-            <BookOpen className="h-5 w-5" />
-            Library
+            <BookOpen className="h-5 w-5" /> Learn
           </NavLink>
           <NavLink to="/app/ask" className={mobileNavClass}>
-            <MessageCircleQuestion className="h-5 w-5" />
-            Ask
+            <MessageCircleQuestion className="h-5 w-5" /> Ask
           </NavLink>
           <NavLink to="/app/billing" className={mobileNavClass}>
-            <Settings className="h-5 w-5" />
-            Billing
+            <Menu className="h-5 w-5" /> More
           </NavLink>
         </div>
 
         {/* Main */}
-        <main className="flex-1 px-4 md:px-8 py-6 md:py-10 pb-24 md:pb-10 max-w-3xl mx-auto w-full">
+        <main className="flex-1 px-4 md:px-8 py-6 md:py-8 pb-24 md:pb-10 max-w-3xl mx-auto w-full">
           <Outlet />
         </main>
       </div>
