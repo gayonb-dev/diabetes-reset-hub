@@ -13,6 +13,7 @@ export default function Login() {
   const [error, setError] = useState("");
 
   const expired = params.get("expired") === "1";
+  const inactive = params.get("inactive") === "1";
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,8 +47,14 @@ export default function Login() {
           We'll email you a secure one-click login link.
         </p>
 
-        {expired && !sent && (
-          <div className="bg-secondary/40 border border-secondary rounded-lg p-3 mb-4 text-sm text-secondary-foreground">
+        {inactive && !sent && (
+          <div className="bg-accent-muted border border-accent/30 rounded-lg p-3 mb-4 text-sm text-foreground">
+            Your membership isn't active right now. If you just paid, request a fresh login link below — it can take a moment to sync. Otherwise, <Link to="/#pricing" className="text-primary font-semibold underline">start your membership</Link>.
+          </div>
+        )}
+
+        {expired && !sent && !inactive && (
+          <div className="bg-primary-muted border border-primary/20 rounded-lg p-3 mb-4 text-sm text-foreground">
             Your previous login link expired or was already used. Enter your email below and tap
             <strong> Resend login link</strong> to get a fresh one.
           </div>
