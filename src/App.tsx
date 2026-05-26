@@ -34,6 +34,7 @@ import AdminBroadcasts from "./pages/admin/AdminBroadcasts";
 import AdminWaitlist from "./pages/admin/AdminWaitlist";
 import AdminTopCustomers from "./pages/admin/AdminTopCustomers";
 import AdminDigest from "./pages/admin/AdminDigest";
+import AdminPhiLog from "./pages/admin/AdminPhiLog";
 import Privacy from "./pages/Privacy";
 import ChatWidget from "./components/chat/ChatWidget";
 
@@ -71,6 +72,7 @@ const App = () => (
               <Route path="content" element={<AdminContent />} />
               <Route path="broadcasts" element={<AdminBroadcasts />} />
               <Route path="waitlist" element={<AdminWaitlist />} />
+              <Route path="phi-log" element={<AdminPhiLog />} />
             </Route>
 
             <Route path="/llm-info" element={<LLMInfo />} />

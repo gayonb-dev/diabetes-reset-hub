@@ -1,7 +1,7 @@
 import { NavLink, Outlet } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
-import { LogOut, CreditCard, MessageSquare, BookOpen, Megaphone, UserPlus, BarChart3, TrendingUp, FileText } from "lucide-react";
+import { LogOut, CreditCard, MessageSquare, BookOpen, Megaphone, UserPlus, BarChart3, TrendingUp, FileText, Shield } from "lucide-react";
 
 const tabs = [
   { to: "/admin", label: "Legacy", icon: BarChart3, end: true },
@@ -12,6 +12,7 @@ const tabs = [
   { to: "/admin/content", label: "Content", icon: BookOpen },
   { to: "/admin/broadcasts", label: "Broadcasts", icon: Megaphone },
   { to: "/admin/waitlist", label: "Coaching Waitlist", icon: UserPlus },
+  { to: "/admin/phi-log", label: "PHI Audit", icon: Shield },
 ];
 
 export default function AdminLayout() {
