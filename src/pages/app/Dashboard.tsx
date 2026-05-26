@@ -3,11 +3,12 @@ import { Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, CheckCircle2 } from "lucide-react";
+import { ArrowRight, CheckCircle2, Flame } from "lucide-react";
 import HabitRing from "@/components/dashboard/HabitRing";
 import JourneyTrack from "@/components/dashboard/JourneyTrack";
 import QuickStats from "@/components/dashboard/QuickStats";
 import VitaQuoteCard from "@/components/dashboard/VitaQuoteCard";
+import { useGamification } from "@/hooks/useGamification";
 
 type DayContent = { title: string; teaser: string };
 
@@ -35,6 +36,7 @@ function startOfDay(d: Date) {
 
 export default function Dashboard() {
   const { user, subscription } = useAuth();
+  const { streak } = useGamification();
   const [completed, setCompleted] = useState<Set<number>>(new Set());
   const [resetDays, setResetDays] = useState<Record<number, DayContent>>({});
 
@@ -114,8 +116,43 @@ export default function Dashboard() {
           </h1>
         </div>
         <span className="bg-primary text-primary-foreground text-[10px] font-semibold px-2.5 py-1 rounded-full whitespace-nowrap mt-1">
-          Level 2: The Builder
+          Level {streak.level}
         </span>
+      </div>
+
+      {/* Streak — hero metric */}
+      <div className="flex flex-col items-center py-3">
+        <div className="flex items-center gap-2">
+          <Flame
+            className="h-12 w-12"
+            style={{ color: "#FF6A1F", filter: "drop-shadow(0 0 8px rgba(255,140,0,0.35))" }}
+            strokeWidth={2.2}
+          />
+          <span
+            className={`font-heading font-bold leading-none ${
+              streak.current_streak >= 30
+                ? "text-6xl"
+                : streak.current_streak >= 7
+                  ? "text-5xl"
+                  : "text-5xl"
+            }`}
+            style={{
+              background: "linear-gradient(180deg,#FF4500,#FF8C00)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+            }}
+          >
+            {streak.current_streak}
+          </span>
+        </div>
+        <p className="text-xs uppercase tracking-wider font-semibold text-secondary-fg mt-1">
+          {streak.current_streak === 1 ? "Day" : `${streak.current_streak}-day`} Reversal Streak
+        </p>
+        {streak.longest_streak > streak.current_streak && (
+          <p className="text-[11px] text-tertiary-fg mt-0.5">
+            Personal best: {streak.longest_streak} days
+          </p>
+        )}
       </div>
 
       {/* Habit rings */}
