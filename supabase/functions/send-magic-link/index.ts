@@ -45,6 +45,54 @@ serve(async (req) => {
 
     const APP_URL = Deno.env.get("APP_URL") || "https://diabetesresetmethod.com";
 
+    // ── ACCESS GATE ─────────────────────────────────────────────
+    // Only existing users who are EITHER an admin OR have an active
+    // subscription may receive a login link. We never create new auth
+    // users from this endpoint.
+    let allowedUserId: string | null = null;
+    try {
+      // Find existing auth user by email (admin listUsers filtered)
+      const { data: usersPage } = await sb.auth.admin.listUsers({
+        page: 1,
+        perPage: 200,
+      });
+      const match = usersPage?.users?.find(
+        (u: any) => (u.email || "").toLowerCase() === cleanEmail,
+      );
+      if (!match) {
+        console.log("send-magic-link: no auth user for", cleanEmail);
+        return okResponse;
+      }
+      const uid = match.id;
+
+      // Check admin role
+      const { data: roleRow } = await sb
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", uid)
+        .eq("role", "admin")
+        .maybeSingle();
+
+      // Check active subscription
+      const { data: subRow } = await sb
+        .from("subscriptions")
+        .select("status")
+        .eq("user_id", uid)
+        .in("status", ["trialing", "active", "past_due"])
+        .maybeSingle();
+
+      if (!roleRow && !subRow) {
+        console.log("send-magic-link: user not authorized", cleanEmail);
+        return okResponse;
+      }
+      allowedUserId = uid;
+    } catch (gateErr) {
+      console.error("send-magic-link gate error:", gateErr);
+      return okResponse;
+    }
+
+    if (!allowedUserId) return okResponse;
+
     const { data: linkData, error } = await sb.auth.admin.generateLink({
       type: "magiclink",
       email: cleanEmail,
