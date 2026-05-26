@@ -39,7 +39,7 @@ async function sendEmail(apiKey: string, to: string, subject: string, html: stri
 function welcomeHtml(name: string, magicLink: string) {
   return `
   <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:24px;background:#ffffff;">
-    <h1 style="color:#7DAF76;font-size:24px;">Welcome to the Diabetes Reset Method, ${esc(name)}! 🎉</h1>
+    <h1 style="color:#085041;font-size:24px;">Welcome to the Diabetes Reset Method, ${esc(name)}! 🎉</h1>
     <p style="font-size:16px;color:#333;line-height:1.6;">
       Your $27 is confirmed. You now have <strong>14 days of full app access</strong>, starting with the
       5-Day Diabetes Reset.
@@ -48,13 +48,13 @@ function welcomeHtml(name: string, magicLink: string) {
       Click below to log in and start Day 1:
     </p>
     <p style="text-align:center;margin:24px 0;">
-      <a href="${magicLink}" style="display:inline-block;background:#7DAF76;color:#fff;padding:14px 28px;border-radius:8px;text-decoration:none;font-weight:bold;font-size:16px;">
+      <a href="${magicLink}" style="display:inline-block;background:#085041;color:#fff;padding:14px 28px;border-radius:8px;text-decoration:none;font-weight:bold;font-size:16px;">
         Start Your Reset →
       </a>
     </p>
     <p style="font-size:13px;color:#666;">
       This link expires in 1 hour. If it expires, request a new one at
-      <a href="${Deno.env.get("APP_URL") || "https://diabetesresetmethod.com"}/login" style="color:#7DAF76;">/login</a>.
+      <a href="${Deno.env.get("APP_URL") || "https://diabetesresetmethod.com"}/login" style="color:#085041;">/login</a>.
     </p>
     <hr style="border:none;border-top:1px solid #eee;margin:24px 0;">
     <p style="font-size:13px;color:#666;">
@@ -70,7 +70,7 @@ function welcomeHtml(name: string, magicLink: string) {
 function adminNotifHtml(name: string, email: string, phone: string) {
   return `
   <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:24px;">
-    <h2 style="color:#7DAF76;">🎉 New Member: ${esc(name)}</h2>
+    <h2 style="color:#085041;">🎉 New Member: ${esc(name)}</h2>
     <p>Email: ${esc(email)}<br>Phone: ${esc(phone) || "—"}<br>Plan: $27 trial → $67/mo</p>
     <p><a href="${Deno.env.get("APP_URL") || "https://diabetesresetmethod.com"}/admin">View admin</a></p>
   </div>`;
@@ -255,7 +255,7 @@ serve(async (req) => {
                   <p>Your last payment didn't go through (attempt ${inv.attempt_count || 1}).
                   Stripe will retry automatically, but your access will pause if it keeps failing.</p>
                   <p style="text-align:center;margin:24px 0;">
-                    <a href="${portalUrl}" style="display:inline-block;background:#7DAF76;color:#fff;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:bold;">
+                    <a href="${portalUrl}" style="display:inline-block;background:#085041;color:#fff;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:bold;">
                       Update payment method →
                     </a>
                   </p>
