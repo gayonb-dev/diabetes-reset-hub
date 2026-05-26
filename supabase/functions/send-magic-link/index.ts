@@ -65,15 +65,18 @@ serve(async (req) => {
         cleanEmail,
         "Your login link — Diabetes Reset Method",
         `
-        <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:24px;background:#fff;">
-          <h2 style="color:#7DAF76;">Log in to your Reset dashboard</h2>
-          <p style="font-size:16px;color:#333;line-height:1.6;">Click below to log in:</p>
-          <p style="text-align:center;margin:24px 0;">
-            <a href="${loginUrl}" style="display:inline-block;background:#7DAF76;color:#fff;padding:14px 28px;border-radius:8px;text-decoration:none;font-weight:bold;">
+        <div style="font-family:Inter,Arial,sans-serif;max-width:600px;margin:0 auto;padding:32px 24px;background:#FAF7F2;color:#1a1a1a;">
+          <p style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#085041;margin:0 0 8px;">The Diabetes Reset Method</p>
+          <h2 style="color:#085041;font-size:22px;margin:0 0 16px;">Log in to your dashboard</h2>
+          <p style="font-size:16px;color:#3a3a3a;line-height:1.6;margin:0 0 24px;">Tap the button below to log in. For best results, open this email on the device you'll use to log in.</p>
+          <p style="text-align:center;margin:32px 0;">
+            <a href="${loginUrl}" style="display:inline-block;background:#085041;color:#ffffff;padding:14px 32px;border-radius:10px;text-decoration:none;font-weight:700;font-size:16px;">
               Log in →
             </a>
           </p>
-          <p style="font-size:13px;color:#666;">This link expires in 1 hour. For your security, only click it from the device you'll use to log in.</p>
+          <p style="font-size:13px;color:#6b6b6b;line-height:1.5;margin:24px 0 0;">This link expires in 1 hour and can only be used once. If it doesn't work, return to the login page and request a fresh link.</p>
+          <hr style="border:none;border-top:1px solid #E8E4DD;margin:32px 0 16px;" />
+          <p style="font-size:12px;color:#8a8a8a;margin:0;">Diabetes Reset Method · Educational support, not medical advice.</p>
         </div>`,
       );
     }
