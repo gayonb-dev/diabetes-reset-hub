@@ -1,0 +1,301 @@
+// /app/settings — full member settings (units, notifications, account, data, sign out)
+// Spec sections 19/21 highlights: unit toggles, WhatsApp opt-in/out, data export & delete,
+// destructive sign-out at bottom of page (green, not red), confirmation dialog.
+
+import { useEffect, useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Loader2, CreditCard, Shield, Download, Trash2, LogOut, ArrowRight } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
+import { getUnits, setUnits, WeightUnit, GlucoseUnit } from "@/lib/units";
+
+export default function Settings() {
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
+
+  const u = getUnits();
+  const [weightUnit, setWeightUnit] = useState<WeightUnit>(u.weight);
+  const [glucoseUnit, setGlucoseUnit] = useState<GlucoseUnit>(u.glucose);
+
+  const [waPhone, setWaPhone] = useState("");
+  const [waOptedIn, setWaOptedIn] = useState(false);
+  const [waSaving, setWaSaving] = useState(false);
+
+  const [signOutOpen, setSignOutOpen] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+
+  useEffect(() => {
+    if (!user) return;
+    supabase
+      .from("whatsapp_consent")
+      .select("phone_number, revoked_at")
+      .eq("user_id", user.id)
+      .order("opted_in_at", { ascending: false })
+      .limit(1)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data) {
+          setWaPhone(data.phone_number ?? "");
+          setWaOptedIn(!data.revoked_at);
+        }
+      });
+  }, [user]);
+
+  const saveUnits = (next: { weight?: WeightUnit; glucose?: GlucoseUnit }) => {
+    setUnits(next);
+    toast({ title: "Units updated" });
+  };
+
+  const saveWhatsapp = async () => {
+    if (!user) return;
+    setWaSaving(true);
+    if (waOptedIn && waPhone.trim()) {
+      await supabase.from("whatsapp_consent").upsert(
+        {
+          user_id: user.id,
+          phone_number: waPhone.trim(),
+          opted_in_at: new Date().toISOString(),
+          revoked_at: null,
+        } as never,
+        { onConflict: "user_id" },
+      );
+    } else {
+      await supabase
+        .from("whatsapp_consent")
+        .update({ revoked_at: new Date().toISOString(), revoke_reason: "user_settings_toggle" } as never)
+        .eq("user_id", user.id);
+    }
+    setWaSaving(false);
+    toast({ title: "WhatsApp preferences saved" });
+  };
+
+  const exportData = async () => {
+    if (!user) return;
+    const [{ data: logs }, { data: progress }, { data: streak }, { data: badges }] = await Promise.all([
+      supabase.from("health_logs").select("*").eq("user_id", user.id),
+      supabase.from("member_progress").select("*").eq("user_id", user.id),
+      supabase.from("user_streaks").select("*").eq("user_id", user.id),
+      supabase.from("user_badges").select("earned_at, badges(slug,name)").eq("user_id", user.id),
+    ]);
+    const blob = new Blob(
+      [JSON.stringify({ user: { id: user.id, email: user.email }, logs, progress, streak, badges }, null, 2)],
+      { type: "application/json" },
+    );
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `drm-data-${user.id}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast({ title: "Export downloaded" });
+  };
+
+  const deleteAccount = async () => {
+    if (!user) return;
+    setDeleting(true);
+    // Fire the deletion edge function for PHI purge; account row stays referenced via auth.
+    try {
+      await supabase.functions.invoke("request-data-deletion", {
+        body: { anonymous_id: user.id },
+      });
+      toast({
+        title: "Deletion requested",
+        description: "Your health data is being purged. You'll be signed out.",
+      });
+      await signOut();
+      navigate("/", { replace: true });
+    } catch {
+      toast({ title: "Couldn't process request", description: "Email support.", variant: "destructive" });
+    } finally {
+      setDeleting(false);
+      setDeleteOpen(false);
+    }
+  };
+
+  return (
+    <div className="max-w-2xl mx-auto space-y-6">
+      <div>
+        <h1 className="font-heading text-3xl font-bold tracking-tight">Settings</h1>
+        <p className="text-sm text-muted-foreground mt-1">{user?.email}</p>
+      </div>
+
+      {/* Units */}
+      <Card className="p-5 border-border">
+        <h2 className="font-semibold text-base mb-1">Units</h2>
+        <p className="text-xs text-muted-foreground mb-4">How we show your numbers.</p>
+
+        <div className="grid sm:grid-cols-2 gap-4">
+          <div>
+            <Label className="text-xs">Weight</Label>
+            <div className="grid grid-cols-2 gap-2 mt-1.5">
+              <Chip active={weightUnit === "lb"} onClick={() => { setWeightUnit("lb"); saveUnits({ weight: "lb" }); }}>lb</Chip>
+              <Chip active={weightUnit === "kg"} onClick={() => { setWeightUnit("kg"); saveUnits({ weight: "kg" }); }}>kg</Chip>
+            </div>
+          </div>
+          <div>
+            <Label className="text-xs">Blood sugar</Label>
+            <div className="grid grid-cols-2 gap-2 mt-1.5">
+              <Chip active={glucoseUnit === "mgdl"} onClick={() => { setGlucoseUnit("mgdl"); saveUnits({ glucose: "mgdl" }); }}>mg/dL</Chip>
+              <Chip active={glucoseUnit === "mmoll"} onClick={() => { setGlucoseUnit("mmoll"); saveUnits({ glucose: "mmoll" }); }}>mmol/L</Chip>
+            </div>
+          </div>
+        </div>
+      </Card>
+
+      {/* WhatsApp */}
+      <Card className="p-5 border-border">
+        <div className="flex items-start justify-between gap-3 mb-3">
+          <div>
+            <h2 className="font-semibold text-base">WhatsApp updates</h2>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              Weekly Reset Brief — recipes, tips, a nudge.
+            </p>
+          </div>
+          <Switch checked={waOptedIn} onCheckedChange={setWaOptedIn} />
+        </div>
+        {waOptedIn && (
+          <div className="space-y-2">
+            <Label htmlFor="wa" className="text-xs">Number</Label>
+            <Input
+              id="wa"
+              type="tel"
+              placeholder="+1 555 123 4567"
+              value={waPhone}
+              onChange={(e) => setWaPhone(e.target.value)}
+            />
+          </div>
+        )}
+        <Button onClick={saveWhatsapp} disabled={waSaving} variant="outline" size="sm" className="mt-3">
+          {waSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          Save preferences
+        </Button>
+      </Card>
+
+      {/* Billing link */}
+      <Card className="p-5 border-border">
+        <h2 className="font-semibold text-base flex items-center gap-2 mb-1">
+          <CreditCard className="h-4 w-4 text-primary" /> Billing
+        </h2>
+        <p className="text-xs text-muted-foreground mb-3">Manage subscription, update card, cancel.</p>
+        <Link to="/app/billing">
+          <Button variant="outline" size="sm">
+            Open billing <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
+          </Button>
+        </Link>
+      </Card>
+
+      {/* Privacy & data */}
+      <Card className="p-5 border-border">
+        <h2 className="font-semibold text-base flex items-center gap-2 mb-1">
+          <Shield className="h-4 w-4 text-primary" /> Privacy & data
+        </h2>
+        <p className="text-xs text-muted-foreground mb-4">
+          Your data stays yours. Export or delete anytime.
+        </p>
+        <div className="flex flex-wrap gap-2">
+          <Button onClick={exportData} variant="outline" size="sm">
+            <Download className="mr-1.5 h-3.5 w-3.5" /> Export my data
+          </Button>
+          <Button
+            onClick={() => setDeleteOpen(true)}
+            variant="outline"
+            size="sm"
+            className="text-destructive border-destructive/40 hover:bg-destructive/5"
+          >
+            <Trash2 className="mr-1.5 h-3.5 w-3.5" /> Delete my data
+          </Button>
+        </div>
+        <p className="text-[11px] text-muted-foreground mt-3">
+          Deletion is permanent and purges within 24 hours. See our{" "}
+          <Link to="/privacy" className="underline text-primary">privacy policy</Link>.
+        </p>
+      </Card>
+
+      <Separator />
+
+      {/* Sign out — green per spec (not destructive red) */}
+      <div className="flex justify-center pb-8">
+        <Button
+          onClick={() => setSignOutOpen(true)}
+          className="bg-primary hover:bg-primary-hover text-primary-foreground"
+        >
+          <LogOut className="mr-2 h-4 w-4" /> Sign out
+        </Button>
+      </div>
+
+      <Dialog open={signOutOpen} onOpenChange={setSignOutOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Sign out of your account?</DialogTitle>
+            <DialogDescription>You'll need your magic link to sign back in.</DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2 sm:gap-2">
+            <Button variant="ghost" onClick={() => setSignOutOpen(false)}>Cancel</Button>
+            <Button
+              className="bg-primary hover:bg-primary-hover text-primary-foreground"
+              onClick={async () => {
+                await signOut();
+                navigate("/", { replace: true });
+              }}
+            >
+              Sign out
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete all your data?</DialogTitle>
+            <DialogDescription>
+              This permanently purges your health logs, conversations, and consent records within 24
+              hours. Your account will be signed out. This cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2 sm:gap-2">
+            <Button variant="ghost" onClick={() => setDeleteOpen(false)} disabled={deleting}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={deleteAccount} disabled={deleting}>
+              {deleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Yes, delete everything
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
+
+function Chip({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`py-2 rounded-lg border text-sm font-medium transition-colors ${
+        active
+          ? "border-primary bg-primary text-primary-foreground"
+          : "border-border bg-background hover:border-primary/40"
+      }`}
+    >
+      {children}
+    </button>
+  );
+}
