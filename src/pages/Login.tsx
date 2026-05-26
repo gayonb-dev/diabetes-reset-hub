@@ -57,10 +57,41 @@ export default function Login() {
           <div className="text-center py-6">
             <CheckCircle2 className="h-12 w-12 text-primary mx-auto mb-3" />
             <h2 className="font-bold text-lg mb-2">Check your email</h2>
-            <p className="text-muted-foreground text-sm">
+            <p className="text-muted-foreground text-sm mb-6">
               If <strong>{email}</strong> is registered, a login link is on its way. Check your inbox
               (and spam folder).
             </p>
+            <div className="space-y-2">
+              <Button
+                type="button"
+                onClick={async () => {
+                  setSending(true);
+                  try {
+                    await supabase.functions.invoke("send-magic-link", {
+                      body: { email: email.trim().toLowerCase() },
+                    });
+                  } catch {}
+                  setSending(false);
+                }}
+                disabled={sending}
+                variant="outline"
+                className="w-full h-11"
+              >
+                {sending ? (
+                  <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Resending...</>
+                ) : (
+                  "Resend login link"
+                )}
+              </Button>
+              <Button
+                type="button"
+                onClick={() => { setSent(false); setError(""); }}
+                variant="ghost"
+                className="w-full h-11"
+              >
+                Use a different email
+              </Button>
+            </div>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
