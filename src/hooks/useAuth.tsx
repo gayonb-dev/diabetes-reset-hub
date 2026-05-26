@@ -98,10 +98,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
 
     // 2) Then check existing session
-    supabase.auth.getSession().then(({ data: { session: s } }) => {
+    supabase.auth.getSession().then(async ({ data: { session: s } }) => {
       setSession(s);
       setUser(s?.user ?? null);
-      if (s?.user) loadUserData(s.user);
+      if (s?.user) await loadUserData(s.user);
       setLoading(false);
     });
 
