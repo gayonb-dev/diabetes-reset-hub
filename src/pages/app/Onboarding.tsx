@@ -119,9 +119,10 @@ export default function Onboarding() {
         .eq("user_id", user.id)
         .maybeSingle();
       if (vp) {
+        const merged = { ...(vp.metadata as Record<string, unknown>), ...meta } as never;
         await supabase
           .from("visitor_profiles")
-          .update({ metadata: { ...(vp.metadata as object), ...meta } })
+          .update({ metadata: merged })
           .eq("id", vp.id);
       }
     }
