@@ -34,7 +34,7 @@ export default function AuthGuard({ children, requireAdmin, requireActiveSub = t
       subscription &&
       ["trialing", "active", "past_due"].includes(subscription.status);
     if (!active) {
-      return <Navigate to="/login?expired=1" replace />;
+      return <Navigate to="/login?inactive=1" replace />;
     }
   }
 
