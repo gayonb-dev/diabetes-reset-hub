@@ -80,12 +80,12 @@ serve(async (req) => {
         subject: "Your Free 2-Day Diabetic-Friendly Meal Plan 🍽️",
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-            <h1 style="color: #7DAF76; font-size: 24px;">Hi ${esc(name)}! 👋</h1>
+            <h1 style="color: #085041; font-size: 24px;">Hi ${esc(name)}! 👋</h1>
             <p style="font-size: 16px; color: #333; line-height: 1.6;">
               Thank you for your interest in taking control of your health! Here's your free 2-day diabetic-friendly meal plan.
             </p>
             <div style="background: #f0f7ef; border-radius: 12px; padding: 20px; margin: 20px 0;">
-              <h2 style="color: #7DAF76; font-size: 20px; margin-top: 0;">What's Inside:</h2>
+              <h2 style="color: #085041; font-size: 20px; margin-top: 0;">What's Inside:</h2>
               <ul style="color: #333; font-size: 15px; line-height: 1.8;">
                 <li>2 full days of blood-sugar-friendly meals</li>
                 <li>Simple, delicious recipes</li>
@@ -97,7 +97,7 @@ serve(async (req) => {
               <strong>Ready for the full transformation?</strong> Our 5-Day Diabetes Reset Challenge gives you a complete action plan with daily guidance, accountability, and proven strategies.
             </p>
             <a href="https://id-preview--187534ee-b3c7-4a03-a061-621309d24e10.lovable.app" 
-               style="display: inline-block; background: #7DAF76; color: white; padding: 14px 28px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 16px; margin: 10px 0;">
+               style="display: inline-block; background: #085041; color: white; padding: 14px 28px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 16px; margin: 10px 0;">
               Join the 5-Day Challenge →
             </a>
             <p style="font-size: 13px; color: #999; margin-top: 30px; border-top: 1px solid #eee; padding-top: 15px;">

@@ -72,7 +72,7 @@ Deno.serve(async (req) => {
 
       const subject = `${firstName} — checking in`;
       const html = `
-        <div style="font-family:'Open Sans',Arial,sans-serif;max-width:560px;margin:0 auto;padding:32px 24px;color:#1a1a1a;">
+        <div style="font-family:'Inter',Arial,sans-serif;max-width:560px;margin:0 auto;padding:32px 24px;color:#1a1a1a;">
           <p style="font-size:16px;line-height:1.6;">Hey ${firstName},</p>
           <p style="font-size:16px;line-height:1.6;">Noticed you haven't been around in a few weeks. No agenda here, no pitch — just checking you're alright.</p>
           <p style="font-size:16px;line-height:1.6;">If life got loud, that's normal. The work waits. Whenever you're ready, the next small step is still there.</p>

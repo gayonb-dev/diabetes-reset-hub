@@ -80,13 +80,13 @@ serve(async (req) => {
           subject: "Your question has been answered",
           html: `
             <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:24px;background:#fff;">
-              <h2 style="color:#7DAF76;">Your coach answered</h2>
+              <h2 style="color:#085041;">Your coach answered</h2>
               <p style="font-size:14px;color:#666;margin:0 0 4px;">You asked:</p>
               <p style="font-size:15px;color:#222;margin:0 0 16px;"><em>${sub.question}</em></p>
               <p style="font-size:14px;color:#666;margin:0 0 4px;">Answer (preview):</p>
               <p style="font-size:15px;color:#222;line-height:1.6;margin:0 0 24px;">${snippet}${sub.answer && sub.answer.length > 240 ? "…" : ""}</p>
               <p style="text-align:center;margin:24px 0;">
-                <a href="${APP_URL}/app/ask" style="display:inline-block;background:#7DAF76;color:#fff;padding:14px 28px;border-radius:8px;text-decoration:none;font-weight:bold;">
+                <a href="${APP_URL}/app/ask" style="display:inline-block;background:#085041;color:#fff;padding:14px 28px;border-radius:8px;text-decoration:none;font-weight:bold;">
                   Read the full answer →
                 </a>
               </p>

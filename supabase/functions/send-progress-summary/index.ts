@@ -100,7 +100,7 @@ serve(async (req) => {
     // Build day-by-day HTML
     const daysHtml = entries.map((e) => `
       <div style="background: #f0f7ef; border-radius: 8px; padding: 15px; margin-bottom: 10px;">
-        <strong style="color: #7DAF76;">Day ${e.day_number}</strong>
+        <strong style="color: #085041;">Day ${e.day_number}</strong>
         <p style="margin: 5px 0; font-size: 14px; color: #333;">🏆 Win: ${esc(e.win_text)}</p>
         <p style="margin: 3px 0; font-size: 13px; color: #666;">
           ${e.mood_rating ? `Mood: ${MOODS[e.mood_rating]}` : ""} 
@@ -126,7 +126,7 @@ serve(async (req) => {
         subject: `🎉 5-Day Challenge Completed: ${clientName}`,
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-            <h1 style="color: #7DAF76; font-size: 22px;">5-Day Challenge Summary</h1>
+            <h1 style="color: #085041; font-size: 22px;">5-Day Challenge Summary</h1>
             <div style="background: #fff; border: 1px solid #e0e0e0; border-radius: 12px; padding: 20px; margin-bottom: 20px;">
               <h2 style="margin: 0 0 10px; font-size: 18px; color: #333;">Client: ${esc(clientName)}</h2>
               <p style="margin: 3px 0; font-size: 14px; color: #666;">📧 ${esc(email)}</p>
@@ -143,7 +143,7 @@ serve(async (req) => {
             <h3 style="color: #333; font-size: 16px;">📝 Day-by-Day Breakdown</h3>
             ${daysHtml}
 
-            <div style="background: #7DAF76; color: white; border-radius: 8px; padding: 15px; margin-top: 20px; text-align: center;">
+            <div style="background: #085041; color: white; border-radius: 8px; padding: 15px; margin-top: 20px; text-align: center;">
               <p style="margin: 0; font-size: 16px; font-weight: bold;">Follow up with this client!</p>
               <p style="margin: 5px 0 0; font-size: 14px;">
                 Send a WhatsApp message to congratulate them and discuss the 6-Week Reset.

@@ -46,7 +46,7 @@ async function sendEmail(apiKey: string, to: string, subject: string, html: stri
 function buildWelcomeEmail(name: string, origin: string) {
   return `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-      <h1 style="color: #7DAF76; font-size: 24px;">Welcome to The Diabetes Reset Tiny Challenge! 🎉</h1>
+      <h1 style="color: #085041; font-size: 24px;">Welcome to The Diabetes Reset Tiny Challenge! 🎉</h1>
       
       <p style="font-size: 16px; color: #333; line-height: 1.6;">
         Hi ${esc(name)},
@@ -69,7 +69,7 @@ function buildWelcomeEmail(name: string, origin: string) {
       </ul>
       
       <div style="background: #f0f7ef; border-radius: 12px; padding: 20px; margin: 20px 0;">
-        <h2 style="color: #7DAF76; font-size: 18px; margin-top: 0;">Your Next Steps:</h2>
+        <h2 style="color: #085041; font-size: 18px; margin-top: 0;">Your Next Steps:</h2>
         <ol style="color: #333; font-size: 15px; line-height: 2;">
           <li><strong>Complete your intake form</strong> — so we can personalize your experience</li>
           <li><strong>Review your Starter Kit</strong> — attached below</li>
@@ -83,12 +83,12 @@ function buildWelcomeEmail(name: string, origin: string) {
       </p>
       
       <a href="${origin}/intake" 
-         style="display: inline-block; background: #7DAF76; color: white; padding: 14px 28px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 16px; margin: 10px 0;">
+         style="display: inline-block; background: #085041; color: white; padding: 14px 28px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 16px; margin: 10px 0;">
         Complete Your Intake Form →
       </a>
       
       <a href="${origin}/book" 
-         style="display: inline-block; background: white; color: #7DAF76; border: 2px solid #7DAF76; padding: 12px 28px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 16px; margin: 10px 10px;">
+         style="display: inline-block; background: white; color: #085041; border: 2px solid #085041; padding: 12px 28px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 16px; margin: 10px 10px;">
         Book Your Sessions →
       </a>
       
@@ -106,7 +106,7 @@ function buildWelcomeEmail(name: string, origin: string) {
 function buildAdminNotificationEmail(name: string, email: string, phone: string, amount: string, origin: string) {
   return `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-      <h1 style="color: #7DAF76; font-size: 24px;">🎉 New Purchase!</h1>
+      <h1 style="color: #085041; font-size: 24px;">🎉 New Purchase!</h1>
       
       <p style="font-size: 16px; color: #333; line-height: 1.6;">
         A new client just purchased the 5-Day Diabetes Reset Challenge.
@@ -138,7 +138,7 @@ function buildAdminNotificationEmail(name: string, email: string, phone: string,
       </p>
       
       <a href="${origin}/admin" 
-         style="display: inline-block; background: #7DAF76; color: white; padding: 14px 28px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 16px; margin: 10px 0;">
+         style="display: inline-block; background: #085041; color: white; padding: 14px 28px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 16px; margin: 10px 0;">
         View in Dashboard →
       </a>
     </div>

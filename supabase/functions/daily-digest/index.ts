@@ -154,8 +154,8 @@ Deno.serve(async (req) => {
 
     // Email
     const html = `
-      <div style="font-family:'Open Sans',Arial,sans-serif;max-width:640px;margin:0 auto;padding:32px 24px;color:#1a1a1a;">
-        <h1 style="font-family:'Montserrat',Arial,sans-serif;color:#7DAF76;font-size:24px;margin:0 0 8px;">Daily Digest · ${digestDate}</h1>
+      <div style="font-family:'Inter',Arial,sans-serif;max-width:640px;margin:0 auto;padding:32px 24px;color:#1a1a1a;">
+        <h1 style="font-family:'Inter',Arial,sans-serif;color:#085041;font-size:24px;margin:0 0 8px;">Daily Digest · ${digestDate}</h1>
         <p style="color:#666;margin:0 0 24px;font-size:13px;">All names and health details redacted.</p>
 
         <h2 style="font-size:16px;color:#333;border-bottom:2px solid #F4E3B2;padding-bottom:6px;">3 Actions Today</h2>
