@@ -8,6 +8,21 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Loader2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import {
+  getUnits,
+  setUnits as persistUnits,
+  WeightUnit,
+  GlucoseUnit,
+  kgToLb,
+  lbToKg,
+  mmollToMgdl,
+  mgdlToMmoll,
+  displayWeight,
+  displayGlucose,
+  GLUCOSE_RANGE_MGDL,
+  WEIGHT_RANGE_LB,
+} from "@/lib/units";
+import { useGamification } from "@/hooks/useGamification";
 
 interface Log {
   id: string;
@@ -24,6 +39,12 @@ function todayISO() {
 
 export default function ProgressPage() {
   const { user } = useAuth();
+  const { recordAction } = useGamification();
+
+  const initial = getUnits();
+  const [weightUnit, setWeightUnit] = useState<WeightUnit>(initial.weight);
+  const [glucoseUnit, setGlucoseUnit] = useState<GlucoseUnit>(initial.glucose);
+
   const [logs, setLogs] = useState<Log[]>([]);
   const [weight, setWeight] = useState("");
   const [bs, setBs] = useState("");
@@ -31,6 +52,8 @@ export default function ProgressPage() {
   const [notes, setNotes] = useState("");
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [weightErr, setWeightErr] = useState<string | null>(null);
+  const [bsErr, setBsErr] = useState<string | null>(null);
 
   const refresh = async () => {
     if (!user) return;
@@ -44,8 +67,15 @@ export default function ProgressPage() {
     setLogs(arr);
     const today = arr.find((l) => l.log_date === todayISO());
     if (today) {
-      setWeight(today.weight?.toString() ?? "");
-      setBs(today.blood_sugar?.toString() ?? "");
+      // Stored as canonical (lb / mg/dL); convert for display.
+      if (today.weight != null) {
+        const v = weightUnit === "kg" ? lbToKg(today.weight) : today.weight;
+        setWeight(v.toFixed(1));
+      }
+      if (today.blood_sugar != null) {
+        const v = glucoseUnit === "mmoll" ? mgdlToMmoll(today.blood_sugar) : today.blood_sugar;
+        setBs(glucoseUnit === "mmoll" ? v.toFixed(1) : String(Math.round(v)));
+      }
       setEnergy(today.energy);
       setNotes(today.notes ?? "");
     }
@@ -54,17 +84,53 @@ export default function ProgressPage() {
 
   useEffect(() => {
     refresh();
-  }, [user]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, weightUnit, glucoseUnit]);
+
+  function setWeightUnitPersist(u: WeightUnit) {
+    setWeightUnit(u);
+    persistUnits({ weight: u });
+  }
+  function setGlucoseUnitPersist(u: GlucoseUnit) {
+    setGlucoseUnit(u);
+    persistUnits({ glucose: u });
+  }
 
   const save = async () => {
     if (!user) return;
+    setWeightErr(null);
+    setBsErr(null);
+
+    let weightLb: number | null = null;
+    let bsMg: number | null = null;
+
+    if (weight.trim()) {
+      const v = parseFloat(weight);
+      if (isNaN(v)) { setWeightErr("Enter a number."); return; }
+      weightLb = weightUnit === "kg" ? kgToLb(v) : v;
+      if (weightLb < WEIGHT_RANGE_LB.min || weightLb > WEIGHT_RANGE_LB.max) {
+        setWeightErr("That weight seems outside the expected range — double-check.");
+        return;
+      }
+    }
+
+    if (bs.trim()) {
+      const v = parseFloat(bs);
+      if (isNaN(v)) { setBsErr("Enter a number."); return; }
+      bsMg = glucoseUnit === "mmoll" ? mmollToMgdl(v) : v;
+      if (bsMg < GLUCOSE_RANGE_MGDL.min || bsMg > GLUCOSE_RANGE_MGDL.max) {
+        setBsErr("That reading seems outside the expected range — double-check your glucometer.");
+        return;
+      }
+    }
+
     setSaving(true);
     const { error } = await supabase.from("health_logs").upsert(
       {
         user_id: user.id,
         log_date: todayISO(),
-        weight: weight ? Number(weight) : null,
-        blood_sugar: bs ? Number(bs) : null,
+        weight: weightLb,
+        blood_sugar: bsMg != null ? Math.round(bsMg) : null,
         energy,
         notes: notes || null,
       },
@@ -76,28 +142,61 @@ export default function ProgressPage() {
       return;
     }
     toast({ title: "Saved" });
+
+    // Gamification: award XP for each logged metric (idempotent per day for streak)
+    if (bsMg != null) await recordAction("log_glucose");
+    if (weightLb != null) await recordAction("log_weight");
     refresh();
   };
 
-  // Simple sparkline for blood sugar trend (last 14 entries, oldest first)
+  // Sparkline: last 14 entries (oldest first), values displayed in current unit.
   const trend = [...logs]
     .reverse()
     .filter((l) => l.blood_sugar != null)
     .slice(-14);
+  const trendValues = trend.map((t) =>
+    glucoseUnit === "mmoll" ? mgdlToMmoll(t.blood_sugar!) : t.blood_sugar!,
+  );
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="font-heading font-semibold text-2xl text-foreground">Progress</h1>
-        <p className="text-sm text-muted-foreground">Log today's numbers. No judgment — just data.</p>
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <h1 className="font-heading font-semibold text-2xl text-foreground">Progress</h1>
+          <p className="text-sm text-muted-foreground">Log today's numbers. No judgment — just data.</p>
+        </div>
       </div>
+
+      {/* Unit toggles */}
+      <Card className="p-4 border border-border bg-muted/30">
+        <div className="grid sm:grid-cols-2 gap-4 text-sm">
+          <div>
+            <p className="text-xs uppercase tracking-wide text-muted-foreground font-semibold mb-2">Weight unit</p>
+            <div className="grid grid-cols-2 gap-2">
+              <UnitChip active={weightUnit === "lb"} onClick={() => setWeightUnitPersist("lb")}>lb</UnitChip>
+              <UnitChip active={weightUnit === "kg"} onClick={() => setWeightUnitPersist("kg")}>kg</UnitChip>
+            </div>
+          </div>
+          <div>
+            <p className="text-xs uppercase tracking-wide text-muted-foreground font-semibold mb-2">Glucose unit</p>
+            <div className="grid grid-cols-2 gap-2">
+              <UnitChip active={glucoseUnit === "mgdl"} onClick={() => setGlucoseUnitPersist("mgdl")}>mg/dL</UnitChip>
+              <UnitChip active={glucoseUnit === "mmoll"} onClick={() => setGlucoseUnitPersist("mmoll")}>mmol/L</UnitChip>
+            </div>
+          </div>
+        </div>
+      </Card>
 
       {/* Today's log */}
       <Card className="p-5 border border-border">
-        <p className="text-sm font-medium text-foreground mb-4">Today, {new Date().toLocaleDateString()}</p>
+        <p className="text-sm font-medium text-foreground mb-4">
+          Today, {new Date().toLocaleDateString()}
+        </p>
         <div className="grid sm:grid-cols-2 gap-4">
           <div>
-            <Label htmlFor="weight" className="text-xs text-muted-foreground">Weight (lbs)</Label>
+            <Label htmlFor="weight" className="text-xs text-muted-foreground">
+              Weight ({weightUnit})
+            </Label>
             <Input
               id="weight"
               type="number"
@@ -107,17 +206,22 @@ export default function ProgressPage() {
               onChange={(e) => setWeight(e.target.value)}
               placeholder="—"
             />
+            {weightErr && <p className="text-xs text-destructive mt-1">{weightErr}</p>}
           </div>
           <div>
-            <Label htmlFor="bs" className="text-xs text-muted-foreground">Blood sugar (mg/dL)</Label>
+            <Label htmlFor="bs" className="text-xs text-muted-foreground">
+              Blood sugar ({glucoseUnit === "mmoll" ? "mmol/L" : "mg/dL"})
+            </Label>
             <Input
               id="bs"
               type="number"
-              inputMode="numeric"
+              inputMode="decimal"
+              step={glucoseUnit === "mmoll" ? "0.1" : "1"}
               value={bs}
               onChange={(e) => setBs(e.target.value)}
               placeholder="—"
             />
+            {bsErr && <p className="text-xs text-destructive mt-1">{bsErr}</p>}
           </div>
         </div>
 
@@ -128,11 +232,12 @@ export default function ProgressPage() {
               <button
                 key={n}
                 onClick={() => setEnergy(n)}
-                className={`h-10 w-10 rounded-md border text-sm font-medium transition-colors ${
+                className={`h-11 w-11 rounded-md border text-sm font-medium transition-colors ${
                   energy === n
                     ? "bg-primary text-primary-foreground border-primary"
                     : "bg-background text-foreground border-border hover:border-primary/40"
                 }`}
+                aria-label={`Energy ${n} of 5`}
               >
                 {n}
               </button>
@@ -162,12 +267,18 @@ export default function ProgressPage() {
       </Card>
 
       {/* Trend */}
-      {trend.length >= 2 && (
+      {trend.length >= 2 ? (
         <Card className="p-5 border border-border">
           <p className="text-sm font-medium text-foreground mb-3">Blood sugar trend</p>
-          <Sparkline values={trend.map((t) => t.blood_sugar!)} />
+          <Sparkline values={trendValues} />
           <p className="text-xs text-muted-foreground mt-2">
-            Last {trend.length} entries · {Math.min(...trend.map(t=>t.blood_sugar!))} – {Math.max(...trend.map(t=>t.blood_sugar!))} mg/dL
+            Last {trend.length} entries · {Math.min(...trendValues).toFixed(glucoseUnit === "mmoll" ? 1 : 0)} – {Math.max(...trendValues).toFixed(glucoseUnit === "mmoll" ? 1 : 0)} {glucoseUnit === "mmoll" ? "mmol/L" : "mg/dL"}
+          </p>
+        </Card>
+      ) : (
+        <Card className="p-5 border border-border bg-muted/20">
+          <p className="text-sm text-muted-foreground">
+            Your chart builds as you log. Start with today.
           </p>
         </Card>
       )}
@@ -187,8 +298,8 @@ export default function ProgressPage() {
                   {new Date(l.log_date).toLocaleDateString(undefined, { month: "short", day: "numeric" })}
                 </span>
                 <span className="flex-1 text-foreground">
-                  {l.weight != null && <span className="mr-3">{l.weight} lbs</span>}
-                  {l.blood_sugar != null && <span className="mr-3">{l.blood_sugar} mg/dL</span>}
+                  {l.weight != null && <span className="mr-3">{displayWeight(l.weight, weightUnit)}</span>}
+                  {l.blood_sugar != null && <span className="mr-3">{displayGlucose(l.blood_sugar, glucoseUnit)}</span>}
                   {l.energy != null && <span className="text-muted-foreground">energy {l.energy}/5</span>}
                 </span>
               </div>
@@ -197,6 +308,22 @@ export default function ProgressPage() {
         )}
       </Card>
     </div>
+  );
+}
+
+function UnitChip({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`py-2 rounded-lg border text-sm font-medium transition-colors ${
+        active
+          ? "border-primary bg-primary text-primary-foreground"
+          : "border-border bg-background hover:border-primary/40"
+      }`}
+    >
+      {children}
+    </button>
   );
 }
 

@@ -26,6 +26,7 @@ import Billing from "./pages/app/Billing";
 import Onboarding from "./pages/app/Onboarding";
 import CoachingWaitlist from "./pages/app/CoachingWaitlist";
 import AppProgress from "./pages/app/Progress";
+import Settings from "./pages/app/Settings";
 import AdminLayout from "./pages/admin/AdminLayout";
 import AdminSubscriptions from "./pages/admin/AdminSubscriptions";
 import AdminQaQueue from "./pages/admin/AdminQaQueue";
@@ -34,6 +35,7 @@ import AdminBroadcasts from "./pages/admin/AdminBroadcasts";
 import AdminWaitlist from "./pages/admin/AdminWaitlist";
 import AdminTopCustomers from "./pages/admin/AdminTopCustomers";
 import AdminDigest from "./pages/admin/AdminDigest";
+import AdminPhiLog from "./pages/admin/AdminPhiLog";
 import Privacy from "./pages/Privacy";
 import ChatWidget from "./components/chat/ChatWidget";
 
@@ -71,6 +73,7 @@ const App = () => (
               <Route path="content" element={<AdminContent />} />
               <Route path="broadcasts" element={<AdminBroadcasts />} />
               <Route path="waitlist" element={<AdminWaitlist />} />
+              <Route path="phi-log" element={<AdminPhiLog />} />
             </Route>
 
             <Route path="/llm-info" element={<LLMInfo />} />
@@ -108,6 +111,7 @@ const App = () => (
               <Route path="ask" element={<Ask />} />
               <Route path="progress" element={<AppProgress />} />
               <Route path="billing" element={<Billing />} />
+              <Route path="settings" element={<Settings />} />
               <Route path="coaching-waitlist" element={<CoachingWaitlist />} />
 
             </Route>

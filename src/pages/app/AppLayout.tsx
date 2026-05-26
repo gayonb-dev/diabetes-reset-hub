@@ -99,8 +99,8 @@ export default function AppLayout() {
             <NavLink to="/app/ask" className={navClass}>
               <MessageCircleQuestion className="h-4 w-4" /> Ask
             </NavLink>
-            <NavLink to="/app/billing" className={navClass}>
-              <Menu className="h-4 w-4" /> More
+            <NavLink to="/app/settings" className={navClass}>
+              <Menu className="h-4 w-4" /> Settings
             </NavLink>
             {isAdmin && (
               <NavLink to="/admin" className={navClass}>
@@ -139,8 +139,8 @@ export default function AppLayout() {
           <NavLink to="/app/ask" className={mobileNavClass}>
             <MessageCircleQuestion className="h-5 w-5" /> Ask
           </NavLink>
-          <NavLink to="/app/billing" className={mobileNavClass}>
-            <Menu className="h-5 w-5" /> More
+          <NavLink to="/app/settings" className={mobileNavClass}>
+            <Menu className="h-5 w-5" /> Settings
           </NavLink>
         </div>
 

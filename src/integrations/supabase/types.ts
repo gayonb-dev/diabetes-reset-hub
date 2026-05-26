@@ -52,6 +52,42 @@ export type Database = {
           },
         ]
       }
+      badges: {
+        Row: {
+          created_at: string
+          description: string
+          icon: string
+          id: string
+          name: string
+          slug: string
+          sort_order: number
+          tier: string
+          xp_reward: number
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          icon: string
+          id?: string
+          name: string
+          slug: string
+          sort_order?: number
+          tier?: string
+          xp_reward?: number
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          icon?: string
+          id?: string
+          name?: string
+          slug?: string
+          sort_order?: number
+          tier?: string
+          xp_reward?: number
+        }
+        Relationships: []
+      }
       broadcast_log: {
         Row: {
           audience: string
@@ -845,6 +881,35 @@ export type Database = {
         }
         Relationships: []
       }
+      user_badges: {
+        Row: {
+          badge_id: string
+          earned_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          badge_id: string
+          earned_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          badge_id?: string
+          earned_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_badges_badge_id_fkey"
+            columns: ["badge_id"]
+            isOneToOne: false
+            referencedRelation: "badges"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -862,6 +927,42 @@ export type Database = {
           created_at?: string
           id?: string
           role?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_streaks: {
+        Row: {
+          created_at: string
+          current_streak: number
+          id: string
+          last_active_date: string | null
+          level: number
+          longest_streak: number
+          total_xp: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          current_streak?: number
+          id?: string
+          last_active_date?: string | null
+          level?: number
+          longest_streak?: number
+          total_xp?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          current_streak?: number
+          id?: string
+          last_active_date?: string | null
+          level?: number
+          longest_streak?: number
+          total_xp?: number
+          updated_at?: string
           user_id?: string
         }
         Relationships: []
@@ -1014,6 +1115,20 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      award_xp: {
+        Args: { p_amount: number; p_user_id: string }
+        Returns: {
+          level: number
+          total_xp: number
+        }[]
+      }
+      bump_streak: {
+        Args: { p_user_id: string }
+        Returns: {
+          current_streak: number
+          longest_streak: number
+        }[]
+      }
       has_role: {
         Args: { p_role: string; p_user_id: string }
         Returns: boolean
