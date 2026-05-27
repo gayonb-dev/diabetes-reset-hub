@@ -96,7 +96,7 @@ export default function AppLayout() {
             <NavLink to="/app/library" className={navClass}>
               <BookOpen className="h-4 w-4" /> Learn
             </NavLink>
-            <NavLink to="/app/library?tab=workouts" className={navClass}>
+            <NavLink to="/app/workouts" className={navClass}>
               <Activity className="h-4 w-4" /> Workouts
             </NavLink>
             <NavLink to="/app/library?tab=meals" className={navClass}>
