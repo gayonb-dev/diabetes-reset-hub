@@ -52,7 +52,12 @@
     --ring-water: 207 90% 54%;
     --ring-food: 170 82% 17%;
     --ring-exercise: 36 81% 53%;
-    --ring-mindset: 261 42% 56%;
+    --ring-mindset: 259 44% 56%;
+
+    /* streak fire gradient */
+    --streak-fire-start: 16 100% 50%;
+    --streak-fire-end: 33 100% 50%;
+
 
     /* sidebar */
     --sidebar-bg: 170 82% 17%;
