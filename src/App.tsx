@@ -24,6 +24,7 @@ import Library from "./pages/app/Library";
 import WorkoutLibrary from "./pages/app/WorkoutLibrary";
 import WorkoutSession from "./pages/app/WorkoutSession";
 import WorkoutComplete from "./pages/app/WorkoutComplete";
+import Meals from "./pages/app/Meals";
 import Ask from "./pages/app/Ask";
 import Billing from "./pages/app/Billing";
 import Onboarding from "./pages/app/Onboarding";
@@ -115,6 +116,7 @@ const App = () => (
               <Route path="workouts" element={<WorkoutLibrary />} />
               <Route path="workouts/:slug" element={<WorkoutSession />} />
               <Route path="workouts/:slug/complete" element={<WorkoutComplete />} />
+              <Route path="meals" element={<Meals />} />
               <Route path="ask" element={<Ask />} />
               <Route path="progress" element={<AppProgress />} />
               <Route path="billing" element={<Billing />} />

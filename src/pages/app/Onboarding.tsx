@@ -143,25 +143,36 @@ export default function Onboarding() {
         .eq("id", vp.id);
     }
 
-    // Trigger meal plan generation (Phase 9 wires the edge function).
+    // Trigger meal plan generation (Phase 9).
     const today = new Date();
     const validUntil = new Date(today);
-    validUntil.setDate(today.getDate() + 7);
-    await supabase.from("meal_plans").insert({
-      member_id: user.id,
-      plan_type: "standard",
-      generation_status: "pending",
-      generation_trigger: "onboarding",
-      valid_from: today.toISOString().slice(0, 10),
-      valid_until: validUntil.toISOString().slice(0, 10),
-      preferences_snapshot: {
-        diabetes_status: diabetes,
-        medication,
-        challenges,
-        primary_goal: goal,
-      },
-      plan_data: {},
-    } as never);
+    validUntil.setDate(today.getDate() + 13);
+    const { data: planRow } = await supabase
+      .from("meal_plans")
+      .insert({
+        member_id: user.id,
+        plan_type: "standard",
+        generation_status: "pending",
+        generation_trigger: "onboarding",
+        valid_from: today.toISOString().slice(0, 10),
+        valid_until: validUntil.toISOString().slice(0, 10),
+        preferences_snapshot: {
+          diabetes_status: diabetes,
+          medication,
+          challenges,
+          primary_goal: goal,
+        },
+        plan_data: {},
+      } as never)
+      .select("id")
+      .single();
+
+    if (planRow?.id) {
+      // Fire-and-forget; UI will poll generation_status.
+      supabase.functions
+        .invoke("generate-meal-plan", { body: { plan_id: planRow.id } })
+        .catch(() => {/* status will reflect failed */});
+    }
 
     setSaving(false);
     navigate("/app", { replace: true });
