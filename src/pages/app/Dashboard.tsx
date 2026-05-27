@@ -257,9 +257,10 @@ export default function Dashboard() {
     },
     {
       label: "Last A1C",
-      value: null, // A1C logging arrives with Section 8
+      value: latestA1C ? `${latestA1C.value.toFixed(1)}%` : null,
+      sub: latestA1C ? `${daysSince(latestA1C.date)}d ago` : undefined,
       emptyHint: "Enter A1C →",
-      tone: "warning" as const,
+      tone: latestA1C ? (latestA1C.value < 5.7 ? "normal" : latestA1C.value < 6.5 ? "warning" : "danger") : ("warning" as const),
       href: "/app/progress",
     },
   ];
