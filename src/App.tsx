@@ -116,6 +116,7 @@ const App = () => (
               <Route path="workouts" element={<WorkoutLibrary />} />
               <Route path="workouts/:slug" element={<WorkoutSession />} />
               <Route path="workouts/:slug/complete" element={<WorkoutComplete />} />
+              <Route path="meals" element={<Meals />} />
               <Route path="ask" element={<Ask />} />
               <Route path="progress" element={<AppProgress />} />
               <Route path="billing" element={<Billing />} />
