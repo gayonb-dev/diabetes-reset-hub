@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      a1c_logs: {
+        Row: {
+          created_at: string
+          id: string
+          measured_on: string
+          member_id: string
+          notes: string | null
+          source: string | null
+          value_mmol_mol: number | null
+          value_percent: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          measured_on: string
+          member_id: string
+          notes?: string | null
+          source?: string | null
+          value_mmol_mol?: number | null
+          value_percent: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          measured_on?: string
+          member_id?: string
+          notes?: string | null
+          source?: string | null
+          value_mmol_mol?: number | null
+          value_percent?: number
+        }
+        Relationships: []
+      }
       activity_events: {
         Row: {
           created_at: string
@@ -85,6 +118,36 @@ export type Database = {
           sort_order?: number
           tier?: string
           xp_reward?: number
+        }
+        Relationships: []
+      }
+      blood_sugar_readings: {
+        Row: {
+          created_at: string
+          id: string
+          measured_at: string
+          member_id: string
+          notes: string | null
+          reading_type: string
+          value_mgdl: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          measured_at?: string
+          member_id: string
+          notes?: string | null
+          reading_type: string
+          value_mgdl: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          measured_at?: string
+          member_id?: string
+          notes?: string | null
+          reading_type?: string
+          value_mgdl?: number
         }
         Relationships: []
       }
@@ -855,6 +918,45 @@ export type Database = {
         }
         Relationships: []
       }
+      meal_logs: {
+        Row: {
+          complex_carbs: boolean
+          created_at: string
+          free_text: string | null
+          id: string
+          log_date: string
+          meal_type: string
+          member_id: string
+          protein: boolean
+          updated_at: string
+          vegetables: boolean
+        }
+        Insert: {
+          complex_carbs?: boolean
+          created_at?: string
+          free_text?: string | null
+          id?: string
+          log_date?: string
+          meal_type: string
+          member_id: string
+          protein?: boolean
+          updated_at?: string
+          vegetables?: boolean
+        }
+        Update: {
+          complex_carbs?: boolean
+          created_at?: string
+          free_text?: string | null
+          id?: string
+          log_date?: string
+          meal_type?: string
+          member_id?: string
+          protein?: boolean
+          updated_at?: string
+          vegetables?: boolean
+        }
+        Relationships: []
+      }
       meal_plans: {
         Row: {
           created_at: string
@@ -1063,6 +1165,54 @@ export type Database = {
           },
         ]
       }
+      mindset_reads: {
+        Row: {
+          created_at: string
+          id: string
+          log_date: string
+          member_id: string
+          read_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          log_date?: string
+          member_id: string
+          read_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          log_date?: string
+          member_id?: string
+          read_at?: string
+        }
+        Relationships: []
+      }
+      mood_logs: {
+        Row: {
+          created_at: string
+          id: string
+          log_date: string
+          member_id: string
+          mood: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          log_date?: string
+          member_id: string
+          mood: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          log_date?: string
+          member_id?: string
+          mood?: number
+        }
+        Relationships: []
+      }
       orders: {
         Row: {
           amount: number
@@ -1196,6 +1346,33 @@ export type Database = {
           },
         ]
       }
+      post_meal_walks: {
+        Row: {
+          created_at: string
+          id: string
+          log_date: string
+          logged_at: string
+          member_id: string
+          slot: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          log_date?: string
+          logged_at?: string
+          member_id: string
+          slot: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          log_date?: string
+          logged_at?: string
+          member_id?: string
+          slot?: string
+        }
+        Relationships: []
+      }
       product_validation_tokens: {
         Row: {
           created_at: string
@@ -1319,6 +1496,39 @@ export type Database = {
           list_data?: Json
           member_id?: string
           week_start_date?: string
+        }
+        Relationships: []
+      }
+      snack_logs: {
+        Row: {
+          created_at: string
+          eaten: boolean
+          eaten_at: string | null
+          id: string
+          log_date: string
+          member_id: string
+          slot: string
+          snack_name: string | null
+        }
+        Insert: {
+          created_at?: string
+          eaten?: boolean
+          eaten_at?: string | null
+          id?: string
+          log_date?: string
+          member_id: string
+          slot: string
+          snack_name?: string | null
+        }
+        Update: {
+          created_at?: string
+          eaten?: boolean
+          eaten_at?: string | null
+          id?: string
+          log_date?: string
+          member_id?: string
+          slot?: string
+          snack_name?: string | null
         }
         Relationships: []
       }
@@ -1623,6 +1833,33 @@ export type Database = {
           streak_history?: Json
           updated_at?: string
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      water_logs: {
+        Row: {
+          created_at: string
+          id: string
+          log_date: string
+          logged_at: string
+          member_id: string
+          ounces: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          log_date?: string
+          logged_at?: string
+          member_id: string
+          ounces: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          log_date?: string
+          logged_at?: string
+          member_id?: string
+          ounces?: number
         }
         Relationships: []
       }

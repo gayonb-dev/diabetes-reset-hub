@@ -11,7 +11,9 @@ import VitaQuoteCard from "@/components/dashboard/VitaQuoteCard";
 import GettingStartedChecklist from "@/components/dashboard/GettingStartedChecklist";
 import { useGamification } from "@/hooks/useGamification";
 import SupplementPrompt from "@/components/onboarding/SupplementPrompt";
-import { getUnits, displayGlucose, displayWeight } from "@/lib/units";
+import HabitLogging from "@/components/today/HabitLogging";
+import { useDailyHabits } from "@/hooks/useDailyHabits";
+import { getUnits, displayGlucose, displayWeight, mgdlToMmoll } from "@/lib/units";
 
 type DailyAction = {
   id: string;
@@ -67,12 +69,16 @@ function bloodSugarTone(mgdl: number): "normal" | "warning" | "danger" {
 export default function Dashboard() {
   const { user, subscription } = useAuth();
   const { streak } = useGamification();
+  const habits = useDailyHabits();
 
   const [meta, setMeta] = useState<ProfileMeta>({});
   const [action, setAction] = useState<DailyAction | null>(null);
   const [progress, setProgress] = useState<Progress | null>(null);
   const [latestBS, setLatestBS] = useState<{ value: number; date: string } | null>(null);
   const [latestWeight, setLatestWeight] = useState<{ value: number; date: string } | null>(null);
+  const [waterTargetLb, setWaterTargetLb] = useState<number>(180);
+  const [latestA1C, setLatestA1C] = useState<{ value: number; date: string } | null>(null);
+  const [latestReading, setLatestReading] = useState<{ value: number; at: string } | null>(null);
 
   // current program day from subscription created_at
   const currentProgramDay = useMemo(() => {
@@ -141,6 +147,29 @@ export default function Dashboard() {
         .maybeSingle();
       if (!cancelled && w?.weight != null) {
         setLatestWeight({ value: Number(w.weight), date: w.log_date as string });
+        setWaterTargetLb(Number(w.weight));
+      }
+
+      const { data: a1c } = await supabase
+        .from("a1c_logs")
+        .select("value_percent, measured_on")
+        .eq("member_id", user.id)
+        .order("measured_on", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (!cancelled && a1c?.value_percent != null) {
+        setLatestA1C({ value: Number(a1c.value_percent), date: a1c.measured_on as string });
+      }
+
+      const { data: rd } = await supabase
+        .from("blood_sugar_readings")
+        .select("value_mgdl, measured_at")
+        .eq("member_id", user.id)
+        .order("measured_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (!cancelled && rd?.value_mgdl != null) {
+        setLatestReading({ value: rd.value_mgdl as number, at: rd.measured_at as string });
       }
     })();
 
@@ -158,13 +187,23 @@ export default function Dashboard() {
     return "Good evening";
   })();
 
-  // Habit rings — values come from Section 9 in a later phase.
-  // Until then, render empty progress (no fake numbers).
+  // Habit rings — driven by today's logs (Section 9).
+  const mealsDone = (["breakfast", "lunch", "dinner"] as const).filter(
+    (mt) => habits.meals[mt].vegetables && habits.meals[mt].protein && habits.meals[mt].complex_carbs,
+  ).length;
+  const walksDone = (["after_breakfast", "after_lunch", "after_dinner"] as const).filter(
+    (s) => habits.walks[s],
+  ).length;
+  const waterTargetOz = Math.round(waterTargetLb / 2);
   const habitData = {
-    water: { value: 0, target: 72, unit: "oz" },
-    food: { value: 0, target: 3, unit: "meals" },
-    exercise: { value: 0, target: 1, unit: "session" },
-    mindset: { value: 0, target: 1, unit: "" },
+    water: { value: habits.waterOz, target: waterTargetOz, unit: "oz" },
+    food: { value: mealsDone, target: 3, unit: "meals" },
+    exercise: {
+      value: currentProgramDay >= 15 && currentProgramDay <= 28 ? walksDone : 0,
+      target: currentProgramDay >= 15 && currentProgramDay <= 28 ? 3 : 1,
+      unit: currentProgramDay <= 28 ? "walks" : "session",
+    },
+    mindset: { value: habits.mindsetRead ? 1 : 0, target: 1, unit: "" },
   };
 
   const actionDoneToday = progress?.status === "completed";
@@ -181,22 +220,26 @@ export default function Dashboard() {
   const daysSince = (iso: string) =>
     Math.floor((Date.now() - new Date(iso).getTime()) / 86400000);
 
+  const bsSource = latestReading
+    ? { value: latestReading.value, date: latestReading.at }
+    : latestBS;
   const stats = [
     {
       label: "Blood Sugar",
-      value: latestBS
-        ? displayGlucose(latestBS.value, bsUnit).replace(/ (mg\/dL|mmol\/L)$/, "")
+      value: bsSource
+        ? displayGlucose(bsSource.value, bsUnit).replace(/ (mg\/dL|mmol\/L)$/, "")
         : null,
-      unit: latestBS ? (bsUnit === "mmoll" ? "mmol/L" : "mg/dL") : undefined,
-      sub: latestBS ? `Logged ${daysSince(latestBS.date)}d ago` : undefined,
+      unit: bsSource ? (bsUnit === "mmoll" ? "mmol/L" : "mg/dL") : undefined,
+      sub: bsSource ? `Logged ${daysSince(bsSource.date)}d ago` : undefined,
       emptyHint: "Tap to log",
-      tone: latestBS ? bloodSugarTone(latestBS.value) : ("warning" as const),
+      tone: bsSource ? bloodSugarTone(bsSource.value) : ("warning" as const),
       href: "/app/progress",
     },
     {
       label: "Water Today",
-      value: null, // wired in Phase covering Section 9
-      sub: undefined,
+      value: habits.waterOz > 0 ? String(habits.waterOz) : null,
+      unit: habits.waterOz > 0 ? `oz / ${waterTargetOz}oz` : undefined,
+      sub: habits.waterStreak > 1 ? `💧 ${habits.waterStreak}-day streak` : undefined,
       emptyHint: "Tap to log",
       tone: "water" as const,
       href: "/app/progress",
@@ -214,9 +257,16 @@ export default function Dashboard() {
     },
     {
       label: "Last A1C",
-      value: null, // A1C logging arrives with Section 8
+      value: latestA1C ? `${latestA1C.value.toFixed(1)}%` : null,
+      sub: latestA1C ? `${daysSince(latestA1C.date)}d ago` : undefined,
       emptyHint: "Enter A1C →",
-      tone: "warning" as const,
+      tone: (latestA1C
+        ? latestA1C.value < 5.7
+          ? "normal"
+          : latestA1C.value < 6.5
+          ? "warning"
+          : "danger"
+        : "warning") as "normal" | "warning" | "danger",
       href: "/app/progress",
     },
   ];
@@ -332,6 +382,10 @@ export default function Dashboard() {
 
       {/* Row 6 — VITA quote */}
       <VitaQuoteCard quotes={VITA_TIPS} />
+
+      {/* Daily habit logging (Section 9) */}
+      <HabitLogging currentProgramDay={currentProgramDay} />
+
 
       {/* Getting Started checklist (Days 1–29 only) */}
       <GettingStartedChecklist currentProgramDay={currentProgramDay} />

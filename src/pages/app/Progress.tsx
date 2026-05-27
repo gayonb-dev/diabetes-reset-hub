@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import BloodSugarTab from "@/components/progress/BloodSugarTab";
+import A1CTab from "@/components/progress/A1CTab";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
@@ -158,6 +160,8 @@ export default function ProgressPage() {
     glucoseUnit === "mmoll" ? mgdlToMmoll(t.blood_sugar!) : t.blood_sugar!,
   );
 
+  const [tab, setTab] = useState<"daily" | "bs" | "a1c">("daily");
+
   return (
     <div className="space-y-6">
       <div className="flex items-start justify-between gap-3">
@@ -166,6 +170,28 @@ export default function ProgressPage() {
           <p className="text-sm text-muted-foreground">Log today's numbers. No judgment — just data.</p>
         </div>
       </div>
+
+      <div className="flex gap-2 border-b border-border">
+        {([
+          ["daily", "Daily log"],
+          ["bs", "Blood sugar"],
+          ["a1c", "A1C"],
+        ] as const).map(([k, label]) => (
+          <button
+            key={k}
+            onClick={() => setTab(k)}
+            className={`px-3 py-2 text-sm border-b-2 transition-colors ${tab === k ? "border-primary text-primary font-medium" : "border-transparent text-secondary-fg"}`}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+
+      {tab === "bs" && <BloodSugarTab />}
+      {tab === "a1c" && <A1CTab />}
+      {tab === "daily" && (
+        <>
+
 
       {/* Unit toggles */}
       <Card className="p-4 border border-border bg-muted/30">
@@ -307,9 +333,12 @@ export default function ProgressPage() {
           </div>
         )}
       </Card>
+        </>
+      )}
     </div>
   );
 }
+
 
 function UnitChip({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
   return (
