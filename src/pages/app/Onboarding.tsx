@@ -218,7 +218,7 @@ export default function Onboarding() {
               <h1 className="text-[22px] font-semibold mb-2 tracking-tight">
                 Tell us where you are starting.
               </h1>
-              <p className="text-sm text-secondary-fg mb-6">
+              <p className="text-sm text-muted-foreground mb-6">
                 No judgment. Just your baseline so we can track your progress.
               </p>
 
@@ -328,7 +328,7 @@ export default function Onboarding() {
                 onClick={() => {
                   if (validateS2()) setStep(2);
                 }}
-                className="w-full h-[52px] bg-primary hover:bg-primary-hover text-primary-foreground font-semibold"
+                className="w-full h-[52px] bg-primary hover:bg-primary/90 text-primary-foreground font-semibold"
               >
                 Continue
               </Button>
@@ -340,7 +340,7 @@ export default function Onboarding() {
               <h1 className="text-[22px] font-semibold mb-2 tracking-tight">
                 What would a win look like for you?
               </h1>
-              <p className="text-sm text-secondary-fg mb-6">
+              <p className="text-sm text-muted-foreground mb-6">
                 In your own words. There's no wrong answer.
               </p>
 
@@ -366,14 +366,14 @@ export default function Onboarding() {
                   className="bg-muted/50 border-0 rounded-xl min-h-[88px]"
                   maxLength={200}
                 />
-                <p className="text-[11px] text-tertiary-fg text-right mt-1">
+                <p className="text-[11px] text-muted-foreground/70 text-right mt-1">
                   {sixMonth.length}/200
                 </p>
               </Field>
 
               <Field label="Commitment level" required>
                 <div className="flex items-center justify-between">
-                  <span className="text-[11px] text-tertiary-fg">Still figuring it out.</span>
+                  <span className="text-[11px] text-muted-foreground/70">Still figuring it out.</span>
                   <div className="flex gap-1">
                     {[1, 2, 3, 4, 5].map((n) => (
                       <button
@@ -390,7 +390,7 @@ export default function Onboarding() {
                       </button>
                     ))}
                   </div>
-                  <span className="text-[11px] text-tertiary-fg">Fully committed.</span>
+                  <span className="text-[11px] text-muted-foreground/70">Fully committed.</span>
                 </div>
               </Field>
 
@@ -428,7 +428,7 @@ export default function Onboarding() {
               <Button
                 onClick={() => setStep(3)}
                 disabled={!goal || !commitment || !mealFreq}
-                className="w-full h-[52px] bg-primary hover:bg-primary-hover text-primary-foreground font-semibold"
+                className="w-full h-[52px] bg-primary hover:bg-primary/90 text-primary-foreground font-semibold"
               >
                 Continue
               </Button>
@@ -440,7 +440,7 @@ export default function Onboarding() {
               <h1 className="text-[22px] font-semibold mb-2 tracking-tight">
                 How do you currently track your blood sugar?
               </h1>
-              <p className="text-sm text-secondary-fg mb-6">
+              <p className="text-sm text-muted-foreground mb-6">
                 We'll set your daily check-in reminders based on your answer.
               </p>
 
@@ -470,7 +470,7 @@ export default function Onboarding() {
                     },
                   ]}
                 />
-                <p className="text-[11px] text-tertiary-fg mt-2">
+                <p className="text-[11px] text-muted-foreground/70 mt-2">
                   This is your global unit — applied everywhere in the app.
                 </p>
               </Field>
@@ -485,7 +485,7 @@ export default function Onboarding() {
                   ]}
                 />
                 {glucometer === false && (
-                  <p className="text-xs text-secondary-fg mt-2 bg-accent/10 border border-accent/30 rounded-lg p-3">
+                  <p className="text-xs text-muted-foreground mt-2 bg-accent/10 border border-accent/30 rounded-lg p-3">
                     You can get one at most pharmacies for under $20. It's one of the most
                     important tools in this program.
                   </p>
@@ -495,7 +495,7 @@ export default function Onboarding() {
               <Button
                 onClick={finish}
                 disabled={saving || !monitoring || glucometer == null}
-                className="w-full h-[52px] bg-primary hover:bg-primary-hover text-primary-foreground font-semibold"
+                className="w-full h-[52px] bg-primary hover:bg-primary/90 text-primary-foreground font-semibold"
               >
                 {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Let's go
@@ -521,7 +521,7 @@ function Field({
 }) {
   return (
     <div className="mb-5">
-      <Label className="text-sm font-medium mb-1.5 block text-secondary-fg">
+      <Label className="text-sm font-medium mb-1.5 block text-muted-foreground">
         {label} {required && <span className="text-destructive">*</span>}
       </Label>
       {children}
@@ -568,7 +568,7 @@ function Seg({
           className={`px-4 rounded-lg text-sm font-medium transition-all ${
             value === o.v
               ? "bg-primary text-primary-foreground shadow-sm"
-              : "text-secondary-fg"
+              : "text-muted-foreground"
           }`}
         >
           {o.label}
