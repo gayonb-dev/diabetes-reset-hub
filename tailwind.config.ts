@@ -68,6 +68,11 @@ export default {
           exercise: "hsl(var(--ring-exercise))",
           mindset: "hsl(var(--ring-mindset))",
         },
+        streak: {
+          "fire-start": "hsl(var(--streak-fire-start))",
+          "fire-end": "hsl(var(--streak-fire-end))",
+        },
+
       },
       borderRadius: {
         lg: "var(--radius)",
