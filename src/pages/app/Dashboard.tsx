@@ -9,6 +9,7 @@ import JourneyTrack from "@/components/dashboard/JourneyTrack";
 import QuickStats from "@/components/dashboard/QuickStats";
 import VitaQuoteCard from "@/components/dashboard/VitaQuoteCard";
 import { useGamification } from "@/hooks/useGamification";
+import SupplementPrompt from "@/components/onboarding/SupplementPrompt";
 
 type DayContent = { title: string; teaser: string };
 
@@ -107,6 +108,7 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-5 animate-fade-in">
+      <SupplementPrompt />
       {/* Greeting row */}
       <div className="flex items-start justify-between gap-3">
         <div>
