@@ -10,8 +10,10 @@ import {
   Menu,
   LogOut,
   Shield,
+  LifeBuoy,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Vita } from "@/components/vita/Vita";
 
 function navClass({ isActive }: { isActive: boolean }) {
   return `flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] transition-colors ${
@@ -69,9 +71,12 @@ export default function AppLayout() {
       <div className="flex flex-1">
         {/* Sidebar — dark green */}
         <aside className="hidden md:flex w-[240px] flex-col bg-sidebar text-sidebar-foreground p-4 shrink-0">
-          <Link to="/app" className="block mb-4">
-            <p className="text-[10px] uppercase tracking-[0.1em] text-white/35">Diabetes Reset</p>
-            <p className="text-base font-semibold text-white">Method</p>
+          <Link to="/app" className="flex items-center gap-3 mb-4">
+            <Vita size={32} className="shrink-0" />
+            <div>
+              <p className="text-[10px] uppercase tracking-[0.1em] text-white/35">Diabetes Reset</p>
+              <p className="text-base font-semibold text-white">Method</p>
+            </div>
           </Link>
 
           {/* Streak badge */}
@@ -102,6 +107,12 @@ export default function AppLayout() {
             <NavLink to="/app/settings" className={navClass}>
               <Menu className="h-4 w-4" /> Settings
             </NavLink>
+            <a
+              href="mailto:support@diabetesresetmethod.com?subject=App%20Support%20Request"
+              className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] text-white/60 hover:text-white hover:bg-white/8 transition-colors"
+            >
+              <LifeBuoy className="h-4 w-4" /> Get Support
+            </a>
             {isAdmin && (
               <NavLink to="/admin" className={navClass}>
                 <Shield className="h-4 w-4" /> Admin
