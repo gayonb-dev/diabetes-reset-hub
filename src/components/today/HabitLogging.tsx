@@ -108,6 +108,27 @@ export default function HabitLogging({ currentProgramDay }: Props) {
     })();
   }, [user]);
 
+  // Day 29+ workouts: count today's completed sessions, surface any paused.
+  const [workoutsTodayCount, setWorkoutsTodayCount] = useState(0);
+  const [pausedWorkout, setPausedWorkout] = useState<{ slug: string; name: string } | null>(null);
+  useEffect(() => {
+    if (!user || currentProgramDay < 29) return;
+    const start = new Date();
+    start.setHours(0, 0, 0, 0);
+    supabase
+      .from("workout_sessions")
+      .select("id,workout_slug,workout_name,status,completed_at,started_at")
+      .eq("user_id", user.id)
+      .gte("started_at", start.toISOString())
+      .order("started_at", { ascending: false })
+      .then(({ data }) => {
+        const rows = data || [];
+        setWorkoutsTodayCount(rows.filter((r) => r.status === "completed").length);
+        const paused = rows.find((r) => r.status === "paused" || r.status === "in_progress");
+        setPausedWorkout(paused ? { slug: paused.workout_slug, name: paused.workout_name } : null);
+      });
+  }, [user, currentProgramDay, h.mood, h.mindsetRead]);
+
   const waterTarget = Math.round(weightLb / 2);
   const toggle = (k: string) => setOpenKey((p) => (p === k ? null : k));
 
