@@ -383,6 +383,10 @@ export default function Dashboard() {
       {/* Row 6 — VITA quote */}
       <VitaQuoteCard quotes={VITA_TIPS} />
 
+      {/* Daily habit logging (Section 9) */}
+      <HabitLogging currentProgramDay={currentProgramDay} />
+
+
       {/* Getting Started checklist (Days 1–29 only) */}
       <GettingStartedChecklist currentProgramDay={currentProgramDay} />
 
