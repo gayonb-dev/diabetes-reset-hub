@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import BloodSugarTab from "@/components/progress/BloodSugarTab";
+import A1CTab from "@/components/progress/A1CTab";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
