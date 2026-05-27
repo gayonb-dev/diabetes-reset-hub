@@ -331,9 +331,12 @@ export default function ProgressPage() {
           </div>
         )}
       </Card>
+        </>
+      )}
     </div>
   );
 }
+
 
 function UnitChip({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
   return (
