@@ -335,8 +335,122 @@ export default function Settings() {
         </Button>
       </Card>
 
+      {/* Meal Plan Preferences — Section 5 (Section 20 of spec) */}
+      <Card className="p-5 border-border">
+        <h2 className="font-semibold text-base flex items-center gap-2 mb-1">
+          <UtensilsCrossed className="h-4 w-4 text-primary" /> Meal Plan Preferences
+        </h2>
+        <p className="text-xs text-muted-foreground mb-5">
+          These shape every plan we generate for you. Changes take effect when you regenerate.
+        </p>
+
+        {/* Cuisine */}
+        <div className="mb-5">
+          <Label className="text-xs uppercase tracking-wide text-muted-foreground">Cuisine style</Label>
+          <div className="flex flex-wrap gap-2 mt-2">
+            {CUISINE_OPTIONS.map((c) => {
+              const on = cuisines.includes(c);
+              return (
+                <button
+                  key={c}
+                  type="button"
+                  onClick={() => setCuisines((prev) => toggleInArray(prev, c))}
+                  className={`px-3 py-1.5 rounded-full border text-sm transition-colors ${
+                    on
+                      ? "border-primary bg-primary text-primary-foreground"
+                      : "border-border bg-background hover:border-primary/40"
+                  }`}
+                >
+                  {c}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Proteins */}
+        <div className="mb-5">
+          <Label className="text-xs uppercase tracking-wide text-muted-foreground">Protein preferences</Label>
+          <div className="flex flex-wrap gap-2 mt-2">
+            {PROTEIN_OPTIONS.map((p) => {
+              const on = proteins.includes(p);
+              return (
+                <button
+                  key={p}
+                  type="button"
+                  onClick={() =>
+                    setProteins((prev) => toggleInArray(prev, p, "I eat all of these"))
+                  }
+                  className={`px-3 py-1.5 rounded-full border text-sm transition-colors ${
+                    on
+                      ? "border-primary bg-primary text-primary-foreground"
+                      : "border-border bg-background hover:border-primary/40"
+                  }`}
+                >
+                  {p}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Foods to avoid */}
+        <div className="mb-5">
+          <Label htmlFor="avoid" className="text-xs uppercase tracking-wide text-muted-foreground">
+            Foods to avoid
+          </Label>
+          <Textarea
+            id="avoid"
+            placeholder="E.g. shellfish, peanuts, dairy, cilantro…"
+            value={foodsToAvoid}
+            onChange={(e) => setFoodsToAvoid(e.target.value)}
+            className="mt-2 min-h-[64px]"
+          />
+          <p className="text-[11px] text-muted-foreground mt-1">
+            Comma-separate. We'll skip these in every plan.
+          </p>
+        </div>
+
+        {/* Cooking time */}
+        <div className="mb-5">
+          <Label className="text-xs uppercase tracking-wide text-muted-foreground">Cooking time</Label>
+          <div className="grid sm:grid-cols-2 gap-2 mt-2">
+            {COOKING_TIME_OPTIONS.map((t) => (
+              <button
+                key={t}
+                type="button"
+                onClick={() => setCookingTime(t)}
+                className={`text-left px-3 py-2 rounded-lg border text-sm transition-colors ${
+                  cookingTime === t
+                    ? "border-primary bg-primary/5 text-foreground"
+                    : "border-border bg-background hover:border-primary/40"
+                }`}
+              >
+                {t}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {prefsDirty && (
+          <Button
+            onClick={regenerateMealPlan}
+            disabled={regenerating}
+            className="bg-primary hover:bg-primary-hover text-primary-foreground"
+          >
+            {regenerating ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <RefreshCw className="mr-2 h-4 w-4" />
+            )}
+            Regenerate my meal plan with these preferences
+          </Button>
+        )}
+      </Card>
+
       {/* Billing link */}
       <Card className="p-5 border-border">
+
         <h2 className="font-semibold text-base flex items-center gap-2 mb-1">
           <CreditCard className="h-4 w-4 text-primary" /> Billing
         </h2>
