@@ -108,6 +108,7 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-5 animate-fade-in">
+      <SupplementPrompt />
       {/* Greeting row */}
       <div className="flex items-start justify-between gap-3">
         <div>
