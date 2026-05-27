@@ -24,6 +24,7 @@ import Library from "./pages/app/Library";
 import WorkoutLibrary from "./pages/app/WorkoutLibrary";
 import WorkoutSession from "./pages/app/WorkoutSession";
 import WorkoutComplete from "./pages/app/WorkoutComplete";
+import Meals from "./pages/app/Meals";
 import Ask from "./pages/app/Ask";
 import Billing from "./pages/app/Billing";
 import Onboarding from "./pages/app/Onboarding";
