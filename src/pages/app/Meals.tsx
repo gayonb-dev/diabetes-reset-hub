@@ -10,6 +10,7 @@ import { ChevronDown, ChevronUp, RefreshCw, Clock, Repeat2, Loader2 } from "luci
 import { Vita } from "@/components/vita/Vita";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import { SnackLibrary } from "@/components/meals/SnackLibrary";
 
 // ----- types -----
 interface Ingredient { item: string; quantity: string; unit: string }
@@ -450,8 +451,14 @@ export default function Meals() {
         <TabsList className="bg-muted">
           <TabsTrigger value="plan">My Meal Plan</TabsTrigger>
           <TabsTrigger value="shopping">Shopping List</TabsTrigger>
+          <TabsTrigger value="snacks">Snacks</TabsTrigger>
           <TabsTrigger value="preferences">Preferences</TabsTrigger>
         </TabsList>
+
+        <TabsContent value="snacks" className="mt-4">
+          <SnackLibrary dayNumber={programDay} />
+        </TabsContent>
+
 
         <TabsContent value="plan" className="mt-4 space-y-4">
           <div className="flex gap-2">

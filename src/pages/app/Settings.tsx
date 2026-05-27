@@ -20,9 +20,36 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Loader2, CreditCard, Shield, Download, Trash2, LogOut, ArrowRight } from "lucide-react";
+import { Loader2, CreditCard, Shield, Download, Trash2, LogOut, ArrowRight, UtensilsCrossed, RefreshCw } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
 import { getUnits, setUnits, WeightUnit, GlucoseUnit } from "@/lib/units";
+
+const CUISINE_OPTIONS = [
+  "International (balanced)",
+  "Mediterranean",
+  "Asian",
+  "Latin",
+  "African",
+  "Caribbean",
+  "American",
+] as const;
+const PROTEIN_OPTIONS = [
+  "Chicken",
+  "Fish and seafood",
+  "Beef",
+  "Pork",
+  "Eggs",
+  "Legumes and beans",
+  "Tofu and plant protein",
+  "I eat all of these",
+] as const;
+const COOKING_TIME_OPTIONS = [
+  "Under 20 minutes",
+  "20 to 45 minutes",
+  "Over 45 minutes",
+  "I prefer no-cook or minimal prep",
+] as const;
 
 export default function Settings() {
   const { user, signOut } = useAuth();
@@ -40,6 +67,16 @@ export default function Settings() {
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
+  // Meal Plan Preferences (Section 5 — Section 20 of spec)
+  const [profileId, setProfileId] = useState<string | null>(null);
+  const [profileMetadata, setProfileMetadata] = useState<Record<string, unknown>>({});
+  const [cuisines, setCuisines] = useState<string[]>(["International (balanced)"]);
+  const [proteins, setProteins] = useState<string[]>(["I eat all of these"]);
+  const [foodsToAvoid, setFoodsToAvoid] = useState("");
+  const [cookingTime, setCookingTime] = useState<string>("20 to 45 minutes");
+  const [initialPrefs, setInitialPrefs] = useState<string>("");
+  const [regenerating, setRegenerating] = useState(false);
+
   useEffect(() => {
     if (!user) return;
     supabase
@@ -55,7 +92,108 @@ export default function Settings() {
           setWaOptedIn(!data.revoked_at);
         }
       });
+
+    // Load meal plan preferences from visitor_profiles.metadata
+    supabase
+      .from("visitor_profiles")
+      .select("id, metadata")
+      .eq("user_id", user.id)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (!data) return;
+        const meta = (data.metadata as Record<string, unknown>) ?? {};
+        setProfileId(data.id);
+        setProfileMetadata(meta);
+        const c = (meta.cuisine_preferences as string[]) ?? ["International (balanced)"];
+        const p = (meta.protein_preferences as string[]) ?? ["I eat all of these"];
+        const avoid = (meta.foods_to_avoid as string) ?? "";
+        const ct = (meta.cooking_time as string) ?? "20 to 45 minutes";
+        setCuisines(c);
+        setProteins(p);
+        setFoodsToAvoid(avoid);
+        setCookingTime(ct);
+        setInitialPrefs(JSON.stringify({ c, p, avoid, ct }));
+      });
   }, [user]);
+
+  const prefsDirty =
+    initialPrefs !== "" &&
+    JSON.stringify({ c: cuisines, p: proteins, avoid: foodsToAvoid, ct: cookingTime }) !== initialPrefs;
+
+  const toggleInArray = (arr: string[], v: string, single?: string) => {
+    // If "I eat all of these" is selected, clear others; selecting any other clears it.
+    if (single && v === single) return [single];
+    const next = arr.includes(v) ? arr.filter((x) => x !== v) : [...arr.filter((x) => x !== single), v];
+    return next.length === 0 ? (single ? [single] : []) : next;
+  };
+
+  const regenerateMealPlan = async () => {
+    if (!user || !profileId) return;
+    setRegenerating(true);
+    try {
+      const allergies = foodsToAvoid
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean);
+
+      const newMeta = {
+        ...profileMetadata,
+        cuisine_preferences: cuisines,
+        protein_preferences: proteins,
+        foods_to_avoid: foodsToAvoid,
+        allergies,
+        cooking_time: cookingTime,
+      };
+      await supabase
+        .from("visitor_profiles")
+        .update({ metadata: newMeta } as never)
+        .eq("id", profileId);
+      setProfileMetadata(newMeta);
+
+      const today = new Date();
+      const validUntil = new Date(today);
+      validUntil.setDate(today.getDate() + 13);
+      const { data: planRow, error } = await supabase
+        .from("meal_plans")
+        .insert({
+          member_id: user.id,
+          plan_type: "standard",
+          generation_status: "pending",
+          generation_trigger: "preferences_update",
+          valid_from: today.toISOString().slice(0, 10),
+          valid_until: validUntil.toISOString().slice(0, 10),
+          preferences_snapshot: {
+            cuisine_preferences: cuisines,
+            protein_preferences: proteins,
+            allergies,
+            cooking_time: cookingTime,
+          },
+          plan_data: {},
+        } as never)
+        .select("id")
+        .single();
+      if (error) throw error;
+
+      if (planRow?.id) {
+        supabase.functions
+          .invoke("generate-meal-plan", { body: { plan_id: planRow.id } })
+          .catch(() => {});
+      }
+      setInitialPrefs(JSON.stringify({ c: cuisines, p: proteins, avoid: foodsToAvoid, ct: cookingTime }));
+      toast({
+        title: "Regenerating your meal plan",
+        description: "We'll have your new plan ready in under a minute.",
+      });
+    } catch (e) {
+      toast({
+        title: "Couldn't regenerate",
+        description: e instanceof Error ? e.message : "Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setRegenerating(false);
+    }
+  };
 
   const saveUnits = (next: { weight?: WeightUnit; glucose?: GlucoseUnit }) => {
     setUnits(next);
@@ -67,6 +205,7 @@ export default function Settings() {
     setWaSaving(true);
     if (waOptedIn && waPhone.trim()) {
       await supabase.from("whatsapp_consent").upsert(
+
         {
           user_id: user.id,
           phone_number: waPhone.trim(),
@@ -187,8 +326,122 @@ export default function Settings() {
         </Button>
       </Card>
 
+      {/* Meal Plan Preferences — Section 5 (Section 20 of spec) */}
+      <Card className="p-5 border-border">
+        <h2 className="font-semibold text-base flex items-center gap-2 mb-1">
+          <UtensilsCrossed className="h-4 w-4 text-primary" /> Meal Plan Preferences
+        </h2>
+        <p className="text-xs text-muted-foreground mb-5">
+          These shape every plan we generate for you. Changes take effect when you regenerate.
+        </p>
+
+        {/* Cuisine */}
+        <div className="mb-5">
+          <Label className="text-xs uppercase tracking-wide text-muted-foreground">Cuisine style</Label>
+          <div className="flex flex-wrap gap-2 mt-2">
+            {CUISINE_OPTIONS.map((c) => {
+              const on = cuisines.includes(c);
+              return (
+                <button
+                  key={c}
+                  type="button"
+                  onClick={() => setCuisines((prev) => toggleInArray(prev, c))}
+                  className={`px-3 py-1.5 rounded-full border text-sm transition-colors ${
+                    on
+                      ? "border-primary bg-primary text-primary-foreground"
+                      : "border-border bg-background hover:border-primary/40"
+                  }`}
+                >
+                  {c}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Proteins */}
+        <div className="mb-5">
+          <Label className="text-xs uppercase tracking-wide text-muted-foreground">Protein preferences</Label>
+          <div className="flex flex-wrap gap-2 mt-2">
+            {PROTEIN_OPTIONS.map((p) => {
+              const on = proteins.includes(p);
+              return (
+                <button
+                  key={p}
+                  type="button"
+                  onClick={() =>
+                    setProteins((prev) => toggleInArray(prev, p, "I eat all of these"))
+                  }
+                  className={`px-3 py-1.5 rounded-full border text-sm transition-colors ${
+                    on
+                      ? "border-primary bg-primary text-primary-foreground"
+                      : "border-border bg-background hover:border-primary/40"
+                  }`}
+                >
+                  {p}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Foods to avoid */}
+        <div className="mb-5">
+          <Label htmlFor="avoid" className="text-xs uppercase tracking-wide text-muted-foreground">
+            Foods to avoid
+          </Label>
+          <Textarea
+            id="avoid"
+            placeholder="E.g. shellfish, peanuts, dairy, cilantro…"
+            value={foodsToAvoid}
+            onChange={(e) => setFoodsToAvoid(e.target.value)}
+            className="mt-2 min-h-[64px]"
+          />
+          <p className="text-[11px] text-muted-foreground mt-1">
+            Comma-separate. We'll skip these in every plan.
+          </p>
+        </div>
+
+        {/* Cooking time */}
+        <div className="mb-5">
+          <Label className="text-xs uppercase tracking-wide text-muted-foreground">Cooking time</Label>
+          <div className="grid sm:grid-cols-2 gap-2 mt-2">
+            {COOKING_TIME_OPTIONS.map((t) => (
+              <button
+                key={t}
+                type="button"
+                onClick={() => setCookingTime(t)}
+                className={`text-left px-3 py-2 rounded-lg border text-sm transition-colors ${
+                  cookingTime === t
+                    ? "border-primary bg-primary/5 text-foreground"
+                    : "border-border bg-background hover:border-primary/40"
+                }`}
+              >
+                {t}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {prefsDirty && (
+          <Button
+            onClick={regenerateMealPlan}
+            disabled={regenerating}
+            className="bg-primary hover:bg-primary-hover text-primary-foreground"
+          >
+            {regenerating ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <RefreshCw className="mr-2 h-4 w-4" />
+            )}
+            Regenerate my meal plan with these preferences
+          </Button>
+        )}
+      </Card>
+
       {/* Billing link */}
       <Card className="p-5 border-border">
+
         <h2 className="font-semibold text-base flex items-center gap-2 mb-1">
           <CreditCard className="h-4 w-4 text-primary" /> Billing
         </h2>
