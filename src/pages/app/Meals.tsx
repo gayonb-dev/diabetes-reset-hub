@@ -10,6 +10,7 @@ import { ChevronDown, ChevronUp, RefreshCw, Clock, Repeat2, Loader2 } from "luci
 import { Vita } from "@/components/vita/Vita";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import { SnackLibrary } from "@/components/meals/SnackLibrary";
 
 // ----- types -----
 interface Ingredient { item: string; quantity: string; unit: string }
