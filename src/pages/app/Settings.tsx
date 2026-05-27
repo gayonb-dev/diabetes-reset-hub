@@ -204,7 +204,17 @@ export default function Settings() {
     }
   };
 
+  const saveUnits = (next: { weight?: WeightUnit; glucose?: GlucoseUnit }) => {
+    setUnits(next);
+    toast({ title: "Units updated" });
+  };
+
+  const saveWhatsapp = async () => {
+    if (!user) return;
+    setWaSaving(true);
+    if (waOptedIn && waPhone.trim()) {
       await supabase.from("whatsapp_consent").upsert(
+
         {
           user_id: user.id,
           phone_number: waPhone.trim(),
