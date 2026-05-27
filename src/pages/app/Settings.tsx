@@ -86,7 +86,6 @@ export default function Settings() {
       .order("opted_in_at", { ascending: false })
       .limit(1)
       .maybeSingle()
-  useEffect(() => {
     if (!user) return;
     supabase
       .from("whatsapp_consent")
