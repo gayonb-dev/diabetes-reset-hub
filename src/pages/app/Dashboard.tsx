@@ -89,6 +89,7 @@ export default function Dashboard() {
 
   const phase = phaseFor(currentProgramDay);
   const dayInPhase = Math.min(currentProgramDay - (phase.index - 1) * 14, phase.total);
+  const gam = useGamificationProfile(currentProgramDay);
 
   useEffect(() => {
     if (!user) return;
