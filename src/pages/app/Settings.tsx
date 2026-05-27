@@ -67,6 +67,16 @@ export default function Settings() {
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
+  // Meal Plan Preferences (Section 5 — Section 20 of spec)
+  const [profileId, setProfileId] = useState<string | null>(null);
+  const [profileMetadata, setProfileMetadata] = useState<Record<string, unknown>>({});
+  const [cuisines, setCuisines] = useState<string[]>(["International (balanced)"]);
+  const [proteins, setProteins] = useState<string[]>(["I eat all of these"]);
+  const [foodsToAvoid, setFoodsToAvoid] = useState("");
+  const [cookingTime, setCookingTime] = useState<string>("20 to 45 minutes");
+  const [initialPrefs, setInitialPrefs] = useState<string>("");
+  const [regenerating, setRegenerating] = useState(false);
+
   useEffect(() => {
     if (!user) return;
     supabase
