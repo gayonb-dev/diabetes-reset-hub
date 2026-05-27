@@ -107,6 +107,12 @@ export default function AppLayout() {
             <NavLink to="/app/settings" className={navClass}>
               <Menu className="h-4 w-4" /> Settings
             </NavLink>
+            <a
+              href="mailto:support@diabetesresetmethod.com?subject=App%20Support%20Request"
+              className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] text-white/60 hover:text-white hover:bg-white/8 transition-colors"
+            >
+              <LifeBuoy className="h-4 w-4" /> Get Support
+            </a>
             {isAdmin && (
               <NavLink to="/admin" className={navClass}>
                 <Shield className="h-4 w-4" /> Admin
