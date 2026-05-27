@@ -450,8 +450,14 @@ export default function Meals() {
         <TabsList className="bg-muted">
           <TabsTrigger value="plan">My Meal Plan</TabsTrigger>
           <TabsTrigger value="shopping">Shopping List</TabsTrigger>
+          <TabsTrigger value="snacks">Snacks</TabsTrigger>
           <TabsTrigger value="preferences">Preferences</TabsTrigger>
         </TabsList>
+
+        <TabsContent value="snacks" className="mt-4">
+          <SnackLibrary dayNumber={subscription?.day_number ?? 1} />
+        </TabsContent>
+
 
         <TabsContent value="plan" className="mt-4 space-y-4">
           <div className="flex gap-2">
