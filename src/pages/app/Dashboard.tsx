@@ -210,8 +210,9 @@ export default function Dashboard() {
     },
     {
       label: "Water Today",
-      value: null, // wired in Phase covering Section 9
-      sub: undefined,
+      value: habits.waterOz > 0 ? String(habits.waterOz) : null,
+      unit: habits.waterOz > 0 ? `oz / ${waterTargetOz}oz` : undefined,
+      sub: habits.waterStreak > 1 ? `💧 ${habits.waterStreak}-day streak` : undefined,
       emptyHint: "Tap to log",
       tone: "water" as const,
       href: "/app/progress",
