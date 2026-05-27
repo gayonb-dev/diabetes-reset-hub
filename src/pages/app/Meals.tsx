@@ -456,7 +456,7 @@ export default function Meals() {
         </TabsList>
 
         <TabsContent value="snacks" className="mt-4">
-          <SnackLibrary dayNumber={subscription?.day_number ?? 1} />
+          <SnackLibrary dayNumber={programDay} />
         </TabsContent>
 
 
