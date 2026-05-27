@@ -86,23 +86,124 @@ export default function Settings() {
       .order("opted_in_at", { ascending: false })
       .limit(1)
       .maybeSingle()
+  useEffect(() => {
+    if (!user) return;
+    supabase
+      .from("whatsapp_consent")
+      .select("phone_number, revoked_at")
+      .eq("user_id", user.id)
+      .order("opted_in_at", { ascending: false })
+      .limit(1)
+      .maybeSingle()
       .then(({ data }) => {
         if (data) {
           setWaPhone(data.phone_number ?? "");
           setWaOptedIn(!data.revoked_at);
         }
       });
+
+    // Load meal plan preferences from visitor_profiles.metadata
+    supabase
+      .from("visitor_profiles")
+      .select("id, metadata")
+      .eq("user_id", user.id)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (!data) return;
+        const meta = (data.metadata as Record<string, unknown>) ?? {};
+        setProfileId(data.id);
+        setProfileMetadata(meta);
+        const c = (meta.cuisine_preferences as string[]) ?? ["International (balanced)"];
+        const p = (meta.protein_preferences as string[]) ?? ["I eat all of these"];
+        const avoid = (meta.foods_to_avoid as string) ?? "";
+        const ct = (meta.cooking_time as string) ?? "20 to 45 minutes";
+        setCuisines(c);
+        setProteins(p);
+        setFoodsToAvoid(avoid);
+        setCookingTime(ct);
+        setInitialPrefs(JSON.stringify({ c, p, avoid, ct }));
+      });
   }, [user]);
 
-  const saveUnits = (next: { weight?: WeightUnit; glucose?: GlucoseUnit }) => {
-    setUnits(next);
-    toast({ title: "Units updated" });
+  const prefsDirty =
+    initialPrefs !== "" &&
+    JSON.stringify({ c: cuisines, p: proteins, avoid: foodsToAvoid, ct: cookingTime }) !== initialPrefs;
+
+  const toggleInArray = (arr: string[], v: string, single?: string) => {
+    // If "I eat all of these" is selected, clear others; selecting any other clears it.
+    if (single && v === single) return [single];
+    const next = arr.includes(v) ? arr.filter((x) => x !== v) : [...arr.filter((x) => x !== single), v];
+    return next.length === 0 ? (single ? [single] : []) : next;
   };
 
-  const saveWhatsapp = async () => {
-    if (!user) return;
-    setWaSaving(true);
-    if (waOptedIn && waPhone.trim()) {
+  const regenerateMealPlan = async () => {
+    if (!user || !profileId) return;
+    setRegenerating(true);
+    try {
+      const allergies = foodsToAvoid
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean);
+
+      const newMeta = {
+        ...profileMetadata,
+        cuisine_preferences: cuisines,
+        protein_preferences: proteins,
+        foods_to_avoid: foodsToAvoid,
+        allergies,
+        cooking_time: cookingTime,
+      };
+      await supabase
+        .from("visitor_profiles")
+        .update({ metadata: newMeta } as never)
+        .eq("id", profileId);
+      setProfileMetadata(newMeta);
+
+      const today = new Date();
+      const validUntil = new Date(today);
+      validUntil.setDate(today.getDate() + 13);
+      const { data: planRow, error } = await supabase
+        .from("meal_plans")
+        .insert({
+          member_id: user.id,
+          plan_type: "standard",
+          generation_status: "pending",
+          generation_trigger: "preferences_update",
+          valid_from: today.toISOString().slice(0, 10),
+          valid_until: validUntil.toISOString().slice(0, 10),
+          preferences_snapshot: {
+            cuisine_preferences: cuisines,
+            protein_preferences: proteins,
+            allergies,
+            cooking_time: cookingTime,
+          },
+          plan_data: {},
+        } as never)
+        .select("id")
+        .single();
+      if (error) throw error;
+
+      if (planRow?.id) {
+        supabase.functions
+          .invoke("generate-meal-plan", { body: { plan_id: planRow.id } })
+          .catch(() => {});
+      }
+      setInitialPrefs(JSON.stringify({ c: cuisines, p: proteins, avoid: foodsToAvoid, ct: cookingTime }));
+      toast({
+        title: "Regenerating your meal plan",
+        description: "We'll have your new plan ready in under a minute.",
+      });
+    } catch (e) {
+      toast({
+        title: "Couldn't regenerate",
+        description: e instanceof Error ? e.message : "Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setRegenerating(false);
+    }
+  };
+
       await supabase.from("whatsapp_consent").upsert(
         {
           user_id: user.id,
