@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { Link } from "react-router-dom";
 
 interface Stat {
   label: string;
@@ -7,6 +8,7 @@ interface Stat {
   sub?: string;
   tone?: "normal" | "warning" | "danger" | "neutral" | "water";
   emptyHint?: string;
+  href?: string;
 }
 
 interface QuickStatsProps {
@@ -28,8 +30,8 @@ export function QuickStats({ stats, className }: QuickStatsProps) {
       {stats.map((s) => {
         const empty = s.value == null || s.value === "";
         const colorCls = toneColor[s.tone ?? "neutral"];
-        return (
-          <div key={s.label} className="bg-card border border-border rounded-lg p-3 shadow-warm">
+        const inner = (
+          <div className="bg-card border border-border rounded-lg p-3 shadow-warm h-full text-left transition-shadow hover:shadow-md">
             <p className="text-[10px] text-tertiary-fg mb-1">{s.label}</p>
             {empty ? (
               <>
@@ -48,6 +50,13 @@ export function QuickStats({ stats, className }: QuickStatsProps) {
               </>
             )}
           </div>
+        );
+        return s.href ? (
+          <Link key={s.label} to={s.href} className="block">
+            {inner}
+          </Link>
+        ) : (
+          <div key={s.label}>{inner}</div>
         );
       })}
     </div>
