@@ -87,6 +87,7 @@ export type Database = {
       }
       badges: {
         Row: {
+          category: string
           created_at: string
           description: string
           icon: string
@@ -95,9 +96,11 @@ export type Database = {
           slug: string
           sort_order: number
           tier: string
+          unlock_hint: string | null
           xp_reward: number
         }
         Insert: {
+          category?: string
           created_at?: string
           description: string
           icon: string
@@ -106,9 +109,11 @@ export type Database = {
           slug: string
           sort_order?: number
           tier?: string
+          unlock_hint?: string | null
           xp_reward?: number
         }
         Update: {
+          category?: string
           created_at?: string
           description?: string
           icon?: string
@@ -117,6 +122,7 @@ export type Database = {
           slug?: string
           sort_order?: number
           tier?: string
+          unlock_hint?: string | null
           xp_reward?: number
         }
         Relationships: []
