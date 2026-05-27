@@ -260,9 +260,13 @@ export default function Dashboard() {
       value: latestA1C ? `${latestA1C.value.toFixed(1)}%` : null,
       sub: latestA1C ? `${daysSince(latestA1C.date)}d ago` : undefined,
       emptyHint: "Enter A1C →",
-      tone: latestA1C
-        ? ((latestA1C.value < 5.7 ? "normal" : latestA1C.value < 6.5 ? "warning" : "danger") as const)
-        : ("warning" as const),
+      tone: (latestA1C
+        ? latestA1C.value < 5.7
+          ? "normal"
+          : latestA1C.value < 6.5
+          ? "warning"
+          : "danger"
+        : "warning") as "normal" | "warning" | "danger",
       href: "/app/progress",
     },
   ];
