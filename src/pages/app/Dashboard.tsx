@@ -11,7 +11,9 @@ import VitaQuoteCard from "@/components/dashboard/VitaQuoteCard";
 import GettingStartedChecklist from "@/components/dashboard/GettingStartedChecklist";
 import { useGamification } from "@/hooks/useGamification";
 import SupplementPrompt from "@/components/onboarding/SupplementPrompt";
-import { getUnits, displayGlucose, displayWeight } from "@/lib/units";
+import HabitLogging from "@/components/today/HabitLogging";
+import { useDailyHabits } from "@/hooks/useDailyHabits";
+import { getUnits, displayGlucose, displayWeight, mgdlToMmoll } from "@/lib/units";
 
 type DailyAction = {
   id: string;
