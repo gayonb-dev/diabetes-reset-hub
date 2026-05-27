@@ -5,7 +5,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
-import { ChevronDown, ChevronUp, Check, X, Droplet, Apple, Cookie, Footprints, Brain, Smile } from "lucide-react";
+import { ChevronDown, ChevronUp, Check, X, Droplet, Apple, Cookie, Footprints, Brain, Smile, Dumbbell } from "lucide-react";
+import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
 
 interface Props {
@@ -106,6 +107,27 @@ export default function HabitLogging({ currentProgramDay }: Props) {
       if (hl?.weight) setWeightLb(Number(hl.weight));
     })();
   }, [user]);
+
+  // Day 29+ workouts: count today's completed sessions, surface any paused.
+  const [workoutsTodayCount, setWorkoutsTodayCount] = useState(0);
+  const [pausedWorkout, setPausedWorkout] = useState<{ slug: string; name: string } | null>(null);
+  useEffect(() => {
+    if (!user || currentProgramDay < 29) return;
+    const start = new Date();
+    start.setHours(0, 0, 0, 0);
+    supabase
+      .from("workout_sessions")
+      .select("id,workout_slug,workout_name,status,completed_at,started_at")
+      .eq("user_id", user.id)
+      .gte("started_at", start.toISOString())
+      .order("started_at", { ascending: false })
+      .then(({ data }) => {
+        const rows = data || [];
+        setWorkoutsTodayCount(rows.filter((r) => r.status === "completed").length);
+        const paused = rows.find((r) => r.status === "paused" || r.status === "in_progress");
+        setPausedWorkout(paused ? { slug: paused.workout_slug, name: paused.workout_name } : null);
+      });
+  }, [user, currentProgramDay, h.mood, h.mindsetRead]);
 
   const waterTarget = Math.round(weightLb / 2);
   const toggle = (k: string) => setOpenKey((p) => (p === k ? null : k));
@@ -298,10 +320,16 @@ export default function HabitLogging({ currentProgramDay }: Props) {
       {/* EXERCISE */}
       {showExercise && (
         <Section
-          icon={Footprints}
+          icon={phase === 2 ? Footprints : Dumbbell}
           title={phase === 2 ? "Post-meal walks" : "Exercise"}
           iconColor="hsl(var(--ring-exercise))"
-          status={phase === 2 ? `${walksDone} / 3 walks` : "Workout"}
+          status={
+            phase === 2
+              ? `${walksDone} / 3 walks`
+              : workoutsTodayCount > 0
+                ? `${workoutsTodayCount} workout${workoutsTodayCount > 1 ? "s" : ""} logged ✓`
+                : "Tap to start"
+          }
           open={openKey === "exercise"}
           onToggle={() => toggle("exercise")}
         >
@@ -325,9 +353,27 @@ export default function HabitLogging({ currentProgramDay }: Props) {
               })}
             </div>
           ) : (
-            <p className="text-sm text-tertiary-fg mt-3">
-              Structured workouts open in the Library tab from Day 29.
-            </p>
+            <div className="mt-3 space-y-2">
+              {pausedWorkout && (
+                <Link
+                  to={`/app/workouts/${pausedWorkout.slug}?resume=1`}
+                  className="block rounded-lg border border-accent/50 bg-accent-muted/40 p-3 text-sm"
+                >
+                  <p className="font-medium text-foreground">
+                    Resume {pausedWorkout.name}
+                  </p>
+                  <p className="text-xs text-muted-foreground">Pick up where you left off.</p>
+                </Link>
+              )}
+              <Button asChild className="w-full bg-primary hover:bg-primary-hover text-primary-foreground">
+                <Link to="/app/workouts">
+                  {workoutsTodayCount > 0 ? "Start another workout" : "Begin today's workout"}
+                </Link>
+              </Button>
+              <p className="text-xs text-muted-foreground">
+                Aim for 3 sessions/week. Standard or Knee-Friendly track — pick what fits.
+              </p>
+            </div>
           )}
         </Section>
       )}
