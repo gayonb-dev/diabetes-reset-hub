@@ -69,12 +69,14 @@ function bloodSugarTone(mgdl: number): "normal" | "warning" | "danger" {
 export default function Dashboard() {
   const { user, subscription } = useAuth();
   const { streak } = useGamification();
+  const habits = useDailyHabits();
 
   const [meta, setMeta] = useState<ProfileMeta>({});
   const [action, setAction] = useState<DailyAction | null>(null);
   const [progress, setProgress] = useState<Progress | null>(null);
   const [latestBS, setLatestBS] = useState<{ value: number; date: string } | null>(null);
   const [latestWeight, setLatestWeight] = useState<{ value: number; date: string } | null>(null);
+  const [waterTargetLb, setWaterTargetLb] = useState<number>(180);
 
   // current program day from subscription created_at
   const currentProgramDay = useMemo(() => {
