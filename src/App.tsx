@@ -27,6 +27,7 @@ import Onboarding from "./pages/app/Onboarding";
 import CoachingWaitlist from "./pages/app/CoachingWaitlist";
 import AppProgress from "./pages/app/Progress";
 import Settings from "./pages/app/Settings";
+import Profile from "./pages/app/Profile";
 import AdminLayout from "./pages/admin/AdminLayout";
 import AdminSubscriptions from "./pages/admin/AdminSubscriptions";
 import AdminQaQueue from "./pages/admin/AdminQaQueue";
@@ -112,6 +113,7 @@ const App = () => (
               <Route path="progress" element={<AppProgress />} />
               <Route path="billing" element={<Billing />} />
               <Route path="settings" element={<Settings />} />
+              <Route path="profile" element={<Profile />} />
               <Route path="coaching-waitlist" element={<CoachingWaitlist />} />
 
             </Route>
