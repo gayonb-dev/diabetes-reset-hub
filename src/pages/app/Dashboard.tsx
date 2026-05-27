@@ -3,17 +3,22 @@ import { Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, CheckCircle2, Flame } from "lucide-react";
+import { ArrowRight, CheckCircle2 } from "lucide-react";
 import HabitRing from "@/components/dashboard/HabitRing";
 import JourneyTrack from "@/components/dashboard/JourneyTrack";
 import QuickStats from "@/components/dashboard/QuickStats";
 import VitaQuoteCard from "@/components/dashboard/VitaQuoteCard";
 import GettingStartedChecklist from "@/components/dashboard/GettingStartedChecklist";
-import { useGamification } from "@/hooks/useGamification";
+import StreakBadge from "@/components/gamification/StreakBadge";
+import LevelBadge from "@/components/gamification/LevelBadge";
+import StreakHistoryModal from "@/components/gamification/StreakHistoryModal";
+import LevelUpOverlay from "@/components/gamification/LevelUpOverlay";
+import Phase1ExtensionPrompt from "@/components/gamification/Phase1ExtensionPrompt";
+import { useGamificationProfile } from "@/hooks/useGamificationProfile";
 import SupplementPrompt from "@/components/onboarding/SupplementPrompt";
 import HabitLogging from "@/components/today/HabitLogging";
 import { useDailyHabits } from "@/hooks/useDailyHabits";
-import { getUnits, displayGlucose, displayWeight, mgdlToMmoll } from "@/lib/units";
+import { getUnits, displayGlucose, displayWeight } from "@/lib/units";
 
 type DailyAction = {
   id: string;
