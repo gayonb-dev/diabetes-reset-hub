@@ -1505,6 +1505,48 @@ export type Database = {
         }
         Relationships: []
       }
+      snack_library: {
+        Row: {
+          created_at: string
+          description: string
+          id: string
+          is_active: boolean
+          name: string
+          nutritional_note: string
+          sort_order: number
+          timing: string
+          type: string
+          unlock_day: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          id?: string
+          is_active?: boolean
+          name: string
+          nutritional_note: string
+          sort_order?: number
+          timing: string
+          type: string
+          unlock_day?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          nutritional_note?: string
+          sort_order?: number
+          timing?: string
+          type?: string
+          unlock_day?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       snack_logs: {
         Row: {
           created_at: string
