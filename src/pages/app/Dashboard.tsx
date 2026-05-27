@@ -149,6 +149,28 @@ export default function Dashboard() {
         setLatestWeight({ value: Number(w.weight), date: w.log_date as string });
         setWaterTargetLb(Number(w.weight));
       }
+
+      const { data: a1c } = await supabase
+        .from("a1c_logs")
+        .select("value_percent, measured_on")
+        .eq("member_id", user.id)
+        .order("measured_on", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (!cancelled && a1c?.value_percent != null) {
+        setLatestA1C({ value: Number(a1c.value_percent), date: a1c.measured_on as string });
+      }
+
+      const { data: rd } = await supabase
+        .from("blood_sugar_readings")
+        .select("value_mgdl, measured_at")
+        .eq("member_id", user.id)
+        .order("measured_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (!cancelled && rd?.value_mgdl != null) {
+        setLatestReading({ value: rd.value_mgdl as number, at: rd.measured_at as string });
+      }
     })();
 
     return () => {
