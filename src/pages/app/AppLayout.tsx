@@ -11,6 +11,7 @@ import {
   LogOut,
   Shield,
   LifeBuoy,
+  User,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Vita } from "@/components/vita/Vita";
@@ -103,6 +104,9 @@ export default function AppLayout() {
             </NavLink>
             <NavLink to="/app/ask" className={navClass}>
               <MessageCircleQuestion className="h-4 w-4" /> Ask
+            </NavLink>
+            <NavLink to="/app/profile" className={navClass}>
+              <User className="h-4 w-4" /> Profile
             </NavLink>
             <NavLink to="/app/settings" className={navClass}>
               <Menu className="h-4 w-4" /> Settings
