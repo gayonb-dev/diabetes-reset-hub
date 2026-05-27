@@ -220,16 +220,19 @@ export default function Dashboard() {
   const daysSince = (iso: string) =>
     Math.floor((Date.now() - new Date(iso).getTime()) / 86400000);
 
+  const bsSource = latestReading
+    ? { value: latestReading.value, date: latestReading.at }
+    : latestBS;
   const stats = [
     {
       label: "Blood Sugar",
-      value: latestBS
-        ? displayGlucose(latestBS.value, bsUnit).replace(/ (mg\/dL|mmol\/L)$/, "")
+      value: bsSource
+        ? displayGlucose(bsSource.value, bsUnit).replace(/ (mg\/dL|mmol\/L)$/, "")
         : null,
-      unit: latestBS ? (bsUnit === "mmoll" ? "mmol/L" : "mg/dL") : undefined,
-      sub: latestBS ? `Logged ${daysSince(latestBS.date)}d ago` : undefined,
+      unit: bsSource ? (bsUnit === "mmoll" ? "mmol/L" : "mg/dL") : undefined,
+      sub: bsSource ? `Logged ${daysSince(bsSource.date)}d ago` : undefined,
       emptyHint: "Tap to log",
-      tone: latestBS ? bloodSugarTone(latestBS.value) : ("warning" as const),
+      tone: bsSource ? bloodSugarTone(bsSource.value) : ("warning" as const),
       href: "/app/progress",
     },
     {
