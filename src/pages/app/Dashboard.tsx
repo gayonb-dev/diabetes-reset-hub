@@ -270,11 +270,14 @@ export default function Dashboard() {
     },
   ];
 
-  const levelName = LEVEL_NAMES[streak.level] ?? "On Track";
-
   return (
     <div className="max-w-[880px] mx-auto space-y-5 animate-fade-in">
       <SupplementPrompt />
+      <LevelUpOverlay level={gam.leveledUpTo} onDismiss={gam.dismissLevelUp} />
+      <Phase1ExtensionPrompt
+        currentProgramDay={currentProgramDay}
+        enabled={!gam.phase_1_extension_active}
+      />
 
       {/* Row 1 — Greeting */}
       <div className="flex items-start justify-between gap-4">
@@ -285,28 +288,29 @@ export default function Dashboard() {
           </h1>
         </div>
         <div className="flex flex-col items-end gap-1.5">
-          <button
-            type="button"
-            className="flex items-center gap-1.5 group"
-            aria-label="Open streak history"
-          >
-            <Flame
-              className="h-5 w-5"
-              style={{ color: "#FF6A1F", filter: "drop-shadow(0 0 6px rgba(255,140,0,0.35))" }}
-              strokeWidth={2.4}
-            />
-            <span className="text-lg font-semibold text-accent leading-none">
-              {streak.current_streak}
-            </span>
-          </button>
+          <StreakBadge
+            streak={gam.streak_count}
+            freezeAvailable={gam.streak_freeze_available}
+            onClick={() => setShowStreakHistory(true)}
+          />
           <span className="text-[11px] text-secondary-fg">
-            {streak.current_streak === 1 ? "1-day streak" : `${streak.current_streak}-day streak`}
+            {gam.streak_count === 1
+              ? "1-day Reversal Streak"
+              : `${gam.streak_count}-day Reversal Streak`}
           </span>
-          <span className="bg-primary text-primary-foreground text-[10px] font-semibold tracking-wider uppercase px-2.5 py-0.5 rounded-full">
-            Level {streak.level}: {levelName}
-          </span>
+          <LevelBadge level={gam.level} />
         </div>
       </div>
+
+      <StreakHistoryModal
+        open={showStreakHistory}
+        onClose={() => setShowStreakHistory(false)}
+        currentStreak={gam.streak_count}
+        freezeAvailable={gam.streak_freeze_available}
+        startDate={gam.last_ring_close_at}
+        history={gam.streak_history}
+      />
+
 
       {/* Row 2 — Habit rings */}
       <div className="grid grid-cols-4 gap-3 sm:gap-4">
