@@ -20,9 +20,36 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Loader2, CreditCard, Shield, Download, Trash2, LogOut, ArrowRight } from "lucide-react";
+import { Loader2, CreditCard, Shield, Download, Trash2, LogOut, ArrowRight, UtensilsCrossed, RefreshCw } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
 import { getUnits, setUnits, WeightUnit, GlucoseUnit } from "@/lib/units";
+
+const CUISINE_OPTIONS = [
+  "International (balanced)",
+  "Mediterranean",
+  "Asian",
+  "Latin",
+  "African",
+  "Caribbean",
+  "American",
+] as const;
+const PROTEIN_OPTIONS = [
+  "Chicken",
+  "Fish and seafood",
+  "Beef",
+  "Pork",
+  "Eggs",
+  "Legumes and beans",
+  "Tofu and plant protein",
+  "I eat all of these",
+] as const;
+const COOKING_TIME_OPTIONS = [
+  "Under 20 minutes",
+  "20 to 45 minutes",
+  "Over 45 minutes",
+  "I prefer no-cook or minimal prep",
+] as const;
 
 export default function Settings() {
   const { user, signOut } = useAuth();
