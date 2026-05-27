@@ -1758,6 +1758,7 @@ export type Database = {
           id: string
           if_enabled: boolean
           if_window_hours: number | null
+          knee_friendly: boolean
           last_activity_at: string
           last_ring_close_at: string | null
           level: number
@@ -1791,6 +1792,7 @@ export type Database = {
           id?: string
           if_enabled?: boolean
           if_window_hours?: number | null
+          knee_friendly?: boolean
           last_activity_at?: string
           last_ring_close_at?: string | null
           level?: number
@@ -1824,6 +1826,7 @@ export type Database = {
           id?: string
           if_enabled?: boolean
           if_window_hours?: number | null
+          knee_friendly?: boolean
           last_activity_at?: string
           last_ring_close_at?: string | null
           level?: number
