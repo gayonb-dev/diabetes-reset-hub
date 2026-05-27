@@ -145,6 +145,7 @@ export default function Dashboard() {
         .maybeSingle();
       if (!cancelled && w?.weight != null) {
         setLatestWeight({ value: Number(w.weight), date: w.log_date as string });
+        setWaterTargetLb(Number(w.weight));
       }
     })();
 
