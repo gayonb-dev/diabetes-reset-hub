@@ -163,13 +163,23 @@ export default function Dashboard() {
     return "Good evening";
   })();
 
-  // Habit rings — values come from Section 9 in a later phase.
-  // Until then, render empty progress (no fake numbers).
+  // Habit rings — driven by today's logs (Section 9).
+  const mealsDone = (["breakfast", "lunch", "dinner"] as const).filter(
+    (mt) => habits.meals[mt].vegetables && habits.meals[mt].protein && habits.meals[mt].complex_carbs,
+  ).length;
+  const walksDone = (["after_breakfast", "after_lunch", "after_dinner"] as const).filter(
+    (s) => habits.walks[s],
+  ).length;
+  const waterTargetOz = Math.round(waterTargetLb / 2);
   const habitData = {
-    water: { value: 0, target: 72, unit: "oz" },
-    food: { value: 0, target: 3, unit: "meals" },
-    exercise: { value: 0, target: 1, unit: "session" },
-    mindset: { value: 0, target: 1, unit: "" },
+    water: { value: habits.waterOz, target: waterTargetOz, unit: "oz" },
+    food: { value: mealsDone, target: 3, unit: "meals" },
+    exercise: {
+      value: currentProgramDay >= 15 && currentProgramDay <= 28 ? walksDone : 0,
+      target: currentProgramDay >= 15 && currentProgramDay <= 28 ? 3 : 1,
+      unit: currentProgramDay <= 28 ? "walks" : "session",
+    },
+    mindset: { value: habits.mindsetRead ? 1 : 0, target: 1, unit: "" },
   };
 
   const actionDoneToday = progress?.status === "completed";
