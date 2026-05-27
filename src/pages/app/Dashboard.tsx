@@ -47,13 +47,6 @@ const VITA_TIPS = [
   "You're not on a diet. You're rebuilding how your body handles fuel.",
 ];
 
-const LEVEL_NAMES: Record<number, string> = {
-  1: "Starting Out",
-  2: "Building Habits",
-  3: "Finding Rhythm",
-  4: "Reset Underway",
-  5: "Reversal in Motion",
-};
 
 function startOfDay(d: Date) {
   return new Date(d.getFullYear(), d.getMonth(), d.getDate());
@@ -73,8 +66,8 @@ function bloodSugarTone(mgdl: number): "normal" | "warning" | "danger" {
 
 export default function Dashboard() {
   const { user, subscription } = useAuth();
-  const { streak } = useGamification();
   const habits = useDailyHabits();
+  const [showStreakHistory, setShowStreakHistory] = useState(false);
 
   const [meta, setMeta] = useState<ProfileMeta>({});
   const [action, setAction] = useState<DailyAction | null>(null);
