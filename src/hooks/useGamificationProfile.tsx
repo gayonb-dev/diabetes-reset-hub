@@ -72,7 +72,7 @@ export function useGamificationProfile(currentProgramDay: number) {
       badges_earned: (data.badges_earned as unknown as string[]) ?? [],
       community_badges_earned: (data.community_badges_earned as unknown as string[]) ?? [],
       last_ring_close_at: data.last_ring_close_at ?? null,
-      streak_history: (data.streak_history as StreakHistoryEntry[]) ?? [],
+      streak_history: (data.streak_history as unknown as StreakHistoryEntry[]) ?? [],
       phase_1_extension_active: data.phase_1_extension_active ?? false,
       current_program_phase: data.current_program_phase ?? 1,
     });
