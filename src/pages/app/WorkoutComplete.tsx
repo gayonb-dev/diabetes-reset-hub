@@ -83,7 +83,7 @@ export default function WorkoutComplete() {
   return (
     <div className="max-w-xl mx-auto space-y-5 text-center">
       <div className="flex justify-center pt-2">
-        <div className="animate-scale-in">
+        <div className="animate-fade-in">
           <Vita posture="celebrating" size={120} />
         </div>
       </div>
