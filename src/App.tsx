@@ -112,6 +112,9 @@ const App = () => (
               <Route path="today" element={<Dashboard />} />
               <Route path="day/:day" element={<DayDetail />} />
               <Route path="library" element={<Library />} />
+              <Route path="workouts" element={<WorkoutLibrary />} />
+              <Route path="workouts/:slug" element={<WorkoutSession />} />
+              <Route path="workouts/:slug/complete" element={<WorkoutComplete />} />
               <Route path="ask" element={<Ask />} />
               <Route path="progress" element={<AppProgress />} />
               <Route path="billing" element={<Billing />} />
