@@ -5,7 +5,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
-import { ChevronDown, ChevronUp, Check, X, Droplet, Apple, Cookie, Footprints, Brain, Smile } from "lucide-react";
+import { ChevronDown, ChevronUp, Check, X, Droplet, Apple, Cookie, Footprints, Brain, Smile, Dumbbell } from "lucide-react";
+import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
 
 interface Props {
