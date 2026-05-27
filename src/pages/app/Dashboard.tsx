@@ -3,17 +3,22 @@ import { Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, CheckCircle2, Flame } from "lucide-react";
+import { ArrowRight, CheckCircle2 } from "lucide-react";
 import HabitRing from "@/components/dashboard/HabitRing";
 import JourneyTrack from "@/components/dashboard/JourneyTrack";
 import QuickStats from "@/components/dashboard/QuickStats";
 import VitaQuoteCard from "@/components/dashboard/VitaQuoteCard";
 import GettingStartedChecklist from "@/components/dashboard/GettingStartedChecklist";
-import { useGamification } from "@/hooks/useGamification";
+import StreakBadge from "@/components/gamification/StreakBadge";
+import LevelBadge from "@/components/gamification/LevelBadge";
+import StreakHistoryModal from "@/components/gamification/StreakHistoryModal";
+import LevelUpOverlay from "@/components/gamification/LevelUpOverlay";
+import Phase1ExtensionPrompt from "@/components/gamification/Phase1ExtensionPrompt";
+import { useGamificationProfile } from "@/hooks/useGamificationProfile";
 import SupplementPrompt from "@/components/onboarding/SupplementPrompt";
 import HabitLogging from "@/components/today/HabitLogging";
 import { useDailyHabits } from "@/hooks/useDailyHabits";
-import { getUnits, displayGlucose, displayWeight, mgdlToMmoll } from "@/lib/units";
+import { getUnits, displayGlucose, displayWeight } from "@/lib/units";
 
 type DailyAction = {
   id: string;
@@ -42,13 +47,6 @@ const VITA_TIPS = [
   "You're not on a diet. You're rebuilding how your body handles fuel.",
 ];
 
-const LEVEL_NAMES: Record<number, string> = {
-  1: "Starting Out",
-  2: "Building Habits",
-  3: "Finding Rhythm",
-  4: "Reset Underway",
-  5: "Reversal in Motion",
-};
 
 function startOfDay(d: Date) {
   return new Date(d.getFullYear(), d.getMonth(), d.getDate());
@@ -68,8 +66,8 @@ function bloodSugarTone(mgdl: number): "normal" | "warning" | "danger" {
 
 export default function Dashboard() {
   const { user, subscription } = useAuth();
-  const { streak } = useGamification();
   const habits = useDailyHabits();
+  const [showStreakHistory, setShowStreakHistory] = useState(false);
 
   const [meta, setMeta] = useState<ProfileMeta>({});
   const [action, setAction] = useState<DailyAction | null>(null);
@@ -91,6 +89,7 @@ export default function Dashboard() {
 
   const phase = phaseFor(currentProgramDay);
   const dayInPhase = Math.min(currentProgramDay - (phase.index - 1) * 14, phase.total);
+  const gam = useGamificationProfile(currentProgramDay);
 
   useEffect(() => {
     if (!user) return;
@@ -271,11 +270,14 @@ export default function Dashboard() {
     },
   ];
 
-  const levelName = LEVEL_NAMES[streak.level] ?? "On Track";
-
   return (
     <div className="max-w-[880px] mx-auto space-y-5 animate-fade-in">
       <SupplementPrompt />
+      <LevelUpOverlay level={gam.leveledUpTo} onDismiss={gam.dismissLevelUp} />
+      <Phase1ExtensionPrompt
+        currentProgramDay={currentProgramDay}
+        enabled={!gam.phase_1_extension_active}
+      />
 
       {/* Row 1 — Greeting */}
       <div className="flex items-start justify-between gap-4">
@@ -286,28 +288,29 @@ export default function Dashboard() {
           </h1>
         </div>
         <div className="flex flex-col items-end gap-1.5">
-          <button
-            type="button"
-            className="flex items-center gap-1.5 group"
-            aria-label="Open streak history"
-          >
-            <Flame
-              className="h-5 w-5"
-              style={{ color: "#FF6A1F", filter: "drop-shadow(0 0 6px rgba(255,140,0,0.35))" }}
-              strokeWidth={2.4}
-            />
-            <span className="text-lg font-semibold text-accent leading-none">
-              {streak.current_streak}
-            </span>
-          </button>
+          <StreakBadge
+            streak={gam.streak_count}
+            freezeAvailable={gam.streak_freeze_available}
+            onClick={() => setShowStreakHistory(true)}
+          />
           <span className="text-[11px] text-secondary-fg">
-            {streak.current_streak === 1 ? "1-day streak" : `${streak.current_streak}-day streak`}
+            {gam.streak_count === 1
+              ? "1-day Reversal Streak"
+              : `${gam.streak_count}-day Reversal Streak`}
           </span>
-          <span className="bg-primary text-primary-foreground text-[10px] font-semibold tracking-wider uppercase px-2.5 py-0.5 rounded-full">
-            Level {streak.level}: {levelName}
-          </span>
+          <LevelBadge level={gam.level} />
         </div>
       </div>
+
+      <StreakHistoryModal
+        open={showStreakHistory}
+        onClose={() => setShowStreakHistory(false)}
+        currentStreak={gam.streak_count}
+        freezeAvailable={gam.streak_freeze_available}
+        startDate={gam.last_ring_close_at}
+        history={gam.streak_history}
+      />
+
 
       {/* Row 2 — Habit rings */}
       <div className="grid grid-cols-4 gap-3 sm:gap-4">
