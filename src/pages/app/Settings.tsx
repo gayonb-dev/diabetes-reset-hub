@@ -86,14 +86,6 @@ export default function Settings() {
       .order("opted_in_at", { ascending: false })
       .limit(1)
       .maybeSingle()
-    if (!user) return;
-    supabase
-      .from("whatsapp_consent")
-      .select("phone_number, revoked_at")
-      .eq("user_id", user.id)
-      .order("opted_in_at", { ascending: false })
-      .limit(1)
-      .maybeSingle()
       .then(({ data }) => {
         if (data) {
           setWaPhone(data.phone_number ?? "");
