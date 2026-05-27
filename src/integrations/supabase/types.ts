@@ -160,6 +160,36 @@ export type Database = {
         }
         Relationships: []
       }
+      cheat_meals: {
+        Row: {
+          created_at: string
+          fast_start_at: string | null
+          id: string
+          logged_at: string
+          meal_description: string | null
+          member_id: string
+          week_start_date: string
+        }
+        Insert: {
+          created_at?: string
+          fast_start_at?: string | null
+          id?: string
+          logged_at?: string
+          meal_description?: string | null
+          member_id: string
+          week_start_date: string
+        }
+        Update: {
+          created_at?: string
+          fast_start_at?: string | null
+          id?: string
+          logged_at?: string
+          meal_description?: string | null
+          member_id?: string
+          week_start_date?: string
+        }
+        Relationships: []
+      }
       coaching_waitlist: {
         Row: {
           created_at: string
@@ -196,6 +226,194 @@ export type Database = {
           updated_at?: string
           user_id?: string
           why_now?: string | null
+        }
+        Relationships: []
+      }
+      community_answer_embeddings: {
+        Row: {
+          answer_id: string
+          combined_text: string
+          created_at: string
+          embedding: string | null
+          id: string
+          question_id: string
+        }
+        Insert: {
+          answer_id: string
+          combined_text: string
+          created_at?: string
+          embedding?: string | null
+          id?: string
+          question_id: string
+        }
+        Update: {
+          answer_id?: string
+          combined_text?: string
+          created_at?: string
+          embedding?: string | null
+          id?: string
+          question_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "community_answer_embeddings_answer_id_fkey"
+            columns: ["answer_id"]
+            isOneToOne: false
+            referencedRelation: "community_answers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "community_answer_embeddings_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "community_questions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      community_answers: {
+        Row: {
+          admin_related_content_name: string | null
+          author_day_in_program: number | null
+          author_id: string | null
+          content: string
+          created_at: string
+          display_name: string | null
+          helpful_count: number
+          id: string
+          is_admin_response: boolean
+          is_anonymous: boolean
+          is_marked_helpful: boolean
+          is_verified: boolean
+          is_vita_response: boolean
+          question_id: string
+          related_content_slug: string | null
+        }
+        Insert: {
+          admin_related_content_name?: string | null
+          author_day_in_program?: number | null
+          author_id?: string | null
+          content: string
+          created_at?: string
+          display_name?: string | null
+          helpful_count?: number
+          id?: string
+          is_admin_response?: boolean
+          is_anonymous?: boolean
+          is_marked_helpful?: boolean
+          is_verified?: boolean
+          is_vita_response?: boolean
+          question_id: string
+          related_content_slug?: string | null
+        }
+        Update: {
+          admin_related_content_name?: string | null
+          author_day_in_program?: number | null
+          author_id?: string | null
+          content?: string
+          created_at?: string
+          display_name?: string | null
+          helpful_count?: number
+          id?: string
+          is_admin_response?: boolean
+          is_anonymous?: boolean
+          is_marked_helpful?: boolean
+          is_verified?: boolean
+          is_vita_response?: boolean
+          question_id?: string
+          related_content_slug?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "community_answers_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "community_questions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      community_questions: {
+        Row: {
+          answer_count: number
+          author_day_in_program: number | null
+          author_id: string
+          content: string
+          created_at: string
+          display_name: string | null
+          id: string
+          is_anonymous: boolean
+          is_question_of_day: boolean
+          is_verified_answered: boolean
+          metoo_count: number
+          question_of_day_date: string | null
+          tags: string[]
+          updated_at: string
+          upvote_count: number
+        }
+        Insert: {
+          answer_count?: number
+          author_day_in_program?: number | null
+          author_id: string
+          content: string
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          is_anonymous?: boolean
+          is_question_of_day?: boolean
+          is_verified_answered?: boolean
+          metoo_count?: number
+          question_of_day_date?: string | null
+          tags?: string[]
+          updated_at?: string
+          upvote_count?: number
+        }
+        Update: {
+          answer_count?: number
+          author_day_in_program?: number | null
+          author_id?: string
+          content?: string
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          is_anonymous?: boolean
+          is_question_of_day?: boolean
+          is_verified_answered?: boolean
+          metoo_count?: number
+          question_of_day_date?: string | null
+          tags?: string[]
+          updated_at?: string
+          upvote_count?: number
+        }
+        Relationships: []
+      }
+      community_votes: {
+        Row: {
+          created_at: string
+          id: string
+          reaction_emoji: string | null
+          target_id: string
+          target_type: string
+          vote_type: string
+          voter_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          reaction_emoji?: string | null
+          target_id: string
+          target_type: string
+          vote_type: string
+          voter_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          reaction_emoji?: string | null
+          target_id?: string
+          target_type?: string
+          vote_type?: string
+          voter_id?: string
         }
         Relationships: []
       }
@@ -287,6 +505,54 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      daily_actions: {
+        Row: {
+          action_description: string
+          action_detail_content: Json
+          action_title: string
+          action_type: string
+          created_at: string
+          day_name: string
+          day_number: number
+          id: string
+          is_extension_day: boolean
+          learning_objective: string | null
+          phase_number: number
+          sub_tasks: Json
+          updated_at: string
+        }
+        Insert: {
+          action_description: string
+          action_detail_content?: Json
+          action_title: string
+          action_type: string
+          created_at?: string
+          day_name: string
+          day_number: number
+          id?: string
+          is_extension_day?: boolean
+          learning_objective?: string | null
+          phase_number: number
+          sub_tasks?: Json
+          updated_at?: string
+        }
+        Update: {
+          action_description?: string
+          action_detail_content?: Json
+          action_title?: string
+          action_type?: string
+          created_at?: string
+          day_name?: string
+          day_number?: number
+          id?: string
+          is_extension_day?: boolean
+          learning_objective?: string | null
+          phase_number?: number
+          sub_tasks?: Json
+          updated_at?: string
+        }
+        Relationships: []
       }
       daily_digest: {
         Row: {
@@ -440,6 +706,45 @@ export type Database = {
         }
         Relationships: []
       }
+      if_fasting_log: {
+        Row: {
+          actual_duration_hours: number | null
+          created_at: string
+          fast_end_at: string | null
+          fast_start_at: string
+          id: string
+          member_id: string
+          notes: string | null
+          planned_duration_hours: number
+          status: string
+          window_type: string
+        }
+        Insert: {
+          actual_duration_hours?: number | null
+          created_at?: string
+          fast_end_at?: string | null
+          fast_start_at: string
+          id?: string
+          member_id: string
+          notes?: string | null
+          planned_duration_hours: number
+          status?: string
+          window_type: string
+        }
+        Update: {
+          actual_duration_hours?: number | null
+          created_at?: string
+          fast_end_at?: string | null
+          fast_start_at?: string
+          id?: string
+          member_id?: string
+          notes?: string | null
+          planned_duration_hours?: number
+          status?: string
+          window_type?: string
+        }
+        Relationships: []
+      }
       intake_submissions: {
         Row: {
           age: number
@@ -549,6 +854,136 @@ export type Database = {
           source?: string
         }
         Relationships: []
+      }
+      meal_plans: {
+        Row: {
+          created_at: string
+          generated_at: string
+          generation_status: string
+          generation_trigger: string
+          id: string
+          member_id: string
+          plan_data: Json
+          plan_type: string
+          preferences_snapshot: Json
+          valid_from: string
+          valid_until: string
+        }
+        Insert: {
+          created_at?: string
+          generated_at?: string
+          generation_status?: string
+          generation_trigger: string
+          id?: string
+          member_id: string
+          plan_data?: Json
+          plan_type?: string
+          preferences_snapshot?: Json
+          valid_from: string
+          valid_until: string
+        }
+        Update: {
+          created_at?: string
+          generated_at?: string
+          generation_status?: string
+          generation_trigger?: string
+          id?: string
+          member_id?: string
+          plan_data?: Json
+          plan_type?: string
+          preferences_snapshot?: Json
+          valid_from?: string
+          valid_until?: string
+        }
+        Relationships: []
+      }
+      meal_swaps: {
+        Row: {
+          created_at: string
+          day: string
+          id: string
+          meal_type: string
+          member_id: string
+          plan_id: string
+          swapped_at: string
+          swapped_to: Json
+        }
+        Insert: {
+          created_at?: string
+          day: string
+          id?: string
+          meal_type: string
+          member_id: string
+          plan_id: string
+          swapped_at?: string
+          swapped_to: Json
+        }
+        Update: {
+          created_at?: string
+          day?: string
+          id?: string
+          meal_type?: string
+          member_id?: string
+          plan_id?: string
+          swapped_at?: string
+          swapped_to?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "meal_swaps_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "meal_plans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      member_daily_progress: {
+        Row: {
+          action_id: string
+          completed_at: string | null
+          created_at: string
+          day_number: number
+          id: string
+          member_id: string
+          notes: string | null
+          status: string
+          sub_tasks_completed: Json
+          updated_at: string
+        }
+        Insert: {
+          action_id: string
+          completed_at?: string | null
+          created_at?: string
+          day_number: number
+          id?: string
+          member_id: string
+          notes?: string | null
+          status?: string
+          sub_tasks_completed?: Json
+          updated_at?: string
+        }
+        Update: {
+          action_id?: string
+          completed_at?: string | null
+          created_at?: string
+          day_number?: number
+          id?: string
+          member_id?: string
+          notes?: string | null
+          status?: string
+          sub_tasks_completed?: Json
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "member_daily_progress_action_id_fkey"
+            columns: ["action_id"]
+            isOneToOne: false
+            referencedRelation: "daily_actions"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       member_progress: {
         Row: {
@@ -761,6 +1196,36 @@ export type Database = {
           },
         ]
       }
+      product_validation_tokens: {
+        Row: {
+          created_at: string
+          expires_at: string
+          id: string
+          member_id: string
+          product_idea_id: string
+          token: string
+          used_at: string | null
+        }
+        Insert: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          member_id: string
+          product_idea_id: string
+          token?: string
+          used_at?: string | null
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          member_id?: string
+          product_idea_id?: string
+          token?: string
+          used_at?: string | null
+        }
+        Relationships: []
+      }
       qa_monthly_usage: {
         Row: {
           created_at: string
@@ -830,6 +1295,30 @@ export type Database = {
           status?: string
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      shopping_lists: {
+        Row: {
+          created_at: string
+          id: string
+          list_data: Json
+          member_id: string
+          week_start_date: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          list_data?: Json
+          member_id: string
+          week_start_date: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          list_data?: Json
+          member_id?: string
+          week_start_date?: string
         }
         Relationships: []
       }
@@ -1038,40 +1527,100 @@ export type Database = {
       visitor_profiles: {
         Row: {
           anonymous_id: string
+          badges_earned: Json
+          cheat_meal_day_of_week: number | null
+          cheat_meal_enabled: boolean
+          community_badges_earned: Json
+          community_display_name: string | null
           confidence: number
           created_at: string
+          current_program_phase: number
           date_of_birth: string | null
           first_seen_at: string
+          getting_started_checklist: Json
+          helpful_points: number
           id: string
+          if_enabled: boolean
+          if_window_hours: number | null
           last_activity_at: string
+          last_ring_close_at: string | null
+          level: number
+          level_earned_at: string | null
+          lowers_blood_sugar_meds: boolean
           metadata: Json
+          phase_1_extension_active: boolean
+          reset_points: number
+          served_meals: Json
           source: string | null
+          streak_count: number
+          streak_freeze_available: boolean
+          streak_history: Json
           updated_at: string
           user_id: string | null
         }
         Insert: {
           anonymous_id: string
+          badges_earned?: Json
+          cheat_meal_day_of_week?: number | null
+          cheat_meal_enabled?: boolean
+          community_badges_earned?: Json
+          community_display_name?: string | null
           confidence?: number
           created_at?: string
+          current_program_phase?: number
           date_of_birth?: string | null
           first_seen_at?: string
+          getting_started_checklist?: Json
+          helpful_points?: number
           id?: string
+          if_enabled?: boolean
+          if_window_hours?: number | null
           last_activity_at?: string
+          last_ring_close_at?: string | null
+          level?: number
+          level_earned_at?: string | null
+          lowers_blood_sugar_meds?: boolean
           metadata?: Json
+          phase_1_extension_active?: boolean
+          reset_points?: number
+          served_meals?: Json
           source?: string | null
+          streak_count?: number
+          streak_freeze_available?: boolean
+          streak_history?: Json
           updated_at?: string
           user_id?: string | null
         }
         Update: {
           anonymous_id?: string
+          badges_earned?: Json
+          cheat_meal_day_of_week?: number | null
+          cheat_meal_enabled?: boolean
+          community_badges_earned?: Json
+          community_display_name?: string | null
           confidence?: number
           created_at?: string
+          current_program_phase?: number
           date_of_birth?: string | null
           first_seen_at?: string
+          getting_started_checklist?: Json
+          helpful_points?: number
           id?: string
+          if_enabled?: boolean
+          if_window_hours?: number | null
           last_activity_at?: string
+          last_ring_close_at?: string | null
+          level?: number
+          level_earned_at?: string | null
+          lowers_blood_sugar_meds?: boolean
           metadata?: Json
+          phase_1_extension_active?: boolean
+          reset_points?: number
+          served_meals?: Json
           source?: string | null
+          streak_count?: number
+          streak_freeze_available?: boolean
+          streak_history?: Json
           updated_at?: string
           user_id?: string | null
         }
@@ -1107,6 +1656,48 @@ export type Database = {
           revoke_reason?: string | null
           revoked_at?: string | null
           user_id?: string
+        }
+        Relationships: []
+      }
+      win_posts: {
+        Row: {
+          author_day_in_program: number | null
+          author_id: string
+          created_at: string
+          display_name: string | null
+          id: string
+          is_anonymous: boolean
+          milestone_label: string
+          milestone_type: string
+          reaction_counts: Json
+          share_stat: boolean
+          stat_improvement: string | null
+        }
+        Insert: {
+          author_day_in_program?: number | null
+          author_id: string
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          is_anonymous?: boolean
+          milestone_label: string
+          milestone_type: string
+          reaction_counts?: Json
+          share_stat?: boolean
+          stat_improvement?: string | null
+        }
+        Update: {
+          author_day_in_program?: number | null
+          author_id?: string
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          is_anonymous?: boolean
+          milestone_label?: string
+          milestone_type?: string
+          reaction_counts?: Json
+          share_stat?: boolean
+          stat_improvement?: string | null
         }
         Relationships: []
       }
