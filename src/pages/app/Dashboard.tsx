@@ -77,6 +77,8 @@ export default function Dashboard() {
   const [latestBS, setLatestBS] = useState<{ value: number; date: string } | null>(null);
   const [latestWeight, setLatestWeight] = useState<{ value: number; date: string } | null>(null);
   const [waterTargetLb, setWaterTargetLb] = useState<number>(180);
+  const [latestA1C, setLatestA1C] = useState<{ value: number; date: string } | null>(null);
+  const [latestReading, setLatestReading] = useState<{ value: number; at: string } | null>(null);
 
   // current program day from subscription created_at
   const currentProgramDay = useMemo(() => {
