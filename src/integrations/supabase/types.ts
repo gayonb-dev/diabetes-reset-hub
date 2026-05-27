@@ -1944,6 +1944,60 @@ export type Database = {
         }
         Relationships: []
       }
+      workout_sessions: {
+        Row: {
+          completed_at: string | null
+          cool_down_checks: Json
+          created_at: string
+          duration_seconds: number | null
+          exercises_completed: number
+          exercises_total: number | null
+          id: string
+          notes: string | null
+          started_at: string
+          status: string
+          track: string
+          updated_at: string
+          user_id: string
+          workout_name: string
+          workout_slug: string
+        }
+        Insert: {
+          completed_at?: string | null
+          cool_down_checks?: Json
+          created_at?: string
+          duration_seconds?: number | null
+          exercises_completed?: number
+          exercises_total?: number | null
+          id?: string
+          notes?: string | null
+          started_at?: string
+          status?: string
+          track: string
+          updated_at?: string
+          user_id: string
+          workout_name: string
+          workout_slug: string
+        }
+        Update: {
+          completed_at?: string | null
+          cool_down_checks?: Json
+          created_at?: string
+          duration_seconds?: number | null
+          exercises_completed?: number
+          exercises_total?: number | null
+          id?: string
+          notes?: string | null
+          started_at?: string
+          status?: string
+          track?: string
+          updated_at?: string
+          user_id?: string
+          workout_name?: string
+          workout_slug?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
