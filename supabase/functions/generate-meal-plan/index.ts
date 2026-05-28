@@ -433,12 +433,16 @@ Deno.serve(async (req) => {
 
   const windowHours = profile?.if_window_hours ?? 10;
   const fastHours = 24 - windowHours;
+  const planIdx = body.plan_index === 2 ? 2 : body.plan_index === 1 ? 1 : null;
+  const planIndexHint = planIdx
+    ? `\n\n---\n\nPARALLEL PLAN GENERATION CONTEXT\nYou are generating Plan ${planIdx} of 2. A second 2-week plan is being generated for the same member in parallel covering a different fortnight. Bias your dish selection toward varied proteins, varied carbohydrate bases, and varied cooking techniques so the member experiences clear week-over-week novelty across the full 28 days. Do not repeat the names or core compositions of the meals in served_meals above.`
+    : "";
   const systemPrompt = isIfMode
     ? STANDARD_SYSTEM_PROMPT.replace("{{SERVED_MEALS}}", servedMeals.join(", ") || "none") +
       IF_SYSTEM_PROMPT_ADDITION
         .replace("{{WINDOW_HOURS}}", String(windowHours))
-        .replace("{{FAST_HOURS}}", String(fastHours))
-    : STANDARD_SYSTEM_PROMPT.replace("{{SERVED_MEALS}}", servedMeals.join(", ") || "none");
+        .replace("{{FAST_HOURS}}", String(fastHours)) + planIndexHint
+    : STANDARD_SYSTEM_PROMPT.replace("{{SERVED_MEALS}}", servedMeals.join(", ") || "none") + planIndexHint;
 
   try {
     const { object } = await generateObject({
