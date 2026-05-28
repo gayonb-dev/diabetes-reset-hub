@@ -1,5 +1,9 @@
 import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Navigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
+import { Loader2 } from "lucide-react";
 import {
   Home,
   BookOpen,
@@ -34,6 +38,24 @@ export default function AppLayout() {
   const { signOut, subscription, isAdmin, user } = useAuth();
   const navigate = useNavigate();
 
+  // Onboarding gate: redirect new users (no onboarded_at) to /app/onboarding.
+  const [onboardCheck, setOnboardCheck] = useState<"loading" | "needs" | "done">("loading");
+  useEffect(() => {
+    if (!user) return;
+    let cancelled = false;
+    (async () => {
+      const { data } = await supabase
+        .from("visitor_profiles")
+        .select("metadata")
+        .eq("user_id", user.id)
+        .maybeSingle();
+      if (cancelled) return;
+      const meta = (data?.metadata as Record<string, unknown> | null) || {};
+      setOnboardCheck(meta.onboarded_at ? "done" : "needs");
+    })();
+    return () => { cancelled = true; };
+  }, [user?.id]);
+
   // TODO: pull these from real data later
   const streakDays = 12;
   const levelName = "Level 2: The Builder";
@@ -42,6 +64,7 @@ export default function AppLayout() {
     await signOut();
     navigate("/login");
   };
+
 
   const trialBanner =
     subscription?.status === "trialing" &&
@@ -64,6 +87,17 @@ export default function AppLayout() {
       to keep access.
     </div>
   );
+
+  if (onboardCheck === "loading") {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <Loader2 className="h-6 w-6 animate-spin text-primary" />
+      </div>
+    );
+  }
+  if (onboardCheck === "needs") {
+    return <Navigate to="/app/onboarding" replace />;
+  }
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
