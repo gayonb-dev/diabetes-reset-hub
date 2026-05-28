@@ -28,6 +28,7 @@ import Meals from "./pages/app/Meals";
 import Ask from "./pages/app/Ask";
 import Billing from "./pages/app/Billing";
 import Onboarding from "./pages/app/Onboarding";
+import MealSetupTransition from "./pages/app/MealSetupTransition";
 import CoachingWaitlist from "./pages/app/CoachingWaitlist";
 import AppProgress from "./pages/app/Progress";
 import Settings from "./pages/app/Settings";
@@ -96,6 +97,14 @@ const App = () => (
               element={
                 <AuthGuard requireActiveSub={false}>
                   <Onboarding />
+                </AuthGuard>
+              }
+            />
+            <Route
+              path="/app/onboarding/meal-setup"
+              element={
+                <AuthGuard requireActiveSub={false}>
+                  <MealSetupTransition />
                 </AuthGuard>
               }
             />
