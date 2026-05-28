@@ -141,6 +141,13 @@ export default function Onboarding() {
         .from("visitor_profiles")
         .update({ metadata: merged, date_of_birth: dob || null } as never)
         .eq("id", vp.id);
+    } else {
+      await supabase.from("visitor_profiles").insert({
+        user_id: user.id,
+        anonymous_id: localStorage.getItem("drm_visitor_id") || crypto.randomUUID(),
+        metadata: meta,
+        date_of_birth: dob || null,
+      } as never);
     }
 
     setSaving(false);
