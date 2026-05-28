@@ -363,7 +363,7 @@ Deno.serve(async (req) => {
 
   const admin = createClient(SUPABASE_URL, SERVICE_KEY);
 
-  let body: { plan_id?: string; member_id?: string };
+  let body: { plan_id?: string; member_id?: string; plan_index?: number };
   try {
     body = await req.json();
   } catch {
