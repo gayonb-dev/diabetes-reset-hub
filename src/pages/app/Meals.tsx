@@ -422,35 +422,39 @@ export default function Meals() {
   }
 
   // No plan at all
-  if (!planRow) {
+  if (!plan1) {
     return (
       <div className="max-w-md mx-auto py-12 text-center space-y-4">
         <Vita posture="encouraging" size={64} />
         <p className="text-sm text-muted-foreground">You don't have a meal plan yet.</p>
-        <Button onClick={() => regenerate(["International"])} disabled={regenerating}>
+        <Button onClick={() => regenerate()} disabled={regenerating}>
           Generate my plan
         </Button>
       </div>
     );
   }
 
-  // Pending / failed states
-  if (planRow.status === "pending") {
+  const anyPending =
+    plan1.status === "pending" || (plan2 && plan2.status === "pending");
+  const anyFailed =
+    plan1.status === "failed" || (plan2 && plan2.status === "failed");
+
+  if (anyPending || regenerating) {
     return (
       <div className="max-w-md mx-auto py-16 text-center space-y-4">
         <div className="flex justify-center"><Vita posture="encouraging" size={64} /></div>
         <p className="text-sm text-foreground font-medium">
-          VITA is building your personalized meal plan.
+          VITA is building your personalized 4-week meal plan.
         </p>
         <p className="text-xs text-muted-foreground inline-flex items-center gap-1.5">
           <Loader2 className="h-3.5 w-3.5 animate-spin" />
-          This takes about 10 seconds.
+          This takes about 15 seconds.
         </p>
       </div>
     );
   }
 
-  if (planRow.status === "failed") {
+  if (anyFailed) {
     return (
       <div className="max-w-md mx-auto py-16 text-center space-y-4">
         <div className="flex justify-center"><Vita posture="concerned" size={64} /></div>
@@ -467,8 +471,9 @@ export default function Meals() {
     );
   }
 
-  const week = (weekIdx === 1 ? planRow.plan_data.week_1 : planRow.plan_data.week_2) as Week | undefined;
-  const slots = planRow.plan_type === "intermittent_fasting" ? IF_SLOTS : STANDARD_SLOTS;
+  const week = current.plan?.plan_data?.[current.key] as Week | undefined;
+  const slots = (current.plan?.plan_type ?? "standard") === "intermittent_fasting" ? IF_SLOTS : STANDARD_SLOTS;
+  const weekOptions: (1 | 2 | 3 | 4)[] = plan2 ? [1, 2, 3, 4] : [1, 2];
 
   return (
     <div className="max-w-3xl mx-auto space-y-5">
@@ -476,7 +481,7 @@ export default function Meals() {
         <div>
           <h1 className="font-heading font-semibold text-2xl text-foreground">My Meals</h1>
           <p className="text-sm text-muted-foreground">
-            14-day plan, personalized for you. Swap any meal — no waiting.
+            4-week plan, personalized for you. Swap any meal — no waiting.
           </p>
         </div>
         <Button variant="outline" size="sm" onClick={() => regenerate()} disabled={regenerating}>
@@ -490,20 +495,18 @@ export default function Meals() {
           <TabsTrigger value="plan">My Meal Plan</TabsTrigger>
           <TabsTrigger value="shopping">Shopping List</TabsTrigger>
           <TabsTrigger value="snacks">Snacks</TabsTrigger>
-          <TabsTrigger value="preferences">Preferences</TabsTrigger>
         </TabsList>
 
         <TabsContent value="snacks" className="mt-4">
           <SnackLibrary dayNumber={programDay} />
         </TabsContent>
 
-
         <TabsContent value="plan" className="mt-4 space-y-4">
-          <div className="flex gap-2">
-            {[1, 2].map((w) => (
+          <div className="flex gap-2 flex-wrap">
+            {weekOptions.map((w) => (
               <button
                 key={w}
-                onClick={() => setWeekIdx(w as 1 | 2)}
+                onClick={() => setWeekIdx(w)}
                 className={cn(
                   "px-3 py-1.5 rounded-full text-xs font-medium border transition-colors",
                   weekIdx === w
@@ -533,7 +536,7 @@ export default function Meals() {
                             key={slot}
                             slot={slot}
                             meal={meal}
-                            planId={planRow.id}
+                            planId={current.plan!.id}
                             day={dayKey}
                             weekIdx={weekIdx}
                             onSwap={handleSwap}
@@ -590,47 +593,9 @@ export default function Meals() {
             <p className="text-sm text-muted-foreground">No ingredients found in this week.</p>
           )}
         </TabsContent>
-
-        <TabsContent value="preferences" className="mt-4 space-y-4">
-          <Card className="p-4 border-border space-y-3">
-            <h3 className="font-medium text-foreground">Cuisine preferences</h3>
-            <p className="text-xs text-muted-foreground">
-              Pick the cuisines you'd like reflected in your plan. Changes take effect on the next regeneration.
-            </p>
-            <div className="flex flex-wrap gap-2">
-              {["International", "Mediterranean", "Asian", "Latin", "African", "Caribbean", "American"].map((c) => {
-                const on = cuisines.includes(c);
-                return (
-                  <button
-                    key={c}
-                    onClick={() =>
-                      setCuisines((p) => (on ? p.filter((x) => x !== c) : [...p, c]))
-                    }
-                    className={cn(
-                      "px-3 py-1.5 rounded-full text-xs border transition-colors",
-                      on
-                        ? "bg-primary text-primary-foreground border-primary"
-                        : "border-border text-muted-foreground hover:border-primary/40",
-                    )}
-                  >
-                    {c}
-                  </button>
-                );
-              })}
-            </div>
-            <Button
-              onClick={() => regenerate(cuisines)}
-              disabled={regenerating || cuisines.length === 0}
-              className="bg-primary hover:bg-primary-hover text-primary-foreground"
-            >
-              {regenerating ? "Regenerating…" : "Save and regenerate"}
-            </Button>
-          </Card>
-          <Badge variant="outline" className="text-[11px]">
-            Day {programDay}
-          </Badge>
-        </TabsContent>
       </Tabs>
+
+      <Badge variant="outline" className="text-[11px]">Day {programDay}</Badge>
     </div>
   );
 }
