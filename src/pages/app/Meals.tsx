@@ -188,50 +188,61 @@ function MealCard({ slot, meal, planId, day, weekIdx, onSwap }: {
   );
 }
 
+interface PlanRow {
+  id: string;
+  status: string;
+  plan_data: PlanData;
+  plan_type: string;
+  valid_from: string;
+}
+
 export default function Meals() {
   const { user, subscription } = useAuth();
-  const [planRow, setPlanRow] = useState<{ id: string; status: string; plan_data: PlanData; plan_type: string; valid_from: string } | null>(null);
+  const [plan1, setPlan1] = useState<PlanRow | null>(null);
+  const [plan2, setPlan2] = useState<PlanRow | null>(null);
   const [loading, setLoading] = useState(true);
   const [regenerating, setRegenerating] = useState(false);
-  const [weekIdx, setWeekIdx] = useState<1 | 2>(1);
+  const [weekIdx, setWeekIdx] = useState<1 | 2 | 3 | 4>(1);
   const [cuisines, setCuisines] = useState<string[]>([]);
   const [shoppingChecked, setShoppingChecked] = useState<Record<string, boolean>>({});
 
   const programDay = useMemo(() => programDayFrom(subscription?.created_at), [subscription]);
 
-  // Load current plan + preferences. Poll while pending.
+  // Load the two most-recent active plans. Plan 1 = earlier valid_from, Plan 2 = later.
   useEffect(() => {
     if (!user) return;
     let active = true;
     let timer: number | undefined;
 
     async function load() {
-      const { data: plan } = await supabase
+      const { data } = await supabase
         .from("meal_plans")
         .select("id, generation_status, plan_data, plan_type, valid_from")
         .eq("member_id", user!.id)
         .order("valid_from", { ascending: false })
-        .limit(1)
-        .maybeSingle();
+        .limit(2);
 
       if (!active) return;
 
-      if (plan) {
-        setPlanRow({
-          id: plan.id,
-          status: plan.generation_status,
-          plan_data: (plan.plan_data as PlanData) || {},
-          plan_type: plan.plan_type,
-          valid_from: plan.valid_from,
+      if (data && data.length > 0) {
+        // data is newest-first; Plan 2 (later fortnight) is index 0, Plan 1 is index 1.
+        const sorted = [...data].sort((a, b) => a.valid_from.localeCompare(b.valid_from));
+        const toRow = (r: typeof data[number]): PlanRow => ({
+          id: r.id,
+          status: r.generation_status,
+          plan_data: (r.plan_data as PlanData) || {},
+          plan_type: r.plan_type,
+          valid_from: r.valid_from,
         });
-        if (plan.generation_status === "pending") {
-          timer = window.setTimeout(load, 3000);
-        }
+        setPlan1(toRow(sorted[0]));
+        setPlan2(sorted[1] ? toRow(sorted[1]) : null);
+        const anyPending = sorted.some((r) => r.generation_status === "pending");
+        if (anyPending) timer = window.setTimeout(load, 3000);
       }
       setLoading(false);
     }
 
-    const { data: vp } = supabase
+    supabase
       .from("visitor_profiles")
       .select("metadata")
       .eq("user_id", user.id)
@@ -239,8 +250,7 @@ export default function Meals() {
       .then(({ data }) => {
         const meta = (data?.metadata as Record<string, unknown>) || {};
         setCuisines((meta.cuisine_preferences as string[]) ?? []);
-      }) as unknown as { data: unknown };
-    void vp;
+      });
 
     load();
     return () => {
@@ -249,74 +259,96 @@ export default function Meals() {
     };
   }, [user]);
 
-  async function regenerate(newCuisines?: string[]) {
+  // Regenerate BOTH plans in parallel using current profile preferences.
+  async function regenerate() {
     if (!user) return;
     setRegenerating(true);
     try {
-      // Persist cuisine preferences if changed
-      if (newCuisines) {
-        const { data: vp } = await supabase
-          .from("visitor_profiles")
-          .select("id, metadata")
-          .eq("user_id", user.id)
-          .maybeSingle();
-        if (vp) {
-          await supabase
-            .from("visitor_profiles")
-            .update({
-              metadata: {
-                ...((vp.metadata as Record<string, unknown>) || {}),
-                cuisine_preferences: newCuisines,
-              } as never,
-            })
-            .eq("id", vp.id);
-        }
-        setCuisines(newCuisines);
-      }
+      const { data: vp } = await supabase
+        .from("visitor_profiles")
+        .select("metadata")
+        .eq("user_id", user.id)
+        .maybeSingle();
+      const meta = (vp?.metadata as Record<string, unknown>) || {};
+      const snapshot = {
+        cuisine_preferences: (meta.cuisine_preferences as string[]) ?? cuisines,
+        protein_preferences: meta.protein_preferences ?? null,
+        allergies: meta.allergies ?? [],
+        cooking_time: meta.cooking_time ?? "20–45 min",
+      };
 
       const today = new Date();
-      const until = new Date(today);
-      until.setDate(today.getDate() + 13);
+      const dayStr = (offset: number) => {
+        const d = new Date(today);
+        d.setDate(today.getDate() + offset);
+        return d.toISOString().slice(0, 10);
+      };
 
-      const { data: inserted } = await supabase
-        .from("meal_plans")
-        .insert({
-          member_id: user.id,
-          plan_type: planRow?.plan_type ?? "standard",
-          generation_status: "pending",
-          generation_trigger: "manual",
-          valid_from: today.toISOString().slice(0, 10),
-          valid_until: until.toISOString().slice(0, 10),
-          preferences_snapshot: { cuisine_preferences: newCuisines ?? cuisines },
-          plan_data: {},
-        } as never)
-        .select("id")
-        .single();
-
-      if (inserted?.id) {
-        setPlanRow({
-          id: inserted.id,
-          status: "pending",
-          plan_data: {},
-          plan_type: planRow?.plan_type ?? "standard",
-          valid_from: today.toISOString().slice(0, 10),
-        });
-        await supabase.functions.invoke("generate-meal-plan", { body: { plan_id: inserted.id } });
-        // refetch
-        const { data: updated } = await supabase
+      const [{ data: r1 }, { data: r2 }] = await Promise.all([
+        supabase
           .from("meal_plans")
-          .select("id, generation_status, plan_data, plan_type, valid_from")
-          .eq("id", inserted.id)
-          .maybeSingle();
-        if (updated) {
-          setPlanRow({
-            id: updated.id,
-            status: updated.generation_status,
-            plan_data: (updated.plan_data as PlanData) || {},
-            plan_type: updated.plan_type,
-            valid_from: updated.valid_from,
-          });
-        }
+          .insert({
+            member_id: user.id,
+            plan_type: plan1?.plan_type ?? "standard",
+            generation_status: "pending",
+            generation_trigger: "manual",
+            valid_from: dayStr(0),
+            valid_until: dayStr(13),
+            preferences_snapshot: snapshot,
+            plan_data: {},
+          } as never)
+          .select("id, plan_type, valid_from")
+          .single(),
+        supabase
+          .from("meal_plans")
+          .insert({
+            member_id: user.id,
+            plan_type: plan1?.plan_type ?? "standard",
+            generation_status: "pending",
+            generation_trigger: "manual",
+            valid_from: dayStr(14),
+            valid_until: dayStr(27),
+            preferences_snapshot: snapshot,
+            plan_data: {},
+          } as never)
+          .select("id, plan_type, valid_from")
+          .single(),
+      ]);
+
+      if (r1?.id) {
+        setPlan1({ id: r1.id, status: "pending", plan_data: {}, plan_type: r1.plan_type, valid_from: r1.valid_from });
+      }
+      if (r2?.id) {
+        setPlan2({ id: r2.id, status: "pending", plan_data: {}, plan_type: r2.plan_type, valid_from: r2.valid_from });
+      }
+
+      await Promise.all([
+        r1?.id
+          ? supabase.functions.invoke("generate-meal-plan", { body: { plan_id: r1.id, plan_index: 1 } })
+          : Promise.resolve(),
+        r2?.id
+          ? supabase.functions.invoke("generate-meal-plan", { body: { plan_id: r2.id, plan_index: 2 } })
+          : Promise.resolve(),
+      ]);
+
+      // Refetch
+      const { data: updated } = await supabase
+        .from("meal_plans")
+        .select("id, generation_status, plan_data, plan_type, valid_from")
+        .eq("member_id", user.id)
+        .order("valid_from", { ascending: false })
+        .limit(2);
+      if (updated && updated.length > 0) {
+        const sorted = [...updated].sort((a, b) => a.valid_from.localeCompare(b.valid_from));
+        const toRow = (r: typeof updated[number]): PlanRow => ({
+          id: r.id,
+          status: r.generation_status,
+          plan_data: (r.plan_data as PlanData) || {},
+          plan_type: r.plan_type,
+          valid_from: r.valid_from,
+        });
+        setPlan1(toRow(sorted[0]));
+        setPlan2(sorted[1] ? toRow(sorted[1]) : null);
       }
     } catch (e) {
       toast({ title: "Couldn't regenerate", description: (e as Error).message, variant: "destructive" });
@@ -325,33 +357,40 @@ export default function Meals() {
     }
   }
 
+  // Map a global week index (1–4) to the underlying plan + week key.
+  function resolveWeek(idx: 1 | 2 | 3 | 4): { plan: PlanRow | null; key: "week_1" | "week_2" } {
+    if (idx === 1) return { plan: plan1, key: "week_1" };
+    if (idx === 2) return { plan: plan1, key: "week_2" };
+    if (idx === 3) return { plan: plan2, key: "week_1" };
+    return { plan: plan2, key: "week_2" };
+  }
+  const current = resolveWeek(weekIdx);
+
   async function handleSwap(slot: string, day: string, wIdx: number, alt: Alternative) {
-    if (!planRow || !user) return;
-    const data: PlanData = JSON.parse(JSON.stringify(planRow.plan_data));
-    const weekKey = wIdx === 1 ? "week_1" : "week_2";
-    const original = data[weekKey]?.[day]?.[slot];
+    if (!user) return;
+    const { plan, key } = resolveWeek(wIdx as 1 | 2 | 3 | 4);
+    if (!plan) return;
+    const data: PlanData = JSON.parse(JSON.stringify(plan.plan_data));
+    const original = data[key]?.[day]?.[slot];
     if (!original) return;
-    // Replace name + description with the alternative; keep ingredients/instructions as a stub.
-    data[weekKey]![day][slot] = {
-      ...original,
-      name: alt.name,
-      description: alt.description,
-    };
-    await supabase.from("meal_plans").update({ plan_data: data as never }).eq("id", planRow.id);
+    data[key]![day][slot] = { ...original, name: alt.name, description: alt.description };
+    await supabase.from("meal_plans").update({ plan_data: data as never }).eq("id", plan.id);
     await supabase.from("meal_swaps").insert({
-      plan_id: planRow.id,
+      plan_id: plan.id,
       member_id: user.id,
       day,
       meal_type: slot,
       swapped_to: { name: alt.name, description: alt.description } as never,
     } as never);
-    setPlanRow({ ...planRow, plan_data: data });
+    if (plan.id === plan1?.id) setPlan1({ ...plan, plan_data: data });
+    else if (plan.id === plan2?.id) setPlan2({ ...plan, plan_data: data });
     toast({ title: "Swapped", description: alt.name });
   }
 
-  // ----- Shopping list (client-side) -----
+  // ----- Shopping list (client-side) — current week only -----
   const shopping = useMemo(() => {
-    if (!planRow?.plan_data) return new Map<string, string[]>();
+    const { plan, key } = current;
+    const wk = plan?.plan_data?.[key];
     const items: { item: string; quantity?: string; unit?: string }[] = [];
     const walk = (node: unknown) => {
       if (!node || typeof node !== "object") return;
@@ -363,20 +402,19 @@ export default function Meals() {
       }
       for (const v of Object.values(rec)) walk(v);
     };
-    const wk = weekIdx === 1 ? planRow.plan_data.week_1 : planRow.plan_data.week_2;
     walk(wk);
     const byCat = new Map<string, string[]>();
     const seen = new Set<string>();
     for (const it of items) {
-      const key = it.item.toLowerCase().trim();
-      if (seen.has(key)) continue;
-      seen.add(key);
+      const k = it.item.toLowerCase().trim();
+      if (seen.has(k)) continue;
+      seen.add(k);
       const cat = categorize(it.item);
       if (!byCat.has(cat)) byCat.set(cat, []);
       byCat.get(cat)!.push(it.item);
     }
     return byCat;
-  }, [planRow, weekIdx]);
+  }, [current]);
 
   // ----- Render -----
   if (loading) {
