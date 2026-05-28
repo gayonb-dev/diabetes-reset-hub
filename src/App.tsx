@@ -21,6 +21,8 @@ import AppLayout from "./pages/app/AppLayout";
 import Dashboard from "./pages/app/Dashboard";
 import DayDetail from "./pages/app/DayDetail";
 import Library from "./pages/app/Library";
+import Learn from "./pages/app/Learn";
+import Supplements from "./pages/app/Supplements";
 import WorkoutLibrary from "./pages/app/WorkoutLibrary";
 import WorkoutSession from "./pages/app/WorkoutSession";
 import WorkoutComplete from "./pages/app/WorkoutComplete";
@@ -122,6 +124,8 @@ const App = () => (
               <Route path="today" element={<Dashboard />} />
               <Route path="day/:day" element={<DayDetail />} />
               <Route path="library" element={<Library />} />
+              <Route path="learn" element={<Learn />} />
+              <Route path="supplements" element={<Supplements />} />
               <Route path="workouts" element={<WorkoutLibrary />} />
               <Route path="workouts/:slug" element={<WorkoutSession />} />
               <Route path="workouts/:slug/complete" element={<WorkoutComplete />} />
