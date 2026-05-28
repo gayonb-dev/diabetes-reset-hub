@@ -119,7 +119,7 @@ function DailyActionsTab() {
       .select("*")
       .order("is_extension_day")
       .order("day_number");
-    setRows((data as DailyAction[]) || []);
+    setRows((data as unknown as DailyAction[]) || []);
     setLoading(false);
   };
 
@@ -151,9 +151,9 @@ function DailyActionsTab() {
       day_name: editing.day_name.trim(),
       action_title: editing.action_title.trim(),
       action_description: editing.action_description?.trim() || "",
-      action_detail_content: editing.action_detail_content || {},
+      action_detail_content: (editing.action_detail_content || {}) as never,
       action_type: editing.action_type || "habit",
-      sub_tasks: editing.sub_tasks || [],
+      sub_tasks: (editing.sub_tasks || []) as never,
       is_extension_day: editing.is_extension_day ?? false,
       learning_objective: editing.learning_objective || null,
     };
