@@ -150,39 +150,67 @@ export default function Settings() {
         .eq("id", profileId);
       setProfileMetadata(newMeta);
 
-      const today = new Date();
-      const validUntil = new Date(today);
-      validUntil.setDate(today.getDate() + 13);
-      const { data: planRow, error } = await supabase
-        .from("meal_plans")
-        .insert({
-          member_id: user.id,
-          plan_type: "standard",
-          generation_status: "pending",
-          generation_trigger: "preferences_update",
-          valid_from: today.toISOString().slice(0, 10),
-          valid_until: validUntil.toISOString().slice(0, 10),
-          preferences_snapshot: {
-            cuisine_preferences: cuisines,
-            protein_preferences: proteins,
-            allergies,
-            cooking_time: cookingTime,
-          },
-          plan_data: {},
-        } as never)
-        .select("id")
-        .single();
-      if (error) throw error;
+      const snapshot = {
+        cuisine_preferences: cuisines,
+        protein_preferences: proteins,
+        allergies,
+        cooking_time: cookingTime,
+      };
+      const dayStr = (offset: number) => {
+        const d = new Date();
+        d.setDate(d.getDate() + offset);
+        return d.toISOString().slice(0, 10);
+      };
 
-      if (planRow?.id) {
+      // Create Plan 1 (days 1–14) and Plan 2 (days 15–28) in parallel.
+      const [{ data: r1, error: e1 }, { data: r2, error: e2 }] = await Promise.all([
+        supabase
+          .from("meal_plans")
+          .insert({
+            member_id: user.id,
+            plan_type: "standard",
+            generation_status: "pending",
+            generation_trigger: "preferences_update",
+            valid_from: dayStr(0),
+            valid_until: dayStr(13),
+            preferences_snapshot: snapshot,
+            plan_data: {},
+          } as never)
+          .select("id")
+          .single(),
+        supabase
+          .from("meal_plans")
+          .insert({
+            member_id: user.id,
+            plan_type: "standard",
+            generation_status: "pending",
+            generation_trigger: "preferences_update",
+            valid_from: dayStr(14),
+            valid_until: dayStr(27),
+            preferences_snapshot: snapshot,
+            plan_data: {},
+          } as never)
+          .select("id")
+          .single(),
+      ]);
+      if (e1 || e2) throw (e1 ?? e2);
+
+      // Fire both edge function calls simultaneously (do not await).
+      if (r1?.id) {
         supabase.functions
-          .invoke("generate-meal-plan", { body: { plan_id: planRow.id } })
+          .invoke("generate-meal-plan", { body: { plan_id: r1.id, plan_index: 1 } })
           .catch(() => {});
       }
+      if (r2?.id) {
+        supabase.functions
+          .invoke("generate-meal-plan", { body: { plan_id: r2.id, plan_index: 2 } })
+          .catch(() => {});
+      }
+
       setInitialPrefs(JSON.stringify({ c: cuisines, p: proteins, avoid: foodsToAvoid, ct: cookingTime }));
       toast({
-        title: "Regenerating your meal plan",
-        description: "We'll have your new plan ready in under a minute.",
+        title: "Regenerating your 4-week meal plan",
+        description: "Both plans are being rebuilt — your Meals tab will refresh in about 15 seconds.",
       });
     } catch (e) {
       toast({
