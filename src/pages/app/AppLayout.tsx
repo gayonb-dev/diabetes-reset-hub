@@ -15,6 +15,7 @@ import {
   LogOut,
   Shield,
   LifeBuoy,
+  Pill,
   User,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -135,8 +136,11 @@ export default function AppLayout() {
             <NavLink to="/app/progress" className={navClass}>
               <LineChart className="h-4 w-4" /> Progress
             </NavLink>
-            <NavLink to="/app/library" className={navClass}>
+            <NavLink to="/app/learn" className={navClass}>
               <BookOpen className="h-4 w-4" /> Learn
+            </NavLink>
+            <NavLink to="/app/supplements" className={navClass}>
+              <Pill className="h-4 w-4" /> Supplements
             </NavLink>
             <NavLink to="/app/workouts" className={navClass}>
               <Activity className="h-4 w-4" /> Workouts
@@ -190,7 +194,7 @@ export default function AppLayout() {
           <NavLink to="/app/progress" className={mobileNavClass}>
             <LineChart className="h-5 w-5" /> Progress
           </NavLink>
-          <NavLink to="/app/library" className={mobileNavClass}>
+          <NavLink to="/app/learn" className={mobileNavClass}>
             <BookOpen className="h-5 w-5" /> Learn
           </NavLink>
           <NavLink to="/app/ask" className={mobileNavClass}>
