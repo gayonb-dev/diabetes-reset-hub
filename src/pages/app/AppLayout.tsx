@@ -88,6 +88,17 @@ export default function AppLayout() {
     </div>
   );
 
+  if (onboardCheck === "loading") {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <Loader2 className="h-6 w-6 animate-spin text-primary" />
+      </div>
+    );
+  }
+  if (onboardCheck === "needs") {
+    return <Navigate to="/app/onboarding" replace />;
+  }
+
   return (
     <div className="min-h-screen bg-background flex flex-col">
       {trialBanner}
