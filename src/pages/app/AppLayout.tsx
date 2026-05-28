@@ -37,6 +37,8 @@ function mobileNavClass({ isActive }: { isActive: boolean }) {
 export default function AppLayout() {
   const { signOut, subscription, isAdmin, user } = useAuth();
   const navigate = useNavigate();
+  const [streakDays, setStreakDays] = useState(0);
+  const [levelName, setLevelName] = useState("Level 1: Getting Started");
 
   // Onboarding gate: redirect new users (no onboarded_at) to /app/onboarding.
   const [onboardCheck, setOnboardCheck] = useState<"loading" | "needs" | "done">("loading");
@@ -44,21 +46,27 @@ export default function AppLayout() {
     if (!user) return;
     let cancelled = false;
     (async () => {
-      const { data } = await supabase
+      const [{ data }, { data: streak }] = await Promise.all([
+        supabase
         .from("visitor_profiles")
         .select("metadata")
         .eq("user_id", user.id)
-        .maybeSingle();
+          .maybeSingle(),
+        supabase
+          .from("user_streaks")
+          .select("current_streak, level")
+          .eq("user_id", user.id)
+          .maybeSingle(),
+      ]);
       if (cancelled) return;
       const meta = (data?.metadata as Record<string, unknown> | null) || {};
+      const level = streak?.level ?? 1;
+      setStreakDays(streak?.current_streak ?? 0);
+      setLevelName(level <= 1 ? "Level 1: Getting Started" : `Level ${level}: The Builder`);
       setOnboardCheck(meta.onboarded_at ? "done" : "needs");
     })();
     return () => { cancelled = true; };
   }, [user?.id]);
-
-  // TODO: pull these from real data later
-  const streakDays = 12;
-  const levelName = "Level 2: The Builder";
 
   const handleSignOut = async () => {
     await signOut();
