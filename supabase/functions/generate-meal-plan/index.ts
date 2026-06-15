@@ -37,20 +37,12 @@ const MealSchema = z.object({
   prep_time_minutes: z.number(),
   cook_time_minutes: z.number(),
   servings: z.number(),
-  ingredients: z.array(z.object({
-    item: z.string(),
-    quantity: z.string(),
-    unit: z.string(),
-  })),
+  ingredients: z.array(z.string()),
   instructions: z.array(z.string()),
-  plate_breakdown: z.object({
-    vegetables: z.string(),
-    protein: z.string(),
-    carbs: z.string(),
-  }),
-  glycemic_rating: z.enum(["low", "medium", "high"]),
-  alternatives: z.array(z.string()).min(2).max(4),
+  plate_breakdown: z.string(),
+  alternatives: z.array(z.string()),
 });
+
 
 const DaySchema = z.object({
   breakfast: MealSchema,
