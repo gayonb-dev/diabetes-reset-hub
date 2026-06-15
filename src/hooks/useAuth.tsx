@@ -60,8 +60,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     // 1) Set listener FIRST
     const { data: { subscription: authSub } } = supabase.auth.onAuthStateChange((event, s) => {
-      setSession(s);
-      setUser(s?.user ?? null);
+      // Avoid churning user/session state on TOKEN_REFRESHED (fired on every
+      // tab focus). Otherwise components that key effects off `user` reset
+      // their in-progress state (selections, form input) whenever the user
+      // tabs away and comes back.
+      setSession((prev) => (prev?.access_token === s?.access_token ? prev : s));
+      setUser((prev) => (prev?.id === s?.user?.id ? prev : (s?.user ?? null)));
+
+      if (event === "TOKEN_REFRESHED") return;
 
       if (s?.user) {
         // Hold loading=true while we refresh isAdmin / subscription so
