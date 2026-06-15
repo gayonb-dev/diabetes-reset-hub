@@ -13,7 +13,7 @@ import { cn } from "@/lib/utils";
 import { SnackLibrary } from "@/components/meals/SnackLibrary";
 
 // ----- types -----
-interface Ingredient { item: string; quantity: string; unit: string }
+type Ingredient = string | { item: string; quantity: string; unit: string };
 type Alternative = string | { name: string; description?: string }
 interface Meal {
   name: string;
@@ -23,9 +23,20 @@ interface Meal {
   servings: number;
   ingredients: Ingredient[];
   instructions: string[];
-  plate_breakdown: { vegetables: string; protein: string; carbs: string };
-  glycemic_rating: "low" | "medium" | "high";
+  plate_breakdown: string | { vegetables: string; protein: string; carbs: string };
+  glycemic_rating?: "low" | "medium" | "high";
   alternatives: Alternative[];
+}
+
+function ingredientText(ing: Ingredient): string {
+  if (typeof ing === "string") return ing;
+  return [ing.quantity, ing.unit, ing.item].filter(Boolean).join(" ");
+}
+function ingredientItemName(ing: Ingredient): string {
+  if (typeof ing === "string") {
+    return ing.replace(/^[\d./\s]+(?:g|kg|ml|l|oz|lb|tbsp|tsp|cup|cups|pieces?|fillets?)?\s*/i, "").trim() || ing;
+  }
+  return ing.item;
 }
 type Day = Record<string, Meal>; // breakfast/lunch/dinner/snack_1/snack_2 OR meal_1/meal_2/snack_1/snack_2
 type Week = Record<string, Day>; // monday..sunday
@@ -135,7 +146,7 @@ function MealCard({ slot, meal, planId, day, weekIdx, onSwap }: {
           </p>
           <h3 className="font-medium text-foreground mt-0.5 truncate">{meal.name}</h3>
           <div className="flex items-center gap-2 mt-1.5">
-            <GlyBadge rating={meal.glycemic_rating} />
+            {meal.glycemic_rating && <GlyBadge rating={meal.glycemic_rating} />}
             <span className="text-[11px] text-muted-foreground inline-flex items-center gap-1">
               <Clock className="h-3 w-3" />
               {meal.prep_time_minutes + meal.cook_time_minutes} min
@@ -150,29 +161,37 @@ function MealCard({ slot, meal, planId, day, weekIdx, onSwap }: {
         <div className="px-4 pb-4 space-y-3 border-t border-border pt-3">
           <p className="text-sm text-muted-foreground">{meal.description}</p>
 
-          <div className="grid grid-cols-3 gap-2 text-xs">
-            <div className="bg-primary-muted/40 rounded p-2">
-              <p className="font-medium text-primary">50% Veg</p>
-              <p className="text-muted-foreground">{meal.plate_breakdown.vegetables}</p>
+          {typeof meal.plate_breakdown === "string" ? (
+            <div className="bg-primary-muted/40 rounded p-2 text-xs">
+              <p className="font-medium text-primary mb-0.5">Plate Method</p>
+              <p className="text-muted-foreground">{meal.plate_breakdown}</p>
             </div>
-            <div className="bg-accent-muted/40 rounded p-2">
-              <p className="font-medium text-accent">25% Protein</p>
-              <p className="text-muted-foreground">{meal.plate_breakdown.protein}</p>
+          ) : (
+            <div className="grid grid-cols-3 gap-2 text-xs">
+              <div className="bg-primary-muted/40 rounded p-2">
+                <p className="font-medium text-primary">50% Veg</p>
+                <p className="text-muted-foreground">{meal.plate_breakdown.vegetables}</p>
+              </div>
+              <div className="bg-accent-muted/40 rounded p-2">
+                <p className="font-medium text-accent">25% Protein</p>
+                <p className="text-muted-foreground">{meal.plate_breakdown.protein}</p>
+              </div>
+              <div className="bg-muted/60 rounded p-2">
+                <p className="font-medium text-foreground">25% Carbs</p>
+                <p className="text-muted-foreground">{meal.plate_breakdown.carbs}</p>
+              </div>
             </div>
-            <div className="bg-muted/60 rounded p-2">
-              <p className="font-medium text-foreground">25% Carbs</p>
-              <p className="text-muted-foreground">{meal.plate_breakdown.carbs}</p>
-            </div>
-          </div>
+          )}
 
           <div>
             <p className="text-xs font-medium text-foreground mb-1">Ingredients</p>
             <ul className="text-xs text-muted-foreground space-y-0.5">
               {meal.ingredients.map((ing, i) => (
-                <li key={i}>• {ing.quantity} {ing.unit} {ing.item}</li>
+                <li key={i}>• {ingredientText(ing)}</li>
               ))}
             </ul>
           </div>
+
 
           <div>
             <p className="text-xs font-medium text-foreground mb-1">Instructions</p>
@@ -410,7 +429,7 @@ export default function Meals() {
       const rec = node as Record<string, unknown>;
       if (Array.isArray(rec.ingredients) && typeof rec.name === "string") {
         for (const ing of rec.ingredients as Ingredient[]) {
-          items.push({ item: ing.item, quantity: ing.quantity, unit: ing.unit });
+          items.push({ item: ingredientItemName(ing) });
         }
       }
       for (const v of Object.values(rec)) walk(v);
