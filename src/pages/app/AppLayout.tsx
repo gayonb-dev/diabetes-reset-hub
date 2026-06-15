@@ -22,6 +22,8 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Vita } from "@/components/vita/Vita";
+import { NotificationsBell } from "@/components/notifications/NotificationsBell";
+
 
 function navClass({ isActive }: { isActive: boolean }) {
   return `flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] transition-colors ${
