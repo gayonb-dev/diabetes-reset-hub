@@ -162,7 +162,7 @@ export default function MealSetupTransition() {
   // Kick off the first generation on mount with defaults.
   useEffect(() => {
     if (!user) return;
-    startGeneration({ cuisine: DEFAULT_CUISINE, cookingTime: DEFAULT_COOKING });
+    startGeneration({ cuisine: DEFAULT_CUISINE, cookingTime: DEFAULT_COOKING }).catch(handleGenerationError);
     // 18s safety net: if the member never touches anything, treat as approved.
     const t = window.setTimeout(() => setUserTouched(true), 18000);
     return () => clearTimeout(t);
@@ -182,7 +182,7 @@ export default function MealSetupTransition() {
     if (c === cuisine) return;
     setCuisine(c);
     if (!bothComplete) {
-      startGeneration({ cuisine: c, cookingTime });
+      startGeneration({ cuisine: c, cookingTime }).catch(handleGenerationError);
     }
   }
 
@@ -191,7 +191,7 @@ export default function MealSetupTransition() {
     if (t === cookingTime) return;
     setCookingTime(t);
     if (!bothComplete) {
-      startGeneration({ cuisine, cookingTime: t });
+      startGeneration({ cuisine, cookingTime: t }).catch(handleGenerationError);
     }
   }
 
