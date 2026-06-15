@@ -203,14 +203,6 @@ function MealCard({ slot, meal, planId, day, weekIdx, onSwap }: {
   );
 }
 
-interface PlanRow {
-  id: string;
-  status: string;
-  plan_data: PlanData;
-  plan_type: string;
-  valid_from: string;
-}
-
 export default function Meals() {
   const { user, subscription } = useAuth();
   const [plan1, setPlan1] = useState<PlanRow | null>(null);
@@ -232,7 +224,7 @@ export default function Meals() {
     async function load() {
       const { data } = await supabase
         .from("meal_plans")
-        .select("id, generation_status, plan_data, plan_type, valid_from")
+        .select("id, generation_status, plan_data, plan_type, valid_from, created_at")
         .eq("member_id", user!.id)
         .order("valid_from", { ascending: false })
         .limit(2);
@@ -248,6 +240,7 @@ export default function Meals() {
           plan_data: (r.plan_data as PlanData) || {},
           plan_type: r.plan_type,
           valid_from: r.valid_from,
+          created_at: r.created_at,
         });
         setPlan1(toRow(sorted[0]));
         setPlan2(sorted[1] ? toRow(sorted[1]) : null);
