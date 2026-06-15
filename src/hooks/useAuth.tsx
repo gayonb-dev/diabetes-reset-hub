@@ -125,7 +125,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     supabase.auth.getSession().then(async ({ data: { session: s } }) => {
       setSession(s);
       setUser(s?.user ?? null);
-      if (s?.user) await loadUserData(s.user);
+      if (s?.user) {
+        lastUserId = s.user.id;
+        loginLogged = true; // existing session — don't log a new login
+        await loadUserData(s.user);
+      }
       setLoading(false);
     });
 
