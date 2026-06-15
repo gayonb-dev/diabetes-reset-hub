@@ -373,7 +373,42 @@ export default function Settings() {
         <p className="text-sm text-muted-foreground mt-1">{user?.email}</p>
       </div>
 
+      {/* Profile */}
+      <Card className="p-5 border-border">
+        <h2 className="font-semibold text-base flex items-center gap-2 mb-1">
+          <User className="h-4 w-4 text-primary" /> Profile
+        </h2>
+        <p className="text-xs text-muted-foreground mb-4">
+          Your account name stays private. Choose how you appear to other members.
+        </p>
+        <div className="space-y-2">
+          <Label htmlFor="display-name" className="text-xs">Community display name</Label>
+          <Input
+            id="display-name"
+            type="text"
+            placeholder={firstName || "How you'll appear in community"}
+            value={displayName}
+            onChange={(e) => setDisplayName(e.target.value)}
+            maxLength={40}
+          />
+          <p className="text-[11px] text-muted-foreground">
+            Shown on questions, answers, and wins. Defaults to your first name. Does not change your account name.
+          </p>
+        </div>
+        <Button
+          onClick={saveDisplayName}
+          disabled={displayNameSaving || !displayNameDirty}
+          variant="outline"
+          size="sm"
+          className="mt-3"
+        >
+          {displayNameSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          Save display name
+        </Button>
+      </Card>
+
       {/* Units */}
+
       <Card className="p-5 border-border">
         <h2 className="font-semibold text-base mb-1">Units</h2>
         <p className="text-xs text-muted-foreground mb-4">How we show your numbers.</p>
