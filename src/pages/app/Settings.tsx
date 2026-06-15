@@ -460,7 +460,32 @@ export default function Settings() {
         </Button>
       </Card>
 
+      {/* Notifications */}
+      <Card className="p-5 border-border">
+        <h2 className="font-semibold text-base flex items-center gap-2 mb-1">
+          <Bell className="h-4 w-4 text-primary" /> Notifications
+        </h2>
+        <p className="text-xs text-muted-foreground mb-4">
+          Turn off anything you don't want. Urgent account messages always come through.
+        </p>
+        <div className="space-y-3">
+          {Object.entries(NOTIF_LABELS).map(([key, meta]) => (
+            <div key={key} className="flex items-start justify-between gap-3 py-1">
+              <div className="min-w-0">
+                <p className="text-sm font-medium text-foreground">{meta.title}</p>
+                <p className="text-xs text-muted-foreground">{meta.desc}</p>
+              </div>
+              <Switch
+                checked={notifPrefs[key] ?? true}
+                onCheckedChange={(v) => toggleNotif(key, Boolean(v))}
+              />
+            </div>
+          ))}
+        </div>
+      </Card>
+
       {/* Meal Plan Preferences — Section 5 (Section 20 of spec) */}
+
       <Card className="p-5 border-border">
         <h2 className="font-semibold text-base flex items-center gap-2 mb-1">
           <UtensilsCrossed className="h-4 w-4 text-primary" /> Meal Plan Preferences
