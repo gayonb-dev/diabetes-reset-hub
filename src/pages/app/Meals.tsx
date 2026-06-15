@@ -244,7 +244,10 @@ export default function Meals() {
         });
         setPlan1(toRow(sorted[0]));
         setPlan2(sorted[1] ? toRow(sorted[1]) : null);
-        const anyPending = sorted.some((r) => r.generation_status === "pending");
+        const anyPending = sorted.some((r) => {
+          if (r.generation_status !== "pending") return false;
+          return Date.now() - new Date(r.created_at).getTime() <= PLAN_PENDING_TIMEOUT_MS;
+        });
         if (anyPending) timer = window.setTimeout(load, 3000);
       }
       setLoading(false);
@@ -446,12 +449,13 @@ export default function Meals() {
     );
   }
 
-  const anyPending =
-    plan1.status === "pending" || (plan2 && plan2.status === "pending");
   const anyFailed =
-    plan1.status === "failed" || (plan2 && plan2.status === "failed");
+    plan1.status === "failed" || isStalePending(plan1) || (plan2 && (plan2.status === "failed" || isStalePending(plan2)));
+  const anyPending =
+    (plan1.status === "pending" && !isStalePending(plan1)) ||
+    (plan2 && plan2.status === "pending" && !isStalePending(plan2));
 
-  if (anyPending || regenerating) {
+  if ((anyPending || regenerating) && !anyFailed) {
     return (
       <div className="max-w-md mx-auto py-16 text-center space-y-4">
         <div className="flex justify-center"><Vita posture="encouraging" size={64} /></div>
