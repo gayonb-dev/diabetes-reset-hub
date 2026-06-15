@@ -433,6 +433,11 @@ Deno.serve(async (req) => {
     }
 
     const cta = buildCta(classifier.intent, origin);
+    const healthRelated =
+      classifier.contains_phi ||
+      classifier.topic === "diabetes_management" ||
+      classifier.topic === "meds" ||
+      (classifier.health_signals?.length ?? 0) > 0;
 
     return new Response(
       JSON.stringify({
@@ -440,9 +445,12 @@ Deno.serve(async (req) => {
         assistant_message: assistantText,
         needs_phi_consent: false,
         cta,
+        intent: classifier.intent,
+        health_related: healthRelated,
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } },
     );
+
   } catch (e) {
     console.error("chat-agent fatal", e);
     return new Response(JSON.stringify({ error: "Internal server error" }), {
