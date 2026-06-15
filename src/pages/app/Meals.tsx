@@ -198,8 +198,8 @@ function MealCard({ slot, meal, planId, day, weekIdx, onSwap }: {
                     onClick={() => onSwap(slot, day, weekIdx, alt)}
                     className="w-full text-left rounded-md border border-border p-2 hover:border-accent transition-colors"
                   >
-                    <p className="text-sm font-medium text-foreground">{alt.name}</p>
-                    <p className="text-xs text-muted-foreground">{alt.description}</p>
+                    <p className="text-sm font-medium text-foreground">{altName(alt)}</p>
+                    {altDescription(alt) && <p className="text-xs text-muted-foreground">{altDescription(alt)}</p>}
                   </button>
                 ))}
               </div>
