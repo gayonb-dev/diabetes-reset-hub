@@ -58,6 +58,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   useEffect(() => {
+    let lastUserId: string | null = null;
+    let loginLogged = false;
+
     // 1) Set listener FIRST
     const { data: { subscription: authSub } } = supabase.auth.onAuthStateChange((event, s) => {
       // Avoid churning user/session state on TOKEN_REFRESHED (fired on every
@@ -67,16 +70,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setSession((prev) => (prev?.access_token === s?.access_token ? prev : s));
       setUser((prev) => (prev?.id === s?.user?.id ? prev : (s?.user ?? null)));
 
-      if (event === "TOKEN_REFRESHED") return;
+      // Ignore noisy events that fire on tab focus / token refresh. They
+      // would otherwise flip loading=true and re-fetch user data, causing
+      // the whole app to flash a spinner whenever the user returns to the
+      // tab and dropping in-progress UI state.
+      if (event === "TOKEN_REFRESHED" || event === "INITIAL_SESSION") return;
 
       if (s?.user) {
-        // Hold loading=true while we refresh isAdmin / subscription so
-        // AuthGuard doesn't redirect on a half-loaded auth state.
-        setLoading(true);
-        loadUserData(s.user).finally(() => setLoading(false));
+        const sameUser = lastUserId === s.user.id;
+        lastUserId = s.user.id;
 
-        // Activity event: login
-        if (event === "SIGNED_IN") {
+        if (!sameUser) {
+          // Only show loading & re-fetch when the signed-in user actually
+          // changes (real sign-in / account switch).
+          setLoading(true);
+          loadUserData(s.user).finally(() => setLoading(false));
+        }
+
+        // Activity event: login — only once per real sign-in
+        if (event === "SIGNED_IN" && !loginLogged) {
+          loginLogged = true;
           setTimeout(async () => {
             const anonId = localStorage.getItem("drm_visitor_id");
             try {
@@ -101,6 +114,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           }, 0);
         }
       } else {
+        lastUserId = null;
+        loginLogged = false;
         setIsAdmin(false);
         setSubscription(null);
       }
