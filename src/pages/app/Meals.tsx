@@ -34,6 +34,14 @@ interface PlanData {
   week_1?: Week;
   week_2?: Week;
 }
+interface PlanRow {
+  id: string;
+  status: string;
+  plan_data: PlanData;
+  plan_type: string;
+  valid_from: string;
+  created_at?: string;
+}
 
 const DAY_KEYS = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"] as const;
 const STANDARD_SLOTS = ["breakfast", "lunch", "dinner", "snack_1", "snack_2"] as const;
@@ -48,6 +56,13 @@ const SLOT_LABEL: Record<string, string> = {
   meal_1: "Meal 1",
   meal_2: "Meal 2",
 };
+
+const PLAN_PENDING_TIMEOUT_MS = 2 * 60 * 1000;
+
+function isStalePending(plan: PlanRow | null) {
+  if (!plan || plan.status !== "pending" || !plan.created_at) return false;
+  return Date.now() - new Date(plan.created_at).getTime() > PLAN_PENDING_TIMEOUT_MS;
+}
 
 // ----- shopping list categorization (client-side, no API) -----
 const CATEGORY_RULES: Array<{ category: string; tip: string; match: (item: string) => boolean }> = [
@@ -188,14 +203,6 @@ function MealCard({ slot, meal, planId, day, weekIdx, onSwap }: {
   );
 }
 
-interface PlanRow {
-  id: string;
-  status: string;
-  plan_data: PlanData;
-  plan_type: string;
-  valid_from: string;
-}
-
 export default function Meals() {
   const { user, subscription } = useAuth();
   const [plan1, setPlan1] = useState<PlanRow | null>(null);
@@ -217,7 +224,7 @@ export default function Meals() {
     async function load() {
       const { data } = await supabase
         .from("meal_plans")
-        .select("id, generation_status, plan_data, plan_type, valid_from")
+        .select("id, generation_status, plan_data, plan_type, valid_from, created_at")
         .eq("member_id", user!.id)
         .order("valid_from", { ascending: false })
         .limit(2);
@@ -233,10 +240,14 @@ export default function Meals() {
           plan_data: (r.plan_data as PlanData) || {},
           plan_type: r.plan_type,
           valid_from: r.valid_from,
+          created_at: r.created_at,
         });
         setPlan1(toRow(sorted[0]));
         setPlan2(sorted[1] ? toRow(sorted[1]) : null);
-        const anyPending = sorted.some((r) => r.generation_status === "pending");
+        const anyPending = sorted.some((r) => {
+          if (r.generation_status !== "pending") return false;
+          return Date.now() - new Date(r.created_at).getTime() <= PLAN_PENDING_TIMEOUT_MS;
+        });
         if (anyPending) timer = window.setTimeout(load, 3000);
       }
       setLoading(false);
@@ -284,7 +295,7 @@ export default function Meals() {
         return d.toISOString().slice(0, 10);
       };
 
-      const [{ data: r1 }, { data: r2 }] = await Promise.all([
+      const [{ data: r1, error: e1 }, { data: r2, error: e2 }] = await Promise.all([
         supabase
           .from("meal_plans")
           .insert({
@@ -314,6 +325,7 @@ export default function Meals() {
           .select("id, plan_type, valid_from")
           .single(),
       ]);
+      if (e1 || e2) throw (e1 ?? e2);
 
       if (r1?.id) {
         setPlan1({ id: r1.id, status: "pending", plan_data: {}, plan_type: r1.plan_type, valid_from: r1.valid_from });
@@ -322,19 +334,21 @@ export default function Meals() {
         setPlan2({ id: r2.id, status: "pending", plan_data: {}, plan_type: r2.plan_type, valid_from: r2.valid_from });
       }
 
-      await Promise.all([
+      const generationResults = await Promise.all([
         r1?.id
           ? supabase.functions.invoke("generate-meal-plan", { body: { plan_id: r1.id, plan_index: 1 } })
-          : Promise.resolve(),
+          : Promise.resolve({ error: null }),
         r2?.id
           ? supabase.functions.invoke("generate-meal-plan", { body: { plan_id: r2.id, plan_index: 2 } })
-          : Promise.resolve(),
+          : Promise.resolve({ error: null }),
       ]);
+      const generationError = generationResults.find((result) => result?.error)?.error;
+      if (generationError) throw generationError;
 
       // Refetch
       const { data: updated } = await supabase
         .from("meal_plans")
-        .select("id, generation_status, plan_data, plan_type, valid_from")
+        .select("id, generation_status, plan_data, plan_type, valid_from, created_at")
         .eq("member_id", user.id)
         .order("valid_from", { ascending: false })
         .limit(2);
@@ -346,6 +360,7 @@ export default function Meals() {
           plan_data: (r.plan_data as PlanData) || {},
           plan_type: r.plan_type,
           valid_from: r.valid_from,
+          created_at: r.created_at,
         });
         setPlan1(toRow(sorted[0]));
         setPlan2(sorted[1] ? toRow(sorted[1]) : null);
@@ -434,12 +449,13 @@ export default function Meals() {
     );
   }
 
-  const anyPending =
-    plan1.status === "pending" || (plan2 && plan2.status === "pending");
   const anyFailed =
-    plan1.status === "failed" || (plan2 && plan2.status === "failed");
+    plan1.status === "failed" || isStalePending(plan1) || (plan2 && (plan2.status === "failed" || isStalePending(plan2)));
+  const anyPending =
+    (plan1.status === "pending" && !isStalePending(plan1)) ||
+    (plan2 && plan2.status === "pending" && !isStalePending(plan2));
 
-  if (anyPending || regenerating) {
+  if ((anyPending || regenerating) && !anyFailed) {
     return (
       <div className="max-w-md mx-auto py-16 text-center space-y-4">
         <div className="flex justify-center"><Vita posture="encouraging" size={64} /></div>
