@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import Vita from "@/components/vita/Vita";
+import { toast } from "@/hooks/use-toast";
 
 const CUISINES = [
   "International (balanced)",
@@ -33,6 +34,7 @@ const DEFAULT_CUISINE = "International (balanced)";
 const DEFAULT_COOKING = "20–45 min";
 
 interface PlanIds { plan1: string | null; plan2: string | null }
+type GenerationResult = { error?: { message?: string } | null };
 
 function todayPlus(days: number) {
   const d = new Date();
@@ -83,7 +85,7 @@ export default function MealSetupTransition() {
       .eq("user_id", user.id);
 
     // Create two pending plan rows: today→+13 and +14→+27.
-    const [{ data: row1 }, { data: row2 }] = await Promise.all([
+    const [{ data: row1, error: e1 }, { data: row2, error: e2 }] = await Promise.all([
       supabase
         .from("meal_plans")
         .insert({
@@ -113,6 +115,7 @@ export default function MealSetupTransition() {
         .select("id")
         .single(),
     ]);
+    if (e1 || e2) throw (e1 ?? e2);
 
     if (myKey !== generationKeyRef.current) return; // a newer restart took over
     planIdsRef.current = { plan1: row1?.id ?? null, plan2: row2?.id ?? null };
@@ -121,25 +124,33 @@ export default function MealSetupTransition() {
     if (row1?.id) {
       supabase.functions
         .invoke("generate-meal-plan", { body: { plan_id: row1.id, plan_index: 1 } })
-        .then(() => {
+        .then((result: GenerationResult) => {
+          if (result.error) throw result.error;
           if (myKey === generationKeyRef.current) {
             completionRef.current.plan1 = true;
             checkBothDone();
           }
         })
-        .catch(() => {/* status will surface in Meals tab if failed */});
+        .catch((error) => handleGenerationError(error));
     }
     if (row2?.id) {
       supabase.functions
         .invoke("generate-meal-plan", { body: { plan_id: row2.id, plan_index: 2 } })
-        .then(() => {
+        .then((result: GenerationResult) => {
+          if (result.error) throw result.error;
           if (myKey === generationKeyRef.current) {
             completionRef.current.plan2 = true;
             checkBothDone();
           }
         })
-        .catch(() => {});
+        .catch((error) => handleGenerationError(error));
     }
+  }
+
+  function handleGenerationError(error: unknown) {
+    const message = error instanceof Error ? error.message : "Please try again from the Meals tab.";
+    toast({ title: "Meal plan generation failed", description: message, variant: "destructive" });
+    navigate("/app/meals", { replace: true });
   }
 
   function checkBothDone() {
