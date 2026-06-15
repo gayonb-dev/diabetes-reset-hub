@@ -429,7 +429,7 @@ export default function Meals() {
       const rec = node as Record<string, unknown>;
       if (Array.isArray(rec.ingredients) && typeof rec.name === "string") {
         for (const ing of rec.ingredients as Ingredient[]) {
-          items.push({ item: ing.item, quantity: ing.quantity, unit: ing.unit });
+          items.push({ item: ingredientItemName(ing) });
         }
       }
       for (const v of Object.values(rec)) walk(v);
