@@ -50,6 +50,7 @@ const AdminWaitlist = lazy(() => import("./pages/admin/AdminWaitlist"));
 const AdminTopCustomers = lazy(() => import("./pages/admin/AdminTopCustomers"));
 const AdminDigest = lazy(() => import("./pages/admin/AdminDigest"));
 const AdminPhiLog = lazy(() => import("./pages/admin/AdminPhiLog"));
+const AdminCommunity = lazy(() => import("./pages/admin/AdminCommunity"));
 const Privacy = lazy(() => import("./pages/Privacy"));
 const ChatWidget = lazy(() => import("./components/chat/ChatWidget"));
 
