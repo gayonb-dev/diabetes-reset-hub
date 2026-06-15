@@ -89,6 +89,7 @@ const App = () => (
                 <Route path="broadcasts" element={<AdminBroadcasts />} />
                 <Route path="waitlist" element={<AdminWaitlist />} />
                 <Route path="phi-log" element={<AdminPhiLog />} />
+                <Route path="community" element={<AdminCommunity />} />
               </Route>
 
               <Route path="/llm-info" element={<LLMInfo />} />
