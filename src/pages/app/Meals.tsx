@@ -370,12 +370,12 @@ export default function Meals() {
     }
   }
 
-  // Map a global week index (1–4) to the underlying plan + week key.
+  // Map a global week index (1–4) to the underlying one-week plan row.
   function resolveWeek(idx: 1 | 2 | 3 | 4): { plan: PlanRow | null; key: "week_1" | "week_2" } {
     if (idx === 1) return { plan: plan1, key: "week_1" };
-    if (idx === 2) return { plan: plan1, key: "week_2" };
-    if (idx === 3) return { plan: plan2, key: "week_1" };
-    return { plan: plan2, key: "week_2" };
+    if (idx === 2) return { plan: plan2, key: "week_1" };
+    if (idx === 3) return { plan: plan3, key: "week_1" };
+    return { plan: plan4, key: "week_1" };
   }
   const current = resolveWeek(weekIdx);
 
@@ -447,11 +447,9 @@ export default function Meals() {
     );
   }
 
-  const anyFailed =
-    plan1.status === "failed" || isStalePending(plan1) || (plan2 && (plan2.status === "failed" || isStalePending(plan2)));
-  const anyPending =
-    (plan1.status === "pending" && !isStalePending(plan1)) ||
-    (plan2 && plan2.status === "pending" && !isStalePending(plan2));
+  const allPlans = [plan1, plan2, plan3, plan4].filter(Boolean) as PlanRow[];
+  const anyFailed = allPlans.some((plan) => plan.status === "failed" || isStalePending(plan));
+  const anyPending = allPlans.some((plan) => plan.status === "pending" && !isStalePending(plan));
 
   if ((anyPending || regenerating) && !anyFailed) {
     return (
@@ -487,7 +485,7 @@ export default function Meals() {
 
   const week = current.plan?.plan_data?.[current.key] as Week | undefined;
   const slots = (current.plan?.plan_type ?? "standard") === "intermittent_fasting" ? IF_SLOTS : STANDARD_SLOTS;
-  const weekOptions: (1 | 2 | 3 | 4)[] = plan2 ? [1, 2, 3, 4] : [1, 2];
+  const weekOptions: (1 | 2 | 3 | 4)[] = [1, 2, 3, 4].filter((idx) => Boolean(resolveWeek(idx as 1 | 2 | 3 | 4).plan)) as (1 | 2 | 3 | 4)[];
 
   return (
     <div className="max-w-3xl mx-auto space-y-5">
