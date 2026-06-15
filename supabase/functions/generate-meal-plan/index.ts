@@ -452,8 +452,37 @@ Deno.serve(async (req) => {
   const windowHours = profile?.if_window_hours ?? 10;
   const fastHours = 24 - windowHours;
   const planIdx = [1, 2, 3, 4].includes(body.plan_index ?? 0) ? body.plan_index : null;
-  const planIndexHint = planIdx
-    ? `\n\n---\n\nPARALLEL PLAN GENERATION CONTEXT\nYou are generating Week ${planIdx} of 4 for the same member in parallel. Return this week as week_1 only. Bias your dish selection toward varied proteins, varied carbohydrate bases, and varied cooking techniques so the member experiences clear week-over-week novelty across the full 28 days. Do not repeat the names or core compositions of the meals in served_meals above.`
+  // Per-week deterministic bias. The 4 weeks are generated in parallel and cannot
+  // see each other's served_meals, so we force novelty via distinct themes here.
+  const WEEK_BIAS: Record<number, { theme: string; mondayBreakfast: string; primaryProtein: string; carbBase: string }> = {
+    1: {
+      theme: "Eggs and leafy-green forward week.",
+      mondayBreakfast: "An egg-based scramble or omelette featuring callaloo, spinach, or dasheen leaves with a small portion of whole grain.",
+      primaryProtein: "eggs and chicken breast",
+      carbBase: "rolled oats and whole grain bread",
+    },
+    2: {
+      theme: "Fish and seafood forward week.",
+      mondayBreakfast: "A smoked-fish or fresh-fish breakfast bowl (e.g., steamed fish with provisions, fish-and-bake style with whole grain, or a saltfish-and-vegetable mix). NO eggs as the primary protein.",
+      primaryProtein: "fish (snapper, mackerel, tuna, saltfish soaked) and shrimp",
+      carbBase: "boiled green banana and brown rice",
+    },
+    3: {
+      theme: "Grain and oat forward week.",
+      mondayBreakfast: "A warm whole-grain porridge or savoury oat bowl (e.g., cornmeal porridge made with rolled oats and unsweetened almond milk, savoury oat congee with vegetables and turkey). NO eggs and NO fish as the primary protein.",
+      primaryProtein: "turkey breast, Greek yogurt, and lean beef",
+      carbBase: "rolled oats, bulgur, and quinoa",
+    },
+    4: {
+      theme: "Legume and plant-protein forward week.",
+      mondayBreakfast: "A bean, lentil, or tofu-based breakfast (e.g., stewed black-eyed peas with sauteed greens and a small portion of breadfruit, or a chickpea-and-vegetable hash with whole grain toast). NO eggs, NO fish, NO chicken as the primary protein.",
+      primaryProtein: "black beans, lentils, chickpeas, tofu, and tempeh",
+      carbBase: "breadfruit (boiled), sweet potato, and whole wheat pasta",
+    },
+  };
+  const bias = planIdx ? WEEK_BIAS[planIdx] : null;
+  const planIndexHint = planIdx && bias
+    ? `\n\n---\n\nPARALLEL PLAN GENERATION CONTEXT — WEEK ${planIdx} OF 4\nYou are generating Week ${planIdx} of 4 for the same member in parallel. The other 3 weeks are being generated at the same moment and CANNOT see your output, so you MUST follow the deterministic per-week bias below so the member experiences clear week-over-week novelty across the full 28 days.\n\nWEEK ${planIdx} THEME: ${bias.theme}\n- Primary protein focus for this week: ${bias.primaryProtein}.\n- Primary complex-carbohydrate base for this week: ${bias.carbBase}.\n- Monday breakfast for THIS week MUST be: ${bias.mondayBreakfast}\n\nReturn this week as week_1 only. Do not repeat the names or core compositions of the meals in served_meals above.`
     : "";
   const systemPrompt = isIfMode
     ? STANDARD_SYSTEM_PROMPT.replace("{{SERVED_MEALS}}", servedMeals.join(", ") || "none") +
@@ -465,13 +494,30 @@ Deno.serve(async (req) => {
   try {
     console.log("Testing real generation");
     console.log("generateObject starting, plan_id:", planRow.id);
-    const { object } = await generateObject({
-      model,
-      schema,
-      mode: "json",
-      system: systemPrompt,
-      prompt: formatMemberInputs(prefs, servedMeals),
-    });
+    async function tryGenerate() {
+      return await generateObject({
+        model,
+        schema,
+        mode: "json",
+        system: systemPrompt,
+        prompt: formatMemberInputs(prefs, servedMeals),
+      });
+    }
+    let result;
+    try {
+      result = await tryGenerate();
+    } catch (firstErr) {
+      const msg = (firstErr as { message?: string })?.message ?? "";
+      const causeName = ((firstErr as { cause?: { name?: string } })?.cause?.name) ?? "";
+      const retryable =
+        msg.includes("Invalid JSON response") ||
+        msg.includes("Unexpected end of JSON") ||
+        causeName === "AI_JSONParseError";
+      if (!retryable) throw firstErr;
+      console.warn("generateObject retry after parse failure");
+      result = await tryGenerate();
+    }
+    const { object } = result;
     console.log("generateObject complete");
 
     // Update served_meals (FIFO 250 cap)
