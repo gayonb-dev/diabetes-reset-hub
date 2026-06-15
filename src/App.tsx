@@ -140,6 +140,7 @@ const App = () => (
                 <Route path="profile" element={<Profile />} />
                 <Route path="fasting" element={<Fasting />} />
                 <Route path="cheat-meal" element={<CheatMeal />} />
+                <Route path="support" element={<Support />} />
                 <Route path="settings/billing" element={<Billing />} />
                 <Route path="coaching-waitlist" element={<CoachingWaitlist />} />
               </Route>
