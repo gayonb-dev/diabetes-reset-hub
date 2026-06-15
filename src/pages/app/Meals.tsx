@@ -292,7 +292,7 @@ export default function Meals() {
         return d.toISOString().slice(0, 10);
       };
 
-      const [{ data: r1 }, { data: r2 }] = await Promise.all([
+      const [{ data: r1, error: e1 }, { data: r2, error: e2 }] = await Promise.all([
         supabase
           .from("meal_plans")
           .insert({
@@ -322,6 +322,7 @@ export default function Meals() {
           .select("id, plan_type, valid_from")
           .single(),
       ]);
+      if (e1 || e2) throw (e1 ?? e2);
 
       if (r1?.id) {
         setPlan1({ id: r1.id, status: "pending", plan_data: {}, plan_type: r1.plan_type, valid_from: r1.valid_from });
@@ -330,7 +331,7 @@ export default function Meals() {
         setPlan2({ id: r2.id, status: "pending", plan_data: {}, plan_type: r2.plan_type, valid_from: r2.valid_from });
       }
 
-      await Promise.all([
+      const generationResults = await Promise.all([
         r1?.id
           ? supabase.functions.invoke("generate-meal-plan", { body: { plan_id: r1.id, plan_index: 1 } })
           : Promise.resolve(),
@@ -338,11 +339,13 @@ export default function Meals() {
           ? supabase.functions.invoke("generate-meal-plan", { body: { plan_id: r2.id, plan_index: 2 } })
           : Promise.resolve(),
       ]);
+      const generationError = generationResults.find((result) => result?.error)?.error;
+      if (generationError) throw generationError;
 
       // Refetch
       const { data: updated } = await supabase
         .from("meal_plans")
-        .select("id, generation_status, plan_data, plan_type, valid_from")
+        .select("id, generation_status, plan_data, plan_type, valid_from, created_at")
         .eq("member_id", user.id)
         .order("valid_from", { ascending: false })
         .limit(2);
@@ -354,6 +357,7 @@ export default function Meals() {
           plan_data: (r.plan_data as PlanData) || {},
           plan_type: r.plan_type,
           valid_from: r.valid_from,
+          created_at: r.created_at,
         });
         setPlan1(toRow(sorted[0]));
         setPlan2(sorted[1] ? toRow(sorted[1]) : null);
