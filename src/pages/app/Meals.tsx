@@ -161,29 +161,37 @@ function MealCard({ slot, meal, planId, day, weekIdx, onSwap }: {
         <div className="px-4 pb-4 space-y-3 border-t border-border pt-3">
           <p className="text-sm text-muted-foreground">{meal.description}</p>
 
-          <div className="grid grid-cols-3 gap-2 text-xs">
-            <div className="bg-primary-muted/40 rounded p-2">
-              <p className="font-medium text-primary">50% Veg</p>
-              <p className="text-muted-foreground">{meal.plate_breakdown.vegetables}</p>
+          {typeof meal.plate_breakdown === "string" ? (
+            <div className="bg-primary-muted/40 rounded p-2 text-xs">
+              <p className="font-medium text-primary mb-0.5">Plate Method</p>
+              <p className="text-muted-foreground">{meal.plate_breakdown}</p>
             </div>
-            <div className="bg-accent-muted/40 rounded p-2">
-              <p className="font-medium text-accent">25% Protein</p>
-              <p className="text-muted-foreground">{meal.plate_breakdown.protein}</p>
+          ) : (
+            <div className="grid grid-cols-3 gap-2 text-xs">
+              <div className="bg-primary-muted/40 rounded p-2">
+                <p className="font-medium text-primary">50% Veg</p>
+                <p className="text-muted-foreground">{meal.plate_breakdown.vegetables}</p>
+              </div>
+              <div className="bg-accent-muted/40 rounded p-2">
+                <p className="font-medium text-accent">25% Protein</p>
+                <p className="text-muted-foreground">{meal.plate_breakdown.protein}</p>
+              </div>
+              <div className="bg-muted/60 rounded p-2">
+                <p className="font-medium text-foreground">25% Carbs</p>
+                <p className="text-muted-foreground">{meal.plate_breakdown.carbs}</p>
+              </div>
             </div>
-            <div className="bg-muted/60 rounded p-2">
-              <p className="font-medium text-foreground">25% Carbs</p>
-              <p className="text-muted-foreground">{meal.plate_breakdown.carbs}</p>
-            </div>
-          </div>
+          )}
 
           <div>
             <p className="text-xs font-medium text-foreground mb-1">Ingredients</p>
             <ul className="text-xs text-muted-foreground space-y-0.5">
               {meal.ingredients.map((ing, i) => (
-                <li key={i}>• {ing.quantity} {ing.unit} {ing.item}</li>
+                <li key={i}>• {ingredientText(ing)}</li>
               ))}
             </ul>
           </div>
+
 
           <div>
             <p className="text-xs font-medium text-foreground mb-1">Instructions</p>
