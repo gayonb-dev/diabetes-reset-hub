@@ -52,7 +52,7 @@ export default function MealSetupTransition() {
   const planIdsRef = useRef<PlanIds>({ plan1: null, plan2: null, plan3: null, plan4: null });
   const generationKeyRef = useRef(0); // increments each restart; stale calls are discarded
   const [bothComplete, setBothComplete] = useState(false);
-  const completionRef = useRef({ plan1: false, plan2: false });
+  const completionRef = useRef<Record<keyof PlanIds, boolean>>({ plan1: false, plan2: false, plan3: false, plan4: false });
 
   // Start (or restart) both generations with the given preferences.
   async function startGeneration(prefs: { cuisine: string; cookingTime: string }) {
