@@ -76,7 +76,7 @@ const SLOT_LABEL: Record<string, string> = {
   meal_2: "Meal 2",
 };
 
-const PLAN_PENDING_TIMEOUT_MS = 2 * 60 * 1000;
+const PLAN_PENDING_TIMEOUT_MS = 90 * 1000; // 90s safety net per Phase 15 spec
 
 function isStalePending(plan: PlanRow | null) {
   if (!plan || plan.status !== "pending" || !plan.created_at) return false;
