@@ -451,20 +451,20 @@ export default function Settings() {
           </div>
         </div>
 
-        {prefsDirty && (
-          <Button
-            onClick={regenerateMealPlan}
-            disabled={regenerating}
-            className="bg-primary hover:bg-primary-hover text-primary-foreground"
-          >
-            {regenerating ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            ) : (
-              <RefreshCw className="mr-2 h-4 w-4" />
-            )}
-            Regenerate my meal plan with these preferences
-          </Button>
-        )}
+        <Button
+          onClick={regenerateMealPlan}
+          disabled={regenerating}
+          className="bg-primary hover:bg-primary-hover text-primary-foreground"
+        >
+          {regenerating ? (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          ) : (
+            <RefreshCw className="mr-2 h-4 w-4" />
+          )}
+          {prefsDirty
+            ? "Regenerate my meal plan with these preferences"
+            : "Regenerate my meal plan"}
+        </Button>
       </Card>
 
       {/* Billing link */}
