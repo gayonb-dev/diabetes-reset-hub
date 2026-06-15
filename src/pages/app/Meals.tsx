@@ -471,19 +471,38 @@ export default function Meals() {
   const anyPending = allPlans.some((plan) => plan.status === "pending" && !isStalePending(plan));
 
   if ((anyPending || regenerating) && !anyFailed) {
+    const completedWeeks = allPlans.filter((p) => p.status === "complete").length;
+    const totalWeeks = 4;
+    const progressPct = Math.round((completedWeeks / totalWeeks) * 100);
     return (
-      <div className="max-w-md mx-auto py-16 text-center space-y-4">
+      <div className="max-w-md mx-auto py-16 text-center space-y-5">
         <div className="flex justify-center"><Vita posture="encouraging" size={64} /></div>
         <p className="text-sm text-foreground font-medium">
           VITA is building your personalized 4-week meal plan.
         </p>
+        <div className="w-full max-w-xs mx-auto">
+          <div className="h-2 rounded-full overflow-hidden bg-muted">
+            <div
+              className="h-full bg-primary transition-all duration-500 ease-out"
+              style={{ width: `${progressPct}%` }}
+            />
+          </div>
+          <div className="flex justify-between mt-1.5 text-[10px] text-muted-foreground">
+            {[1, 2, 3, 4].map((n) => (
+              <span key={n} style={{ opacity: completedWeeks >= n ? 1 : 0.4 }}>
+                {completedWeeks >= n ? "✓" : "○"} Week {n}
+              </span>
+            ))}
+          </div>
+        </div>
         <p className="text-xs text-muted-foreground inline-flex items-center gap-1.5">
           <Loader2 className="h-3.5 w-3.5 animate-spin" />
-          This takes about 15 seconds.
+          {completedWeeks} of {totalWeeks} weeks ready…
         </p>
       </div>
     );
   }
+
 
   if (anyFailed) {
     return (
