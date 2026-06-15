@@ -57,7 +57,7 @@ Deno.serve(async (req) => {
         member_id: plan.member_id,
         plan_type: plan.plan_type,
         generation_status: "pending",
-        generation_trigger: "cron",
+        generation_trigger: "scheduled",
         valid_from: from.toISOString().slice(0, 10),
         valid_until: until.toISOString().slice(0, 10),
         preferences_snapshot: plan.preferences_snapshot ?? {},

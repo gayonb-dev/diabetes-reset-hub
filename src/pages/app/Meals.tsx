@@ -314,7 +314,7 @@ export default function Meals() {
             member_id: user.id,
             plan_type: plan1?.plan_type ?? "standard",
             generation_status: "pending",
-            generation_trigger: "manual",
+            generation_trigger: "preference_change",
             valid_from: dayStr(offset),
             valid_until: dayStr(offset + 6),
             preferences_snapshot: snapshot,

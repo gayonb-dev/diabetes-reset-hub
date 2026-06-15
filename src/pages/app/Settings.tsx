@@ -170,7 +170,7 @@ export default function Settings() {
             member_id: user.id,
             plan_type: "standard",
             generation_status: "pending",
-            generation_trigger: "preferences_update",
+            generation_trigger: "preference_change",
             valid_from: dayStr(offset),
             valid_until: dayStr(offset + 6),
             preferences_snapshot: snapshot,
