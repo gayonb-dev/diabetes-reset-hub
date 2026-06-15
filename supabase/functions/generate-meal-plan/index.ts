@@ -350,6 +350,20 @@ function collectMealNames(plan: unknown): string[] {
   return names;
 }
 
+function serializeError(error: unknown): unknown {
+  if (!error || typeof error !== "object") return error;
+  const rec = error as Record<string, unknown>;
+  return {
+    name: rec.name,
+    message: rec.message,
+    status: rec.status,
+    statusCode: rec.statusCode,
+    cause: serializeError(rec.cause),
+    responseBody: rec.responseBody,
+    data: rec.data,
+  };
+}
+
 // ---------- Handler ----------
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
@@ -498,7 +512,7 @@ Deno.serve(async (req) => {
       .update({ generation_status: "failed" })
       .eq("id", planRow.id);
 
-    console.error("generate-meal-plan error", code, err.message);
+    console.error("generate-meal-plan error", code, err.message, JSON.stringify(serializeError(e)));
     return new Response(
       JSON.stringify({ error: "generation_failed", status: code, message: err.message ?? "unknown" }),
       {
