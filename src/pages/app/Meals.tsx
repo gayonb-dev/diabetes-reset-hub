@@ -14,7 +14,7 @@ import { SnackLibrary } from "@/components/meals/SnackLibrary";
 
 // ----- types -----
 interface Ingredient { item: string; quantity: string; unit: string }
-interface Alternative { name: string; description: string }
+type Alternative = string | { name: string; description?: string }
 interface Meal {
   name: string;
   description: string;
@@ -41,6 +41,14 @@ interface PlanRow {
   plan_type: string;
   valid_from: string;
   created_at?: string;
+}
+
+function altName(alt: Alternative): string {
+  return typeof alt === "string" ? alt : alt.name;
+}
+
+function altDescription(alt: Alternative): string {
+  return typeof alt === "string" ? "" : alt.description ?? "";
 }
 
 const DAY_KEYS = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"] as const;
@@ -207,6 +215,8 @@ export default function Meals() {
   const { user, subscription } = useAuth();
   const [plan1, setPlan1] = useState<PlanRow | null>(null);
   const [plan2, setPlan2] = useState<PlanRow | null>(null);
+  const [plan3, setPlan3] = useState<PlanRow | null>(null);
+  const [plan4, setPlan4] = useState<PlanRow | null>(null);
   const [loading, setLoading] = useState(true);
   const [regenerating, setRegenerating] = useState(false);
   const [weekIdx, setWeekIdx] = useState<1 | 2 | 3 | 4>(1);
