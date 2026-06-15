@@ -17,6 +17,8 @@ import {
   LifeBuoy,
   Pill,
   User,
+  Timer,
+  Cookie,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Vita } from "@/components/vita/Vita";
@@ -147,6 +149,12 @@ export default function AppLayout() {
             </NavLink>
             <NavLink to="/app/meals" className={navClass}>
               <UtensilsCrossed className="h-4 w-4" /> Meals
+            </NavLink>
+            <NavLink to="/app/fasting" className={navClass}>
+              <Timer className="h-4 w-4" /> Fasting
+            </NavLink>
+            <NavLink to="/app/cheat-meal" className={navClass}>
+              <Cookie className="h-4 w-4" /> Cheat Meal
             </NavLink>
             <NavLink to="/app/ask" className={navClass}>
               <MessageCircleQuestion className="h-4 w-4" /> Ask

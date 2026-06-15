@@ -38,6 +38,8 @@ const CoachingWaitlist = lazy(() => import("./pages/app/CoachingWaitlist"));
 const AppProgress = lazy(() => import("./pages/app/Progress"));
 const Settings = lazy(() => import("./pages/app/Settings"));
 const Profile = lazy(() => import("./pages/app/Profile"));
+const Fasting = lazy(() => import("./pages/app/Fasting"));
+const CheatMeal = lazy(() => import("./pages/app/CheatMeal"));
 const AdminLayout = lazy(() => import("./pages/admin/AdminLayout"));
 const AdminSubscriptions = lazy(() => import("./pages/admin/AdminSubscriptions"));
 const AdminQaQueue = lazy(() => import("./pages/admin/AdminQaQueue"));
@@ -135,6 +137,9 @@ const App = () => (
                 <Route path="billing" element={<Billing />} />
                 <Route path="settings" element={<Settings />} />
                 <Route path="profile" element={<Profile />} />
+                <Route path="fasting" element={<Fasting />} />
+                <Route path="cheat-meal" element={<CheatMeal />} />
+                <Route path="settings/billing" element={<Billing />} />
                 <Route path="coaching-waitlist" element={<CoachingWaitlist />} />
               </Route>
 
