@@ -20,7 +20,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Loader2, CreditCard, Shield, Download, Trash2, LogOut, ArrowRight, UtensilsCrossed, RefreshCw } from "lucide-react";
+import { Loader2, CreditCard, Shield, Download, Trash2, LogOut, ArrowRight, UtensilsCrossed, RefreshCw, User, Bell } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
 import { getUnits, setUnits, WeightUnit, GlucoseUnit } from "@/lib/units";
@@ -67,6 +67,42 @@ export default function Settings() {
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
+  // Profile — community display name (defaults to first_name, editable independently)
+  const [firstName, setFirstName] = useState<string>("");
+  const [displayName, setDisplayName] = useState<string>("");
+  const [displayNameSaving, setDisplayNameSaving] = useState(false);
+  const [initialDisplayName, setInitialDisplayName] = useState<string>("");
+
+  // Notification preferences (profiles.notification_prefs jsonb)
+  type NotifPrefs = Record<string, boolean>;
+  const DEFAULT_NOTIF_PREFS: NotifPrefs = {
+    vita_morning: true,
+    daily_action: true,
+    streak_at_risk: true,
+    level_up: true,
+    water: true,
+    workout: true,
+    a1c: true,
+    measurement: true,
+    cheat_meal: true,
+    birthday: true,
+    community_mission: true,
+  };
+  const NOTIF_LABELS: Record<string, { title: string; desc: string }> = {
+    vita_morning: { title: "VITA morning greeting", desc: "Daily nudge from VITA to start your day." },
+    daily_action: { title: "Daily action reminders", desc: "Today-screen habit nudges." },
+    streak_at_risk: { title: "Streak at risk", desc: "Heads-up when your streak could break tonight." },
+    level_up: { title: "Level up & badges", desc: "When you earn XP, levels, or new badges." },
+    water: { title: "Water reminders", desc: "Hydration nudges through the day." },
+    workout: { title: "Workout reminders", desc: "Reminders on your scheduled training days." },
+    a1c: { title: "A1C reminders", desc: "Periodic prompts to log a new A1C." },
+    measurement: { title: "Measurement reminders", desc: "Weekly nudge to update measurements." },
+    cheat_meal: { title: "Cheat meal coaching", desc: "Tips after logging an off-plan meal." },
+    birthday: { title: "Birthday greeting", desc: "A short note from VITA on your day." },
+    community_mission: { title: "Community missions", desc: "Weekly community challenges and Q&A picks." },
+  };
+  const [notifPrefs, setNotifPrefs] = useState<NotifPrefs>(DEFAULT_NOTIF_PREFS);
+
   // Meal Plan Preferences (Section 5 — Section 20 of spec)
   const [profileId, setProfileId] = useState<string | null>(null);
   const [profileMetadata, setProfileMetadata] = useState<Record<string, unknown>>({});
@@ -93,14 +129,23 @@ export default function Settings() {
         }
       });
 
-    // Load meal plan preferences from the authenticated profile row.
+    // Load profile (display name, first name, notification prefs, meal prefs) — single source of truth.
     supabase
       .from("profiles")
-      .select("meal_preferences")
+      .select("first_name, community_display_name, notification_prefs, meal_preferences")
       .eq("user_id", user.id)
       .maybeSingle()
       .then(({ data }) => {
         if (!data) return;
+        const fn = data.first_name ?? "";
+        const dn = data.community_display_name ?? fn ?? "";
+        setFirstName(fn);
+        setDisplayName(dn);
+        setInitialDisplayName(dn);
+
+        const np = (data.notification_prefs as NotifPrefs) ?? {};
+        setNotifPrefs({ ...DEFAULT_NOTIF_PREFS, ...np });
+
         const meta = (data.meal_preferences as Record<string, unknown>) ?? {};
         setProfileId(user.id);
         setProfileMetadata(meta);
@@ -115,6 +160,49 @@ export default function Settings() {
         setInitialPrefs(JSON.stringify({ c, p, avoid, ct }));
       });
   }, [user]);
+
+  const displayNameDirty = displayName.trim() !== initialDisplayName.trim() && displayName.trim().length > 0;
+
+  const saveDisplayName = async () => {
+    if (!user) return;
+    const name = displayName.trim();
+    if (!name) return;
+    setDisplayNameSaving(true);
+    try {
+      // Primary write: profiles.community_display_name (spec).
+      await supabase.from("profiles").update({ community_display_name: name } as never).eq("user_id", user.id);
+      // Mirror to visitor_profiles for the community feed readers (Ask, Profile).
+      await supabase
+        .from("visitor_profiles")
+        .update({ community_display_name: name } as never)
+        .eq("user_id", user.id);
+      setInitialDisplayName(name);
+      toast({ title: "Display name updated", description: "This is how you'll appear in the community." });
+    } catch (e) {
+      toast({
+        title: "Couldn't save display name",
+        description: e instanceof Error ? e.message : "Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setDisplayNameSaving(false);
+    }
+  };
+
+  const toggleNotif = async (key: string, value: boolean) => {
+    if (!user) return;
+    const next = { ...notifPrefs, [key]: value };
+    setNotifPrefs(next);
+    const { error } = await supabase
+      .from("profiles")
+      .update({ notification_prefs: next as never })
+      .eq("user_id", user.id);
+    if (error) {
+      // revert on failure
+      setNotifPrefs(notifPrefs);
+      toast({ title: "Couldn't update notification", description: error.message, variant: "destructive" });
+    }
+  };
 
   const prefsDirty =
     initialPrefs !== "" &&
@@ -285,7 +373,42 @@ export default function Settings() {
         <p className="text-sm text-muted-foreground mt-1">{user?.email}</p>
       </div>
 
+      {/* Profile */}
+      <Card className="p-5 border-border">
+        <h2 className="font-semibold text-base flex items-center gap-2 mb-1">
+          <User className="h-4 w-4 text-primary" /> Profile
+        </h2>
+        <p className="text-xs text-muted-foreground mb-4">
+          Your account name stays private. Choose how you appear to other members.
+        </p>
+        <div className="space-y-2">
+          <Label htmlFor="display-name" className="text-xs">Community display name</Label>
+          <Input
+            id="display-name"
+            type="text"
+            placeholder={firstName || "How you'll appear in community"}
+            value={displayName}
+            onChange={(e) => setDisplayName(e.target.value)}
+            maxLength={40}
+          />
+          <p className="text-[11px] text-muted-foreground">
+            Shown on questions, answers, and wins. Defaults to your first name. Does not change your account name.
+          </p>
+        </div>
+        <Button
+          onClick={saveDisplayName}
+          disabled={displayNameSaving || !displayNameDirty}
+          variant="outline"
+          size="sm"
+          className="mt-3"
+        >
+          {displayNameSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          Save display name
+        </Button>
+      </Card>
+
       {/* Units */}
+
       <Card className="p-5 border-border">
         <h2 className="font-semibold text-base mb-1">Units</h2>
         <p className="text-xs text-muted-foreground mb-4">How we show your numbers.</p>
@@ -337,7 +460,32 @@ export default function Settings() {
         </Button>
       </Card>
 
+      {/* Notifications */}
+      <Card className="p-5 border-border">
+        <h2 className="font-semibold text-base flex items-center gap-2 mb-1">
+          <Bell className="h-4 w-4 text-primary" /> Notifications
+        </h2>
+        <p className="text-xs text-muted-foreground mb-4">
+          Turn off anything you don't want. Urgent account messages always come through.
+        </p>
+        <div className="space-y-3">
+          {Object.entries(NOTIF_LABELS).map(([key, meta]) => (
+            <div key={key} className="flex items-start justify-between gap-3 py-1">
+              <div className="min-w-0">
+                <p className="text-sm font-medium text-foreground">{meta.title}</p>
+                <p className="text-xs text-muted-foreground">{meta.desc}</p>
+              </div>
+              <Switch
+                checked={notifPrefs[key] ?? true}
+                onCheckedChange={(v) => toggleNotif(key, Boolean(v))}
+              />
+            </div>
+          ))}
+        </div>
+      </Card>
+
       {/* Meal Plan Preferences — Section 5 (Section 20 of spec) */}
+
       <Card className="p-5 border-border">
         <h2 className="font-semibold text-base flex items-center gap-2 mb-1">
           <UtensilsCrossed className="h-4 w-4 text-primary" /> Meal Plan Preferences
