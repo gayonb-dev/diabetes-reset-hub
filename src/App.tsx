@@ -40,6 +40,7 @@ const Settings = lazy(() => import("./pages/app/Settings"));
 const Profile = lazy(() => import("./pages/app/Profile"));
 const Fasting = lazy(() => import("./pages/app/Fasting"));
 const CheatMeal = lazy(() => import("./pages/app/CheatMeal"));
+const Support = lazy(() => import("./pages/app/Support"));
 const AdminLayout = lazy(() => import("./pages/admin/AdminLayout"));
 const AdminSubscriptions = lazy(() => import("./pages/admin/AdminSubscriptions"));
 const AdminQaQueue = lazy(() => import("./pages/admin/AdminQaQueue"));
