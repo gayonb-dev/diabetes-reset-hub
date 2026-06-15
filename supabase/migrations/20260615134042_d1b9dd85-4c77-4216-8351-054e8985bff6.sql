@@ -1,0 +1,3 @@
+CREATE POLICY "Members insert own meal_plans" ON public.meal_plans FOR INSERT TO authenticated WITH CHECK (auth.uid() = member_id);
+CREATE POLICY "Members update own meal_plans" ON public.meal_plans FOR UPDATE TO authenticated USING (auth.uid() = member_id) WITH CHECK (auth.uid() = member_id);
+CREATE POLICY "Members delete own meal_plans" ON public.meal_plans FOR DELETE TO authenticated USING (auth.uid() = member_id);
