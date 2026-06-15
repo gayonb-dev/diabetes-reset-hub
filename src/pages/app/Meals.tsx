@@ -386,18 +386,18 @@ export default function Meals() {
     const data: PlanData = JSON.parse(JSON.stringify(plan.plan_data));
     const original = data[key]?.[day]?.[slot];
     if (!original) return;
-    data[key]![day][slot] = { ...original, name: alt.name, description: alt.description };
+    data[key]![day][slot] = { ...original, name: altName(alt), description: altDescription(alt) || original.description };
     await supabase.from("meal_plans").update({ plan_data: data as never }).eq("id", plan.id);
     await supabase.from("meal_swaps").insert({
       plan_id: plan.id,
       member_id: user.id,
       day,
       meal_type: slot,
-      swapped_to: { name: alt.name, description: alt.description } as never,
+      swapped_to: { name: altName(alt), description: altDescription(alt) } as never,
     } as never);
     if (plan.id === plan1?.id) setPlan1({ ...plan, plan_data: data });
     else if (plan.id === plan2?.id) setPlan2({ ...plan, plan_data: data });
-    toast({ title: "Swapped", description: alt.name });
+    toast({ title: "Swapped", description: altName(alt) });
   }
 
   // ----- Shopping list (client-side) — current week only -----
