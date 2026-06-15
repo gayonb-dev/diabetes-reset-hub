@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
@@ -11,13 +11,60 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { Loader2, AlertCircle } from "lucide-react";
+import { Loader2, AlertCircle, CreditCard, ExternalLink } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+
+interface Invoice {
+  id: string;
+  date: number;
+  amount: number;
+  currency: string;
+  status: string | null;
+  hosted_invoice_url: string | null;
+}
+interface PaymentMethod {
+  brand: string;
+  last4: string;
+  exp_month: number;
+  exp_year: number;
+}
+
+const STATUS_LABEL: Record<string, { label: string; color: string }> = {
+  trialing: { label: "● Trial", color: "text-[#F59E0B]" },
+  active: { label: "● Active", color: "text-[#22C55E]" },
+  past_due: { label: "● Payment failed", color: "text-[#EF4444]" },
+  cancelled: { label: "● Cancelled", color: "text-[#EF4444]" },
+  canceled: { label: "● Cancelled", color: "text-[#EF4444]" },
+  incomplete: { label: "● Incomplete", color: "text-[#F59E0B]" },
+  unpaid: { label: "● Unpaid", color: "text-[#EF4444]" },
+};
+
+const INVOICE_STATUS: Record<string, { label: string; color: string }> = {
+  paid: { label: "Paid", color: "text-[#22C55E]" },
+  open: { label: "Open", color: "text-[#F59E0B]" },
+  void: { label: "Voided", color: "text-muted-foreground" },
+  uncollectible: { label: "Failed", color: "text-[#EF4444]" },
+  draft: { label: "Draft", color: "text-muted-foreground" },
+};
 
 export default function Billing() {
   const { subscription } = useAuth();
   const [loading, setLoading] = useState(false);
   const [cancelOpen, setCancelOpen] = useState(false);
+  const [invoices, setInvoices] = useState<Invoice[]>([]);
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | null>(null);
+  const [invLoading, setInvLoading] = useState(true);
+
+  useEffect(() => {
+    (async () => {
+      const { data, error } = await supabase.functions.invoke("list-invoices", {});
+      if (!error && data) {
+        setInvoices(data.invoices || []);
+        setPaymentMethod(data.payment_method || null);
+      }
+      setInvLoading(false);
+    })();
+  }, []);
 
   const openPortal = async () => {
     setLoading(true);
@@ -46,38 +93,39 @@ export default function Billing() {
     );
   }
 
-  const statusLabel = {
-    trialing: "Trial",
-    active: "Active",
-    past_due: "Payment failed",
-    cancelled: "Cancelled",
-    incomplete: "Incomplete",
-    unpaid: "Unpaid",
-  }[subscription.status];
-
+  const status = STATUS_LABEL[subscription.status] ?? { label: subscription.status, color: "text-foreground" };
   const nextChargeDate =
     subscription.trial_end_date && subscription.status === "trialing"
       ? subscription.trial_end_date
       : subscription.current_period_end;
+  const trialDay = subscription.trial_end_date && subscription.status === "trialing"
+    ? Math.max(1, 7 - Math.ceil((new Date(subscription.trial_end_date).getTime() - Date.now()) / 86400000))
+    : null;
 
   return (
-    <div className="max-w-xl mx-auto space-y-5">
-      <h1 className="font-heading font-semibold text-2xl text-foreground">Billing</h1>
+    <div className="max-w-2xl mx-auto space-y-5">
+      <h1 className="font-heading font-semibold text-2xl text-primary">Your Subscription</h1>
 
+      {/* Status card */}
       <Card className="p-6 border border-border">
-        <p className="text-xs uppercase tracking-wider text-muted-foreground mb-1">Current plan</p>
-        <h2 className="font-heading font-semibold text-lg text-foreground mb-4">
-          Diabetes Reset Method Membership
-        </h2>
+        <p className={`text-sm font-medium ${status.color} mb-2`}>{status.label}</p>
+        <h2 className="font-semibold text-lg text-foreground">Diabetes Reset Method</h2>
+        <p className="text-[15px] text-secondary-fg mb-4">$67 / month</p>
+
+        {trialDay && subscription.trial_end_date && (
+          <p className="text-sm text-accent mb-3">
+            Day {trialDay} of 7-day trial. Trial ends {new Date(subscription.trial_end_date).toLocaleDateString()}.
+          </p>
+        )}
 
         <dl className="text-sm space-y-2">
-          <Row label="Status" value={statusLabel ?? subscription.status} />
-          <Row label="Price" value="$67 / month" />
           {nextChargeDate && (
-            <Row
-              label={subscription.status === "trialing" ? "First charge" : "Next charge"}
-              value={new Date(nextChargeDate).toLocaleDateString()}
-            />
+            <div className="flex justify-between">
+              <dt className="text-secondary-fg">{subscription.status === "trialing" ? "First charge" : "Next charge"}</dt>
+              <dd className="font-medium text-foreground">
+                {new Date(nextChargeDate).toLocaleDateString()} · $67
+              </dd>
+            </div>
           )}
         </dl>
 
@@ -92,26 +140,86 @@ export default function Billing() {
             </span>
           </div>
         )}
-
-        <div className="mt-5 flex gap-2">
-          <Button
-            onClick={openPortal}
-            disabled={loading}
-            variant="outline"
-            className="flex-1"
-          >
-            {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Update card
-          </Button>
-          <Button
-            onClick={() => setCancelOpen(true)}
-            variant="ghost"
-            className="text-muted-foreground hover:text-destructive"
-          >
-            Cancel membership
-          </Button>
-        </div>
       </Card>
+
+      {/* Payment method card */}
+      <Card className="p-6 border border-border">
+        <div className="flex items-center gap-3 mb-4">
+          <CreditCard className="h-5 w-5 text-primary" />
+          <div className="flex-1">
+            {paymentMethod ? (
+              <>
+                <p className="font-medium capitalize">
+                  {paymentMethod.brand} ending {paymentMethod.last4}
+                </p>
+                <p className="text-xs text-secondary-fg">
+                  Expires {String(paymentMethod.exp_month).padStart(2, "0")}/{String(paymentMethod.exp_year).slice(-2)}
+                </p>
+              </>
+            ) : (
+              <p className="text-sm text-muted-foreground">
+                {invLoading ? "Loading payment method…" : "No payment method on file."}
+              </p>
+            )}
+          </div>
+        </div>
+        <Button
+          onClick={openPortal}
+          disabled={loading}
+          variant="outline"
+          className="w-full h-12 border-primary text-primary hover:bg-primary-muted"
+        >
+          {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          Update payment method →
+        </Button>
+      </Card>
+
+      {/* Billing history */}
+      <Card className="p-6 border border-border">
+        <p className="text-sm font-medium text-foreground mb-3">Billing history</p>
+        {invLoading ? (
+          <p className="text-sm text-muted-foreground">Loading…</p>
+        ) : invoices.length === 0 ? (
+          <p className="text-sm text-muted-foreground">No charges yet.</p>
+        ) : (
+          <div className="divide-y divide-border">
+            {invoices.map((inv) => {
+              const st = INVOICE_STATUS[inv.status ?? ""] ?? { label: inv.status ?? "—", color: "text-muted-foreground" };
+              return (
+                <div key={inv.id} className="py-2.5 flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground w-28">
+                    {new Date(inv.date).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" })}
+                  </span>
+                  <span className="font-medium tabular-nums flex-1 text-right pr-3">
+                    ${(inv.amount / 100).toFixed(2)}
+                  </span>
+                  <span className={`text-xs font-medium ${st.color} w-16 text-right`}>{st.label}</span>
+                  {inv.hosted_invoice_url && (
+                    <a
+                      href={inv.hosted_invoice_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="ml-2 text-primary"
+                      aria-label="View invoice"
+                    >
+                      <ExternalLink className="h-3.5 w-3.5" />
+                    </a>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </Card>
+
+      <div className="text-center pt-4">
+        <button
+          onClick={() => setCancelOpen(true)}
+          className="text-sm text-[#EF4444] hover:underline"
+        >
+          Cancel subscription
+        </button>
+      </div>
 
       <p className="text-xs text-muted-foreground text-center">
         Questions? Email{" "}
@@ -123,39 +231,31 @@ export default function Billing() {
       <Dialog open={cancelOpen} onOpenChange={setCancelOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Cancel membership?</DialogTitle>
+            <DialogTitle>Are you sure you want to cancel?</DialogTitle>
             <DialogDescription>
-              You'll keep access until{" "}
+              Your access continues until{" "}
               {subscription.current_period_end
                 ? new Date(subscription.current_period_end).toLocaleDateString()
                 : "the end of the current period"}
-              . No further charges after that.
+              . If you change your mind, you can reactivate at any time.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="gap-2 sm:gap-2">
-            <Button variant="ghost" onClick={() => setCancelOpen(false)}>
-              Keep membership
+            <Button onClick={() => setCancelOpen(false)} className="bg-primary hover:bg-primary/90">
+              Keep my subscription
             </Button>
             <Button
               onClick={openPortal}
               disabled={loading}
-              variant="destructive"
+              variant="ghost"
+              className="text-[#EF4444] hover:text-[#EF4444]/80"
             >
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Continue to cancel
+              Cancel anyway
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
-  );
-}
-
-function Row({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="flex justify-between">
-      <dt className="text-muted-foreground">{label}</dt>
-      <dd className="font-medium text-foreground">{value}</dd>
     </div>
   );
 }

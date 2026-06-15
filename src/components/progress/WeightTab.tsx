@@ -1,0 +1,251 @@
+import { useEffect, useMemo, useState } from "react";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Loader2 } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
+import {
+  getUnits,
+  setUnits as persistUnits,
+  WeightUnit,
+  kgToLb,
+  lbToKg,
+  displayWeight,
+  WEIGHT_RANGE_LB,
+} from "@/lib/units";
+import { useGamification } from "@/hooks/useGamification";
+
+interface Log {
+  id: string;
+  log_date: string;
+  weight: number | null;
+}
+
+function todayISO() {
+  return new Date().toISOString().slice(0, 10);
+}
+
+export default function WeightTab() {
+  const { user } = useAuth();
+  const { recordAction } = useGamification();
+  const initial = getUnits();
+  const [unit, setUnit] = useState<WeightUnit>(initial.weight);
+  const [logs, setLogs] = useState<Log[]>([]);
+  const [weight, setWeight] = useState("");
+  const [goalWeight, setGoalWeight] = useState<string>(
+    () => localStorage.getItem("drm:goal-weight-lb") ?? "",
+  );
+  const [err, setErr] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  const refresh = async () => {
+    if (!user) return;
+    const { data } = await supabase
+      .from("health_logs")
+      .select("id, log_date, weight")
+      .eq("user_id", user.id)
+      .not("weight", "is", null)
+      .order("log_date", { ascending: false })
+      .limit(180);
+    setLogs((data || []) as Log[]);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    refresh();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
+
+  const sorted = useMemo(() => [...logs].reverse(), [logs]);
+  const startWeight = sorted[0]?.weight ?? null;
+  const currentWeight = sorted[sorted.length - 1]?.weight ?? null;
+  const pctChange =
+    startWeight && currentWeight
+      ? ((currentWeight - startWeight) / startWeight) * 100
+      : null;
+
+  const save = async () => {
+    if (!user) return;
+    setErr(null);
+    const v = parseFloat(weight);
+    if (isNaN(v)) {
+      setErr("Enter a number.");
+      return;
+    }
+    const lb = unit === "kg" ? kgToLb(v) : v;
+    if (lb < WEIGHT_RANGE_LB.min || lb > WEIGHT_RANGE_LB.max) {
+      setErr("That weight seems outside the expected range.");
+      return;
+    }
+    setSaving(true);
+    const { error } = await supabase.from("health_logs").upsert(
+      { user_id: user.id, log_date: todayISO(), weight: lb },
+      { onConflict: "user_id,log_date" },
+    );
+    setSaving(false);
+    if (error) {
+      toast({ title: "Couldn't save", description: error.message, variant: "destructive" });
+      return;
+    }
+    toast({ title: "Weight saved" });
+    setWeight("");
+    await recordAction("log_weight");
+    refresh();
+  };
+
+  function saveGoal(v: string) {
+    setGoalWeight(v);
+    const n = parseFloat(v);
+    if (!isNaN(n)) {
+      const lb = unit === "kg" ? kgToLb(n) : n;
+      localStorage.setItem("drm:goal-weight-lb", String(lb));
+    } else {
+      localStorage.removeItem("drm:goal-weight-lb");
+    }
+  }
+
+  const goalLb = parseFloat(localStorage.getItem("drm:goal-weight-lb") || "");
+
+  return (
+    <div className="space-y-5">
+      <Card className="p-5 border border-border">
+        <div className="flex items-center justify-between mb-3">
+          <p className="text-sm font-medium">Log today's weight</p>
+          <div className="flex gap-1.5 text-xs">
+            <button
+              className={`px-2.5 py-1 rounded-full border ${unit === "lb" ? "bg-primary text-primary-foreground border-primary" : "border-border"}`}
+              onClick={() => { setUnit("lb"); persistUnits({ weight: "lb" }); }}
+            >
+              lb
+            </button>
+            <button
+              className={`px-2.5 py-1 rounded-full border ${unit === "kg" ? "bg-primary text-primary-foreground border-primary" : "border-border"}`}
+              onClick={() => { setUnit("kg"); persistUnits({ weight: "kg" }); }}
+            >
+              kg
+            </button>
+          </div>
+        </div>
+        <Input
+          type="number"
+          inputMode="decimal"
+          step="0.1"
+          value={weight}
+          onChange={(e) => setWeight(e.target.value)}
+          placeholder={unit === "kg" ? "e.g. 82.5" : "e.g. 182"}
+          className="h-12 text-xl text-center"
+        />
+        {err && <p className="text-xs text-destructive mt-2">{err}</p>}
+        <div className="mt-4">
+          <Label className="text-xs text-muted-foreground">Goal weight ({unit}) — optional</Label>
+          <Input
+            type="number"
+            inputMode="decimal"
+            step="0.1"
+            value={goalWeight}
+            onChange={(e) => saveGoal(e.target.value)}
+            placeholder={unit === "kg" ? "e.g. 75" : "e.g. 165"}
+          />
+        </div>
+        <Button
+          onClick={save}
+          disabled={saving}
+          className="mt-4 w-full h-[52px] bg-primary hover:bg-primary/90 text-primary-foreground"
+        >
+          {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          Save weight
+        </Button>
+      </Card>
+
+      {startWeight && currentWeight && pctChange !== null && sorted.length >= 2 && (
+        <Card className="p-5 border border-border bg-primary-muted">
+          <p className="text-[11px] uppercase tracking-wider text-primary mb-1">Progress</p>
+          <p className="text-2xl font-bold text-primary">
+            {pctChange < 0 ? "↓" : "↑"} {Math.abs(pctChange).toFixed(1)}% from your starting weight
+          </p>
+          <p className="text-xs text-secondary-fg mt-1">
+            Start: {displayWeight(startWeight, unit)} · Now: {displayWeight(currentWeight, unit)}
+          </p>
+        </Card>
+      )}
+
+      {sorted.length >= 2 ? (
+        <Card className="p-5 border border-border">
+          <p className="text-sm font-medium mb-3">Weight trend</p>
+          <WeightChart logs={sorted} goalLb={isNaN(goalLb) ? null : goalLb} unit={unit} />
+        </Card>
+      ) : (
+        <Card className="p-5 border border-border bg-muted/20">
+          <p className="text-sm text-muted-foreground">Your chart builds as you log. Start with today.</p>
+        </Card>
+      )}
+
+      <Card className="p-5 border border-border">
+        <p className="text-sm font-medium text-foreground mb-3">Recent entries</p>
+        {loading ? (
+          <p className="text-sm text-muted-foreground">Loading…</p>
+        ) : logs.length === 0 ? (
+          <p className="text-sm text-muted-foreground">No entries yet.</p>
+        ) : (
+          <div className="divide-y divide-border">
+            {logs.slice(0, 14).map((l) => (
+              <div key={l.id} className="py-2 flex items-center justify-between text-sm">
+                <span className="text-muted-foreground">
+                  {new Date(l.log_date).toLocaleDateString(undefined, { month: "short", day: "numeric" })}
+                </span>
+                <span className="font-medium">{displayWeight(l.weight!, unit)}</span>
+              </div>
+            ))}
+          </div>
+        )}
+      </Card>
+    </div>
+  );
+}
+
+function WeightChart({ logs, goalLb, unit }: { logs: Log[]; goalLb: number | null; unit: WeightUnit }) {
+  const W = 600;
+  const H = 140;
+  const values = logs.map((l) => l.weight!);
+  const baseline = values[0];
+  const min = Math.min(...values, goalLb ?? Infinity, baseline) - 2;
+  const max = Math.max(...values, baseline) + 2;
+  const range = max - min || 1;
+  const step = W / Math.max(values.length - 1, 1);
+  const points = values
+    .map((v, i) => `${i * step},${H - ((v - min) / range) * (H - 16) - 8}`)
+    .join(" ");
+  const yBase = H - ((baseline - min) / range) * (H - 16) - 8;
+  const yGoal = goalLb ? H - ((goalLb - min) / range) * (H - 16) - 8 : null;
+
+  return (
+    <div className="overflow-x-auto">
+      <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-40 min-w-[400px]">
+        <line x1="0" x2={W} y1={yBase} y2={yBase} stroke="hsl(var(--muted-foreground))" strokeDasharray="2 4" strokeOpacity="0.4" />
+        {yGoal != null && (
+          <line x1="0" x2={W} y1={yGoal} y2={yGoal} stroke="#E8A029" strokeDasharray="4 4" />
+        )}
+        <polyline
+          points={points}
+          fill="none"
+          stroke="hsl(var(--primary))"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        {values.map((v, i) => (
+          <circle key={i} cx={i * step} cy={H - ((v - min) / range) * (H - 16) - 8} r="3" fill="hsl(var(--primary))" />
+        ))}
+      </svg>
+      <div className="flex justify-between text-[10px] text-tertiary-fg mt-1">
+        <span>{logs[0] && new Date(logs[0].log_date).toLocaleDateString(undefined, { month: "short", day: "numeric" })}</span>
+        {goalLb && <span className="text-accent">Goal: {displayWeight(goalLb, unit)}</span>}
+        <span>{logs[logs.length - 1] && new Date(logs[logs.length - 1].log_date).toLocaleDateString(undefined, { month: "short", day: "numeric" })}</span>
+      </div>
+    </div>
+  );
+}
