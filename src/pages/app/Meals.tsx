@@ -237,12 +237,12 @@ export default function Meals() {
         .select("id, generation_status, plan_data, plan_type, valid_from, created_at")
         .eq("member_id", user!.id)
         .order("valid_from", { ascending: false })
-        .limit(2);
+        .limit(4);
 
       if (!active) return;
 
       if (data && data.length > 0) {
-        // data is newest-first; Plan 2 (later fortnight) is index 0, Plan 1 is index 1.
+        // data is newest-first; sort back to Week 1 → Week 4.
         const sorted = [...data].sort((a, b) => a.valid_from.localeCompare(b.valid_from));
         const toRow = (r: typeof data[number]): PlanRow => ({
           id: r.id,
@@ -254,6 +254,8 @@ export default function Meals() {
         });
         setPlan1(toRow(sorted[0]));
         setPlan2(sorted[1] ? toRow(sorted[1]) : null);
+        setPlan3(sorted[2] ? toRow(sorted[2]) : null);
+        setPlan4(sorted[3] ? toRow(sorted[3]) : null);
         const anyPending = sorted.some((r) => {
           if (r.generation_status !== "pending") return false;
           return Date.now() - new Date(r.created_at).getTime() <= PLAN_PENDING_TIMEOUT_MS;
@@ -305,7 +307,7 @@ export default function Meals() {
         return d.toISOString().slice(0, 10);
       };
 
-      const [{ data: r1, error: e1 }, { data: r2, error: e2 }] = await Promise.all([
+      const insertResults = await Promise.all([0, 7, 14, 21].map((offset) =>
         supabase
           .from("meal_plans")
           .insert({
@@ -313,45 +315,29 @@ export default function Meals() {
             plan_type: plan1?.plan_type ?? "standard",
             generation_status: "pending",
             generation_trigger: "manual",
-            valid_from: dayStr(0),
-            valid_until: dayStr(13),
+            valid_from: dayStr(offset),
+            valid_until: dayStr(offset + 6),
             preferences_snapshot: snapshot,
             plan_data: {},
           } as never)
           .select("id, plan_type, valid_from")
           .single(),
-        supabase
-          .from("meal_plans")
-          .insert({
-            member_id: user.id,
-            plan_type: plan1?.plan_type ?? "standard",
-            generation_status: "pending",
-            generation_trigger: "manual",
-            valid_from: dayStr(14),
-            valid_until: dayStr(27),
-            preferences_snapshot: snapshot,
-            plan_data: {},
-          } as never)
-          .select("id, plan_type, valid_from")
-          .single(),
-      ]);
-      if (e1 || e2) throw (e1 ?? e2);
+      ));
+      const insertError = insertResults.find((result) => result.error)?.error;
+      if (insertError) throw insertError;
 
-      if (r1?.id) {
-        setPlan1({ id: r1.id, status: "pending", plan_data: {}, plan_type: r1.plan_type, valid_from: r1.valid_from });
-      }
-      if (r2?.id) {
-        setPlan2({ id: r2.id, status: "pending", plan_data: {}, plan_type: r2.plan_type, valid_from: r2.valid_from });
-      }
+      const rows = insertResults.map((result) => result.data).filter(Boolean);
+      const pendingRows = rows.map((row) => ({ id: row!.id, status: "pending", plan_data: {}, plan_type: row!.plan_type, valid_from: row!.valid_from }));
+      if (pendingRows[0]) setPlan1(pendingRows[0]);
+      if (pendingRows[1]) setPlan2(pendingRows[1]);
+      if (pendingRows[2]) setPlan3(pendingRows[2]);
+      if (pendingRows[3]) setPlan4(pendingRows[3]);
 
-      const generationResults = await Promise.all([
-        r1?.id
-          ? supabase.functions.invoke("generate-meal-plan", { body: { plan_id: r1.id, plan_index: 1 } })
+      const generationResults = await Promise.all(rows.map((row, index) =>
+        row?.id
+          ? supabase.functions.invoke("generate-meal-plan", { body: { plan_id: row.id, plan_index: index + 1 } })
           : Promise.resolve({ error: null }),
-        r2?.id
-          ? supabase.functions.invoke("generate-meal-plan", { body: { plan_id: r2.id, plan_index: 2 } })
-          : Promise.resolve({ error: null }),
-      ]);
+      ));
       const generationError = generationResults.find((result) => result?.error)?.error;
       if (generationError) throw generationError;
 
@@ -361,7 +347,7 @@ export default function Meals() {
         .select("id, generation_status, plan_data, plan_type, valid_from, created_at")
         .eq("member_id", user.id)
         .order("valid_from", { ascending: false })
-        .limit(2);
+        .limit(4);
       if (updated && updated.length > 0) {
         const sorted = [...updated].sort((a, b) => a.valid_from.localeCompare(b.valid_from));
         const toRow = (r: typeof updated[number]): PlanRow => ({
@@ -374,6 +360,8 @@ export default function Meals() {
         });
         setPlan1(toRow(sorted[0]));
         setPlan2(sorted[1] ? toRow(sorted[1]) : null);
+        setPlan3(sorted[2] ? toRow(sorted[2]) : null);
+        setPlan4(sorted[3] ? toRow(sorted[3]) : null);
       }
     } catch (e) {
       toast({ title: "Couldn't regenerate", description: (e as Error).message, variant: "destructive" });
