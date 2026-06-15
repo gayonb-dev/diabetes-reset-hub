@@ -146,7 +146,7 @@ function MealCard({ slot, meal, planId, day, weekIdx, onSwap }: {
           </p>
           <h3 className="font-medium text-foreground mt-0.5 truncate">{meal.name}</h3>
           <div className="flex items-center gap-2 mt-1.5">
-            <GlyBadge rating={meal.glycemic_rating} />
+            {meal.glycemic_rating && <GlyBadge rating={meal.glycemic_rating} />}
             <span className="text-[11px] text-muted-foreground inline-flex items-center gap-1">
               <Clock className="h-3 w-3" />
               {meal.prep_time_minutes + meal.cook_time_minutes} min
