@@ -82,7 +82,7 @@ const IFSingleWeekSchema = z.object({ generated_at: z.string(), week_1: IFWeekSc
 
 // ---------- System prompts (Section 29 — VERBATIM) ----------
 const STANDARD_SYSTEM_PROMPT = `You are a certified diabetes nutrition specialist generating a personalized 
-2-week meal plan for a member of the Diabetes Reset Method program. Your 
+1-week meal plan for a member of the Diabetes Reset Method program. Your 
 sole purpose is to help reverse Type 2 diabetes through food.
 
 ---
@@ -203,7 +203,7 @@ must include protein. Turkey chili with beans, lean protein bowls, vegetable ome
 
 BREAKFAST RULES
 - Minimum 350 calories. Front-load protein — highest-impact meal for blood sugar control.
-- Vary breakfast style across 14 days: mix egg-based, grain-based, fruit-plus-protein.
+- Vary breakfast style across 7 days: mix egg-based, grain-based, fruit-plus-protein.
 - Never repeat the same breakfast more than once per week.
 
 ---
@@ -215,13 +215,13 @@ functionally identical even if the name differs slightly.
 
 ---
 
-VARIETY REQUIREMENTS ACROSS 14 DAYS
+VARIETY REQUIREMENTS ACROSS 7 DAYS
 - No primary protein source appears more than 4 times
 - No primary carbohydrate appears more than 5 times
 - At least 5 different vegetable types per week
 - At least 3 different breakfast styles per week
 - No dinner dish repeats within the same week
-- Week 2 dinners must not repeat any Week 1 dinner
+- Dinners must not repeat within the week
 
 ---
 
