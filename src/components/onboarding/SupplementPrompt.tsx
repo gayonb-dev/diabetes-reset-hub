@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import Vita from "@/components/vita/Vita";
 
 const PRODUCT_SEARCH_URL =
-  "https://www.amazon.com/s?k=Nature+Made+Diabetes+Health+Pack";
+  "https://www.bjs.com/product/nature-made-daily-diabetes-health-pack-60-ct/3000000000005464255";
 
 /**
  * Post-onboarding supplement prompt overlay.
@@ -74,7 +74,7 @@ export default function SupplementPrompt() {
           onClick={() => dismiss(true)}
           className="w-full h-12 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold mb-2"
         >
-          Got it, I'll get mine
+          Got it, I'll get mine now
         </Button>
         <Button
           onClick={() => dismiss(false)}
