@@ -494,13 +494,30 @@ Deno.serve(async (req) => {
   try {
     console.log("Testing real generation");
     console.log("generateObject starting, plan_id:", planRow.id);
-    const { object } = await generateObject({
-      model,
-      schema,
-      mode: "json",
-      system: systemPrompt,
-      prompt: formatMemberInputs(prefs, servedMeals),
-    });
+    async function tryGenerate() {
+      return await generateObject({
+        model,
+        schema,
+        mode: "json",
+        system: systemPrompt,
+        prompt: formatMemberInputs(prefs, servedMeals),
+      });
+    }
+    let result;
+    try {
+      result = await tryGenerate();
+    } catch (firstErr) {
+      const msg = (firstErr as { message?: string })?.message ?? "";
+      const causeName = ((firstErr as { cause?: { name?: string } })?.cause?.name) ?? "";
+      const retryable =
+        msg.includes("Invalid JSON response") ||
+        msg.includes("Unexpected end of JSON") ||
+        causeName === "AI_JSONParseError";
+      if (!retryable) throw firstErr;
+      console.warn("generateObject retry after parse failure");
+      result = await tryGenerate();
+    }
+    const { object } = result;
     console.log("generateObject complete");
 
     // Update served_meals (FIFO 250 cap)
