@@ -48,40 +48,45 @@ Deno.serve(async (req) => {
 
     const newFrom = new Date(plan.valid_until + "T00:00:00Z");
     newFrom.setUTCDate(newFrom.getUTCDate() + 1);
-    const newUntil = new Date(newFrom);
-    newUntil.setUTCDate(newUntil.getUTCDate() + 13);
-
-    const { data: inserted, error: insErr } = await admin
-      .from("meal_plans")
-      .insert({
+    const inserts = [0, 7, 14, 21].map((offset) => {
+      const from = new Date(newFrom);
+      from.setUTCDate(newFrom.getUTCDate() + offset);
+      const until = new Date(from);
+      until.setUTCDate(from.getUTCDate() + 6);
+      return {
         member_id: plan.member_id,
         plan_type: plan.plan_type,
         generation_status: "pending",
         generation_trigger: "cron",
-        valid_from: newFrom.toISOString().slice(0, 10),
-        valid_until: newUntil.toISOString().slice(0, 10),
+        valid_from: from.toISOString().slice(0, 10),
+        valid_until: until.toISOString().slice(0, 10),
         preferences_snapshot: plan.preferences_snapshot ?? {},
         plan_data: {},
-      })
-      .select("id")
-      .single();
+      };
+    });
 
-    if (insErr || !inserted) {
+    const { data: inserted, error: insErr } = await admin
+      .from("meal_plans")
+      .insert(inserts)
+      .select("id");
+
+    if (insErr || !inserted?.length) {
       results.push({ member_id: plan.member_id, status: "insert_failed" });
       continue;
     }
 
-    // Fire and forget invoke
+    // Fire all four week generations in parallel.
     try {
-      const r = await fetch(`${SUPABASE_URL}/functions/v1/generate-meal-plan`, {
+      const generationResults = await Promise.all(inserted.map((row, index) => fetch(`${SUPABASE_URL}/functions/v1/generate-meal-plan`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           "X-Cron-Secret": CRON_SECRET,
         },
-        body: JSON.stringify({ plan_id: inserted.id, member_id: plan.member_id }),
-      });
-      results.push({ member_id: plan.member_id, status: r.ok ? "queued" : `err_${r.status}` });
+        body: JSON.stringify({ plan_id: row.id, member_id: plan.member_id, plan_index: index + 1 }),
+      })));
+      const failed = generationResults.find((r) => !r.ok);
+      results.push({ member_id: plan.member_id, status: failed ? `err_${failed.status}` : "queued" });
     } catch {
       results.push({ member_id: plan.member_id, status: "invoke_failed" });
     }
