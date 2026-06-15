@@ -40,6 +40,7 @@ const Settings = lazy(() => import("./pages/app/Settings"));
 const Profile = lazy(() => import("./pages/app/Profile"));
 const Fasting = lazy(() => import("./pages/app/Fasting"));
 const CheatMeal = lazy(() => import("./pages/app/CheatMeal"));
+const Support = lazy(() => import("./pages/app/Support"));
 const AdminLayout = lazy(() => import("./pages/admin/AdminLayout"));
 const AdminSubscriptions = lazy(() => import("./pages/admin/AdminSubscriptions"));
 const AdminQaQueue = lazy(() => import("./pages/admin/AdminQaQueue"));
@@ -49,6 +50,7 @@ const AdminWaitlist = lazy(() => import("./pages/admin/AdminWaitlist"));
 const AdminTopCustomers = lazy(() => import("./pages/admin/AdminTopCustomers"));
 const AdminDigest = lazy(() => import("./pages/admin/AdminDigest"));
 const AdminPhiLog = lazy(() => import("./pages/admin/AdminPhiLog"));
+const AdminCommunity = lazy(() => import("./pages/admin/AdminCommunity"));
 const Privacy = lazy(() => import("./pages/Privacy"));
 const ChatWidget = lazy(() => import("./components/chat/ChatWidget"));
 
@@ -87,6 +89,7 @@ const App = () => (
                 <Route path="broadcasts" element={<AdminBroadcasts />} />
                 <Route path="waitlist" element={<AdminWaitlist />} />
                 <Route path="phi-log" element={<AdminPhiLog />} />
+                <Route path="community" element={<AdminCommunity />} />
               </Route>
 
               <Route path="/llm-info" element={<LLMInfo />} />
@@ -139,6 +142,7 @@ const App = () => (
                 <Route path="profile" element={<Profile />} />
                 <Route path="fasting" element={<Fasting />} />
                 <Route path="cheat-meal" element={<CheatMeal />} />
+                <Route path="support" element={<Support />} />
                 <Route path="settings/billing" element={<Billing />} />
                 <Route path="coaching-waitlist" element={<CoachingWaitlist />} />
               </Route>
