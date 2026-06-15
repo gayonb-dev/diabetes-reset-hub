@@ -237,6 +237,7 @@ Deno.serve(async (req) => {
     const { object } = await generateObject({
       model,
       schema: VitaAnswerSchema,
+      mode: "json",
       messages,
     });
 

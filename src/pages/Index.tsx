@@ -13,6 +13,7 @@ import FinalCTASection from "@/components/landing/FinalCTASection";
 import Footer from "@/components/landing/Footer";
 import StickyBottomCTA from "@/components/landing/StickyBottomCTA";
 import PaymentModal from "@/components/landing/PaymentModal";
+import ChatWidget from "@/components/chat/ChatWidget";
 import { usePaidMemberRedirect } from "@/hooks/usePaidMemberRedirect";
 
 const FAQS = [
@@ -98,6 +99,8 @@ const Index = () => {
         isOpen={isPaymentModalOpen}
         onClose={() => setIsPaymentModalOpen(false)}
       />
+
+      <ChatWidget />
     </main>
   );
 };
