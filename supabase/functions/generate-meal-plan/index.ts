@@ -1,5 +1,5 @@
 // Edge function: generate-meal-plan
-// Generates a 2-week meal plan via Lovable AI Gateway and stores it on the
+// Generates a 1-week meal plan via Lovable AI Gateway and stores it on the
 // member's meal_plans row. See Section 29 of the DRM build spec.
 //
 // Auth: requires the user's JWT in the Authorization header. The function
@@ -28,7 +28,7 @@ const gateway = createOpenAICompatible({
   },
 });
 
-const model = gateway("google/gemini-2.5-flash");
+const model = gateway("google/gemini-3-flash-preview");
 
 // ---------- Zod Schemas (spec verbatim) ----------
 const MealSchema = z.object({
@@ -49,10 +49,7 @@ const MealSchema = z.object({
     carbs: z.string(),
   }),
   glycemic_rating: z.enum(["low", "medium", "high"]),
-  alternatives: z.array(z.object({
-    name: z.string(),
-    description: z.string(),
-  })).min(2).max(4),
+  alternatives: z.array(z.string()).min(2).max(4),
 });
 
 const DaySchema = z.object({
@@ -80,12 +77,12 @@ const IFWeekSchema = z.object({
   thursday: IFDaySchema, friday: IFDaySchema, saturday: IFDaySchema, sunday: IFDaySchema,
 });
 
-const PlanSchema = z.object({ generated_at: z.string(), week_1: WeekSchema, week_2: WeekSchema });
-const IFPlanSchema = z.object({ generated_at: z.string(), week_1: IFWeekSchema, week_2: IFWeekSchema });
+const SingleWeekSchema = z.object({ generated_at: z.string(), week_1: WeekSchema });
+const IFSingleWeekSchema = z.object({ generated_at: z.string(), week_1: IFWeekSchema });
 
 // ---------- System prompts (Section 29 — VERBATIM) ----------
 const STANDARD_SYSTEM_PROMPT = `You are a certified diabetes nutrition specialist generating a personalized 
-2-week meal plan for a member of the Diabetes Reset Method program. Your 
+1-week meal plan for a member of the Diabetes Reset Method program. Your 
 sole purpose is to help reverse Type 2 diabetes through food.
 
 ---
@@ -206,7 +203,7 @@ must include protein. Turkey chili with beans, lean protein bowls, vegetable ome
 
 BREAKFAST RULES
 - Minimum 350 calories. Front-load protein — highest-impact meal for blood sugar control.
-- Vary breakfast style across 14 days: mix egg-based, grain-based, fruit-plus-protein.
+- Vary breakfast style across 7 days: mix egg-based, grain-based, fruit-plus-protein.
 - Never repeat the same breakfast more than once per week.
 
 ---
@@ -218,13 +215,13 @@ functionally identical even if the name differs slightly.
 
 ---
 
-VARIETY REQUIREMENTS ACROSS 14 DAYS
+VARIETY REQUIREMENTS ACROSS 7 DAYS
 - No primary protein source appears more than 4 times
 - No primary carbohydrate appears more than 5 times
 - At least 5 different vegetable types per week
 - At least 3 different breakfast styles per week
 - No dinner dish repeats within the same week
-- Week 2 dinners must not repeat any Week 1 dinner
+- Dinners must not repeat within the week
 
 ---
 
@@ -333,7 +330,7 @@ function formatMemberInputs(prefs: Record<string, unknown>, servedMeals: string[
     `- Cooking time available per meal: ${cookingTime}`,
     `- Primary goal: ${(prefs.primary_goal as string) ?? "diabetes reversal"}`,
     ``,
-    `Generate a complete 2-week meal plan (week_1 + week_2, Monday–Sunday).`,
+  `Generate exactly one complete 7-day meal plan as week_1 only, Monday–Sunday.`,
     `Return the full structured JSON output.`,
   ];
   return lines.join("\n");
@@ -351,6 +348,20 @@ function collectMealNames(plan: unknown): string[] {
   };
   walk(plan);
   return names;
+}
+
+function serializeError(error: unknown): unknown {
+  if (!error || typeof error !== "object") return error;
+  const rec = error as Record<string, unknown>;
+  return {
+    name: rec.name,
+    message: rec.message,
+    status: rec.status,
+    statusCode: rec.statusCode,
+    cause: serializeError(rec.cause),
+    responseBody: rec.responseBody,
+    data: rec.data,
+  };
 }
 
 // ---------- Handler ----------
@@ -444,13 +455,13 @@ Deno.serve(async (req) => {
   // For simplicity: IF mode requires both if_enabled and plan_type === 'intermittent_fasting'.
   const isIfMode =
     !!profile?.if_enabled && (planRow.plan_type === "intermittent_fasting");
-  const schema = isIfMode ? IFPlanSchema : PlanSchema;
+  const schema = isIfMode ? IFSingleWeekSchema : SingleWeekSchema;
 
   const windowHours = profile?.if_window_hours ?? 10;
   const fastHours = 24 - windowHours;
-  const planIdx = body.plan_index === 2 ? 2 : body.plan_index === 1 ? 1 : null;
+  const planIdx = [1, 2, 3, 4].includes(body.plan_index ?? 0) ? body.plan_index : null;
   const planIndexHint = planIdx
-    ? `\n\n---\n\nPARALLEL PLAN GENERATION CONTEXT\nYou are generating Plan ${planIdx} of 2. A second 2-week plan is being generated for the same member in parallel covering a different fortnight. Bias your dish selection toward varied proteins, varied carbohydrate bases, and varied cooking techniques so the member experiences clear week-over-week novelty across the full 28 days. Do not repeat the names or core compositions of the meals in served_meals above.`
+    ? `\n\n---\n\nPARALLEL PLAN GENERATION CONTEXT\nYou are generating Week ${planIdx} of 4 for the same member in parallel. Return this week as week_1 only. Bias your dish selection toward varied proteins, varied carbohydrate bases, and varied cooking techniques so the member experiences clear week-over-week novelty across the full 28 days. Do not repeat the names or core compositions of the meals in served_meals above.`
     : "";
   const systemPrompt = isIfMode
     ? STANDARD_SYSTEM_PROMPT.replace("{{SERVED_MEALS}}", servedMeals.join(", ") || "none") +
@@ -460,12 +471,15 @@ Deno.serve(async (req) => {
     : STANDARD_SYSTEM_PROMPT.replace("{{SERVED_MEALS}}", servedMeals.join(", ") || "none") + planIndexHint;
 
   try {
+    console.log("Testing real generation");
+    console.log("generateObject starting, plan_id:", planRow.id);
     const { object } = await generateObject({
       model,
       schema,
       system: systemPrompt,
       prompt: formatMemberInputs(prefs, servedMeals),
     });
+    console.log("generateObject complete");
 
     // Update served_meals (FIFO 250 cap)
     const newNames = collectMealNames(object);
@@ -498,7 +512,7 @@ Deno.serve(async (req) => {
       .update({ generation_status: "failed" })
       .eq("id", planRow.id);
 
-    console.error("generate-meal-plan error", code, err.message);
+    console.error("generate-meal-plan error", code, err.message, JSON.stringify(serializeError(e)));
     return new Response(
       JSON.stringify({ error: "generation_failed", status: code, message: err.message ?? "unknown" }),
       {

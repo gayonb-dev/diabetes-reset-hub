@@ -33,7 +33,7 @@ const COOKING_TIMES = [
 const DEFAULT_CUISINE = "International (balanced)";
 const DEFAULT_COOKING = "20–45 min";
 
-interface PlanIds { plan1: string | null; plan2: string | null }
+interface PlanIds { plan1: string | null; plan2: string | null; plan3: string | null; plan4: string | null }
 type GenerationResult = { error?: { message?: string } | null };
 
 function todayPlus(days: number) {
@@ -49,17 +49,17 @@ export default function MealSetupTransition() {
   const [cuisine, setCuisine] = useState<string>(DEFAULT_CUISINE);
   const [cookingTime, setCookingTime] = useState<string>(DEFAULT_COOKING);
   const [userTouched, setUserTouched] = useState(false);
-  const planIdsRef = useRef<PlanIds>({ plan1: null, plan2: null });
+  const planIdsRef = useRef<PlanIds>({ plan1: null, plan2: null, plan3: null, plan4: null });
   const generationKeyRef = useRef(0); // increments each restart; stale calls are discarded
   const [bothComplete, setBothComplete] = useState(false);
-  const completionRef = useRef({ plan1: false, plan2: false });
+  const completionRef = useRef<Record<keyof PlanIds, boolean>>({ plan1: false, plan2: false, plan3: false, plan4: false });
 
   // Start (or restart) both generations with the given preferences.
   async function startGeneration(prefs: { cuisine: string; cookingTime: string }) {
     if (!user) return;
     generationKeyRef.current += 1;
     const myKey = generationKeyRef.current;
-    completionRef.current = { plan1: false, plan2: false };
+    completionRef.current = { plan1: false, plan2: false, plan3: false, plan4: false };
     setBothComplete(false);
 
     const snapshot = {
@@ -84,8 +84,8 @@ export default function MealSetupTransition() {
       })
       .eq("user_id", user.id);
 
-    // Create two pending plan rows: today→+13 and +14→+27.
-    const [{ data: row1, error: e1 }, { data: row2, error: e2 }] = await Promise.all([
+    // Create four pending one-week plan rows.
+    const insertResults = await Promise.all([0, 7, 14, 21].map((offset) =>
       supabase
         .from("meal_plans")
         .insert({
@@ -93,58 +93,36 @@ export default function MealSetupTransition() {
           plan_type: "standard",
           generation_status: "pending",
           generation_trigger: "onboarding",
-          valid_from: todayPlus(0),
-          valid_until: todayPlus(13),
+          valid_from: todayPlus(offset),
+          valid_until: todayPlus(offset + 6),
           preferences_snapshot: snapshot,
           plan_data: {},
         } as never)
         .select("id")
         .single(),
-      supabase
-        .from("meal_plans")
-        .insert({
-          member_id: user.id,
-          plan_type: "standard",
-          generation_status: "pending",
-          generation_trigger: "onboarding",
-          valid_from: todayPlus(14),
-          valid_until: todayPlus(27),
-          preferences_snapshot: snapshot,
-          plan_data: {},
-        } as never)
-        .select("id")
-        .single(),
-    ]);
-    if (e1 || e2) throw (e1 ?? e2);
+    ));
+    const insertError = insertResults.find((result) => result.error)?.error;
+    if (insertError) throw insertError;
 
     if (myKey !== generationKeyRef.current) return; // a newer restart took over
-    planIdsRef.current = { plan1: row1?.id ?? null, plan2: row2?.id ?? null };
+    const rows = insertResults.map((result) => result.data);
+    planIdsRef.current = { plan1: rows[0]?.id ?? null, plan2: rows[1]?.id ?? null, plan3: rows[2]?.id ?? null, plan4: rows[3]?.id ?? null };
 
-    // Fire both edge function calls in parallel — do not await.
-    if (row1?.id) {
+    // Fire all four edge function calls in parallel — do not await.
+    rows.forEach((row, index) => {
+      if (!row?.id) return;
+      const key = `plan${index + 1}` as keyof PlanIds;
       supabase.functions
-        .invoke("generate-meal-plan", { body: { plan_id: row1.id, plan_index: 1 } })
+        .invoke("generate-meal-plan", { body: { plan_id: row.id, plan_index: index + 1 } })
         .then((result: GenerationResult) => {
           if (result.error) throw result.error;
           if (myKey === generationKeyRef.current) {
-            completionRef.current.plan1 = true;
+            completionRef.current[key] = true;
             checkBothDone();
           }
         })
         .catch((error) => handleGenerationError(error));
-    }
-    if (row2?.id) {
-      supabase.functions
-        .invoke("generate-meal-plan", { body: { plan_id: row2.id, plan_index: 2 } })
-        .then((result: GenerationResult) => {
-          if (result.error) throw result.error;
-          if (myKey === generationKeyRef.current) {
-            completionRef.current.plan2 = true;
-            checkBothDone();
-          }
-        })
-        .catch((error) => handleGenerationError(error));
-    }
+    });
   }
 
   function handleGenerationError(error: unknown) {
@@ -154,7 +132,7 @@ export default function MealSetupTransition() {
   }
 
   function checkBothDone() {
-    if (completionRef.current.plan1 && completionRef.current.plan2) {
+    if (completionRef.current.plan1 && completionRef.current.plan2 && completionRef.current.plan3 && completionRef.current.plan4) {
       setBothComplete(true);
     }
   }
