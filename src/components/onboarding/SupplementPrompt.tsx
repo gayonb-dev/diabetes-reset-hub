@@ -74,7 +74,7 @@ export default function SupplementPrompt() {
           onClick={() => dismiss(true)}
           className="w-full h-12 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold mb-2"
         >
-          Got it, I'll get mine
+          Got it, I'll get mine now
         </Button>
         <Button
           onClick={() => dismiss(false)}
