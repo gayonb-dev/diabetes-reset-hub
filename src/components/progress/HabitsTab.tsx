@@ -35,16 +35,17 @@ export default function HabitsTab() {
       since.setDate(since.getDate() - 90);
       const sinceISO = since.toISOString();
 
-      const waterRes = await supabase.from("water_logs").select("logged_at").eq("user_id", user.id).gte("logged_at", sinceISO);
-      const mealRes = await supabase.from("meal_logs").select("logged_at").eq("member_id", user.id).gte("logged_at", sinceISO);
-      const workoutRes = await supabase
+      const sb: any = supabase;
+      const waterRes = await sb.from("water_logs").select("logged_at").eq("user_id", user.id).gte("logged_at", sinceISO);
+      const mealRes = await sb.from("meal_logs").select("logged_at").eq("member_id", user.id).gte("logged_at", sinceISO);
+      const workoutRes = await sb
         .from("workout_sessions")
         .select("completed_at")
         .eq("user_id", user.id)
         .eq("status", "completed")
         .gte("completed_at", sinceISO);
-      const mindsetRes = await supabase.from("mindset_reads").select("read_at").eq("member_id", user.id).gte("read_at", sinceISO);
-      const streakRes = await supabase.from("user_streaks").select("current_streak, longest_streak").eq("user_id", user.id).maybeSingle();
+      const mindsetRes = await sb.from("mindset_reads").select("read_at").eq("member_id", user.id).gte("read_at", sinceISO);
+      const streakRes = await sb.from("user_streaks").select("current_streak, longest_streak").eq("user_id", user.id).maybeSingle();
 
       const map = new Map<string, DayRings>();
       const ensure = (k: string) => {
