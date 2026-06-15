@@ -162,8 +162,8 @@ export default function Settings() {
         return d.toISOString().slice(0, 10);
       };
 
-      // Create Plan 1 (days 1–14) and Plan 2 (days 15–28) in parallel.
-      const [{ data: r1, error: e1 }, { data: r2, error: e2 }] = await Promise.all([
+      // Create four one-week plan rows in parallel.
+      const insertResults = await Promise.all([0, 7, 14, 21].map((offset) =>
         supabase
           .from("meal_plans")
           .insert({
@@ -171,38 +171,22 @@ export default function Settings() {
             plan_type: "standard",
             generation_status: "pending",
             generation_trigger: "preferences_update",
-            valid_from: dayStr(0),
-            valid_until: dayStr(13),
+            valid_from: dayStr(offset),
+            valid_until: dayStr(offset + 6),
             preferences_snapshot: snapshot,
             plan_data: {},
           } as never)
           .select("id")
           .single(),
-        supabase
-          .from("meal_plans")
-          .insert({
-            member_id: user.id,
-            plan_type: "standard",
-            generation_status: "pending",
-            generation_trigger: "preferences_update",
-            valid_from: dayStr(14),
-            valid_until: dayStr(27),
-            preferences_snapshot: snapshot,
-            plan_data: {},
-          } as never)
-          .select("id")
-          .single(),
-      ]);
-      if (e1 || e2) throw (e1 ?? e2);
+      ));
+      const insertError = insertResults.find((result) => result.error)?.error;
+      if (insertError) throw insertError;
 
-      const generationResults = await Promise.all([
-        r1?.id
-          ? supabase.functions.invoke("generate-meal-plan", { body: { plan_id: r1.id, plan_index: 1 } })
+      const generationResults = await Promise.all(insertResults.map((result, index) =>
+        result.data?.id
+          ? supabase.functions.invoke("generate-meal-plan", { body: { plan_id: result.data.id, plan_index: index + 1 } })
           : Promise.resolve({ error: null }),
-        r2?.id
-          ? supabase.functions.invoke("generate-meal-plan", { body: { plan_id: r2.id, plan_index: 2 } })
-          : Promise.resolve({ error: null }),
-      ]);
+      ));
       const generationError = generationResults.find((result) => result.error)?.error;
       if (generationError) throw generationError;
 
