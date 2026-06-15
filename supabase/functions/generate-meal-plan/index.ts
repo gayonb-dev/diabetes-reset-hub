@@ -468,6 +468,7 @@ Deno.serve(async (req) => {
     const { object } = await generateObject({
       model,
       schema,
+      mode: "json",
       system: systemPrompt,
       prompt: formatMemberInputs(prefs, servedMeals),
     });
