@@ -34,6 +34,14 @@ interface PlanData {
   week_1?: Week;
   week_2?: Week;
 }
+interface PlanRow {
+  id: string;
+  status: string;
+  plan_data: PlanData;
+  plan_type: string;
+  valid_from: string;
+  created_at?: string;
+}
 
 const DAY_KEYS = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"] as const;
 const STANDARD_SLOTS = ["breakfast", "lunch", "dinner", "snack_1", "snack_2"] as const;
@@ -48,6 +56,13 @@ const SLOT_LABEL: Record<string, string> = {
   meal_1: "Meal 1",
   meal_2: "Meal 2",
 };
+
+const PLAN_PENDING_TIMEOUT_MS = 2 * 60 * 1000;
+
+function isStalePending(plan: PlanRow | null) {
+  if (!plan || plan.status !== "pending" || !plan.created_at) return false;
+  return Date.now() - new Date(plan.created_at).getTime() > PLAN_PENDING_TIMEOUT_MS;
+}
 
 // ----- shopping list categorization (client-side, no API) -----
 const CATEGORY_RULES: Array<{ category: string; tip: string; match: (item: string) => boolean }> = [
