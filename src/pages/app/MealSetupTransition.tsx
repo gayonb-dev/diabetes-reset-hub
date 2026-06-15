@@ -65,24 +65,22 @@ export default function MealSetupTransition() {
       cooking_time: prefs.cookingTime,
     };
 
-    // Persist on profile metadata so Settings + Meals tab read the same values.
-    const { data: vp } = await supabase
-      .from("visitor_profiles")
-      .select("id, metadata")
+    // Persist on the authenticated member's own profile row (RLS-protected).
+    const { data: prof } = await supabase
+      .from("profiles")
+      .select("meal_preferences")
       .eq("user_id", user.id)
       .maybeSingle();
-    if (vp) {
-      await supabase
-        .from("visitor_profiles")
-        .update({
-          metadata: {
-            ...((vp.metadata as Record<string, unknown>) || {}),
-            cuisine_preferences: [prefs.cuisine],
-            cooking_time: prefs.cookingTime,
-          } as never,
-        })
-        .eq("id", vp.id);
-    }
+    await supabase
+      .from("profiles")
+      .update({
+        meal_preferences: {
+          ...((prof?.meal_preferences as Record<string, unknown>) || {}),
+          cuisine_preferences: [prefs.cuisine],
+          cooking_time: prefs.cookingTime,
+        } as never,
+      })
+      .eq("user_id", user.id);
 
     // Create two pending plan rows: today→+13 and +14→+27.
     const [{ data: row1 }, { data: row2 }] = await Promise.all([

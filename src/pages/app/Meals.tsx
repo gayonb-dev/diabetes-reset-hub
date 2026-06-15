@@ -243,12 +243,12 @@ export default function Meals() {
     }
 
     supabase
-      .from("visitor_profiles")
-      .select("metadata")
+      .from("profiles")
+      .select("meal_preferences")
       .eq("user_id", user.id)
       .maybeSingle()
       .then(({ data }) => {
-        const meta = (data?.metadata as Record<string, unknown>) || {};
+        const meta = (data?.meal_preferences as Record<string, unknown>) || {};
         setCuisines((meta.cuisine_preferences as string[]) ?? []);
       });
 
@@ -264,12 +264,12 @@ export default function Meals() {
     if (!user) return;
     setRegenerating(true);
     try {
-      const { data: vp } = await supabase
-        .from("visitor_profiles")
-        .select("metadata")
+      const { data: prof } = await supabase
+        .from("profiles")
+        .select("meal_preferences")
         .eq("user_id", user.id)
         .maybeSingle();
-      const meta = (vp?.metadata as Record<string, unknown>) || {};
+      const meta = (prof?.meal_preferences as Record<string, unknown>) || {};
       const snapshot = {
         cuisine_preferences: (meta.cuisine_preferences as string[]) ?? cuisines,
         protein_preferences: meta.protein_preferences ?? null,

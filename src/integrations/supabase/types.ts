@@ -1449,6 +1449,7 @@ export type Database = {
           date_of_birth: string | null
           first_name: string | null
           last_name: string | null
+          meal_preferences: Json
           notification_prefs: Json
           program_start_date: string | null
           updated_at: string
@@ -1460,6 +1461,7 @@ export type Database = {
           date_of_birth?: string | null
           first_name?: string | null
           last_name?: string | null
+          meal_preferences?: Json
           notification_prefs?: Json
           program_start_date?: string | null
           updated_at?: string
@@ -1471,6 +1473,7 @@ export type Database = {
           date_of_birth?: string | null
           first_name?: string | null
           last_name?: string | null
+          meal_preferences?: Json
           notification_prefs?: Json
           program_start_date?: string | null
           updated_at?: string
