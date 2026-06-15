@@ -1,10 +1,11 @@
 // Full-screen VITA transition shown right after onboarding's "Let's go".
-// Fires two parallel generate-meal-plan calls (Plan 1: days 1–14, Plan 2: days 15–28),
-// lets the member pick cuisine + cooking time inline, restarts both calls if the
-// preference changes before completion, and auto-advances to /app once both plans
-// are `complete` AND a cuisine has been selected.
+// Fires four parallel generate-meal-plan calls (one per week), lets the member
+// pick cuisine + cooking time inline, and auto-advances ONLY when all 4 weekly
+// plans return `complete`. A 90s safety net advances to /app/meals if any week
+// is still pending (the Meals tab shows per-week status with a retry button).
 //
-// 18s no-input timeout: use the default selections and proceed when both plans finish.
+// Cuisine / cooking time changes during generation cancel all in-flight calls
+// (via generationKeyRef) and restart all 4 with the new preferences.
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -32,7 +33,10 @@ const COOKING_TIMES = [
 
 const DEFAULT_CUISINE = "International (balanced)";
 const DEFAULT_COOKING = "20–45 min";
+const MAX_WAIT_MS = 90_000;
+const TOTAL_WEEKS = 4;
 
+type WeekKey = "plan1" | "plan2" | "plan3" | "plan4";
 interface PlanIds { plan1: string | null; plan2: string | null; plan3: string | null; plan4: string | null }
 type GenerationResult = { error?: { message?: string } | null };
 
@@ -48,26 +52,34 @@ export default function MealSetupTransition() {
 
   const [cuisine, setCuisine] = useState<string>(DEFAULT_CUISINE);
   const [cookingTime, setCookingTime] = useState<string>(DEFAULT_COOKING);
-  const [userTouched, setUserTouched] = useState(false);
   const planIdsRef = useRef<PlanIds>({ plan1: null, plan2: null, plan3: null, plan4: null });
   const generationKeyRef = useRef(0); // increments each restart; stale calls are discarded
-  const [bothComplete, setBothComplete] = useState(false);
-  const completionRef = useRef<Record<keyof PlanIds, boolean>>({ plan1: false, plan2: false, plan3: false, plan4: false });
+  const completionRef = useRef<Record<WeekKey, boolean>>({ plan1: false, plan2: false, plan3: false, plan4: false });
+  const [completedCount, setCompletedCount] = useState(0);
+  const [forcedAdvance, setForcedAdvance] = useState(false);
+  const startedAtRef = useRef<number>(Date.now());
 
-  // Start (or restart) both generations with the given preferences.
+  function recomputeCompleted() {
+    const c = (["plan1","plan2","plan3","plan4"] as WeekKey[])
+      .reduce((n, k) => n + (completionRef.current[k] ? 1 : 0), 0);
+    setCompletedCount(c);
+    return c;
+  }
+
+  // Start (or restart) all four generations with the given preferences.
   async function startGeneration(prefs: { cuisine: string; cookingTime: string }) {
     if (!user) return;
     generationKeyRef.current += 1;
     const myKey = generationKeyRef.current;
     completionRef.current = { plan1: false, plan2: false, plan3: false, plan4: false };
-    setBothComplete(false);
+    setCompletedCount(0);
+    startedAtRef.current = Date.now();
 
     const snapshot = {
       cuisine_preferences: [prefs.cuisine],
       cooking_time: prefs.cookingTime,
     };
 
-    // Persist on the authenticated member's own profile row (RLS-protected).
     const { data: prof } = await supabase
       .from("profiles")
       .select("meal_preferences")
@@ -83,6 +95,8 @@ export default function MealSetupTransition() {
         } as never,
       })
       .eq("user_id", user.id);
+
+    if (myKey !== generationKeyRef.current) return;
 
     // Create four pending one-week plan rows.
     const insertResults = await Promise.all([0, 7, 14, 21].map((offset) =>
@@ -104,80 +118,91 @@ export default function MealSetupTransition() {
     const insertError = insertResults.find((result) => result.error)?.error;
     if (insertError) throw insertError;
 
-    if (myKey !== generationKeyRef.current) return; // a newer restart took over
+    if (myKey !== generationKeyRef.current) return;
     const rows = insertResults.map((result) => result.data);
-    planIdsRef.current = { plan1: rows[0]?.id ?? null, plan2: rows[1]?.id ?? null, plan3: rows[2]?.id ?? null, plan4: rows[3]?.id ?? null };
+    planIdsRef.current = {
+      plan1: rows[0]?.id ?? null,
+      plan2: rows[1]?.id ?? null,
+      plan3: rows[2]?.id ?? null,
+      plan4: rows[3]?.id ?? null,
+    };
 
-    // Fire all four edge function calls in parallel — do not await.
     rows.forEach((row, index) => {
       if (!row?.id) return;
-      const key = `plan${index + 1}` as keyof PlanIds;
+      const key = (`plan${index + 1}`) as WeekKey;
       supabase.functions
         .invoke("generate-meal-plan", { body: { plan_id: row.id, plan_index: index + 1 } })
         .then((result: GenerationResult) => {
-          if (result.error) throw result.error;
-          if (myKey === generationKeyRef.current) {
-            completionRef.current[key] = true;
-            checkBothDone();
+          if (myKey !== generationKeyRef.current) return; // stale
+          if (result.error) {
+            console.error(`Week ${index + 1} generation error`, result.error);
+            return; // leave incomplete; Meals tab will surface failed status
           }
+          completionRef.current[key] = true;
+          recomputeCompleted();
         })
-        .catch((error) => handleGenerationError(error));
+        .catch((error) => {
+          if (myKey !== generationKeyRef.current) return;
+          console.error(`Week ${index + 1} generation threw`, error);
+        });
     });
   }
 
-  function handleGenerationError(error: unknown) {
-    const message = error instanceof Error ? error.message : "Please try again from the Meals tab.";
-    toast({ title: "Meal plan generation failed", description: message, variant: "destructive" });
-    navigate("/app/meals", { replace: true });
-  }
-
-  function checkBothDone() {
-    if (completionRef.current.plan1 && completionRef.current.plan2 && completionRef.current.plan3 && completionRef.current.plan4) {
-      setBothComplete(true);
-    }
-  }
-
-  // Kick off the first generation on mount with defaults.
+  // Kick off on mount.
   useEffect(() => {
     if (!user) return;
-    startGeneration({ cuisine: DEFAULT_CUISINE, cookingTime: DEFAULT_COOKING }).catch(handleGenerationError);
-    // 18s safety net: if the member never touches anything, treat as approved.
-    const t = window.setTimeout(() => setUserTouched(true), 18000);
-    return () => clearTimeout(t);
+    startGeneration({ cuisine: DEFAULT_CUISINE, cookingTime: DEFAULT_COOKING }).catch((e) => {
+      toast({
+        title: "Couldn't start meal plan",
+        description: e instanceof Error ? e.message : "Please try again from the Meals tab.",
+        variant: "destructive",
+      });
+      navigate("/app/meals", { replace: true });
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id]);
 
-  // Auto-advance once both plans complete AND the member has confirmed a cuisine
-  // (touched the chips OR 18s elapsed).
+  // 90s max wait safety net.
   useEffect(() => {
-    if (bothComplete && userTouched) {
-      navigate("/app", { replace: true });
+    const t = window.setInterval(() => {
+      if (Date.now() - startedAtRef.current >= MAX_WAIT_MS && completedCount < TOTAL_WEEKS) {
+        setForcedAdvance(true);
+      }
+    }, 1000);
+    return () => clearInterval(t);
+  }, [completedCount]);
+
+  // Auto-advance when all 4 are complete, or when forced by the 90s safety net.
+  useEffect(() => {
+    if (completedCount >= TOTAL_WEEKS) {
+      navigate("/app/meals", { replace: true });
+    } else if (forcedAdvance) {
+      toast({
+        title: "Some weeks are still cooking",
+        description: `${completedCount} of ${TOTAL_WEEKS} weeks ready. You can retry the rest from the Meals tab.`,
+      });
+      navigate("/app/meals", { replace: true });
     }
-  }, [bothComplete, userTouched, navigate]);
+  }, [completedCount, forcedAdvance, navigate]);
 
   function pickCuisine(c: string) {
-    setUserTouched(true);
     if (c === cuisine) return;
     setCuisine(c);
-    if (!bothComplete) {
-      startGeneration({ cuisine: c, cookingTime }).catch(handleGenerationError);
-    }
+    startGeneration({ cuisine: c, cookingTime }).catch(console.error);
   }
 
   function pickCooking(t: string) {
-    setUserTouched(true);
     if (t === cookingTime) return;
     setCookingTime(t);
-    if (!bothComplete) {
-      startGeneration({ cuisine, cookingTime: t }).catch(handleGenerationError);
-    }
+    startGeneration({ cuisine, cookingTime: t }).catch(console.error);
   }
 
   const subText = useMemo(() => {
-    if (bothComplete && userTouched) return "Opening your dashboard…";
-    if (bothComplete) return "Your plan is ready — tap your cuisine to continue.";
-    return "Building 4 weeks of meals tailored to you.";
-  }, [bothComplete, userTouched]);
+    if (completedCount >= TOTAL_WEEKS) return "Opening your meal plan…";
+    return `${completedCount} of ${TOTAL_WEEKS} weeks ready…`;
+  }, [completedCount]);
+
+  const progressPct = Math.round((completedCount / TOTAL_WEEKS) * 100);
 
   return (
     <div
@@ -188,11 +213,31 @@ export default function MealSetupTransition() {
 
       <div className="space-y-2 max-w-sm">
         <h1 className="text-[20px] font-semibold leading-snug" style={{ color: "#FFFFFF" }}>
-          One last thing while I build your plan…
+          Building your 4-week meal plan
         </h1>
         <p className="text-[13px]" style={{ color: "rgba(255,255,255,0.7)" }}>
           {subText}
         </p>
+      </div>
+
+      {/* Progress bar */}
+      <div className="w-full max-w-xs">
+        <div
+          className="h-2 rounded-full overflow-hidden"
+          style={{ backgroundColor: "rgba(255,255,255,0.15)" }}
+        >
+          <div
+            className="h-full transition-all duration-500 ease-out"
+            style={{ width: `${progressPct}%`, backgroundColor: "#E8A029" }}
+          />
+        </div>
+        <div className="flex justify-between mt-1.5 text-[10px]" style={{ color: "rgba(255,255,255,0.55)" }}>
+          {[1, 2, 3, 4].map((n) => (
+            <span key={n} style={{ opacity: completedCount >= n ? 1 : 0.4 }}>
+              {completedCount >= n ? "✓" : "○"} Week {n}
+            </span>
+          ))}
+        </div>
       </div>
 
       <div className="space-y-2 max-w-md">
@@ -222,6 +267,9 @@ export default function MealSetupTransition() {
             );
           })}
         </div>
+        <p className="text-[10px]" style={{ color: "rgba(255,255,255,0.4)" }}>
+          Changing cuisine restarts all 4 weeks.
+        </p>
       </div>
 
       <div className="space-y-2 max-w-md">
