@@ -13,7 +13,7 @@ import { cn } from "@/lib/utils";
 import { SnackLibrary } from "@/components/meals/SnackLibrary";
 
 // ----- types -----
-interface Ingredient { item: string; quantity: string; unit: string }
+type Ingredient = string | { item: string; quantity: string; unit: string };
 type Alternative = string | { name: string; description?: string }
 interface Meal {
   name: string;
@@ -23,9 +23,20 @@ interface Meal {
   servings: number;
   ingredients: Ingredient[];
   instructions: string[];
-  plate_breakdown: { vegetables: string; protein: string; carbs: string };
-  glycemic_rating: "low" | "medium" | "high";
+  plate_breakdown: string | { vegetables: string; protein: string; carbs: string };
+  glycemic_rating?: "low" | "medium" | "high";
   alternatives: Alternative[];
+}
+
+function ingredientText(ing: Ingredient): string {
+  if (typeof ing === "string") return ing;
+  return [ing.quantity, ing.unit, ing.item].filter(Boolean).join(" ");
+}
+function ingredientItemName(ing: Ingredient): string {
+  if (typeof ing === "string") {
+    return ing.replace(/^[\d./\s]+(?:g|kg|ml|l|oz|lb|tbsp|tsp|cup|cups|pieces?|fillets?)?\s*/i, "").trim() || ing;
+  }
+  return ing.item;
 }
 type Day = Record<string, Meal>; // breakfast/lunch/dinner/snack_1/snack_2 OR meal_1/meal_2/snack_1/snack_2
 type Week = Record<string, Day>; // monday..sunday
