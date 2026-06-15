@@ -262,7 +262,7 @@ Deno.serve(async (req) => {
     // Medical-question hard handoff — no LLM call needed
     if (classifier.intent === "medical_question") {
       const handoff =
-        "That's one for your doctor — I'm here to support your lifestyle, not to replace your medical team. Want me to point you to how the reset would fit alongside what they've got you on?";
+        "That's a question for your doctor — I'm not qualified to give medical advice. What I can help with is how the program works and whether it might be right for you.";
       await supabase.from("messages").insert({
         conversation_id: conversationId,
         visitor_profile_id: profile.id,
@@ -281,10 +281,13 @@ Deno.serve(async (req) => {
           assistant_message: handoff,
           needs_phi_consent: false,
           cta: null,
+          intent: "medical_question",
+          health_related: true,
         }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
     }
+
 
     // Current conversation history
     const { data: history } = await supabase
@@ -430,6 +433,11 @@ Deno.serve(async (req) => {
     }
 
     const cta = buildCta(classifier.intent, origin);
+    const healthRelated =
+      classifier.contains_phi ||
+      classifier.topic === "diabetes_management" ||
+      classifier.topic === "meds" ||
+      (classifier.health_signals?.length ?? 0) > 0;
 
     return new Response(
       JSON.stringify({
@@ -437,9 +445,12 @@ Deno.serve(async (req) => {
         assistant_message: assistantText,
         needs_phi_consent: false,
         cta,
+        intent: classifier.intent,
+        health_related: healthRelated,
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } },
     );
+
   } catch (e) {
     console.error("chat-agent fatal", e);
     return new Response(JSON.stringify({ error: "Internal server error" }), {
