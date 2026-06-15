@@ -179,6 +179,16 @@ serve(async (req) => {
       throw new Error(`Resend API error [${res.status}]: ${errBody}`);
     }
 
+    // Log the send for idempotency / audit
+    await supabaseAdmin.from("broadcast_log").insert({
+      channel: "email",
+      audience: `coach-progress-summary:${lowerEmail}`,
+      subject: `5-Day Challenge Completed: ${clientName}`,
+      body: "Coach progress summary",
+      recipients_count: 1,
+      metadata: { email: lowerEmail },
+    });
+
     return new Response(
       JSON.stringify({ success: true, message: "Summary sent to coach" }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 200 }
