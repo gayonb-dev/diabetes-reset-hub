@@ -80,6 +80,26 @@ serve(async (req) => {
       );
     }
 
+    // Idempotency guard: prevent spam by rejecting repeat triggers for the
+    // same email within a 24-hour window.
+    const audienceKey = `coach-progress-summary:${lowerEmail}`;
+    const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+    const { data: recent } = await supabaseAdmin
+      .from("broadcast_log")
+      .select("id")
+      .eq("channel", "email")
+      .eq("audience", audienceKey)
+      .gte("sent_at", since)
+      .limit(1)
+      .maybeSingle();
+
+    if (recent) {
+      return new Response(
+        JSON.stringify({ success: true, message: "Already sent recently" }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 200 }
+      );
+    }
+
     // Also get the client's name from orders if available
     const { data: order } = await supabaseAdmin
       .from("orders")
@@ -158,6 +178,16 @@ serve(async (req) => {
       const errBody = await res.text();
       throw new Error(`Resend API error [${res.status}]: ${errBody}`);
     }
+
+    // Log the send for idempotency / audit
+    await supabaseAdmin.from("broadcast_log").insert({
+      channel: "email",
+      audience: `coach-progress-summary:${lowerEmail}`,
+      subject: `5-Day Challenge Completed: ${clientName}`,
+      body: "Coach progress summary",
+      recipients_count: 1,
+      metadata: { email: lowerEmail },
+    });
 
     return new Response(
       JSON.stringify({ success: true, message: "Summary sent to coach" }),
