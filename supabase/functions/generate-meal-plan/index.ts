@@ -413,15 +413,27 @@ Deno.serve(async (req) => {
     });
   }
 
-  const { data: profile } = await admin
-    .from("visitor_profiles")
-    .select("metadata, served_meals, if_enabled, if_window_hours")
-    .eq("user_id", memberId)
-    .maybeSingle();
+  // Meal preferences now live on the authenticated profile row (RLS-protected).
+  // served_meals / IF settings remain on visitor_profiles (admin-only writes).
+  const [{ data: memberProfile }, { data: profile }] = await Promise.all([
+    admin
+      .from("profiles")
+      .select("meal_preferences")
+      .eq("user_id", memberId)
+      .maybeSingle(),
+    admin
+      .from("visitor_profiles")
+      .select("metadata, served_meals, if_enabled, if_window_hours")
+      .eq("user_id", memberId)
+      .maybeSingle(),
+  ]);
 
   const prefs = {
     ...((planRow.preferences_snapshot as Record<string, unknown>) || {}),
+    // Legacy fallback: any older meal prefs still on visitor_profiles.metadata
     ...((profile?.metadata as Record<string, unknown>) || {}),
+    // Authoritative: meal prefs from the member's own profile row
+    ...((memberProfile?.meal_preferences as Record<string, unknown>) || {}),
   };
   const servedMeals = ((profile?.served_meals as string[]) || []).slice(-250);
 

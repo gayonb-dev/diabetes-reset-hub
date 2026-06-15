@@ -93,16 +93,16 @@ export default function Settings() {
         }
       });
 
-    // Load meal plan preferences from visitor_profiles.metadata
+    // Load meal plan preferences from the authenticated profile row.
     supabase
-      .from("visitor_profiles")
-      .select("id, metadata")
+      .from("profiles")
+      .select("meal_preferences")
       .eq("user_id", user.id)
       .maybeSingle()
       .then(({ data }) => {
         if (!data) return;
-        const meta = (data.metadata as Record<string, unknown>) ?? {};
-        setProfileId(data.id);
+        const meta = (data.meal_preferences as Record<string, unknown>) ?? {};
+        setProfileId(user.id);
         setProfileMetadata(meta);
         const c = (meta.cuisine_preferences as string[]) ?? ["International (balanced)"];
         const p = (meta.protein_preferences as string[]) ?? ["I eat all of these"];
@@ -145,9 +145,9 @@ export default function Settings() {
         cooking_time: cookingTime,
       };
       await supabase
-        .from("visitor_profiles")
-        .update({ metadata: newMeta } as never)
-        .eq("id", profileId);
+        .from("profiles")
+        .update({ meal_preferences: newMeta as never })
+        .eq("user_id", user.id);
       setProfileMetadata(newMeta);
 
       const snapshot = {
