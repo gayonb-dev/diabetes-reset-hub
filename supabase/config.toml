@@ -45,6 +45,13 @@ verify_jwt = false
 [functions.compute-engagement-scores]
 verify_jwt = false
 
+[functions.notifications-cron]
+verify_jwt = false
+
+[functions.send-notification]
+verify_jwt = false
+
+
 
 
 

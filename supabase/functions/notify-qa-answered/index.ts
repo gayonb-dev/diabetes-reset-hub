@@ -59,6 +59,24 @@ serve(async (req) => {
       });
     }
 
+    // Also create an in-app notification (VITA template)
+    try {
+      await fetch(`${Deno.env.get("SUPABASE_URL")}/functions/v1/send-notification`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-internal-secret": Deno.env.get("INTERNAL_FUNCTION_SECRET") ?? "",
+        },
+        body: JSON.stringify({
+          user_id: sub.user_id,
+          template_key: "qa_answered",
+          payload: { submission_id },
+        }),
+      });
+    } catch (e) {
+      console.error("qa_answered notification dispatch failed", e);
+    }
+
     const { data: target } = await sb.auth.admin.getUserById(sub.user_id);
     const email = target?.user?.email;
     if (!email) {
@@ -66,6 +84,7 @@ serve(async (req) => {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+
 
     const key = Deno.env.get("RESEND_API_KEY");
     const APP_URL = Deno.env.get("APP_URL") || "https://diabetesresetmethod.com";

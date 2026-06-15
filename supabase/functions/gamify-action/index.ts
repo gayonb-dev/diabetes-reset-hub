@@ -51,27 +51,77 @@ Deno.serve(async (req) => {
     const xp = ACTION_XP[action] ?? 5;
 
     const { data: streak } = await supabase.rpc("bump_streak", { p_user_id: uid });
-    const { data: xpRes } = await supabase.rpc("award_xp", { p_user_id: uid, p_amount: xp });
 
-    // Auto-award streak milestone badges
+    // Capture level BEFORE awarding XP to detect level-up
+    const { data: priorStreak } = await supabase
+      .from("user_streaks")
+      .select("level")
+      .eq("user_id", uid)
+      .maybeSingle();
+    const priorLevel = priorStreak?.level ?? 1;
+
+    const { data: xpRes } = await supabase.rpc("award_xp", { p_user_id: uid, p_amount: xp });
+    const newLevel = xpRes?.[0]?.level ?? priorLevel;
+
+    const LEVEL_NAMES: Record<number, { name: string; msg: string }> = {
+      2: { name: "Reset Apprentice", msg: "You've moved past beginner" },
+      3: { name: "Reset Practitioner", msg: "The habits are becoming yours" },
+      5: { name: "Reset Veteran", msg: "Most people quit before this" },
+      10: { name: "Reset Master", msg: "You've changed your trajectory" },
+    };
+
+    const sendNotif = async (template: string, vars: Record<string, unknown>) => {
+      try {
+        await fetch(`${Deno.env.get("SUPABASE_URL")}/functions/v1/send-notification`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-internal-secret": Deno.env.get("INTERNAL_FUNCTION_SECRET") ?? "",
+          },
+          body: JSON.stringify({ user_id: uid, template_key: template, vars }),
+        });
+      } catch (e) {
+        console.error("notif dispatch failed", e);
+      }
+    };
+
+    if (newLevel > priorLevel && LEVEL_NAMES[newLevel]) {
+      await sendNotif("level_up", {
+        level_name: LEVEL_NAMES[newLevel].name,
+        level_message: LEVEL_NAMES[newLevel].msg,
+      });
+    }
+
+    // Auto-award streak milestone badges + streak notification
     const cur = streak?.[0]?.current_streak ?? 0;
-    const milestones: Record<number, string> = { 1: "first-drop", 7: "week-strong", 30: "thirty-reset" };
-    const slug = milestones[cur];
-    if (slug) {
-      const { data: badge } = await supabase
-        .from("badges")
-        .select("id, xp_reward")
-        .eq("slug", slug)
-        .maybeSingle();
-      if (badge) {
-        const { error: insErr } = await supabase
-          .from("user_badges")
-          .insert({ user_id: uid, badge_id: badge.id });
-        if (!insErr && badge.xp_reward) {
-          await supabase.rpc("award_xp", { p_user_id: uid, p_amount: badge.xp_reward });
+    const milestones: Record<number, { slug: string; tpl: string }> = {
+      1: { slug: "first-drop", tpl: "" },
+      7: { slug: "week-strong", tpl: "streak_7" },
+      14: { slug: "two-week", tpl: "streak_14" },
+      30: { slug: "thirty-reset", tpl: "streak_30" },
+    };
+    const milestone = milestones[cur];
+    if (milestone) {
+      if (milestone.slug) {
+        const { data: badge } = await supabase
+          .from("badges")
+          .select("id, xp_reward")
+          .eq("slug", milestone.slug)
+          .maybeSingle();
+        if (badge) {
+          const { error: insErr } = await supabase
+            .from("user_badges")
+            .insert({ user_id: uid, badge_id: badge.id });
+          if (!insErr && badge.xp_reward) {
+            await supabase.rpc("award_xp", { p_user_id: uid, p_amount: badge.xp_reward });
+          }
         }
       }
+      if (milestone.tpl) {
+        await sendNotif(milestone.tpl, { streak: cur });
+      }
     }
+
 
     return new Response(
       JSON.stringify({

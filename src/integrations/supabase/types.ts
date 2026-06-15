@@ -1219,6 +1219,39 @@ export type Database = {
         }
         Relationships: []
       }
+      notifications: {
+        Row: {
+          body: string
+          created_at: string
+          id: string
+          payload: Json
+          read_at: string | null
+          template_key: string
+          title: string
+          user_id: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          id?: string
+          payload?: Json
+          read_at?: string | null
+          template_key: string
+          title: string
+          user_id: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          id?: string
+          payload?: Json
+          read_at?: string | null
+          template_key?: string
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       orders: {
         Row: {
           amount: number
@@ -1406,6 +1439,42 @@ export type Database = {
           product_idea_id?: string
           token?: string
           used_at?: string | null
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          community_display_name: string | null
+          created_at: string
+          date_of_birth: string | null
+          first_name: string | null
+          last_name: string | null
+          notification_prefs: Json
+          program_start_date: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          community_display_name?: string | null
+          created_at?: string
+          date_of_birth?: string | null
+          first_name?: string | null
+          last_name?: string | null
+          notification_prefs?: Json
+          program_start_date?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          community_display_name?: string | null
+          created_at?: string
+          date_of_birth?: string | null
+          first_name?: string | null
+          last_name?: string | null
+          notification_prefs?: Json
+          program_start_date?: string | null
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }

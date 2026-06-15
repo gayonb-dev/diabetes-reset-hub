@@ -22,6 +22,8 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Vita } from "@/components/vita/Vita";
+import { NotificationsBell } from "@/components/notifications/NotificationsBell";
+
 
 function navClass({ isActive }: { isActive: boolean }) {
   return `flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] transition-colors ${
@@ -117,13 +119,17 @@ export default function AppLayout() {
       <div className="flex flex-1">
         {/* Sidebar — dark green */}
         <aside className="hidden md:flex w-[240px] flex-col bg-sidebar text-sidebar-foreground p-4 shrink-0">
-          <Link to="/app" className="flex items-center gap-3 mb-4">
-            <Vita size={32} className="shrink-0" />
-            <div>
-              <p className="text-[10px] uppercase tracking-[0.1em] text-white/35">Diabetes Reset</p>
-              <p className="text-base font-semibold text-white">Method</p>
-            </div>
-          </Link>
+          <div className="flex items-center justify-between mb-4">
+            <Link to="/app" className="flex items-center gap-3">
+              <Vita size={32} className="shrink-0" />
+              <div>
+                <p className="text-[10px] uppercase tracking-[0.1em] text-white/35">Diabetes Reset</p>
+                <p className="text-base font-semibold text-white">Method</p>
+              </div>
+            </Link>
+            <NotificationsBell variant="dark" />
+          </div>
+
 
           {/* Streak badge */}
           <div className="bg-accent/15 border border-accent/30 rounded-lg px-3 py-2 mb-5">
