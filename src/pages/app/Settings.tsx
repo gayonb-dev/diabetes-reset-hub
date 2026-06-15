@@ -441,7 +441,7 @@ export default function Settings() {
                 onClick={() => setCookingTime(t)}
                 className={`text-left px-3 py-2 rounded-lg border text-sm transition-colors ${
                   cookingTime === t
-                    ? "border-primary bg-primary/5 text-foreground"
+                    ? "border-primary bg-primary text-primary-foreground"
                     : "border-border bg-background hover:border-primary/40"
                 }`}
               >
