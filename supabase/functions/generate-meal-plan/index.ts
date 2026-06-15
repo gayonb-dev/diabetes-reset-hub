@@ -28,7 +28,7 @@ const gateway = createOpenAICompatible({
   },
 });
 
-const model = gateway("google/gemini-2.5-flash");
+const model = gateway("google/gemini-3-flash-preview");
 
 // ---------- Zod Schemas (spec verbatim) ----------
 const MealSchema = z.object({
