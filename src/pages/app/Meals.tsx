@@ -334,10 +334,10 @@ export default function Meals() {
       const generationResults = await Promise.all([
         r1?.id
           ? supabase.functions.invoke("generate-meal-plan", { body: { plan_id: r1.id, plan_index: 1 } })
-          : Promise.resolve(),
+          : Promise.resolve({ error: null }),
         r2?.id
           ? supabase.functions.invoke("generate-meal-plan", { body: { plan_id: r2.id, plan_index: 2 } })
-          : Promise.resolve(),
+          : Promise.resolve({ error: null }),
       ]);
       const generationError = generationResults.find((result) => result?.error)?.error;
       if (generationError) throw generationError;
