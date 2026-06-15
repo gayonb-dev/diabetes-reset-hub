@@ -195,22 +195,21 @@ export default function Settings() {
       ]);
       if (e1 || e2) throw (e1 ?? e2);
 
-      // Fire both edge function calls simultaneously (do not await).
-      if (r1?.id) {
-        supabase.functions
-          .invoke("generate-meal-plan", { body: { plan_id: r1.id, plan_index: 1 } })
-          .catch(() => {});
-      }
-      if (r2?.id) {
-        supabase.functions
-          .invoke("generate-meal-plan", { body: { plan_id: r2.id, plan_index: 2 } })
-          .catch(() => {});
-      }
+      const generationResults = await Promise.all([
+        r1?.id
+          ? supabase.functions.invoke("generate-meal-plan", { body: { plan_id: r1.id, plan_index: 1 } })
+          : Promise.resolve({ error: null }),
+        r2?.id
+          ? supabase.functions.invoke("generate-meal-plan", { body: { plan_id: r2.id, plan_index: 2 } })
+          : Promise.resolve({ error: null }),
+      ]);
+      const generationError = generationResults.find((result) => result.error)?.error;
+      if (generationError) throw generationError;
 
       setInitialPrefs(JSON.stringify({ c: cuisines, p: proteins, avoid: foodsToAvoid, ct: cookingTime }));
       toast({
-        title: "Regenerating your 4-week meal plan",
-        description: "Both plans are being rebuilt — your Meals tab will refresh in about 15 seconds.",
+        title: "Meal plan regenerated",
+        description: "Your Meals tab is ready with the new 4-week plan.",
       });
     } catch (e) {
       toast({
