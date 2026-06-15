@@ -248,7 +248,9 @@ Deno.serve(async (req) => {
     console.error("ask-vita error", err);
     const msg = err instanceof Error ? err.message : String(err);
     const status = msg.includes("429") ? 429 : msg.includes("402") ? 402 : 500;
-    return new Response(JSON.stringify({ error: msg }), {
+    const safeMessage =
+      status === 429 ? "Rate limited" : status === 402 ? "Service unavailable" : "Internal server error";
+    return new Response(JSON.stringify({ error: safeMessage }), {
       status,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
