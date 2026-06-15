@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import Vita from "@/components/vita/Vita";
 
 const PRODUCT_SEARCH_URL =
-  "https://www.amazon.com/s?k=Nature+Made+Diabetes+Health+Pack";
+  "https://www.bjs.com/product/nature-made-daily-diabetes-health-pack-60-ct/3000000000005464255";
 
 /**
  * Post-onboarding supplement prompt overlay.
