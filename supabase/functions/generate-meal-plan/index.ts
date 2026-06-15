@@ -1,5 +1,5 @@
 // Edge function: generate-meal-plan
-// Generates a 2-week meal plan via Lovable AI Gateway and stores it on the
+// Generates a 1-week meal plan via Lovable AI Gateway and stores it on the
 // member's meal_plans row. See Section 29 of the DRM build spec.
 //
 // Auth: requires the user's JWT in the Authorization header. The function
@@ -49,10 +49,7 @@ const MealSchema = z.object({
     carbs: z.string(),
   }),
   glycemic_rating: z.enum(["low", "medium", "high"]),
-  alternatives: z.array(z.object({
-    name: z.string(),
-    description: z.string(),
-  })).min(2).max(4),
+  alternatives: z.array(z.string()).min(2).max(4),
 });
 
 const DaySchema = z.object({
@@ -80,8 +77,8 @@ const IFWeekSchema = z.object({
   thursday: IFDaySchema, friday: IFDaySchema, saturday: IFDaySchema, sunday: IFDaySchema,
 });
 
-const PlanSchema = z.object({ generated_at: z.string(), week_1: WeekSchema, week_2: WeekSchema });
-const IFPlanSchema = z.object({ generated_at: z.string(), week_1: IFWeekSchema, week_2: IFWeekSchema });
+const SingleWeekSchema = z.object({ generated_at: z.string(), week_1: WeekSchema });
+const IFSingleWeekSchema = z.object({ generated_at: z.string(), week_1: IFWeekSchema });
 
 // ---------- System prompts (Section 29 — VERBATIM) ----------
 const STANDARD_SYSTEM_PROMPT = `You are a certified diabetes nutrition specialist generating a personalized 
@@ -333,7 +330,7 @@ function formatMemberInputs(prefs: Record<string, unknown>, servedMeals: string[
     `- Cooking time available per meal: ${cookingTime}`,
     `- Primary goal: ${(prefs.primary_goal as string) ?? "diabetes reversal"}`,
     ``,
-    `Generate a complete 2-week meal plan (week_1 + week_2, Monday–Sunday).`,
+  `Generate exactly one complete 7-day meal plan as week_1 only, Monday–Sunday.`,
     `Return the full structured JSON output.`,
   ];
   return lines.join("\n");
