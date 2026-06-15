@@ -441,13 +441,13 @@ Deno.serve(async (req) => {
   // For simplicity: IF mode requires both if_enabled and plan_type === 'intermittent_fasting'.
   const isIfMode =
     !!profile?.if_enabled && (planRow.plan_type === "intermittent_fasting");
-  const schema = isIfMode ? IFPlanSchema : PlanSchema;
+  const schema = isIfMode ? IFSingleWeekSchema : SingleWeekSchema;
 
   const windowHours = profile?.if_window_hours ?? 10;
   const fastHours = 24 - windowHours;
-  const planIdx = body.plan_index === 2 ? 2 : body.plan_index === 1 ? 1 : null;
+  const planIdx = [1, 2, 3, 4].includes(body.plan_index ?? 0) ? body.plan_index : null;
   const planIndexHint = planIdx
-    ? `\n\n---\n\nPARALLEL PLAN GENERATION CONTEXT\nYou are generating Plan ${planIdx} of 2. A second 2-week plan is being generated for the same member in parallel covering a different fortnight. Bias your dish selection toward varied proteins, varied carbohydrate bases, and varied cooking techniques so the member experiences clear week-over-week novelty across the full 28 days. Do not repeat the names or core compositions of the meals in served_meals above.`
+    ? `\n\n---\n\nPARALLEL PLAN GENERATION CONTEXT\nYou are generating Week ${planIdx} of 4 for the same member in parallel. Return this week as week_1 only. Bias your dish selection toward varied proteins, varied carbohydrate bases, and varied cooking techniques so the member experiences clear week-over-week novelty across the full 28 days. Do not repeat the names or core compositions of the meals in served_meals above.`
     : "";
   const systemPrompt = isIfMode
     ? STANDARD_SYSTEM_PROMPT.replace("{{SERVED_MEALS}}", servedMeals.join(", ") || "none") +
@@ -457,12 +457,15 @@ Deno.serve(async (req) => {
     : STANDARD_SYSTEM_PROMPT.replace("{{SERVED_MEALS}}", servedMeals.join(", ") || "none") + planIndexHint;
 
   try {
+    console.log("Testing real generation");
+    console.log("generateObject starting, plan_id:", planRow.id);
     const { object } = await generateObject({
       model,
       schema,
       system: systemPrompt,
       prompt: formatMemberInputs(prefs, servedMeals),
     });
+    console.log("generateObject complete");
 
     // Update served_meals (FIFO 250 cap)
     const newNames = collectMealNames(object);
