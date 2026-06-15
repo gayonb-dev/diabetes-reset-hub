@@ -1682,6 +1682,7 @@ export type Database = {
         Row: {
           created_at: string
           current_streak: number
+          helpful_points: number
           id: string
           last_active_date: string | null
           level: number
@@ -1693,6 +1694,7 @@ export type Database = {
         Insert: {
           created_at?: string
           current_streak?: number
+          helpful_points?: number
           id?: string
           last_active_date?: string | null
           level?: number
@@ -1704,6 +1706,7 @@ export type Database = {
         Update: {
           created_at?: string
           current_streak?: number
+          helpful_points?: number
           id?: string
           last_active_date?: string | null
           level?: number
@@ -1887,6 +1890,39 @@ export type Database = {
         }
         Relationships: []
       }
+      vita_similarity_log: {
+        Row: {
+          called_ask_vita: boolean
+          created_at: string
+          id: string
+          matched_answer_id: string | null
+          question_text: string
+          top_similarity: number | null
+          used_verified_answer: boolean
+          user_id: string | null
+        }
+        Insert: {
+          called_ask_vita?: boolean
+          created_at?: string
+          id?: string
+          matched_answer_id?: string | null
+          question_text: string
+          top_similarity?: number | null
+          used_verified_answer?: boolean
+          user_id?: string | null
+        }
+        Update: {
+          called_ask_vita?: boolean
+          created_at?: string
+          id?: string
+          matched_answer_id?: string | null
+          question_text?: string
+          top_similarity?: number | null
+          used_verified_answer?: boolean
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       water_logs: {
         Row: {
           created_at: string
@@ -2048,6 +2084,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      award_helpful_points: {
+        Args: { p_amount: number; p_user_id: string }
+        Returns: number
+      }
       award_xp: {
         Args: { p_amount: number; p_user_id: string }
         Returns: {
@@ -2065,6 +2105,19 @@ export type Database = {
       has_role: {
         Args: { p_role: string; p_user_id: string }
         Returns: boolean
+      }
+      search_verified_answers: {
+        Args: {
+          match_count?: number
+          query_embedding: string
+          similarity_threshold?: number
+        }
+        Returns: {
+          answer_id: string
+          combined_text: string
+          question_id: string
+          similarity: number
+        }[]
       }
     }
     Enums: {
