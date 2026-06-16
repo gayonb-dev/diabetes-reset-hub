@@ -29,7 +29,7 @@ const gateway = createOpenAICompatible({
     "X-Lovable-AIG-SDK": "vercel-ai-sdk",
   },
 });
-const model = gateway("google/gemini-2.5-flash");
+const model = gateway("google/gemini-3-flash-preview");
 
 const VitaAnswerSchema = z.object({
   answer: z.string(),
