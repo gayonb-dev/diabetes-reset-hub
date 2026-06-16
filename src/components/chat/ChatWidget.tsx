@@ -143,11 +143,16 @@ export default function ChatWidget() {
           },
         ]);
       }
-    } catch (e) {
-      console.error(e);
+    } catch (e: any) {
+      console.error("chat-agent invoke failed", e);
+      const detail =
+        e?.context?.error_description ||
+        e?.context?.message ||
+        e?.message ||
+        "Unknown error";
       setMessages((m) => [
         ...m,
-        { role: "assistant", content: "Sorry, I hit a snag. Try again in a moment." },
+        { role: "assistant", content: `Sorry, I hit a snag (${detail}). Try again in a moment.` },
       ]);
     } finally {
       setSending(false);
