@@ -77,7 +77,7 @@ const SLOT_LABEL: Record<string, string> = {
   meal_2: "Meal 2",
 };
 
-const PLAN_PENDING_TIMEOUT_MS = 90 * 1000; // 90s safety net per Phase 15 spec
+const PLAN_PENDING_TIMEOUT_MS = 4 * 60 * 1000; // 4-min ceiling — AI gen often needs 60–120s per week
 
 function isStalePending(plan: PlanRow | null) {
   if (!plan || plan.status !== "pending" || !plan.created_at) return false;

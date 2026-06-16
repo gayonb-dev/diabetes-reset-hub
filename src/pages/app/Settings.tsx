@@ -222,12 +222,12 @@ export default function Settings() {
     setRegenerating(true);
     setRegenError(null);
 
-    // 90s safety net: surface VitaErrorCard if the request hasn't returned by then.
+    // 4-min safety net: surface VitaErrorCard if generation hasn't kicked off by then.
     const timeoutId = window.setTimeout(() => {
       setRegenError(
         "VITA is taking longer than usual to rebuild your plan. Try again, or open the Meals tab — partial weeks may already be ready.",
       );
-    }, 90_000);
+    }, 4 * 60 * 1000);
 
     try {
       const allergies = foodsToAvoid
@@ -606,6 +606,17 @@ export default function Settings() {
             ? "Regenerate my meal plan with these preferences"
             : "Regenerate my meal plan"}
         </Button>
+
+        {regenerating && !regenError && (
+          <div className="mt-3 flex items-start gap-2 rounded-md bg-primary-muted/60 border border-primary/15 p-3">
+            <Loader2 className="h-4 w-4 text-primary animate-spin shrink-0 mt-0.5" />
+            <p className="text-xs text-foreground">
+              <span className="font-medium text-primary">Heads up — this can take 2–3 minutes.</span>{" "}
+              VITA is building all 4 weeks in parallel. You can leave this page; the Meals tab will
+              update as each week finishes.
+            </p>
+          </div>
+        )}
 
         {regenError && (
           <div className="mt-4">
