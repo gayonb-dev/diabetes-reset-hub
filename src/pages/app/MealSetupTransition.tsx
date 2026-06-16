@@ -34,7 +34,7 @@ const COOKING_TIMES = [
 
 const DEFAULT_CUISINE = "International (balanced)";
 const DEFAULT_COOKING = "20–45 min";
-const MAX_WAIT_MS = 90_000;
+const MAX_WAIT_MS = 4 * 60 * 1000; // up to 4 minutes — meal-plan AI gen runs 60–120s per week
 const TOTAL_WEEKS = 4;
 
 type WeekKey = "plan1" | "plan2" | "plan3" | "plan4";
