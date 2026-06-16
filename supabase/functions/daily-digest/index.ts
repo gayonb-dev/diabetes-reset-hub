@@ -20,7 +20,7 @@ const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY")!;
 const FROM_EMAIL = "Diabetes Reset <hello@diabetesresetmethod.com>";
 const DIGEST_TO = Deno.env.get("DIGEST_RECIPIENT") ?? "hello@diabetesresetmethod.com";
 
-const MODEL = "google/gemini-2.5-flash";
+const MODEL = "google/gemini-3-flash-preview";
 
 async function llm(messages: any[], jsonMode = false) {
   const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
