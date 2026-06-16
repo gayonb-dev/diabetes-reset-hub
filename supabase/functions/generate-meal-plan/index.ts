@@ -491,73 +491,83 @@ Deno.serve(async (req) => {
         .replace("{{FAST_HOURS}}", String(fastHours)) + planIndexHint
     : STANDARD_SYSTEM_PROMPT.replace("{{SERVED_MEALS}}", servedMeals.join(", ") || "none") + planIndexHint;
 
-  try {
-    console.log("Testing real generation");
-    console.log("generateObject starting, plan_id:", planRow.id);
-    async function tryGenerate() {
-      return await generateObject({
-        model,
-        schema,
-        mode: "json",
-        system: systemPrompt,
-        prompt: formatMemberInputs(prefs, servedMeals),
-      });
-    }
-    let result;
+  // Mark in_progress immediately so the client sees movement.
+  await admin
+    .from("meal_plans")
+    .update({ generation_status: "pending" })
+    .eq("id", planRow.id);
+
+  // Run the AI generation in the background. Return a 202 right away so the
+  // browser's supabase.functions.invoke() does not have to wait on a 60-120s
+  // LLM call (which silently kills the function and leaves rows in pending).
+  const work = (async () => {
     try {
-      result = await tryGenerate();
-    } catch (firstErr) {
-      const msg = (firstErr as { message?: string })?.message ?? "";
-      const causeName = ((firstErr as { cause?: { name?: string } })?.cause?.name) ?? "";
-      const retryable =
-        msg.includes("Invalid JSON response") ||
-        msg.includes("Unexpected end of JSON") ||
-        causeName === "AI_JSONParseError";
-      if (!retryable) throw firstErr;
-      console.warn("generateObject retry after parse failure");
-      result = await tryGenerate();
+      console.log("Testing real generation");
+      console.log("generateObject starting, plan_id:", planRow.id);
+      async function tryGenerate() {
+        return await generateObject({
+          model,
+          schema,
+          mode: "json",
+          system: systemPrompt,
+          prompt: formatMemberInputs(prefs, servedMeals),
+        });
+      }
+      let result;
+      try {
+        result = await tryGenerate();
+      } catch (firstErr) {
+        const msg = (firstErr as { message?: string })?.message ?? "";
+        const causeName = ((firstErr as { cause?: { name?: string } })?.cause?.name) ?? "";
+        const retryable =
+          msg.includes("Invalid JSON response") ||
+          msg.includes("Unexpected end of JSON") ||
+          causeName === "AI_JSONParseError";
+        if (!retryable) throw firstErr;
+        console.warn("generateObject retry after parse failure");
+        result = await tryGenerate();
+      }
+      const { object } = result;
+      console.log("generateObject complete, plan_id:", planRow.id);
+
+      const newNames = collectMealNames(object);
+      const merged = [...servedMeals, ...newNames].slice(-250);
+
+      await admin
+        .from("meal_plans")
+        .update({
+          plan_data: object,
+          generation_status: "complete",
+          generated_at: new Date().toISOString(),
+        })
+        .eq("id", planRow.id);
+
+      await admin
+        .from("visitor_profiles")
+        .update({ served_meals: merged })
+        .eq("user_id", memberId);
+    } catch (e) {
+      const err = e as { statusCode?: number; status?: number; message?: string };
+      const code = err.statusCode ?? err.status ?? 500;
+      console.error("generate-meal-plan error", code, err.message, JSON.stringify(serializeError(e)));
+      await admin
+        .from("meal_plans")
+        .update({ generation_status: "failed" })
+        .eq("id", planRow.id);
     }
-    const { object } = result;
-    console.log("generateObject complete");
+  })();
 
-    // Update served_meals (FIFO 250 cap)
-    const newNames = collectMealNames(object);
-    const merged = [...servedMeals, ...newNames].slice(-250);
-
-    await admin
-      .from("meal_plans")
-      .update({
-        plan_data: object,
-        generation_status: "complete",
-        generated_at: new Date().toISOString(),
-      })
-      .eq("id", planRow.id);
-
-    await admin
-      .from("visitor_profiles")
-      .update({ served_meals: merged })
-      .eq("user_id", memberId);
-
-    return new Response(JSON.stringify({ ok: true, plan_id: planRow.id }), {
-      status: 200,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
-  } catch (e) {
-    const err = e as { statusCode?: number; status?: number; message?: string };
-    const code = err.statusCode ?? err.status ?? 500;
-    // Mark failed for UI
-    await admin
-      .from("meal_plans")
-      .update({ generation_status: "failed" })
-      .eq("id", planRow.id);
-
-    console.error("generate-meal-plan error", code, err.message, JSON.stringify(serializeError(e)));
-    return new Response(
-      JSON.stringify({ error: "generation_failed", status: code, message: err.message ?? "unknown" }),
-      {
-        status: code === 402 || code === 429 ? code : 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      },
-    );
+  // @ts-expect-error EdgeRuntime is provided by Deno Deploy / Supabase edge runtime.
+  if (typeof EdgeRuntime !== "undefined" && typeof EdgeRuntime.waitUntil === "function") {
+    // @ts-expect-error see above
+    EdgeRuntime.waitUntil(work);
+  } else {
+    // Local fallback — don't block.
+    work.catch((e) => console.error("background work crashed", e));
   }
+
+  return new Response(JSON.stringify({ ok: true, started: true, plan_id: planRow.id }), {
+    status: 202,
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
+  });
 });
