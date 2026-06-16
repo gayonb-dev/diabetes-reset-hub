@@ -1965,29 +1965,32 @@ export type Database = {
       vita_quotes: {
         Row: {
           category: string
-          content: string
           created_at: string
+          day_range_end: number
+          day_range_start: number
           id: string
           is_active: boolean
-          sort_order: number
+          quote_text: string
           updated_at: string
         }
         Insert: {
           category: string
-          content: string
           created_at?: string
+          day_range_end?: number
+          day_range_start?: number
           id?: string
           is_active?: boolean
-          sort_order?: number
+          quote_text: string
           updated_at?: string
         }
         Update: {
           category?: string
-          content?: string
           created_at?: string
+          day_range_end?: number
+          day_range_start?: number
           id?: string
           is_active?: boolean
-          sort_order?: number
+          quote_text?: string
           updated_at?: string
         }
         Relationships: []
