@@ -595,7 +595,7 @@ export default function Settings() {
         <Button
           onClick={regenerateMealPlan}
           disabled={regenerating}
-          className="bg-primary hover:bg-primary-hover text-primary-foreground"
+          className="bg-primary hover:bg-primary-hover text-primary-foreground min-h-11"
         >
           {regenerating ? (
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -606,6 +606,17 @@ export default function Settings() {
             ? "Regenerate my meal plan with these preferences"
             : "Regenerate my meal plan"}
         </Button>
+
+        {regenError && (
+          <div className="mt-4">
+            <VitaErrorCard
+              title="Couldn't rebuild your plan"
+              message={regenError}
+              onRetry={regenerateMealPlan}
+              retrying={regenerating}
+            />
+          </div>
+        )}
       </Card>
 
       {/* Billing link */}
