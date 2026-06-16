@@ -123,10 +123,25 @@ export default function AdminCommunity() {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-2xl font-semibold">Community Moderation</h1>
+      <div className="flex items-center justify-between gap-3">
+        <h1 className="text-2xl font-semibold">Community Moderation</h1>
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={async () => {
+            const { data, error } = await supabase.functions.invoke("select-question-of-day", { body: {} });
+            if (error) return toast.error(error.message);
+            toast.success(`QotD cron ran: ${data?.source ?? "ok"}`);
+            await load();
+          }}
+        >
+          Run QotD cron
+        </Button>
+      </div>
       <p className="text-sm text-muted-foreground">
         Verify high-quality answers so VITA surfaces them in similarity search. Post as DRM team for authoritative replies.
       </p>
+
 
       {qs.map((q) => (
         <Card key={q.id} className="p-4 space-y-3">
