@@ -8,6 +8,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { ChevronDown, ChevronUp, RefreshCw, Clock, Repeat2, Loader2 } from "lucide-react";
 import { Vita } from "@/components/vita/Vita";
+import VitaErrorCard from "@/components/vita/VitaErrorCard";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { SnackLibrary } from "@/components/meals/SnackLibrary";
@@ -506,17 +507,13 @@ export default function Meals() {
 
   if (anyFailed) {
     return (
-      <div className="max-w-md mx-auto py-16 text-center space-y-4">
-        <div className="flex justify-center"><Vita posture="concerned" size={64} /></div>
-        <p className="text-sm text-foreground font-medium">
-          Your plan generation is taking longer than expected.
-        </p>
-        <p className="text-xs text-muted-foreground">
-          We'll send you a notification when it's ready. You can also retry now.
-        </p>
-        <Button onClick={() => regenerate()} disabled={regenerating}>
-          {regenerating ? "Retrying…" : "Try again"}
-        </Button>
+      <div className="py-16">
+        <VitaErrorCard
+          title="Your plan generation is taking longer than expected"
+          message="We'll notify you when it's ready, or you can retry right now."
+          onRetry={() => regenerate()}
+          retrying={regenerating}
+        />
       </div>
     );
   }

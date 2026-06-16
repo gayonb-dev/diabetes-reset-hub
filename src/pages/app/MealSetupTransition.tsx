@@ -12,6 +12,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import Vita from "@/components/vita/Vita";
+import VitaErrorCard from "@/components/vita/VitaErrorCard";
 import { toast } from "@/hooks/use-toast";
 
 const CUISINES = [
@@ -172,18 +173,32 @@ export default function MealSetupTransition() {
     return () => clearInterval(t);
   }, [completedCount]);
 
-  // Auto-advance when all 4 are complete, or when forced by the 90s safety net.
+  // Auto-advance only when all 4 are complete. On 90s timeout, show VitaErrorCard
+  // with a retry button instead of forcing a navigation away.
   useEffect(() => {
     if (completedCount >= TOTAL_WEEKS) {
       navigate("/app/meals", { replace: true });
-    } else if (forcedAdvance) {
-      toast({
-        title: "Some weeks are still cooking",
-        description: `${completedCount} of ${TOTAL_WEEKS} weeks ready. You can retry the rest from the Meals tab.`,
-      });
-      navigate("/app/meals", { replace: true });
     }
-  }, [completedCount, forcedAdvance, navigate]);
+  }, [completedCount, navigate]);
+
+  if (forcedAdvance && completedCount < TOTAL_WEEKS) {
+    return (
+      <div
+        className="min-h-screen flex items-center justify-center px-6"
+        style={{ backgroundColor: "#085041" }}
+      >
+        <VitaErrorCard
+          title="Your meal plan is taking longer than expected"
+          message={`${completedCount} of ${TOTAL_WEEKS} weeks finished. Retry now, or open the Meals tab and finish the rest there.`}
+          retryLabel="Try again"
+          onRetry={() => {
+            setForcedAdvance(false);
+            startGeneration({ cuisine, cookingTime }).catch(console.error);
+          }}
+        />
+      </div>
+    );
+  }
 
   function pickCuisine(c: string) {
     if (c === cuisine) return;

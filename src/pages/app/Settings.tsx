@@ -23,6 +23,7 @@ import {
 import { Loader2, CreditCard, Shield, Download, Trash2, LogOut, ArrowRight, UtensilsCrossed, RefreshCw, User, Bell } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
+import VitaErrorCard from "@/components/vita/VitaErrorCard";
 import { getUnits, setUnits, WeightUnit, GlucoseUnit } from "@/lib/units";
 
 const CUISINE_OPTIONS = [
@@ -112,6 +113,7 @@ export default function Settings() {
   const [cookingTime, setCookingTime] = useState<string>("20 to 45 minutes");
   const [initialPrefs, setInitialPrefs] = useState<string>("");
   const [regenerating, setRegenerating] = useState(false);
+  const [regenError, setRegenError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!user) return;
@@ -218,6 +220,15 @@ export default function Settings() {
   const regenerateMealPlan = async () => {
     if (!user || !profileId) return;
     setRegenerating(true);
+    setRegenError(null);
+
+    // 90s safety net: surface VitaErrorCard if the request hasn't returned by then.
+    const timeoutId = window.setTimeout(() => {
+      setRegenError(
+        "VITA is taking longer than usual to rebuild your plan. Try again, or open the Meals tab — partial weeks may already be ready.",
+      );
+    }, 90_000);
+
     try {
       const allergies = foodsToAvoid
         .split(",")
@@ -279,17 +290,16 @@ export default function Settings() {
       if (generationError) throw generationError;
 
       setInitialPrefs(JSON.stringify({ c: cuisines, p: proteins, avoid: foodsToAvoid, ct: cookingTime }));
+      setRegenError(null);
       toast({
         title: "Meal plan regenerated",
         description: "Your Meals tab is ready with the new 4-week plan.",
       });
     } catch (e) {
-      toast({
-        title: "Couldn't regenerate",
-        description: e instanceof Error ? e.message : "Please try again.",
-        variant: "destructive",
-      });
+      console.error("regenerateMealPlan failed", e);
+      setRegenError(e instanceof Error ? e.message : "Couldn't reach VITA. Try again in a moment.");
     } finally {
+      clearTimeout(timeoutId);
       setRegenerating(false);
     }
   };
@@ -585,7 +595,7 @@ export default function Settings() {
         <Button
           onClick={regenerateMealPlan}
           disabled={regenerating}
-          className="bg-primary hover:bg-primary-hover text-primary-foreground"
+          className="bg-primary hover:bg-primary-hover text-primary-foreground min-h-11"
         >
           {regenerating ? (
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -596,6 +606,17 @@ export default function Settings() {
             ? "Regenerate my meal plan with these preferences"
             : "Regenerate my meal plan"}
         </Button>
+
+        {regenError && (
+          <div className="mt-4">
+            <VitaErrorCard
+              title="Couldn't rebuild your plan"
+              message={regenError}
+              onRetry={regenerateMealPlan}
+              retrying={regenerating}
+            />
+          </div>
+        )}
       </Card>
 
       {/* Billing link */}

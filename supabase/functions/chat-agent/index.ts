@@ -22,7 +22,7 @@ const corsHeaders = {
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_ROLE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY")!;
-const MODEL = "google/gemini-3-flash-preview";
+const MODEL = "google/gemini-2.5-flash";
 
 const SYSTEM_PROMPT = `You are the conversational guide for The Diabetes Reset Method — a self-serve app that gives people the tools to REVERSE their type 2 diabetes. Not a coaching program. Not 1:1 coaching. Not a generic wellness app.
 
