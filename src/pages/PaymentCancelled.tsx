@@ -13,7 +13,7 @@ const PaymentCancelled = () => {
   };
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-muted/30 to-background flex items-center justify-center p-4">
+    <main className="min-h-dvh bg-gradient-to-b from-muted/30 to-background flex items-center justify-center p-4">
       <div className="max-w-lg w-full py-12 text-center">
         <div className="w-20 h-20 bg-destructive/10 rounded-full flex items-center justify-center mx-auto mb-6">
           <XCircle className="h-12 w-12 text-destructive" />

@@ -42,7 +42,7 @@ export default function Privacy() {
   }
 
   return (
-    <main className="min-h-screen bg-background px-4 py-12">
+    <main className="min-h-dvh bg-background px-4 py-12">
       <div className="max-w-2xl mx-auto space-y-6">
         <header className="space-y-2">
           <h1 className="text-3xl font-bold tracking-tight">Your data & privacy</h1>

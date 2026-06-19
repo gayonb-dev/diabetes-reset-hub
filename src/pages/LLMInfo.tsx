@@ -151,7 +151,7 @@ const LLMInfo = () => {
   }, []);
 
   return (
-    <main className="min-h-screen bg-background">
+    <main className="min-h-dvh bg-background">
       <Helmet>
         <title>LLM Info | The Diabetes Reset Method</title>
         <meta name="description" content="Official information about The Diabetes Reset Method for AI assistants like ChatGPT, Claude, Perplexity, and Gemini." />

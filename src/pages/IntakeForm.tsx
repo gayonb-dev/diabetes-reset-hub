@@ -122,7 +122,7 @@ const IntakeForm = () => {
 
   if (isSubmitted) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+      <div className="min-h-dvh bg-background flex items-center justify-center p-4">
         <div className="max-w-md w-full text-center space-y-6">
           <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
             <CheckCircle2 className="h-12 w-12 text-primary" />
@@ -158,7 +158,7 @@ const IntakeForm = () => {
     `w-full px-4 py-3 rounded-lg border-2 ${errors[field] ? "border-destructive" : "border-input focus:border-primary"}`;
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-dvh bg-background">
       <Helmet>
         <title>Client Intake — The Diabetes Reset Method</title>
         <meta name="description" content="Complete your client intake form to start your personalized Diabetes Reset coaching journey." />

@@ -42,7 +42,7 @@ export default function AuthGuard({ children, requireAdmin, requireActiveSub = t
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-dvh flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
@@ -59,7 +59,7 @@ export default function AuthGuard({ children, requireAdmin, requireActiveSub = t
   if (inactive) {
     if (onboardState === "unknown") {
       return (
-        <div className="min-h-screen flex items-center justify-center">
+        <div className="min-h-dvh flex items-center justify-center">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
         </div>
       );

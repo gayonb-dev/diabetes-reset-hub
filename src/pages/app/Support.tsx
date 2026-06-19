@@ -19,7 +19,7 @@ export default function Support() {
   return (
     <div className="space-y-6 pb-12">
       <div className="text-center">
-        <h1 className="font-heading text-2xl font-semibold text-brand-primary">We're here to help.</h1>
+        <h1 className="font-heading text-2xl font-semibold text-primary">We're here to help.</h1>
         <div className="my-4 inline-flex h-16 w-16 rounded-full bg-accent items-center justify-center text-white">
           <Sparkles className="h-8 w-8" />
         </div>
@@ -33,7 +33,7 @@ export default function Support() {
         <p className="text-xs text-accent">⏱ We respond to app issues within 24 hours.</p>
         <Button
           asChild
-          className="w-full bg-brand-primary hover:bg-brand-primary-hover text-white"
+          className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
         >
           <a href={`mailto:info@diabetesresetmethod.com?subject=${encodeURIComponent("App Support")}&body=${appBody}`}>
             Report an issue →
@@ -45,7 +45,7 @@ export default function Support() {
         <p className="text-[11px] uppercase tracking-wider text-muted-foreground">Billing</p>
         <h2 className="text-base font-semibold">Questions about your subscription?</h2>
         <p className="text-sm text-muted-foreground">Payment issues, plan changes, or anything billing-related.</p>
-        <Button asChild className="w-full bg-brand-primary hover:bg-brand-primary-hover text-white">
+        <Button asChild className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
           <a href={`mailto:info@diabetesresetmethod.com?subject=${encodeURIComponent("Billing Question")}&body=${billingBody}`}>
             Contact billing support →
           </a>
@@ -60,7 +60,7 @@ export default function Support() {
         </p>
         <Button
           variant="outline"
-          className="w-full border-brand-primary text-brand-primary"
+          className="w-full border-primary text-primary"
           onClick={() => navigate("/app/ask")}
         >
           Ask the community →

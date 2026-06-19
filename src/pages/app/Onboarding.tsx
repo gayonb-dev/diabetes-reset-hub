@@ -158,7 +158,7 @@ export default function Onboarding() {
   // ───── Welcome screen ─────
   if (step === 0) {
     return (
-      <div className="min-h-screen bg-primary text-primary-foreground font-sans flex flex-col items-center justify-center px-10 py-12">
+      <div className="min-h-dvh bg-primary text-primary-foreground font-sans flex flex-col items-center justify-center px-10 py-12">
         <p className="text-[22px] font-semibold mb-6 tracking-tight">Diabetes Reset Method</p>
         <Vita posture="celebrating" size={160} />
         <h1 className="text-[28px] font-bold mt-6 text-center leading-tight">
@@ -186,7 +186,7 @@ export default function Onboarding() {
   }
 
   return (
-    <div className="min-h-screen bg-background py-10 px-4 font-sans">
+    <div className="min-h-dvh bg-background py-10 px-4 font-sans">
       <div className="max-w-xl mx-auto">
         {/* 3-dot progress */}
         <div className="flex items-center justify-center gap-2 mb-6">

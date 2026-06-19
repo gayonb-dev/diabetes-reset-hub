@@ -103,7 +103,7 @@ export default function AppLayout() {
 
   if (onboardCheck === "loading") {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
+      <div className="min-h-dvh flex items-center justify-center bg-background">
         <Loader2 className="h-6 w-6 animate-spin text-primary" />
       </div>
     );
@@ -113,7 +113,7 @@ export default function AppLayout() {
   }
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-dvh bg-background flex flex-col">
       {trialBanner}
       {pastDueBanner}
       <div className="flex flex-1">

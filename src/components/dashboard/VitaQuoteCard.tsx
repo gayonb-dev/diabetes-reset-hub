@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronUp, ChevronDown } from "lucide-react";
 import Vita from "@/components/vita/Vita";
 import { cn } from "@/lib/utils";
 
@@ -34,14 +34,14 @@ export function VitaQuoteCard({ quotes, speaker = "VITA", className }: VitaQuote
             aria-label="Previous tip"
             className="text-tertiary-fg hover:text-foreground transition-colors"
           >
-            <ChevronLeft className="h-4 w-4" />
+            <ChevronUp className="h-4 w-4" />
           </button>
           <button
             onClick={next}
             aria-label="Next tip"
             className="text-tertiary-fg hover:text-foreground transition-colors"
           >
-            <ChevronRight className="h-4 w-4" />
+            <ChevronDown className="h-4 w-4" />
           </button>
         </div>
       )}

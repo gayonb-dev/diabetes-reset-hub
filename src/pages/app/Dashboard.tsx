@@ -332,7 +332,7 @@ export default function Dashboard() {
           <div className="flex items-center justify-between mb-3">
             <p className="label-caps text-accent">Today's Action</p>
             <span className="flex items-center gap-2 text-[12px] text-tertiary-fg">
-              Day {currentProgramDay} of {phase.total * 1}
+              Day {currentProgramDay} of {phase.total}
               {actionDoneToday && <CheckCircle2 className="h-4 w-4 text-primary" />}
             </span>
           </div>

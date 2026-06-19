@@ -19,7 +19,7 @@ const tabs = [
 export default function AdminLayout() {
   const { signOut, user } = useAuth();
   return (
-    <div className="min-h-screen bg-muted/30">
+    <div className="min-h-dvh bg-muted/30">
       <header className="bg-background border-b sticky top-0 z-30">
         <div className="container mx-auto px-4 py-3 flex items-center justify-between gap-4">
           <div>
