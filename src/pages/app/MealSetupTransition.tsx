@@ -184,7 +184,7 @@ export default function MealSetupTransition() {
   if (forcedAdvance && completedCount < TOTAL_WEEKS) {
     return (
       <div
-        className="min-h-screen flex items-center justify-center px-6"
+        className="min-h-dvh flex items-center justify-center px-6"
         style={{ backgroundColor: "#085041" }}
       >
         <VitaErrorCard
@@ -221,7 +221,7 @@ export default function MealSetupTransition() {
 
   return (
     <div
-      className="min-h-screen flex flex-col items-center justify-center gap-6 px-6 py-10 text-center"
+      className="min-h-dvh flex flex-col items-center justify-center gap-6 px-6 py-10 text-center"
       style={{ backgroundColor: "#085041" }}
     >
       <Vita posture="encouraging" size={120} />

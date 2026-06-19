@@ -42,7 +42,7 @@ function mobileNavClass({ isActive }: { isActive: boolean }) {
 export default function AppLayout() {
   const { signOut, subscription, isAdmin, user } = useAuth();
   const navigate = useNavigate();
-  const [streakDays, setStreakDays] = useState(0);
+  const [streakDays, setStreakDays] = useState<number | null>(null);
   const [levelName, setLevelName] = useState("Level 1: Getting Started");
 
   // Onboarding gate: redirect new users (no onboarded_at) to /app/onboarding.
@@ -103,7 +103,7 @@ export default function AppLayout() {
 
   if (onboardCheck === "loading") {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
+      <div className="min-h-dvh flex items-center justify-center bg-background">
         <Loader2 className="h-6 w-6 animate-spin text-primary" />
       </div>
     );
@@ -113,7 +113,7 @@ export default function AppLayout() {
   }
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-dvh bg-background flex flex-col">
       {trialBanner}
       {pastDueBanner}
       <div className="flex flex-1">
@@ -132,9 +132,18 @@ export default function AppLayout() {
 
 
           {/* Streak badge */}
-          <div className="bg-accent/15 border border-accent/30 rounded-lg px-3 py-2 mb-5">
-            <p className="text-lg font-semibold text-accent leading-none">🔥 {streakDays}</p>
-            <p className="text-[10px] text-white/45 mt-1">day streak</p>
+          <div className="bg-accent/15 border border-accent/30 rounded-lg px-3 py-2 mb-5 min-h-[52px]">
+            {streakDays === null ? (
+              <>
+                <div className="h-5 w-10 rounded bg-white/10 animate-pulse" />
+                <div className="h-2.5 w-16 rounded bg-white/10 animate-pulse mt-2" />
+              </>
+            ) : (
+              <>
+                <p className="text-lg font-semibold text-accent leading-none">🔥 {streakDays}</p>
+                <p className="text-[10px] text-white/45 mt-1">day streak</p>
+              </>
+            )}
           </div>
 
           <nav className="flex-1 space-y-0.5">

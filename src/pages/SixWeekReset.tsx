@@ -95,7 +95,7 @@ const SixWeekReset = () => {
   // Payment success state
   if (paymentStatus === "success") {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+      <div className="min-h-dvh bg-background flex items-center justify-center p-4">
         <div className="max-w-md w-full text-center space-y-6">
           <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
             <CheckCircle2 className="h-12 w-12 text-primary" />
@@ -126,7 +126,7 @@ const SixWeekReset = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-dvh bg-background">
       <Helmet>
         <title>The 6-Week Reset — Personalized Diabetes Coaching</title>
         <meta name="description" content="6 weeks of one-on-one coaching for Type 2 Diabetes: 12 sessions, daily WhatsApp support, custom meal plans. $497." />

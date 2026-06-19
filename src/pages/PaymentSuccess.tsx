@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 
 const PaymentSuccess = () => {
   return (
-    <main className="min-h-screen bg-gradient-to-b from-primary/5 to-background flex items-center justify-center p-4">
+    <main className="min-h-dvh bg-gradient-to-b from-primary/5 to-background flex items-center justify-center p-4">
       <div className="max-w-2xl w-full py-12">
         <div className="text-center mb-8">
           <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">

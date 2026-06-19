@@ -6,7 +6,7 @@ const BookSession = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-dvh bg-background">
       <div className="max-w-2xl mx-auto px-4 py-12">
         <div className="flex gap-3 mb-8">
           <Button

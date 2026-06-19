@@ -175,7 +175,7 @@ const ProgressTracker = () => {
 
   if (!isLoaded && email) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-dvh bg-background flex items-center justify-center">
         <div className="animate-pulse text-muted-foreground">Loading your progress...</div>
       </div>
     );
@@ -184,7 +184,7 @@ const ProgressTracker = () => {
   // Full Summary View after all 5 days
   if (showSummary && completedDays === 5) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-dvh bg-background">
         <div className="max-w-2xl mx-auto px-4 py-8">
           <div className="text-center mb-8">
             <p className="text-sm font-semibold tracking-widest uppercase text-primary mb-3">The Diabetes Reset Method</p>
@@ -290,7 +290,7 @@ const ProgressTracker = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-dvh bg-background">
       <div className="max-w-2xl mx-auto px-4 py-8">
         <div className="flex gap-3 mb-6">
           <Button
