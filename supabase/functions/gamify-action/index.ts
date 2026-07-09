@@ -136,7 +136,7 @@ Deno.serve(async (req) => {
         ok: true,
         streak: streak?.[0] ?? null,
         xp: xpRes?.[0] ?? null,
-        newBadge: slug ?? null,
+        newBadge: milestone?.slug ?? null,
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } },
     );
