@@ -142,7 +142,7 @@ const App = () => (
                 <Route path="settings" element={<Settings />} />
                 <Route path="profile" element={<Profile />} />
                 <Route path="fasting" element={<Fasting />} />
-                <Route path="cheat-meal" element={<CheatMeal />} />
+                <Route path="cheat-meal" element={<Navigate to="/app/meals?tab=cheat-meal" replace />} />
                 <Route path="support" element={<Support />} />
                 <Route path="settings/billing" element={<Billing />} />
                 <Route path="coaching-waitlist" element={<CoachingWaitlist />} />
