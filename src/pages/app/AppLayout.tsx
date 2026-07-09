@@ -210,7 +210,7 @@ export default function AppLayout() {
         </aside>
 
         {/* Mobile bottom nav */}
-        <div className="md:hidden fixed bottom-0 left-0 right-0 bg-card border-t border-border z-40 flex justify-around py-1.5">
+        <div className="md:hidden fixed bottom-0 left-0 right-0 bg-card border-t border-border z-40 flex justify-around py-1.5 pb-[calc(env(safe-area-inset-bottom)+0.375rem)]">
           <NavLink to="/app" end className={mobileNavClass}>
             <Home className="h-5 w-5" /> Today
           </NavLink>

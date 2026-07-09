@@ -18,6 +18,7 @@ const PaymentCancelled = lazy(() => import("./pages/PaymentCancelled"));
 const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
 const LLMInfo = lazy(() => import("./pages/LLMInfo"));
 const NotFound = lazy(() => import("./pages/NotFound"));
+const AppNotFound = lazy(() => import("./pages/app/AppNotFound"));
 const Login = lazy(() => import("./pages/Login"));
 const AuthCallback = lazy(() => import("./pages/AuthCallback"));
 const AppLayout = lazy(() => import("./pages/app/AppLayout"));
@@ -145,6 +146,7 @@ const App = () => (
                 <Route path="support" element={<Support />} />
                 <Route path="settings/billing" element={<Billing />} />
                 <Route path="coaching-waitlist" element={<CoachingWaitlist />} />
+                <Route path="*" element={<AppNotFound />} />
               </Route>
 
               <Route path="*" element={<NotFound />} />
