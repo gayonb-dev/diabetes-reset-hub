@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 import { ChevronDown, ChevronUp, RefreshCw, Clock, Repeat2, Loader2 } from "lucide-react";
 import { Vita } from "@/components/vita/Vita";
 import VitaErrorCard from "@/components/vita/VitaErrorCard";
