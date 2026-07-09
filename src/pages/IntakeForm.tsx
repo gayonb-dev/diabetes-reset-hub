@@ -19,6 +19,8 @@ const IntakeForm = () => {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [step, setStep] = useState(0);
+  const STEPS = ["Personal", "Health", "Lifestyle", "Readiness"] as const;
 
   const [form, setForm] = useState({
     full_name: "",
