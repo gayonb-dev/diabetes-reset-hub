@@ -119,7 +119,7 @@ export default function AdminCommunity() {
   };
 
   if (loading) {
-    return <div className="flex justify-center py-12"><Loader2 className="h-5 w-5 animate-spin" /></div>;
+    return <AdminListSkeleton rows={4} rowHeight="h-28" />;
   }
 
   return (
