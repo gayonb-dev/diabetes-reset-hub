@@ -32,7 +32,7 @@ const Index = () => {
 
 
   return (
-    <main className="min-h-dvh">
+    <main className="min-h-dvh pb-24 md:pb-0">
       <Helmet>
         <title>Diabetes Reset Method — Lower Blood Sugar Membership ($27)</title>
         <meta
