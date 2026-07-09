@@ -1,5 +1,6 @@
 import { useMemo, useState, useEffect } from "react";
 import { useDailyHabits } from "@/hooks/useDailyHabits";
+import { phaseFor } from "@/lib/phase";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";

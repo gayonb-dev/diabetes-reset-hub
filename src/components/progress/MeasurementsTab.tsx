@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import EmptyState from "@/components/ui/empty-state";
 
 const SITES = [
   { k: "waist", label: "Waist" },
@@ -159,7 +160,11 @@ export default function MeasurementsTab() {
         {loading ? (
           <p className="text-sm text-muted-foreground">Loading…</p>
         ) : entries.length === 0 ? (
-          <p className="text-sm text-muted-foreground">No measurements logged yet.</p>
+          <EmptyState
+            title="No measurements yet"
+            description="Measurement day comes once a month. The tape tells a story the scale misses."
+            posture="encouraging"
+          />
         ) : (
           <div className="divide-y divide-border">
             {entries.map((e) => (
