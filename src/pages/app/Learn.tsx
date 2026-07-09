@@ -246,19 +246,25 @@ function MindsetReader({
   userId: string | undefined;
   onClose: () => void;
 }) {
+  const { recordAction } = useGamification();
   const [idx, setIdx] = useState(0);
-  const [startedAt] = useState(Date.now());
+  const [openedAt] = useState(Date.now());
+  const [now, setNow] = useState(Date.now());
   const [completing, setCompleting] = useState(false);
   const totalCards = week.cards.length + (week.assignment ? 1 : 0);
-  const isAssignment = week.assignment && idx === week.cards.length;
   const isLast = idx === totalCards - 1;
 
+  // Live countdown until the 30-second read gate opens.
+  useEffect(() => {
+    const t = setInterval(() => setNow(Date.now()), 500);
+    return () => clearInterval(t);
+  }, []);
+
+  const secondsRemaining = Math.max(0, 30 - Math.floor((now - openedAt) / 1000));
+  const canMarkRead = secondsRemaining === 0;
+
   async function markRead() {
-    if (!userId) return;
-    if (Date.now() - startedAt < 30_000) {
-      toast.info("Take a moment to read — this counts when you've spent 30 seconds with it.");
-      return;
-    }
+    if (!userId || !canMarkRead) return;
     setCompleting(true);
     const today = new Date().toISOString().slice(0, 10);
     const { error } = await supabase.from("mindset_reads").insert({
@@ -268,7 +274,10 @@ function MindsetReader({
     if (error && !error.message.includes("duplicate")) {
       toast.error(error.message);
     } else {
-      toast.success("Mindset ring closed for today.");
+      toast.success(
+        "Mindset ring closed for today ✓ — you can revisit any card, any time.",
+      );
+      recordAction("complete_lesson").catch(() => {});
     }
     setCompleting(false);
     onClose();
@@ -291,9 +300,7 @@ function MindsetReader({
         </div>
 
         {card ? (
-          <p className="text-[16px] leading-[1.7] text-foreground">
-            {card.body}
-          </p>
+          <p className="text-[16px] leading-[1.7] text-foreground">{card.body}</p>
         ) : (
           <div>
             <h3 className="font-heading font-semibold text-lg text-primary mb-2">
@@ -316,10 +323,11 @@ function MindsetReader({
           {isLast ? (
             <Button
               onClick={markRead}
-              disabled={completing}
+              disabled={!canMarkRead || completing}
               className="bg-primary text-primary-foreground"
             >
-              <CheckCircle2 className="h-4 w-4 mr-1.5" /> I read this
+              <CheckCircle2 className="h-4 w-4 mr-1.5" />
+              {canMarkRead ? "I read this ✓" : `Read time: ${secondsRemaining}s`}
             </Button>
           ) : (
             <Button
@@ -335,3 +343,4 @@ function MindsetReader({
     </Dialog>
   );
 }
+
