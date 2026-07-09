@@ -284,8 +284,8 @@ function MindsetReader({
   const card = idx < week.cards.length ? week.cards[idx] : null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
-      <Card className="w-full max-w-lg p-6 bg-card rounded-2xl">
+    <Dialog open onOpenChange={(v) => !v && onClose()}>
+      <DialogContent className="sm:max-w-lg p-6 bg-card rounded-2xl">
         <div className="flex items-center justify-between mb-4">
           <p className="label-caps text-accent">{week.title}</p>
           <p className="text-[11px] text-tertiary-fg">
@@ -338,15 +338,7 @@ function MindsetReader({
             </Button>
           )}
         </div>
-
-        <button
-          onClick={onClose}
-          className="absolute top-3 right-3 text-tertiary-fg hover:text-foreground text-sm px-2 py-1"
-          aria-label="Close"
-        >
-          ✕
-        </button>
-      </Card>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }
