@@ -1,10 +1,11 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Lock, BookOpen } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useProgramDay } from "@/hooks/useProgramDay";
 
 interface ContentItem {
   id: string;
@@ -23,7 +24,8 @@ const TABS: { key: string; label: string; types: string[] }[] = [
 ];
 
 export default function Library() {
-  const { user, subscription } = useAuth();
+  const { user } = useAuth();
+  const programDay = useProgramDay();
   const [items, setItems] = useState<ContentItem[]>([]);
   const [completedDays, setCompletedDays] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -44,17 +46,8 @@ export default function Library() {
     });
   }, [user]);
 
-  const memberDay = useMemo(() => {
-    if (!subscription?.created_at) return 1;
-    const start = new Date(subscription.created_at);
-    return Math.min(
-      Math.max(
-        Math.floor((Date.now() - start.getTime()) / 86400000) + 1,
-        1,
-      ),
-      14,
-    );
-  }, [subscription]);
+  const memberDay = Math.min(programDay, 14);
+
 
   const unlocked = memberDay >= 6 || completedDays >= 5;
 

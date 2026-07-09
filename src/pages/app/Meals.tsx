@@ -247,7 +247,7 @@ export default function Meals() {
   const tabParam = searchParams.get("tab");
   const activeTab = ["plan", "snacks", "shopping", "cheat-meal"].includes(tabParam || "") ? (tabParam as string) : "plan";
 
-  const programDay = useMemo(() => programDayFrom(subscription?.created_at), [subscription]);
+  const programDay = useProgramDay();
 
   // Load the two most-recent active plans. Plan 1 = earlier valid_from, Plan 2 = later.
   useEffect(() => {

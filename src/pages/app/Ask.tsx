@@ -13,6 +13,7 @@ import { toast } from "@/hooks/use-toast";
 import { Loader2, Sparkles, ChevronUp, MessageSquare, Trophy, CheckCircle2, Flame } from "lucide-react";
 import EmptyState from "@/components/ui/empty-state";
 import { Link, useNavigate } from "react-router-dom";
+import { useProgramDay } from "@/hooks/useProgramDay";
 
 type Tab = "hot" | "new" | "unanswered" | "wins" | "mine";
 
@@ -68,11 +69,6 @@ const REACTIONS: Array<{ key: string; emoji: string; label: string }> = [
   { key: "clap", emoji: "👏", label: "Clap" },
 ];
 
-function programDay(createdAt: string | null | undefined): number {
-  if (!createdAt) return 1;
-  return Math.max(1, Math.floor((Date.now() - new Date(createdAt).getTime()) / 86400000) + 1);
-}
-
 function timeAgo(iso: string): string {
   const diff = Date.now() - new Date(iso).getTime();
   const m = Math.floor(diff / 60000);
@@ -84,9 +80,9 @@ function timeAgo(iso: string): string {
 }
 
 export default function Ask() {
-  const { user, subscription } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
-  const myDay = useMemo(() => programDay(subscription?.created_at), [subscription]);
+  const myDay = useProgramDay();
 
   const [tab, setTab] = useState<Tab>("hot");
   const [questions, setQuestions] = useState<Question[]>([]);
