@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import Vita from "@/components/vita/Vita";
 
 const PRODUCT_SEARCH_URL =
@@ -54,11 +55,11 @@ export default function SupplementPrompt() {
       .eq("id", profileId);
   }
 
-  if (!show) return null;
+  
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
-      <div className="bg-card rounded-2xl shadow-2xl max-w-md w-full p-8 text-center">
+    <Dialog open={show} onOpenChange={(v) => !v && dismiss(false)}>
+      <DialogContent className="sm:max-w-md p-8 text-center bg-card rounded-2xl">
         <div className="flex justify-center mb-4">
           <Vita posture="encouraging" size={64} />
         </div>
@@ -83,7 +84,7 @@ export default function SupplementPrompt() {
         >
           I already have it
         </Button>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }
