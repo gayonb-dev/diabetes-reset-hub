@@ -1,8 +1,9 @@
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect, useRef } from "react";
 import { useDailyHabits } from "@/hooks/useDailyHabits";
 import { phaseFor } from "@/lib/phase";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
+import { useGamification } from "@/hooks/useGamification";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
