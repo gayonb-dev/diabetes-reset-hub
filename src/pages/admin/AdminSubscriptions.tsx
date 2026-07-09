@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Loader2 } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface Row {
   id: string;
@@ -54,7 +54,26 @@ export default function AdminSubscriptions() {
     cancelling: rows.filter((r) => r.cancel_at_period_end).length,
   };
 
-  if (loading) return <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto mt-12" />;
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          {[0, 1, 2, 3].map((i) => (
+            <div key={i} className="rounded-xl border border-border bg-card p-4 space-y-2">
+              <Skeleton className="h-3 w-16" />
+              <Skeleton className="h-7 w-12" />
+            </div>
+          ))}
+        </div>
+        <Skeleton className="h-10 w-full max-w-sm" />
+        <div className="space-y-2">
+          {[0, 1, 2, 3, 4].map((i) => (
+            <Skeleton key={i} className="h-16 w-full rounded-xl" />
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Loader2, CheckCircle2, Trash2, Star, Bot } from "lucide-react";
+import AdminListSkeleton from "@/components/admin/AdminListSkeleton";
 import { toast } from "sonner";
 
 interface Q {
@@ -118,7 +119,7 @@ export default function AdminCommunity() {
   };
 
   if (loading) {
-    return <div className="flex justify-center py-12"><Loader2 className="h-5 w-5 animate-spin" /></div>;
+    return <AdminListSkeleton rows={4} rowHeight="h-28" />;
   }
 
   return (

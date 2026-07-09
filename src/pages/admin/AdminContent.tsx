@@ -19,6 +19,7 @@ import {
   TabsContent,
 } from "@/components/ui/tabs";
 import { Loader2, Plus, Trash2, Edit, ArrowUp, ArrowDown } from "lucide-react";
+import AdminListSkeleton from "@/components/admin/AdminListSkeleton";
 import { toast } from "sonner";
 import { MINDSET_WEEKS } from "@/data/mindsetWeeks";
 
@@ -179,7 +180,7 @@ function DailyActionsTab() {
   };
 
   if (loading)
-    return <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto mt-12" />;
+    return <AdminListSkeleton rows={5} rowHeight="h-20" />;
 
   return (
     <div className="space-y-4">
@@ -556,7 +557,7 @@ function ContentItemsTab({ type, label }: { type: "blog" | "guide"; label: strin
   };
 
   if (loading)
-    return <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto mt-12" />;
+    return <AdminListSkeleton rows={5} rowHeight="h-20" />;
 
   return (
     <div className="space-y-4">
