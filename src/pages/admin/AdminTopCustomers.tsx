@@ -108,7 +108,11 @@ export default function AdminTopCustomers() {
       </div>
 
       {loading ? (
-        <div className="flex justify-center py-12"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>
+        <div className="space-y-2">
+          {[0, 1, 2, 3, 4].map((i) => (
+            <Skeleton key={i} className="h-20 w-full rounded-xl" />
+          ))}
+        </div>
       ) : rows.length === 0 ? (
         <Card>
           <CardContent className="py-12 text-center text-muted-foreground">
