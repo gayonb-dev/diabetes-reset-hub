@@ -145,6 +145,7 @@ const App = () => (
                 <Route path="support" element={<Support />} />
                 <Route path="settings/billing" element={<Billing />} />
                 <Route path="coaching-waitlist" element={<CoachingWaitlist />} />
+                <Route path="*" element={<AppNotFound />} />
               </Route>
 
               <Route path="*" element={<NotFound />} />
