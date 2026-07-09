@@ -153,22 +153,55 @@ export default function A1CTab() {
             posture="encouraging"
           />
         ) : (
-          <div className="divide-y divide-border">
-            {logs.map((l) => (
-              <div key={l.id} className="py-2 flex items-center justify-between text-sm">
-                <span className="text-muted-foreground w-28">
-                  {new Date(l.measured_on).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })}
-                </span>
-                <span className="font-semibold" style={{ color: tone(l.value_percent) }}>
-                  {l.value_percent.toFixed(1)}%
-                  {l.value_mmol_mol != null && (
-                    <span className="text-tertiary-fg font-normal ml-2 text-xs">({l.value_mmol_mol} mmol/mol)</span>
-                  )}
-                </span>
-                <span className="text-xs text-tertiary-fg w-32 text-right truncate">{l.source ?? ""}</span>
+          <>
+            {logs.length >= 2 && (
+              <div className="h-56 w-full mb-4">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart
+                    data={[...logs].reverse().map((l) => ({
+                      date: new Date(l.measured_on).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "2-digit" }),
+                      value: Number(l.value_percent.toFixed(1)),
+                    }))}
+                    margin={{ top: 8, right: 20, left: -12, bottom: 0 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
+                    <XAxis dataKey="date" tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} tickLine={false} axisLine={false} minTickGap={20} label={{ value: "Date", position: "insideBottom", offset: -2, fontSize: 10, fill: "hsl(var(--muted-foreground))" }} />
+                    <YAxis tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} tickLine={false} axisLine={false} width={36} domain={["dataMin - 0.5", "dataMax + 0.5"]} label={{ value: "%", angle: -90, position: "insideLeft", fontSize: 10, fill: "hsl(var(--muted-foreground))" }} />
+                    <Tooltip
+                      contentStyle={{
+                        background: "hsl(var(--popover))",
+                        border: "1px solid hsl(var(--border))",
+                        borderRadius: 8,
+                        fontSize: 12,
+                        color: "hsl(var(--popover-foreground))",
+                      }}
+                      formatter={(v: number) => [`${v}%`, "A1C"]}
+                      labelFormatter={(l) => `Date: ${l}`}
+                    />
+                    <ReferenceLine y={5.7} stroke="hsl(var(--status-normal))" strokeDasharray="4 4" label={{ value: "5.7% Pre-diabetic", fill: "hsl(var(--status-normal))", fontSize: 10, position: "insideTopRight" }} />
+                    <ReferenceLine y={6.5} stroke="hsl(var(--status-danger))" strokeDasharray="4 4" label={{ value: "6.5% Diabetic", fill: "hsl(var(--status-danger))", fontSize: 10, position: "insideTopRight" }} />
+                    <Line type="monotone" dataKey="value" stroke="hsl(var(--primary))" strokeWidth={2} isAnimationActive={true} animationDuration={800} dot={{ r: 3, fill: "hsl(var(--primary))" }} activeDot={{ r: 5 }} />
+                  </LineChart>
+                </ResponsiveContainer>
               </div>
-            ))}
-          </div>
+            )}
+            <div className="divide-y divide-border">
+              {logs.map((l) => (
+                <div key={l.id} className="py-2 flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground w-28">
+                    {new Date(l.measured_on).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })}
+                  </span>
+                  <span className="font-semibold" style={{ color: tone(l.value_percent) }}>
+                    {l.value_percent.toFixed(1)}%
+                    {l.value_mmol_mol != null && (
+                      <span className="text-tertiary-fg font-normal ml-2 text-xs">({l.value_mmol_mol} mmol/mol)</span>
+                    )}
+                  </span>
+                  <span className="text-xs text-tertiary-fg w-32 text-right truncate">{l.source ?? ""}</span>
+                </div>
+              ))}
+            </div>
+          </>
         )}
 
         <p className="text-[11px] text-tertiary-fg mt-4">
