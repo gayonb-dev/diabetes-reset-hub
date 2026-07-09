@@ -75,6 +75,7 @@ function Section({
 export default function HabitLogging({ currentProgramDay }: Props) {
   const { user } = useAuth();
   const h = useDailyHabits();
+  const { recordAction } = useGamification();
   const [openKey, setOpenKey] = useState<string | null>(null);
   const [weightLb, setWeightLb] = useState<number>(180);
   const [lowersMeds, setLowersMeds] = useState(false);
@@ -140,12 +141,43 @@ export default function HabitLogging({ currentProgramDay }: Props) {
     ).length;
   }, [h.meals]);
 
+  // Wire gamify pipeline: fires log_water once per day when target hit; log_meal
+  // each time a plate-method meal transitions to fully-complete.
+  const waterAwardedRef = useRef(false);
+  const mealsAwardedRef = useRef<Set<string>>(new Set());
+  useEffect(() => {
+    if (!waterAwardedRef.current && waterTarget > 0 && h.waterOz >= waterTarget) {
+      waterAwardedRef.current = true;
+      recordAction("log_water").catch(() => {});
+    }
+  }, [h.waterOz, waterTarget, recordAction]);
+  useEffect(() => {
+    (["breakfast", "lunch", "dinner"] as const).forEach((mt) => {
+      const m = h.meals[mt];
+      const complete = m.vegetables && m.protein && m.complex_carbs;
+      if (complete && !mealsAwardedRef.current.has(mt)) {
+        mealsAwardedRef.current.add(mt);
+        recordAction("log_meal").catch(() => {});
+      }
+    });
+  }, [h.meals, recordAction]);
+
+  // complete_lesson when mindset ring closes for the day.
+  const mindsetAwardedRef = useRef(false);
+  useEffect(() => {
+    if (h.mindsetRead && !mindsetAwardedRef.current) {
+      mindsetAwardedRef.current = true;
+      recordAction("complete_lesson").catch(() => {});
+    }
+  }, [h.mindsetRead, recordAction]);
+
   const walksDone = (["after_breakfast", "after_lunch", "after_dinner"] as const).filter(
     (s) => h.walks[s],
   ).length;
 
   const showExercise = currentProgramDay >= 15;
   const phase = phaseFor(currentProgramDay).index;
+
 
   return (
     <div className="space-y-3">
