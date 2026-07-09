@@ -8,6 +8,16 @@ import { Label } from "@/components/ui/label";
 import { Loader2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import EmptyState from "@/components/ui/empty-state";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
+
+const SITE_COLORS: Record<string, string> = {
+  waist: "hsl(var(--ring-water))",
+  hips: "hsl(var(--ring-food))",
+  chest: "hsl(var(--ring-exercise))",
+  thigh: "hsl(var(--ring-mindset))",
+  arm: "hsl(var(--primary))",
+  neck: "hsl(var(--accent))",
+};
 
 const SITES = [
   { k: "waist", label: "Waist" },
