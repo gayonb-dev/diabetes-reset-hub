@@ -15,6 +15,7 @@ import { cn } from "@/lib/utils";
 import { SnackLibrary } from "@/components/meals/SnackLibrary";
 import CheatMeal from "@/pages/app/CheatMeal";
 import { useSearchParams } from "react-router-dom";
+import { useProgramDay } from "@/hooks/useProgramDay";
 
 // ----- types -----
 type Ingredient = string | { item: string; quantity: string; unit: string };
