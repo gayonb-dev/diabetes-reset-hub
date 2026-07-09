@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import AuthGuard from "@/components/AuthGuard";
 import Index from "./pages/Index";
@@ -40,7 +40,7 @@ const AppProgress = lazy(() => import("./pages/app/Progress"));
 const Settings = lazy(() => import("./pages/app/Settings"));
 const Profile = lazy(() => import("./pages/app/Profile"));
 const Fasting = lazy(() => import("./pages/app/Fasting"));
-const CheatMeal = lazy(() => import("./pages/app/CheatMeal"));
+
 const Support = lazy(() => import("./pages/app/Support"));
 const AdminLayout = lazy(() => import("./pages/admin/AdminLayout"));
 const AdminSubscriptions = lazy(() => import("./pages/admin/AdminSubscriptions"));
@@ -142,7 +142,7 @@ const App = () => (
                 <Route path="settings" element={<Settings />} />
                 <Route path="profile" element={<Profile />} />
                 <Route path="fasting" element={<Fasting />} />
-                <Route path="cheat-meal" element={<CheatMeal />} />
+                <Route path="cheat-meal" element={<Navigate to="/app/meals?tab=cheat-meal" replace />} />
                 <Route path="support" element={<Support />} />
                 <Route path="settings/billing" element={<Billing />} />
                 <Route path="coaching-waitlist" element={<CoachingWaitlist />} />

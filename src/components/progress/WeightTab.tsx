@@ -229,8 +229,8 @@ function WeightChart({ logs, goalLb, unit }: { logs: Log[]; goalLb: number | nul
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={data} margin={{ top: 8, right: 12, left: -12, bottom: 0 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
-          <XAxis dataKey="date" tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} tickLine={false} axisLine={false} minTickGap={20} />
-          <YAxis tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} tickLine={false} axisLine={false} width={36} domain={["dataMin - 2", "dataMax + 2"]} />
+          <XAxis dataKey="date" tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} tickLine={false} axisLine={false} minTickGap={20} label={{ value: "Date", position: "insideBottom", offset: -2, fontSize: 10, fill: "hsl(var(--muted-foreground))" }} />
+          <YAxis tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} tickLine={false} axisLine={false} width={36} domain={["dataMin - 2", "dataMax + 2"]} label={{ value: unit === "kg" ? "kg" : "lb", angle: -90, position: "insideLeft", fontSize: 10, fill: "hsl(var(--muted-foreground))" }} />
           <Tooltip
             contentStyle={{
               background: "hsl(var(--popover))",
@@ -240,11 +240,12 @@ function WeightChart({ logs, goalLb, unit }: { logs: Log[]; goalLb: number | nul
               color: "hsl(var(--popover-foreground))",
             }}
             formatter={(v: number) => [`${v} ${unit === "kg" ? "kg" : "lb"}`, "Weight"]}
+            labelFormatter={(l) => `Date: ${l}`}
           />
           {goalDisplay != null && (
             <ReferenceLine y={goalDisplay} stroke="hsl(var(--accent))" strokeDasharray="4 4" label={{ value: `Goal ${goalDisplay}`, fill: "hsl(var(--accent))", fontSize: 10, position: "insideTopRight" }} />
           )}
-          <Line type="monotone" dataKey="weight" stroke="hsl(var(--primary))" strokeWidth={2} dot={{ r: 3, fill: "hsl(var(--primary))" }} activeDot={{ r: 5 }} />
+          <Line type="monotone" dataKey="weight" stroke="hsl(var(--primary))" strokeWidth={2} isAnimationActive={true} animationDuration={800} dot={{ r: 3, fill: "hsl(var(--primary))" }} activeDot={{ r: 5 }} />
         </LineChart>
       </ResponsiveContainer>
     </div>

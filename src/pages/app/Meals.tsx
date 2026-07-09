@@ -13,6 +13,8 @@ import VitaErrorCard from "@/components/vita/VitaErrorCard";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { SnackLibrary } from "@/components/meals/SnackLibrary";
+import CheatMeal from "@/pages/app/CheatMeal";
+import { useSearchParams } from "react-router-dom";
 
 // ----- types -----
 type Ingredient = string | { item: string; quantity: string; unit: string };
@@ -243,6 +245,9 @@ export default function Meals() {
   const [weekIdx, setWeekIdx] = useState<1 | 2 | 3 | 4>(1);
   const [cuisines, setCuisines] = useState<string[]>([]);
   const [shoppingChecked, setShoppingChecked] = useState<Record<string, boolean>>({});
+  const [searchParams, setSearchParams] = useSearchParams();
+  const tabParam = searchParams.get("tab");
+  const activeTab = ["plan", "snacks", "shopping", "cheat-meal"].includes(tabParam || "") ? (tabParam as string) : "plan";
 
   const programDay = useMemo(() => programDayFrom(subscription?.created_at), [subscription]);
 
@@ -557,15 +562,28 @@ export default function Meals() {
         </Button>
       </div>
 
-      <Tabs defaultValue="plan">
-        <TabsList className="bg-muted">
+      <Tabs
+        value={activeTab}
+        onValueChange={(v) => {
+          const next = new URLSearchParams(searchParams);
+          if (v === "plan") next.delete("tab");
+          else next.set("tab", v);
+          setSearchParams(next, { replace: true });
+        }}
+      >
+        <TabsList className="bg-muted flex-wrap h-auto">
           <TabsTrigger value="plan">My Meal Plan</TabsTrigger>
-          <TabsTrigger value="shopping">Shopping List</TabsTrigger>
           <TabsTrigger value="snacks">Snacks</TabsTrigger>
+          <TabsTrigger value="shopping">Shopping List</TabsTrigger>
+          <TabsTrigger value="cheat-meal">Cheat Meal</TabsTrigger>
         </TabsList>
 
         <TabsContent value="snacks" className="mt-4">
           <SnackLibrary dayNumber={programDay} />
+        </TabsContent>
+
+        <TabsContent value="cheat-meal" className="mt-4">
+          <CheatMeal />
         </TabsContent>
 
         <TabsContent value="plan" className="mt-4 space-y-4">

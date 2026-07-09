@@ -17,7 +17,7 @@ import {
   mmollToMgdl,
 } from "@/lib/units";
 import { useGamification } from "@/hooks/useGamification";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine, Dot } from "recharts";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine, ReferenceArea, Dot } from "recharts";
 
 type ReadingType = "fasting" | "post_meal" | "bedtime" | "other";
 
@@ -338,8 +338,8 @@ function BloodSugarHistory({ readings, unit }: { readings: Reading[]; unit: Gluc
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={data} margin={{ top: 8, right: 12, left: -12, bottom: 0 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
-            <XAxis dataKey="label" tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} tickLine={false} axisLine={false} minTickGap={20} />
-            <YAxis tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} tickLine={false} axisLine={false} width={36} />
+            <XAxis dataKey="label" tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} tickLine={false} axisLine={false} minTickGap={20} label={{ value: "Date", position: "insideBottom", offset: -2, fontSize: 10, fill: "hsl(var(--muted-foreground))" }} />
+            <YAxis tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} tickLine={false} axisLine={false} width={36} label={{ value: unit === "mmoll" ? "mmol/L" : "mg/dL", angle: -90, position: "insideLeft", fontSize: 10, fill: "hsl(var(--muted-foreground))" }} />
             <Tooltip
               contentStyle={{
                 background: "hsl(var(--popover))",
@@ -349,7 +349,10 @@ function BloodSugarHistory({ readings, unit }: { readings: Reading[]; unit: Gluc
                 color: "hsl(var(--popover-foreground))",
               }}
               formatter={(v: number) => [`${v} ${unit === "mmoll" ? "mmol/L" : "mg/dL"}`, "Reading"]}
+              labelFormatter={(l) => `Date: ${l}`}
             />
+            {/* Shaded normal range band — below 100 mg/dL / 5.6 mmol/L */}
+            <ReferenceArea y1={0} y2={normalRef} fill="hsl(var(--status-normal))" fillOpacity={0.12} strokeOpacity={0} />
             <ReferenceLine y={normalRef} stroke="hsl(var(--status-normal))" strokeDasharray="4 4" />
             <ReferenceLine y={diabeticRef} stroke="hsl(var(--status-warning))" strokeDasharray="4 4" />
             <Line
@@ -357,6 +360,8 @@ function BloodSugarHistory({ readings, unit }: { readings: Reading[]; unit: Gluc
               dataKey="value"
               stroke="hsl(var(--primary))"
               strokeWidth={2}
+              isAnimationActive={true}
+              animationDuration={800}
               dot={(props: any) => {
                 const { cx, cy, payload, index } = props;
                 return <Dot key={payload?.id ?? index} cx={cx} cy={cy} r={3} fill={toneColor(payload.tone)} />;

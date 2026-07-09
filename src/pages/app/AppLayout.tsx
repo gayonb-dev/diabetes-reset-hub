@@ -18,7 +18,7 @@ import {
   Pill,
   User,
   Timer,
-  Cookie,
+  
   MoreHorizontal,
   Settings as SettingsIcon,
 } from "lucide-react";
@@ -195,9 +195,6 @@ export default function AppLayout() {
             <NavLink to="/app/fasting" className={navClass}>
               <Timer className="h-4 w-4" /> Fasting
             </NavLink>
-            <NavLink to="/app/cheat-meal" className={navClass}>
-              <Cookie className="h-4 w-4" /> Cheat Meal
-            </NavLink>
             <NavLink to="/app/ask" className={navClass}>
               <MessageCircleQuestion className="h-4 w-4" /> Ask
             </NavLink>
@@ -261,7 +258,7 @@ export default function AppLayout() {
                   { to: "/app/workouts", icon: Activity, label: "Workouts" },
                   { to: "/app/supplements", icon: Pill, label: "Supplements" },
                   { to: "/app/fasting", icon: Timer, label: "Fasting" },
-                  { to: "/app/cheat-meal", icon: Cookie, label: "Cheat Meal" },
+                  
                   { to: "/app/profile", icon: User, label: "Profile" },
                   { to: "/app/settings", icon: SettingsIcon, label: "Settings" },
                   { to: "/app/support", icon: LifeBuoy, label: "Support" },

@@ -8,6 +8,16 @@ import { Label } from "@/components/ui/label";
 import { Loader2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import EmptyState from "@/components/ui/empty-state";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
+
+const SITE_COLORS: Record<string, string> = {
+  waist: "hsl(var(--ring-water))",
+  hips: "hsl(var(--ring-food))",
+  chest: "hsl(var(--ring-exercise))",
+  thigh: "hsl(var(--ring-mindset))",
+  arm: "hsl(var(--primary))",
+  neck: "hsl(var(--accent))",
+};
 
 const SITES = [
   { k: "waist", label: "Waist" },
@@ -154,6 +164,61 @@ export default function MeasurementsTab() {
           </div>
         </Card>
       )}
+
+      {entries.length >= 2 && (
+        <Card className="p-5 border border-border">
+          <p className="text-sm font-medium mb-3">Measurement trends</p>
+          <div className="h-64 w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart
+                data={[...entries].reverse().map((e) => {
+                  const row: Record<string, number | string> = {
+                    date: new Date(e.logged_on).toLocaleDateString(undefined, { month: "short", day: "numeric" }),
+                  };
+                  for (const s of SITES) if (e.values[s.k] != null) row[s.k] = e.values[s.k]!;
+                  return row;
+                })}
+                margin={{ top: 8, right: 12, left: -12, bottom: 0 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
+                <XAxis dataKey="date" tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} tickLine={false} axisLine={false} minTickGap={20} label={{ value: "Date", position: "insideBottom", offset: -2, fontSize: 10, fill: "hsl(var(--muted-foreground))" }} />
+                <YAxis tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} tickLine={false} axisLine={false} width={36} label={{ value: "inches", angle: -90, position: "insideLeft", fontSize: 10, fill: "hsl(var(--muted-foreground))" }} />
+                <Tooltip
+                  contentStyle={{
+                    background: "hsl(var(--popover))",
+                    border: "1px solid hsl(var(--border))",
+                    borderRadius: 8,
+                    fontSize: 12,
+                    color: "hsl(var(--popover-foreground))",
+                  }}
+                  formatter={(v: number, name: string) => {
+                    const site = SITES.find((s) => s.k === name);
+                    return [`${v}"`, site?.label ?? name];
+                  }}
+                  labelFormatter={(l) => `Date: ${l}`}
+                />
+                <Legend wrapperStyle={{ fontSize: 11 }} />
+                {SITES.map((s) => (
+                  <Line
+                    key={s.k}
+                    type="monotone"
+                    dataKey={s.k}
+                    name={s.label}
+                    stroke={SITE_COLORS[s.k]}
+                    strokeWidth={2}
+                    isAnimationActive={true}
+                    animationDuration={800}
+                    dot={{ r: 2, fill: SITE_COLORS[s.k] }}
+                    activeDot={{ r: 4 }}
+                    connectNulls
+                  />
+                ))}
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </Card>
+      )}
+
 
       <Card className="p-5 border border-border">
         <p className="text-sm font-medium mb-3">History</p>
