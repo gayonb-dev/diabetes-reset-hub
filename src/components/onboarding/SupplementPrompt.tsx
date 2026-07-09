@@ -55,7 +55,7 @@ export default function SupplementPrompt() {
       .eq("id", profileId);
   }
 
-  if (!show) return null;
+  
 
   return (
     <Dialog open={show} onOpenChange={(v) => !v && dismiss(false)}>
