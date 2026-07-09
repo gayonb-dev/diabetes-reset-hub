@@ -51,7 +51,7 @@ export default function AdminWaitlist() {
     }
   };
 
-  if (loading) return <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto mt-12" />;
+  if (loading) return <AdminListSkeleton showStats rows={6} />;
 
   return (
     <div className="space-y-3">
