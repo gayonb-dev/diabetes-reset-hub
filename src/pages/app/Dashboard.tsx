@@ -3,11 +3,11 @@ import { Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, CheckCircle2 } from "lucide-react";
+import { ArrowRight, CheckCircle2, Lock } from "lucide-react";
 import HabitRing from "@/components/dashboard/HabitRing";
 import JourneyTrack from "@/components/dashboard/JourneyTrack";
 import QuickStats from "@/components/dashboard/QuickStats";
-import VitaQuoteCard from "@/components/dashboard/VitaQuoteCard";
+import VitaQuoteCard, { QuoteItem } from "@/components/dashboard/VitaQuoteCard";
 import GettingStartedChecklist from "@/components/dashboard/GettingStartedChecklist";
 import StreakBadge from "@/components/gamification/StreakBadge";
 import LevelBadge from "@/components/gamification/LevelBadge";
@@ -18,7 +18,9 @@ import { useGamificationProfile } from "@/hooks/useGamificationProfile";
 import SupplementPrompt from "@/components/onboarding/SupplementPrompt";
 import HabitLogging from "@/components/today/HabitLogging";
 import { useDailyHabits } from "@/hooks/useDailyHabits";
+import { useVitaQuotes } from "@/hooks/useVitaQuotes";
 import { getUnits, displayGlucose, displayWeight } from "@/lib/units";
+import { phaseFor, dayInPhase, PHASE_TOTAL } from "@/lib/phase";
 
 type DailyAction = {
   id: string;
@@ -39,29 +41,33 @@ type ProfileMeta = {
   blood_sugar_unit?: "mgdl" | "mmoll";
 };
 
-const VITA_TIPS = [
-  "Three days in. Your blood sugar is already responding. This is the part most people never reach.",
-  "Hydration first. Most cravings are dehydration in disguise.",
-  "A short walk after eating moves glucose into your muscles, not your bloodstream.",
-  "Progress is not linear. Trust the trend, not the day.",
-  "You're not on a diet. You're rebuilding how your body handles fuel.",
-];
-
-
 function startOfDay(d: Date) {
   return new Date(d.getFullYear(), d.getMonth(), d.getDate());
-}
-
-function phaseFor(day: number): { name: string; index: number; total: number } {
-  if (day <= 14) return { name: "Phase 1 — Reset", index: 1, total: 14 };
-  if (day <= 28) return { name: "Phase 2 — Momentum", index: 2, total: 14 };
-  return { name: `Phase 3 — Reversal`, index: 3, total: 14 };
 }
 
 function bloodSugarTone(mgdl: number): "normal" | "warning" | "danger" {
   if (mgdl < 100) return "normal";
   if (mgdl < 126) return "warning";
   return "danger";
+}
+
+function DashboardSkeleton() {
+  return (
+    <div className="max-w-[880px] mx-auto space-y-5" aria-busy="true" aria-label="Loading dashboard">
+      <div className="h-10 w-1/2 rounded bg-muted animate-pulse" />
+      <div className="grid grid-cols-4 gap-3 sm:gap-4">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <div key={i} className="h-24 md:h-28 rounded-xl bg-muted animate-pulse" />
+        ))}
+      </div>
+      <div className="h-44 rounded-2xl bg-muted animate-pulse" />
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <div key={i} className="h-16 rounded-lg bg-muted animate-pulse" />
+        ))}
+      </div>
+    </div>
+  );
 }
 
 export default function Dashboard() {
@@ -71,12 +77,14 @@ export default function Dashboard() {
 
   const [meta, setMeta] = useState<ProfileMeta>({});
   const [action, setAction] = useState<DailyAction | null>(null);
+  const [upcoming, setUpcoming] = useState<DailyAction[]>([]);
   const [progress, setProgress] = useState<Progress | null>(null);
   const [latestBS, setLatestBS] = useState<{ value: number; date: string } | null>(null);
   const [latestWeight, setLatestWeight] = useState<{ value: number; date: string } | null>(null);
   const [waterTargetLb, setWaterTargetLb] = useState<number>(180);
   const [latestA1C, setLatestA1C] = useState<{ value: number; date: string } | null>(null);
   const [latestReading, setLatestReading] = useState<{ value: number; at: string } | null>(null);
+  const [loading, setLoading] = useState(true);
 
   // current program day from subscription created_at
   const currentProgramDay = useMemo(() => {
@@ -88,8 +96,18 @@ export default function Dashboard() {
   }, [subscription]);
 
   const phase = phaseFor(currentProgramDay);
-  const dayInPhase = Math.min(currentProgramDay - (phase.index - 1) * 14, phase.total);
+  const currentDayInPhase = dayInPhase(currentProgramDay);
   const gam = useGamificationProfile(currentProgramDay);
+  const { quotes: vitaQuotes } = useVitaQuotes(user?.id, currentProgramDay);
+
+  const quoteItems: QuoteItem[] = useMemo(
+    () =>
+      vitaQuotes.map((q) => ({
+        text: q.text,
+        speaker: q.category === "gayon_says" ? "GAYON" : "VITA",
+      })),
+    [vitaQuotes],
+  );
 
   useEffect(() => {
     if (!user) return;
@@ -104,21 +122,28 @@ export default function Dashboard() {
         .maybeSingle();
       if (!cancelled && vp) setMeta((vp.metadata as ProfileMeta) ?? {});
 
-      // Today's action from daily_actions
-      const { data: act } = await supabase
+      // Today + next 2 upcoming daily actions (single extended query)
+      const { data: actions } = await supabase
         .from("daily_actions")
         .select("id, day_number, phase_number, action_title, action_description, sub_tasks")
-        .eq("day_number", currentProgramDay)
+        .gte("day_number", currentProgramDay)
         .eq("is_extension_day", false)
-        .maybeSingle();
-      if (!cancelled && act) {
-        setAction(act as DailyAction);
+        .order("day_number", { ascending: true })
+        .limit(3);
+      const list = (actions ?? []) as DailyAction[];
+      const today = list.find((a) => a.day_number === currentProgramDay) ?? null;
+      const next2 = list.filter((a) => a.day_number > currentProgramDay).slice(0, 2);
+      if (!cancelled) {
+        setAction(today);
+        setUpcoming(next2);
+      }
 
+      if (today) {
         const { data: prog } = await supabase
           .from("member_daily_progress")
           .select("status, sub_tasks_completed")
           .eq("member_id", user.id)
-          .eq("action_id", act.id)
+          .eq("action_id", today.id)
           .maybeSingle();
         if (!cancelled) setProgress(prog as Progress | null);
       }
@@ -170,12 +195,16 @@ export default function Dashboard() {
       if (!cancelled && rd?.value_mgdl != null) {
         setLatestReading({ value: rd.value_mgdl as number, at: rd.measured_at as string });
       }
+
+      if (!cancelled) setLoading(false);
     })();
 
     return () => {
       cancelled = true;
     };
   }, [user, currentProgramDay]);
+
+  if (loading) return <DashboardSkeleton />;
 
   const firstName = meta.first_name?.trim() || "friend";
 
@@ -271,131 +300,234 @@ export default function Dashboard() {
   ];
 
   return (
-    <div className="max-w-[880px] mx-auto space-y-5 animate-fade-in">
-      <SupplementPrompt />
-      <LevelUpOverlay level={gam.leveledUpTo} onDismiss={gam.dismissLevelUp} />
-      <Phase1ExtensionPrompt
-        currentProgramDay={currentProgramDay}
-        enabled={!gam.phase_1_extension_active}
-      />
+    <div className="xl:grid xl:grid-cols-[minmax(0,1fr)_320px] xl:gap-6 animate-fade-in">
+      <div className="max-w-[880px] mx-auto space-y-5 min-w-0">
+        <SupplementPrompt />
+        <LevelUpOverlay level={gam.leveledUpTo} onDismiss={gam.dismissLevelUp} />
+        <Phase1ExtensionPrompt
+          currentProgramDay={currentProgramDay}
+          enabled={!gam.phase_1_extension_active}
+        />
 
-      {/* Row 1 — Greeting */}
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <p className="text-sm text-secondary-fg">{greeting},</p>
-          <h1 className="font-heading text-3xl md:text-[32px] font-bold text-foreground leading-tight">
-            {firstName}.
-          </h1>
-        </div>
-        <div className="flex flex-col items-end gap-1.5">
-          <StreakBadge
-            streak={gam.streak_count}
-            freezeAvailable={gam.streak_freeze_available}
-            onClick={() => setShowStreakHistory(true)}
-          />
-          <span className="text-[11px] text-secondary-fg">
-            {gam.streak_count === 1
-              ? "1-day Reversal Streak"
-              : `${gam.streak_count}-day Reversal Streak`}
-          </span>
-          <LevelBadge level={gam.level} />
-        </div>
-      </div>
-
-      <StreakHistoryModal
-        open={showStreakHistory}
-        onClose={() => setShowStreakHistory(false)}
-        currentStreak={gam.streak_count}
-        freezeAvailable={gam.streak_freeze_available}
-        startDate={gam.last_ring_close_at}
-        history={gam.streak_history}
-      />
-
-
-      {/* Row 2 — Habit rings */}
-      <div className="grid grid-cols-4 gap-3 sm:gap-4">
-        <HabitRing habit="water" {...habitData.water} />
-        <HabitRing habit="food" {...habitData.food} />
-        <HabitRing habit="exercise" {...habitData.exercise} />
-        <HabitRing habit="mindset" {...habitData.mindset} />
-      </div>
-
-      {/* Row 3 — Today's action card */}
-      {action ? (
-        <div
-          className={`rounded-2xl border-[1.5px] p-6 transition-colors ${
-            actionDoneToday
-              ? "bg-primary-muted border-primary"
-              : "bg-accent-muted border-accent/60"
-          }`}
-        >
-          <div className="flex items-center justify-between mb-3">
-            <p className="label-caps text-accent">Today's Action</p>
-            <span className="flex items-center gap-2 text-[12px] text-tertiary-fg">
-              Day {currentProgramDay} of {phase.total}
-              {actionDoneToday && <CheckCircle2 className="h-4 w-4 text-primary" />}
-            </span>
+        {/* Row 1 — Greeting */}
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <p className="text-sm text-secondary-fg">{greeting},</p>
+            <h1 className="font-heading text-3xl md:text-[32px] font-bold text-foreground leading-tight">
+              {firstName}.
+            </h1>
           </div>
-          <h2 className="font-heading text-2xl font-bold mb-3 text-foreground leading-tight">
-            {action.action_title}
-          </h2>
-          <p className="text-[15px] text-secondary-fg mb-5 leading-relaxed">
-            {action.action_description}
-          </p>
-          <Link to={`/app/day/${currentProgramDay}`} className="block">
-            <Button
-              className="bg-primary hover:bg-primary/90 text-primary-foreground w-full h-12 rounded-[10px] font-semibold"
-              disabled={actionDoneToday}
-            >
-              {actionDoneToday ? (
-                "Action completed ✓"
-              ) : (
-                <>
-                  Open today's action <ArrowRight className="ml-2 h-4 w-4" />
-                </>
-              )}
-            </Button>
-          </Link>
-          {subTasksTotal > 0 && (
-            <p className="text-[11px] text-accent font-medium mt-2 text-center">
-              {subTasksDone} of {subTasksTotal} sub-tasks completed
-            </p>
-          )}
+          <div className="flex flex-col items-end gap-1.5">
+            <StreakBadge
+              streak={gam.streak_count}
+              freezeAvailable={gam.streak_freeze_available}
+              onClick={() => setShowStreakHistory(true)}
+            />
+            <span className="text-[11px] text-secondary-fg">
+              {gam.streak_count === 1
+                ? "1-day Reversal Streak"
+                : `${gam.streak_count}-day Reversal Streak`}
+            </span>
+            <LevelBadge level={gam.level} />
+          </div>
         </div>
-      ) : (
-        <div className="bg-card border border-border rounded-2xl p-6">
-          <p className="label-caps text-tertiary-fg mb-2">Today's Action</p>
-          <p className="text-sm text-secondary-fg">
-            Your next action will appear here as the program advances.
-          </p>
+
+        <StreakHistoryModal
+          open={showStreakHistory}
+          onClose={() => setShowStreakHistory(false)}
+          currentStreak={gam.streak_count}
+          freezeAvailable={gam.streak_freeze_available}
+          startDate={gam.last_ring_close_at}
+          history={gam.streak_history}
+        />
+
+        {/* Row 2 — Habit rings (hero treatment) */}
+        <div className="grid grid-cols-4 gap-3 sm:gap-4 place-items-center">
+          {(
+            [
+              ["water", habitData.water],
+              ["food", habitData.food],
+              ["exercise", habitData.exercise],
+              ["mindset", habitData.mindset],
+            ] as const
+          ).map(([habit, d], i) => (
+            <div key={habit}>
+              {/* Mobile: 72, Desktop md+: 96 */}
+              <div className="md:hidden">
+                <HabitRing habit={habit} {...d} size={72} delayMs={i * 100} />
+              </div>
+              <div className="hidden md:block">
+                <HabitRing habit={habit} {...d} size={96} delayMs={i * 100} />
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Row 3 — Today's action card */}
+        {action ? (
+          <div
+            className={`rounded-2xl border-[1.5px] p-6 transition-colors ${
+              actionDoneToday
+                ? "bg-primary-muted border-primary"
+                : "bg-accent-muted border-accent/60"
+            }`}
+          >
+            <div className="flex items-center justify-between mb-3">
+              <p className="label-caps text-accent">Today's Action</p>
+              <span className="flex items-center gap-2 text-[12px] text-tertiary-fg">
+                Day {currentProgramDay} of {phase.end}
+                {actionDoneToday && <CheckCircle2 className="h-4 w-4 text-primary" />}
+              </span>
+            </div>
+            <h2 className="font-heading text-2xl font-bold mb-3 text-foreground leading-tight">
+              {action.action_title}
+            </h2>
+            <p className="text-[15px] text-secondary-fg mb-5 leading-relaxed">
+              {action.action_description}
+            </p>
+            <Link to={`/app/day/${currentProgramDay}`} className="block">
+              <Button
+                className="bg-primary hover:bg-primary/90 text-primary-foreground w-full h-12 rounded-[10px] font-semibold"
+                disabled={actionDoneToday}
+              >
+                {actionDoneToday ? (
+                  "Action completed ✓"
+                ) : (
+                  <>
+                    Open today's action <ArrowRight className="ml-2 h-4 w-4" />
+                  </>
+                )}
+              </Button>
+            </Link>
+            {subTasksTotal > 0 && (
+              <p className="text-[11px] text-accent font-medium mt-2 text-center">
+                {subTasksDone} of {subTasksTotal} sub-tasks completed
+              </p>
+            )}
+          </div>
+        ) : (
+          <div className="bg-card border border-border rounded-2xl p-6">
+            <p className="label-caps text-tertiary-fg mb-2">Today's Action</p>
+            <p className="text-sm text-secondary-fg">
+              Your next action will appear here as the program advances.
+            </p>
+          </div>
+        )}
+
+        {/* Row 4 — Journey track */}
+        <JourneyTrack
+          currentDay={currentDayInPhase}
+          totalDays={phase.total}
+          phaseName={phase.name}
+          phaseIndex={phase.index}
+          phaseTotal={PHASE_TOTAL}
+        />
+
+        {/* Row 5 — Quick stats */}
+        <QuickStats stats={stats} />
+
+        {/* Row 6 — VITA quote (in-column below xl; moves to right rail at xl) */}
+        <div className="xl:hidden">
+          <VitaQuoteCard quotes={quoteItems} />
+        </div>
+
+        {/* Daily habit logging (Section 9) */}
+        <HabitLogging currentProgramDay={currentProgramDay} />
+
+        {/* Getting Started checklist (Days 1–29 only) */}
+        <GettingStartedChecklist currentProgramDay={currentProgramDay} />
+
+        <p className="text-[11px] text-tertiary-fg text-center pt-2">
+          Educational only — not medical advice. Always consult your healthcare provider.
+        </p>
+      </div>
+
+      {/* Right rail — xl only, sticky */}
+      <aside className="hidden xl:block">
+        <div className="sticky top-6 space-y-4">
+          <VitaQuoteCard quotes={quoteItems} />
+          <StreakMiniWidget
+            streak={gam.streak_count}
+            history={gam.streak_history}
+            freezeAvailable={gam.streak_freeze_available}
+            onOpen={() => setShowStreakHistory(true)}
+          />
+          <UpcomingActions actions={upcoming} />
+        </div>
+      </aside>
+    </div>
+  );
+}
+
+function StreakMiniWidget({
+  streak,
+  history,
+  freezeAvailable,
+  onOpen,
+}: {
+  streak: number;
+  history: { start: string; end: string; length: number }[];
+  freezeAvailable: boolean;
+  onOpen: () => void;
+}) {
+  const recent = history.slice(0, 5);
+  const best = history.reduce((m, h) => Math.max(m, h.length), streak);
+  return (
+    <button
+      onClick={onOpen}
+      className="w-full text-left bg-card border border-border rounded-xl p-4 shadow-warm hover:shadow-md transition-shadow"
+    >
+      <div className="flex items-center justify-between mb-2">
+        <p className="label-caps text-tertiary-fg">Streak</p>
+        {freezeAvailable && (
+          <span className="text-[10px] px-2 py-0.5 rounded-full bg-accent/15 text-accent border border-accent/30">
+            Freeze ready
+          </span>
+        )}
+      </div>
+      <p className="font-heading text-2xl font-bold text-foreground">🔥 {streak}</p>
+      <p className="text-[11px] text-secondary-fg mt-1">Best: {best} days</p>
+      {recent.length > 0 && (
+        <div className="mt-3 space-y-1">
+          {recent.map((h, i) => (
+            <div key={i} className="flex items-center justify-between text-[11px] text-secondary-fg">
+              <span>
+                {new Date(h.start).toLocaleDateString(undefined, { month: "short", day: "numeric" })}
+                {" – "}
+                {new Date(h.end).toLocaleDateString(undefined, { month: "short", day: "numeric" })}
+              </span>
+              <span className="font-medium">{h.length}d</span>
+            </div>
+          ))}
         </div>
       )}
+      {recent.length === 0 && (
+        <p className="text-[11px] text-tertiary-fg mt-3">
+          Your streak history builds as you close daily rings.
+        </p>
+      )}
+    </button>
+  );
+}
 
-      {/* Row 4 — Journey track */}
-      <JourneyTrack
-        currentDay={dayInPhase}
-        totalDays={phase.total}
-        phaseName={phase.name}
-        phaseIndex={phase.index}
-        phaseTotal={5}
-      />
-
-      {/* Row 5 — Quick stats */}
-      <QuickStats stats={stats} />
-
-      {/* Row 6 — VITA quote */}
-      <VitaQuoteCard quotes={VITA_TIPS} />
-
-      {/* Daily habit logging (Section 9) */}
-      <HabitLogging currentProgramDay={currentProgramDay} />
-
-
-      {/* Getting Started checklist (Days 1–29 only) */}
-      <GettingStartedChecklist currentProgramDay={currentProgramDay} />
-
-      <p className="text-[11px] text-tertiary-fg text-center pt-2">
-        Educational only — not medical advice. Always consult your healthcare provider.
-      </p>
+function UpcomingActions({ actions }: { actions: DailyAction[] }) {
+  if (actions.length === 0) return null;
+  return (
+    <div className="bg-card border border-border rounded-xl p-4 shadow-warm">
+      <p className="label-caps text-tertiary-fg mb-3">Coming up</p>
+      <div className="space-y-3">
+        {actions.map((a) => (
+          <div key={a.id} className="flex items-start gap-2">
+            <Lock className="h-3.5 w-3.5 text-tertiary-fg mt-1 shrink-0" aria-hidden />
+            <div className="min-w-0">
+              <p className="text-[11px] text-accent font-medium">Day {a.day_number}</p>
+              <p className="text-sm text-foreground font-medium leading-snug truncate">
+                {a.action_title}
+              </p>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
