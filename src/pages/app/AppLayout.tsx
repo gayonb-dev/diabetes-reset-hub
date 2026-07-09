@@ -19,10 +19,13 @@ import {
   User,
   Timer,
   Cookie,
+  MoreHorizontal,
+  Settings as SettingsIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Vita } from "@/components/vita/Vita";
 import { NotificationsBell } from "@/components/notifications/NotificationsBell";
+import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 
 
 function navClass({ isActive }: { isActive: boolean }) {
