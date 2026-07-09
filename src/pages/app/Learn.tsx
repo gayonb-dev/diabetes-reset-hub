@@ -93,7 +93,7 @@ export default function Learn() {
       <Tabs defaultValue="mindset">
         <TabsList className="bg-muted">
           <TabsTrigger value="mindset">Mindset</TabsTrigger>
-          <TabsTrigger value="learn">Learn</TabsTrigger>
+          <TabsTrigger value="learn">Guides</TabsTrigger>
           <TabsTrigger value="blog">Blog</TabsTrigger>
         </TabsList>
 
