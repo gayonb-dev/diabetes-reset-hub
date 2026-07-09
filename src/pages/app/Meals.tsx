@@ -245,6 +245,9 @@ export default function Meals() {
   const [weekIdx, setWeekIdx] = useState<1 | 2 | 3 | 4>(1);
   const [cuisines, setCuisines] = useState<string[]>([]);
   const [shoppingChecked, setShoppingChecked] = useState<Record<string, boolean>>({});
+  const [searchParams, setSearchParams] = useSearchParams();
+  const tabParam = searchParams.get("tab");
+  const activeTab = ["plan", "snacks", "shopping", "cheat-meal"].includes(tabParam || "") ? (tabParam as string) : "plan";
 
   const programDay = useMemo(() => programDayFrom(subscription?.created_at), [subscription]);
 
