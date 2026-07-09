@@ -2207,6 +2207,7 @@ export type Database = {
           longest_streak: number
         }[]
       }
+      current_program_day: { Args: { p_user_id: string }; Returns: number }
       has_role: {
         Args: { p_role: string; p_user_id: string }
         Returns: boolean
