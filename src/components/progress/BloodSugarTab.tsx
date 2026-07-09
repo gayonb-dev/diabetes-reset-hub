@@ -17,7 +17,7 @@ import {
   mmollToMgdl,
 } from "@/lib/units";
 import { useGamification } from "@/hooks/useGamification";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine, Dot } from "recharts";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine, ReferenceArea, Dot } from "recharts";
 
 type ReadingType = "fasting" | "post_meal" | "bedtime" | "other";
 
