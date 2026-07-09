@@ -11,7 +11,7 @@ export default function AppNotFound() {
   const location = useLocation();
   return (
     <div className="min-h-[60vh] flex flex-col items-center justify-center text-center px-4 py-12">
-      <Vita posture="thinking" size={120} />
+      <Vita posture="concerned" size={120} />
       <h1 className="font-heading font-bold text-3xl md:text-4xl text-foreground mt-6 mb-2">
         This page doesn't exist yet.
       </h1>
