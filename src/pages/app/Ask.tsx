@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { toast } from "@/hooks/use-toast";
 import { Loader2, Sparkles, ChevronUp, MessageSquare, Trophy, CheckCircle2, Flame } from "lucide-react";
+import EmptyState from "@/components/ui/empty-state";
 import { Link, useNavigate } from "react-router-dom";
 
 type Tab = "hot" | "new" | "unanswered" | "wins" | "mine";
@@ -388,9 +389,11 @@ export default function Ask() {
             </Card>
           ))}
           {wins.length === 0 && (
-            <p className="text-sm text-muted-foreground text-center py-6">
-              No wins shared yet. Be the first.
-            </p>
+            <EmptyState
+              title="The wall is empty"
+              description="No wins shared yet. Yours could be the first one on this wall."
+              posture="encouraging"
+            />
           )}
         </div>
       ) : (

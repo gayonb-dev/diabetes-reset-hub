@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
+import EmptyState from "@/components/ui/empty-state";
 import {
   Tabs,
   TabsList,
@@ -188,10 +189,12 @@ export default function Learn() {
             Curated reads from trusted sources.
           </p>
           {blogPosts.length === 0 ? (
-            <Card className="p-8 text-center border-dashed">
-              <p className="text-sm text-tertiary-fg">
-                No articles curated yet. New picks are added monthly.
-              </p>
+            <Card className="p-6 border-dashed">
+              <EmptyState
+                title="No curated reads yet"
+                description="First curated picks are coming. VITA reads everything first."
+                posture="encouraging"
+              />
             </Card>
           ) : (
             <div className="space-y-3">
