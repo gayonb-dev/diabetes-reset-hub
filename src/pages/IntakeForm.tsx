@@ -390,7 +390,10 @@ const IntakeForm = () => {
           )}
 
           {/* Sticky mobile nav — inline on desktop */}
-          <div className="fixed bottom-0 left-0 right-0 z-30 border-t border-border bg-background/95 backdrop-blur px-4 py-3 md:static md:border-0 md:bg-transparent md:p-0 md:pt-4">
+          <div
+            className="fixed bottom-0 left-0 right-0 z-30 border-t border-border bg-background/95 backdrop-blur px-4 pt-3 md:static md:border-0 md:bg-transparent md:p-0 md:pt-4"
+            style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 0.75rem)" }}
+          >
             <div className="max-w-2xl mx-auto flex items-center gap-3">
               {step > 0 ? (
                 <Button
