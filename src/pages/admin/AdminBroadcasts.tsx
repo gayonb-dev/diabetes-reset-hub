@@ -70,7 +70,7 @@ export default function AdminBroadcasts() {
     }
   };
 
-  if (loading) return <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto mt-12" />;
+  if (loading) return <AdminListSkeleton rows={5} rowHeight="h-24" />;
 
   return (
     <div className="space-y-4">
