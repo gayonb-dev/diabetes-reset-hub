@@ -13,6 +13,8 @@ import VitaErrorCard from "@/components/vita/VitaErrorCard";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { SnackLibrary } from "@/components/meals/SnackLibrary";
+import CheatMeal from "@/pages/app/CheatMeal";
+import { useSearchParams } from "react-router-dom";
 
 // ----- types -----
 type Ingredient = string | { item: string; quantity: string; unit: string };
