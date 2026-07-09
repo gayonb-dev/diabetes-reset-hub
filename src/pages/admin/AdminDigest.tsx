@@ -59,7 +59,11 @@ export default function AdminDigest() {
       </div>
 
       {loading ? (
-        <div className="flex justify-center py-12"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>
+        <div className="grid gap-4">
+          {[0, 1, 2].map((i) => (
+            <Skeleton key={i} className="h-32 w-full rounded-xl" />
+          ))}
+        </div>
       ) : rows.length === 0 ? (
         <Card><CardContent className="py-12 text-center text-muted-foreground">No digests yet.</CardContent></Card>
       ) : (
