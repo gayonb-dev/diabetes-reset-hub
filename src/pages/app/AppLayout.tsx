@@ -25,7 +25,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Vita } from "@/components/vita/Vita";
 import { NotificationsBell } from "@/components/notifications/NotificationsBell";
-import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle, SheetClose } from "@/components/ui/sheet";
 
 
 function navClass({ isActive }: { isActive: boolean }) {
