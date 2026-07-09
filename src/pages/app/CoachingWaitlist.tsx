@@ -72,11 +72,11 @@ export default function CoachingWaitlist() {
       <div>
         <h1 className="font-heading font-bold text-3xl mb-2 flex items-center gap-2">
           <Sparkles className="h-7 w-7 text-primary" />
-          1:1 High-Touch Coaching
+          1:1 High-Touch Support
         </h1>
         <p className="text-muted-foreground">
-          Coming soon — limited spots. Get personal weekly coaching, custom meal plans, and a private
-          WhatsApp line with Coach Gayon.
+          Limited spots. Get personal weekly support sessions, custom meal plans, and a private
+          WhatsApp line with Gayon.
         </p>
       </div>
 
@@ -95,7 +95,7 @@ export default function CoachingWaitlist() {
         <Card className="p-6 space-y-4">
           {!eligible && (
             <div className="bg-secondary/40 p-3 rounded-md text-sm">
-              <strong>Eligibility note:</strong> 1:1 coaching prioritises members who've completed at
+              <strong>Eligibility note:</strong> 1:1 support prioritises members who've completed at
               least 60 days inside the Reset Method (you're on day {eligibleDays}). You can still join
               the list now — we'll notify you when you become eligible.
             </div>
@@ -126,7 +126,7 @@ export default function CoachingWaitlist() {
             <Label>Why now? (optional)</Label>
             <Textarea
               rows={4}
-              placeholder="What outcome do you want from 1:1 coaching?"
+              placeholder="What outcome do you want from 1:1 support?"
               value={form.why_now}
               onChange={(e) => setForm({ ...form, why_now: e.target.value })}
             />
@@ -142,7 +142,7 @@ export default function CoachingWaitlist() {
           </Button>
 
           <p className="text-xs text-muted-foreground text-center">
-            Coaching content only — not medical advice.
+            Educational only — not medical advice.
           </p>
         </Card>
       )}
