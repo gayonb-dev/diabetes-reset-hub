@@ -116,9 +116,9 @@ export default function A1CTab() {
         {/* Reference scale */}
         <div className="mt-4">
           <div className="relative h-3 rounded-full overflow-hidden bg-muted">
-            <div className="absolute inset-y-0 left-0 bg-[#22C55E]" style={{ width: "57%" }} />
-            <div className="absolute inset-y-0 bg-[#F59E0B]" style={{ left: "57%", width: "8%" }} />
-            <div className="absolute inset-y-0 bg-[#EF4444]" style={{ left: "65%", width: "35%" }} />
+            <div className="absolute inset-y-0 left-0 bg-status-normal" style={{ width: "57%" }} />
+            <div className="absolute inset-y-0 bg-status-warning" style={{ left: "57%", width: "8%" }} />
+            <div className="absolute inset-y-0 bg-status-danger" style={{ left: "65%", width: "35%" }} />
             {value && !isNaN(parseFloat(value)) && (
               <div
                 className="absolute top-1/2 -translate-y-1/2 h-5 w-5 rounded-full border-2 border-white shadow"

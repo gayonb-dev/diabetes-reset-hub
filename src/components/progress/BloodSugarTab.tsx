@@ -264,13 +264,13 @@ function ReferenceBar({
   return (
     <div className="mt-4">
       <div className="relative h-3 rounded-full overflow-hidden bg-muted">
-        <div className="absolute inset-y-0 left-0 bg-[#22C55E]" style={{ width: `${normalPct}%` }} />
+        <div className="absolute inset-y-0 left-0 bg-status-normal" style={{ width: `${normalPct}%` }} />
         <div
-          className="absolute inset-y-0 bg-[#F59E0B]"
+          className="absolute inset-y-0 bg-status-warning"
           style={{ left: `${normalPct}%`, width: `${diabeticPct - normalPct}%` }}
         />
         <div
-          className="absolute inset-y-0 bg-[#EF4444]"
+          className="absolute inset-y-0 bg-status-danger"
           style={{ left: `${diabeticPct}%`, width: `${100 - diabeticPct}%` }}
         />
         {pct != null && (

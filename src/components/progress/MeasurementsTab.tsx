@@ -144,7 +144,7 @@ export default function MeasurementsTab() {
               return (
                 <div key={s.k} className="py-2 flex items-center justify-between text-sm">
                   <span>{s.label}</span>
-                  <span className={improved ? "text-[#22C55E] font-medium" : "text-muted-foreground"}>
+                  <span className={improved ? "text-status-normal font-medium" : "text-muted-foreground"}>
                     {improved ? "↓" : "↑"} {Math.abs(d).toFixed(1)}"
                   </span>
                 </div>

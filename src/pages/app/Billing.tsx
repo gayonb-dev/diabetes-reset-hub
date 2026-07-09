@@ -30,20 +30,20 @@ interface PaymentMethod {
 }
 
 const STATUS_LABEL: Record<string, { label: string; color: string }> = {
-  trialing: { label: "● Trial", color: "text-[#F59E0B]" },
-  active: { label: "● Active", color: "text-[#22C55E]" },
-  past_due: { label: "● Payment failed", color: "text-[#EF4444]" },
-  cancelled: { label: "● Cancelled", color: "text-[#EF4444]" },
-  canceled: { label: "● Cancelled", color: "text-[#EF4444]" },
-  incomplete: { label: "● Incomplete", color: "text-[#F59E0B]" },
-  unpaid: { label: "● Unpaid", color: "text-[#EF4444]" },
+  trialing: { label: "● Trial", color: "text-status-warning" },
+  active: { label: "● Active", color: "text-status-normal" },
+  past_due: { label: "● Payment failed", color: "text-destructive" },
+  cancelled: { label: "● Cancelled", color: "text-destructive" },
+  canceled: { label: "● Cancelled", color: "text-destructive" },
+  incomplete: { label: "● Incomplete", color: "text-status-warning" },
+  unpaid: { label: "● Unpaid", color: "text-destructive" },
 };
 
 const INVOICE_STATUS: Record<string, { label: string; color: string }> = {
-  paid: { label: "Paid", color: "text-[#22C55E]" },
-  open: { label: "Open", color: "text-[#F59E0B]" },
+  paid: { label: "Paid", color: "text-status-normal" },
+  open: { label: "Open", color: "text-status-warning" },
   void: { label: "Voided", color: "text-muted-foreground" },
-  uncollectible: { label: "Failed", color: "text-[#EF4444]" },
+  uncollectible: { label: "Failed", color: "text-destructive" },
   draft: { label: "Draft", color: "text-muted-foreground" },
 };
 
@@ -215,7 +215,7 @@ export default function Billing() {
       <div className="text-center pt-4">
         <button
           onClick={() => setCancelOpen(true)}
-          className="text-sm text-[#EF4444] hover:underline"
+          className="text-sm text-destructive hover:underline"
         >
           Cancel subscription
         </button>
@@ -248,7 +248,7 @@ export default function Billing() {
               onClick={openPortal}
               disabled={loading}
               variant="ghost"
-              className="text-[#EF4444] hover:text-[#EF4444]/80"
+              className="text-destructive hover:text-destructive/80"
             >
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Cancel anyway
