@@ -557,7 +557,7 @@ function ContentItemsTab({ type, label }: { type: "blog" | "guide"; label: strin
   };
 
   if (loading)
-    return <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto mt-12" />;
+    return <AdminListSkeleton rows={5} rowHeight="h-20" />;
 
   return (
     <div className="space-y-4">
