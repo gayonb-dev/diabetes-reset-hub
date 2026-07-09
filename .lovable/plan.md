@@ -1,184 +1,131 @@
-# Agentic Commerce Ecosystem — The Diabetes Reset Method
+# Pre-Launch Punch List — DRM Member Portal
 
-## Terminology
-- **Agentic commerce ecosystem** — the whole system (chat + intelligence + autonomous actions)
-- **Conversational commerce agent** — the chat layer specifically
+Ranked by how much each item hurts the impression of a finished, premium product. Nothing is being changed — this is a review only.
 
 ---
 
-## Phase A — Foundation: Identity, Agent, and PHI Gate  ✅ SHIPPED
+## Tier 1 — Broken on screen (fix before anyone sees it)
 
-**Goal:** Every visitor recognized, every conversation captured, every health data point handled lawfully.
+### 1. `Ask.tsx` is rendering with an undefined token — huge dead zone
+`src/pages/app/Ask.tsx` uses `bg-brand-primary`, `text-brand-primary`, `border-brand-primary`, `bg-brand-primary-muted` in 10+ places (lines 291, 292, 297, 315, 344, 434, 547, 560, 577, 584). None of those classes exist in `tailwind.config.ts` (only `primary` / `primary-muted` do). Result: pinned answer callouts, category chips, active tab underline, unread counts, admin-response highlight, and topic pills all render with **no background and near-invisible text**. This is the same bug we already fixed in `Support.tsx` — it was never swept in Ask. This is the single worst first impression in the whole portal.
 
-### A1. Visitor identity
-- `visitor_profiles` (anonymous_id, optional user_id, first_seen_at, last_activity_at, source, **date_of_birth**)
-- Three visitor states handled explicitly:
-  1. **Anonymous** — localStorage `drm_visitor_id` only
-  2. **Returning anonymous** — recognized across sessions via persistent id
-  3. **Authenticated** — linked to `auth.users` after login/checkout
-- **Anon → auth merge**: at Stripe checkout, the widget's `anonymous_id` is passed as session metadata. The `stripe-webhook` looks up the auth user by email and sets `visitor_profiles.user_id`. Pre-purchase chat history is preserved.
-- Misidentification hard stop: never auto-merge profiles on weak signals.
+### 2. Streak-fire glyph is stuck orange on any background
+`StreakBadge.tsx` hardcodes `#FF6A1F`, `#FF4500`, `#FF8C00`, `#22C55E`, `#E8F5F1` (lines 32, 39, 40, 50, 52). `StreakHistoryModal.tsx` does the same at lines 60, 74, 75. In the dark sidebar these greens against dark cards read as neon stickers, and in dark mode they'll be worse. Should be `hsl(var(--streak-fire-start/end))` and `text-status-normal` / `bg-primary-muted`.
 
-### A2. Conversational commerce agent
-- Chat widget on landing + key pages (`src/components/chat/ChatWidget.tsx`)
-- Lovable AI Gateway (`google/gemini-2.5-flash`)
-- System prompt: brand voice (short, direct, sales-aware, plainspoken), product knowledge, $27 → 14-day → $67/mo path
-- All turns logged to `conversations` + `messages` with `visitor_profile_id`
-- Classifier extracts in one call: `intent`, `topic`, `objection_type`, `sentiment`, `health_signals`, `contains_phi`, **`confidence` (0-1)**
-- **Medical-question hard handoff**: classifier emits `intent: "medical_question"` → canned reply, no LLM call, pivot to lifestyle scope
-- **Purchase-intent CTA**: when classifier returns `intent: "purchase_intent"`, edge function returns `cta: {type: "checkout", label, url}` and widget renders it as a button below the assistant message. Hash URLs scroll in-page; external URLs open in new tab.
-
-### A3. PHI Gate (HARD PREREQUISITE — launch blocker)
-- **Consent UI** — explicit opt-in before first health-related message; plain language; stored in `phi_consent` with timestamp + version + ip + ua.
-- **Coverage**: chat AND `intake_submissions` (intake_submissions has `phi_consent_required` flag; coaching_agreement checkbox is the consent record).
-- **Retention**: fixed at **730 days from last meaningful activity**. Activity = login, chat_turn, content_view, content_complete, purchase, intake_submit. Cron `purge-inactive-visitors` runs nightly.
-- **Deletion endpoint** — `request-data-deletion` (24h SLA, logged).
-- **Access logging** — every PHI row read by an admin flows through `read-phi-data` edge function which requires a `reason` and writes `phi_access_log`.
-- **Admin surfaces routed through `read-phi-data`** (locked in this patch):
-  - `src/pages/admin/AdminQaQueue.tsx` — qa_submissions (questions often contain meds, A1C, symptoms)
-  - `src/pages/admin/AdminWaitlist.tsx` — coaching_waitlist.why_now, phone
-  - `src/pages/AdminDashboard.tsx` — intake_submissions only (orders, leads, challenge_progress are not PHI under our definition)
-  - **Phase B conversation viewer** — built on `read-phi-data` from day one
-  - **Phase C `/admin/top-customers`** — uses `read-phi-data` only if it surfaces health_signals
-- **30-minute legal review** by a qualified attorney before launch (~$150–400 USD). Not optional.
-
-### Phase A graduation tests
-1. **Recognition** — returning visitor recognized across sessions and devices (when authenticated)
-2. **Deletion** — deletion request fully purges PHI within 24h, verified by query
-3. **Transcript read** — Gayon reads 30 random conversation transcripts and signs off on tone
+### 3. Dead math + wrong glyphs already flagged are only partly resolved
+Confirmed cleaned in prior turn — but the same class of bug now needs a project-wide sweep, not point fixes (see #1 and #6). Treat "confirmed fixed" as unverified until a grep passes cleanly.
 
 ---
 
-## Activity events (added in Phase A, used heavily from Phase C on)
+## Tier 2 — Premium feel is undermined
 
-`activity_events` table is the single source of truth for engagement signals.
+### 4. Hardcoded hex colors across the "money" surfaces
+Every screen a paying member spends real time on has raw hex, which (a) breaks dark mode instantly and (b) reads as amateur inconsistency between charts and cards. Full list:
+- `Billing.tsx` — 9 hexes for status pills (`#F59E0B`, `#22C55E`, `#EF4444`) instead of `--status-*`.
+- `Fasting.tsx` lines 189, 208, 209, 264 — the hero countdown color is a raw green.
+- `MealSetupTransition.tsx` lines 188, 225, 230, 246, 275–277, 309, 325 — the entire "generating meal plan" full-screen state is inline-styled with `#085041`, `#E8A029`, `#FFFFFF`, `rgba(255,255,255,…)`. Zero token usage on the screen the user stares at for 60+ seconds.
+- `CheatMeal.tsx` line 236 — `#22C55E`.
+- `Profile.tsx` line 137 — `#7C5CBF` (purple that appears nowhere in the palette).
+- `BadgeGallery.tsx` lines 22–24 — bronze/silver/gold hardcoded (this one is defensible but should still be tokens).
+- `progress/A1CTab.tsx` lines 23–25, 119–121; `WeightTab.tsx` line 230; `BloodSugarTab.tsx` lines 53, 267–273, 332–333; `HabitsTab.tsx` lines 18–21, 109, 111–112, 123–126, 159; `MeasurementsTab.tsx` line 147; `LevelUpOverlay.tsx` lines 37, 107.
+- `App.css` lines 15, 18, 41 — stray Vite template colors still present.
 
-Columns: `visitor_profile_id, user_id, event_type, event_at, metadata, created_at`.
+### 5. Typography is a single generic sans across everything
+`--font-heading` and `--font-body` both resolve to Inter. No display font, no serif accent, no tabular numerals on the numeric surfaces (blood-sugar reading, fasting countdown, weight, A1C, streak). The result is that a $67/mo product looks visually identical to any weekend Tailwind template. The tokens exist (`font-heading`) — they just point at the same family.
 
-Event types tracked:
-- `login` — from `useAuth.onAuthStateChange` SIGNED_IN
-- `chat_turn` — from `chat-agent` on every user message
-- `purchase` — from `stripe-webhook` checkout.session.completed
-- `intake_submit` — from `IntakeForm.handleSubmit`
-- `content_view`, `content_complete` — wired when content_items get views (Phase B)
-- `consent_granted`, `consent_revoked` — wired in PHI consent flows
+### 6. Sidebar branding vs card branding is inconsistent
+`AppLayout.tsx` uses raw `text-white/60`, `bg-white/8`, `bg-white/15` for the sidebar (lines 31–32, 126–127, 138–144, 194, 202) instead of `sidebar-foreground`. `Profile.tsx` (lines 116, 120, 122, 126) does the same for the profile hero. `Ask.tsx` line 274 uses `text-white` on an accent circle. Nothing wrong visually today, but it will drift the moment sidebar hue changes and will silently break dark mode.
 
-`visitor_profiles.last_activity_at` is the denormalized cache used by the 730-day purge. `activity_events` rows give multi-signal inputs to the Phase C ranking.
+### 7. Loading is all spinners, no skeletons anywhere
+Every async surface uses `<Loader2 className="animate-spin" />` centered on empty space: `AuthGuard`, `Fasting`, `Meals`, `Dashboard` (via streak), `Settings`, `Onboarding`, `AdminWaitlist`, `IntakeForm`, `Login`, `PaymentModal`, `EmailPopup`. A `<Skeleton>` primitive already exists at `src/components/ui/skeleton.tsx` and is used **only** by shadcn's sidebar. Premium apps ghost the shape of the content coming in — the streak badge in `AppLayout` is currently the only place that does this.
 
-Indexes (composites; ranking query always filters by visitor/user + recent window):
-- `(visitor_profile_id, event_at DESC)`
-- `(user_id, event_at DESC) WHERE user_id IS NOT NULL`
-- `(event_type, event_at DESC)`
-- `(event_at)` — drives the purge cron
+### 8. Empty states are text-only across 16 surfaces
+"No entries yet." / "No fasts logged yet." / "No community questions yet." / "No cheat meals logged yet." / "No wins shared yet." / "No charges yet." / "No notifications yet." / "No articles curated yet." / "No A1C results logged yet." / "No measurements logged yet." — no icon, no VITA, no CTA, no illustration. This is where a premium product either wins delight or loses it, and the mascot (`Vita` with 4 postures) is already built for exactly this purpose. Currently used nowhere in an empty state.
 
-Future scale: partition by month when the table crosses ~5M rows. Not yet.
-
----
-
-## Phase B — Recognition, Memory, and Hospitality Triggers  ✅ SHIPPED
-
-Memory (B1) and all six hospitality triggers (B2.1–B2.6) shipped. Cron schedules active (see "Active crons" below).
+### 9. `MealSetupTransition.tsx` is the longest-dwelt screen and it's placeholder-tier
+Full-screen dark green background, four white circles with amber checkmarks as the "week 1/2/3/4" progress, and an inline-styled amber "Cancel" button. No animation on the progress bar beyond width, no motion on the check-ins, no explanation of what's happening beyond one line of copy, no way to background it. The user is asked to look at this for up to a full minute while the meal plan generates.
 
 ---
 
-## Phase C — Intelligence Core, Daily Digest, and Operator Tools  ✅ SHIPPED
+## Tier 3 — Confusing navigation & content gaps
 
-### C1. Daily digest  ✅
-- `daily-digest` edge function: map-reduce architecture.
-  - **MAP**: each conversation active yesterday → one PHI-redacted sentence via Lovable AI (`google/gemini-2.5-flash`).
-  - **REDUCE**: synthesizes all one-liners into `{actions_today[3], what_agent_heard, anomalies[]}` JSON.
-- Persisted to `daily_digest`; emailed to `DIGEST_RECIPIENT` (defaults to `hello@diabetesresetmethod.com` — set the secret to override).
-- `/admin/digest` page lists last 30 days with "Run now" button.
-- Idempotent per `digest_date`.
+### 10. Mobile bottom nav omits four primary sections
+Desktop sidebar exposes 12 destinations. Mobile bottom nav (`AppLayout.tsx` line 210) shows only Today / Progress / Learn / Ask / Settings. Supplements, Workouts, Meals, Fasting, Cheat Meal, Profile, Support are **only reachable by opening Settings and navigating out** — and Settings has no sub-menu of these routes. On mobile the Meals tab (which the user just complained about) is technically unreachable from the bottom bar. This is the biggest silent nav dead-end in the product.
 
-### C2. Top 100 Customers  ✅
-- `compute-engagement-scores` edge function applies the locked formula:
-  `score = 0.30·spend + 0.25·content + 0.20·conversation + 0.15·recency + 0.10·consistency`
-- Inputs: `activity_events` aggregations (90d window) + `orders.amount` (lifetime, log-normalized).
-- Recency = exp decay, half-life 14d. Consistency = distinct active days / 30.
-- Per-row card: last conversation theme, lifetime spend, days quiet, talking points, draft WhatsApp script, open questions.
-- `/admin/top-customers` reads pre-computed `visitor_engagement_scores` — instant load.
-- PHI ("View chats") routed through `read-phi-data` with required reason.
+### 11. "Coming soon" copy shipped in a live product
+- `PricingSection.tsx` line 16: "Priority access to 1-on-1 coaching (coming soon)".
+- `CoachingWaitlist.tsx` line 78: "Coming soon — limited spots…"
+Combined with the memory rule "never use coaching in marketing/SEO copy," both strings arguably shouldn't render as written.
 
-### Active crons (scheduled in `cron.job`)
-- `purge-inactive-visitors-nightly` — 03:00 UTC daily
-- `compute-engagement-scores-nightly` — 05:30 UTC daily
-- `daily-digest-nightly` — 12:00 UTC daily (after scores ready)
-- `birthday-greetings-daily` — 13:00 UTC daily
-- `member-checkin-daily` — 14:00 UTC daily
+### 12. Admin surface uses the same shell as the member app
+`AdminLayout.tsx` has 10 tabs in a horizontally-scrolling row with no active state emphasis beyond a solid green pill. No breadcrumb, no page title inside `<Outlet>` pages, no filter persistence. Not fatal but reads as an internal tool bolted on, which subtly leaks through when you tab from `/admin` back to `/app` and the visual language is identical.
 
-### Phase C graduation tests (in flight)
-1. Gayon answers "what did customers care about this week?" in 60s from the digest.
-2. 14 consecutive days of on-time digest delivery before Phase D begins.
+### 13. No 404 recovery from `/app/*`
+`NotFound.tsx` exists but any typo inside the authenticated area drops to a bare route. There is no in-app "back to Today" affordance from unknown app routes.
 
+### 14. `bg-brand-primary-muted` sweep is needed
+Same category as #1 — grep across `src/` after fixing Ask should return zero hits.
 
 ---
 
-## Phase C — Intelligence Core, Daily Digest, and Operator Tools
+## Tier 4 — Mobile responsiveness
 
-**Goal:** Turn conversation data into decisions and into tools Gayon actually uses.
+### 15. Progress charts are hand-rolled SVG with fixed viewbox
+`BloodSugarTab`, `WeightTab`, `A1CTab`, `MeasurementsTab`, `HabitsTab` all draw their own SVGs with hex-coded stroke colors. No responsive width binding, no tooltips, no axis labels, no hover states. On a 360-wide phone the graphs either overflow or squash depending on which tab. `recharts` is already used by shadcn `chart.tsx` and unused elsewhere.
 
-### C1. Daily digest
-- **Map-reduce digest** — for each conversation, generate a one-sentence summary (map); then synthesize all summaries into the digest (reduce). Avoids dumping every transcript into a single prompt.
-- `daily_digest` table; email each morning. All PHI redacted in the email.
-- Sections: 3 Actions Today, What the agent heard, Numbers, Anomalies.
+### 16. `IntakeForm.tsx` is a 500-line single scroll on mobile
+Fixed-width `Input`s in a single column with no step indicator, no per-section save, no progress %. On a phone it reads as one long survey with the submit button below the fold by ~10 screens.
 
-### C2. Top 100 Customers — operator call list at `/admin/top-customers`
-Refreshed nightly into a materialized `visitor_engagement_scores` table — `/admin/top-customers` reads the pre-computed table; never recomputes on page load.
+### 17. Modals bypass shadcn `<Dialog>` and re-implement backdrops
+`AdminDashboard.tsx` (194), `PaymentModal.tsx` (112), `EmailPopup.tsx` (81), `Learn.tsx` (286), `PaymentResult.tsx` (13, 124), `SupplementPrompt.tsx` (60), `AdminContent.tsx` (312, 618), `AdminBroadcasts.tsx` (106) — all hand-roll `fixed inset-0 bg-black/50 backdrop-blur-sm`. No focus trap, no ESC handling, no scroll lock on iOS, no `Dialog` a11y. On mobile Safari the background scrolls behind the modal.
 
-**Engagement ranking formula (locked here, not at C build time):**
-```
-score =
-   (0.30 × spend_score)         // total_paid_usd, log-normalized
- + (0.25 × content_score)       // distinct content_items completed in last 90d
- + (0.20 × conversation_score)  // user-role messages last 90d, capped at 50
- + (0.15 × recency_score)       // exp decay on days_since_last_activity, half-life 14d
- + (0.10 × consistency_score)   // distinct active days in last 30d / 30
-```
-All inputs sourced from `activity_events` aggregations + `orders.amount`. Per-person card surfaces: last conversation theme, last purchase + days since, open unresolved questions, suggested talking points, draft WhatsApp script. Read PHI fields via `read-phi-data`.
-
-### Phase C graduation tests
-1. Gayon can answer "what did customers care about this week?" in 60s using only the digest
-2. **14 consecutive days of on-time, complete digest delivery** before Phase D begins
+### 18. Sticky mobile CTA on the landing page hides the last section
+`StickyBottomCTA.tsx` has no bottom padding compensation on the sections it overlays. The FAQ's last row is covered on iPhone SE viewport.
 
 ---
 
-## Phase D — Autonomous Segmentation, Re-engagement, Offers, Product Validation
+## Tier 5 — Placeholder / template residue
 
-### D1. Dynamic segmentation
-Segments computed nightly from `activity_events` + purchase data.
+### 19. `App.css` still contains the Vite React starter
+Lines 15, 18, 41 keep the `#646cffaa` React/Vite logo drop-shadows and `#888` `.read-the-docs` text. Nothing references them, but they're shipped.
 
-### D2. Re-engagement (two named plays)
-- **Retention play — "Bought once, went quiet"** (paid, no activity 14d) — engagement metric, not revenue
-- **Conversion play — "Never converted, went quiet"** (high-intent visitor silent 7d) — addresses their specific objection
-- **Intake abandon** — started, didn't finish, 48h → nudge
-- Content drawn from visitor's own conversation history, not template blast
+### 20. `BookSession.tsx` line 49 — literal comment says "Calendly/Cal.com embed placeholder"
+The page is live-linked from onboarding.
 
-### D3. Offer Rules Engine (non-negotiable guardrail)
-**Gayon writes the rules. AI executes.** Admin UI to set: max discount % per segment, frequency cap, eligible segments, expiry windows, blackout rules. Every offer logged with the `rule_id` that authorized it.
-
-### D4. Product Validation Loop
-**Response capture mechanism:** new product idea → emails top N most-engaged customers with a structured one-click response form (interested / not interested / would pay / would not pay + free-text "what would make this a yes"). Responses land in `product_validation_responses` table; AI summarizes into a one-page report. No product ships without this loop.
-
-### Phase D graduation test
-A re-engagement send goes out, gets a reply, the agent handles it under the Offer Rules Engine, the loop closes without Gayon touching it, outcome captured.
+### 21. `favicon`, social preview, `robots.txt`, `sitemap.xml`
+Not inspected in detail but worth verifying before launch that all four are branded to DRM and not defaults.
 
 ---
 
-## Phase E — Continuous Product Evolution
+## Things you're doing well (keep)
 
-90-day product review driven by intelligence core + Product Validation Loop. No graduation. Never ends.
+- Semantic HSL token system in `src/index.css` — the foundation is correct; the failures above are because components ignore it, not because it's missing.
+- `Vita` mascot is genuinely differentiating and is one of the few things that will not look like every other AI-built app.
+- Gamification (`useGamificationProfile`, level names, streak) is a real premium hook competitors won't have.
+- Onboarding gate in `AppLayout.tsx` is doing the right thing — new users can't reach a half-empty dashboard.
+- `min-h-dvh` sweep already applied — that's the correct call for iOS Safari.
+- Tokenized `--status-*`, `--ring-*`, `--streak-fire-*` already exist and just need to be used.
 
 ---
 
-## Landing page policy
+## Not asked for, but you should know
 
-Adding `<ChatWidget />` to `App.tsx` is the only landing-page change permitted by Phase A. Hero copy, layout, sections, and CTAs remain frozen. Future agent surfaces (CTA buttons rendered in chat, mobile bubble positioning above sticky CTA) are allowed; landing-page DOM edits outside the widget are not.
+- **Focus/keyboard states**: No visible `:focus-visible` styling was found beyond browser defaults. For accessibility and premium polish, every interactive surface needs a token'd focus ring.
+- **`framer-motion` is installed and unused in the portal.** One well-timed entrance on Today (rings blooming) would do more for perceived quality than any color change.
+- **Dark mode is technically unshipped** (per prior turn) — the tokens are half-there, but no `ThemeProvider` and no toggle. Currently every dark-mode hex above is dead code. Decide explicitly whether to ship or descope.
+- **Recharts** is imported by `components/ui/chart.tsx` but no page uses it — the hand-rolled SVGs are duplicative work.
+- **No global command palette** — `components/ui/command.tsx` is present but unmounted. Cmd-K is table stakes for members who'll use this daily.
 
 ---
 
-## What I can build alone vs. need outside help
+## Suggested order of operations (when you're ready to implement)
 
-**Build alone:** every table, RLS policy, edge function, chat widget, classifier, digest job, top-100 list, consent UI, deletion endpoint, retention cron, segment engine, re-engagement sequences, offer rules engine, product validation, admin controls.
-
-**Outside help:** the 30-minute legal review in A3. Budget ~$150–400 USD.
+1. Ask.tsx `brand-primary` sweep (Tier 1 #1) — 10 minutes, single file.
+2. Hardcoded hex sweep in `Billing`, `Fasting`, `MealSetupTransition`, progress tabs (Tier 2 #4).
+3. Mobile bottom-nav restructure or overflow menu (Tier 3 #10).
+4. `<Skeleton>` + `<EmptyState>` primitives applied everywhere (Tier 2 #7–8).
+5. `MealSetupTransition` redesign (Tier 2 #9).
+6. Typography — introduce a display face and tabular numerals (Tier 2 #5).
+7. Recharts migration for progress (Tier 4 #15).
+8. Modal consolidation to shadcn `<Dialog>` (Tier 4 #17).
+9. Everything else.
