@@ -106,8 +106,32 @@ export default function AppLayout() {
 
   if (onboardCheck === "loading") {
     return (
-      <div className="min-h-dvh flex items-center justify-center bg-background">
-        <Loader2 className="h-6 w-6 animate-spin text-primary" />
+      <div className="min-h-dvh bg-background flex" aria-busy="true" aria-label="Loading">
+        {/* Sidebar rail skeleton */}
+        <aside className="hidden md:flex w-[240px] flex-col bg-sidebar p-4 shrink-0 gap-3">
+          <div className="h-10 rounded bg-white/10 animate-pulse" />
+          <div className="h-14 rounded bg-white/10 animate-pulse" />
+          <div className="space-y-2 mt-3">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <div key={i} className="h-7 rounded bg-white/8 animate-pulse" />
+            ))}
+          </div>
+        </aside>
+        {/* Content skeleton */}
+        <main className="flex-1 px-4 md:px-8 py-6 md:py-8 max-w-3xl mx-auto w-full space-y-5">
+          <div className="h-8 w-1/2 rounded bg-muted animate-pulse" />
+          <div className="grid grid-cols-4 gap-3">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="h-24 rounded-xl bg-muted animate-pulse" />
+            ))}
+          </div>
+          <div className="h-40 rounded-2xl bg-muted animate-pulse" />
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="h-16 rounded-lg bg-muted animate-pulse" />
+            ))}
+          </div>
+        </main>
       </div>
     );
   }
@@ -272,7 +296,7 @@ export default function AppLayout() {
         </div>
 
         {/* Main */}
-        <main className="flex-1 px-4 md:px-8 py-6 md:py-8 pb-24 md:pb-10 max-w-3xl mx-auto w-full">
+        <main className="flex-1 px-4 md:px-8 py-6 md:py-8 pb-24 md:pb-10 max-w-3xl xl:max-w-5xl mx-auto w-full">
           <Outlet />
         </main>
       </div>
