@@ -66,8 +66,10 @@ export default function AdminPhiLog() {
 
       <Card className="overflow-hidden border-border">
         {loading ? (
-          <div className="p-8 flex items-center justify-center text-muted-foreground">
-            <Loader2 className="h-5 w-5 animate-spin mr-2" /> Loading audit log…
+          <div className="p-4 space-y-2">
+            {[0, 1, 2, 3, 4].map((i) => (
+              <Skeleton key={i} className="h-10 w-full" />
+            ))}
           </div>
         ) : filtered.length === 0 ? (
           <div className="p-8 text-center text-sm text-muted-foreground">No matching entries.</div>
