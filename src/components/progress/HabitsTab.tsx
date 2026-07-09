@@ -87,6 +87,24 @@ export default function HabitsTab() {
   const totalDays = cells.length;
   const selectedRings = selected ? days.get(selected) : null;
 
+  const habitTotals = useMemo(() => {
+    let water = 0, food = 0, exercise = 0, mindset = 0;
+    cells.forEach((c) => {
+      if (c.rings?.water) water++;
+      if (c.rings?.food) food++;
+      if (c.rings?.exercise) exercise++;
+      if (c.rings?.mindset) mindset++;
+    });
+    return [
+      { habit: "Water", days: water, color: "hsl(var(--ring-water))" },
+      { habit: "Food", days: food, color: "hsl(var(--ring-food))" },
+      { habit: "Exercise", days: exercise, color: "hsl(var(--ring-exercise))" },
+      { habit: "Mindset", days: mindset, color: "hsl(var(--ring-mindset))" },
+    ];
+  }, [cells]);
+
+  const hasAny = habitTotals.some((h) => h.days > 0);
+
   if (loading) {
     return <Card className="p-5 border border-border"><p className="text-sm text-muted-foreground">Loading…</p></Card>;
   }
@@ -94,7 +112,45 @@ export default function HabitsTab() {
   return (
     <div className="space-y-5">
       <Card className="p-5 border border-border">
-        <p className="text-sm font-medium mb-3">Last 90 days</p>
+        <p className="text-sm font-medium mb-1">Days completed by habit</p>
+        <p className="text-[11px] text-tertiary-fg mb-3">Out of the last {totalDays} days</p>
+        {hasAny ? (
+          <div className="h-56 w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={habitTotals} margin={{ top: 8, right: 12, left: -12, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
+                <XAxis dataKey="habit" tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} tickLine={false} axisLine={false} />
+                <YAxis tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} tickLine={false} axisLine={false} width={36} allowDecimals={false} label={{ value: "days", angle: -90, position: "insideLeft", fontSize: 10, fill: "hsl(var(--muted-foreground))" }} />
+                <Tooltip
+                  cursor={{ fill: "hsl(var(--muted) / 0.4)" }}
+                  contentStyle={{
+                    background: "hsl(var(--popover))",
+                    border: "1px solid hsl(var(--border))",
+                    borderRadius: 8,
+                    fontSize: 12,
+                    color: "hsl(var(--popover-foreground))",
+                  }}
+                  formatter={(v: number) => [`${v} of ${totalDays} days`, "Completed"]}
+                />
+                <Bar dataKey="days" radius={[6, 6, 0, 0]} isAnimationActive={true} animationDuration={800}>
+                  {habitTotals.map((h) => (
+                    <Cell key={h.habit} fill={h.color} />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        ) : (
+          <EmptyState
+            title="No habits logged in this window"
+            description="Log your first ring today. VITA is ready when you are."
+            posture="encouraging"
+          />
+        )}
+      </Card>
+
+      <Card className="p-5 border border-border">
+        <p className="text-sm font-medium mb-3">Last 90 days heatmap</p>
         <div className="grid grid-cols-[repeat(15,minmax(0,1fr))] gap-1.5">
           {cells.map((c) => (
             <button
