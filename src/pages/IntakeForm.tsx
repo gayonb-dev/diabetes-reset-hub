@@ -8,7 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { CheckCircle2, Loader2, ClipboardList, Calendar, Trophy, MessageCircle } from "lucide-react";
+import { CheckCircle2, Loader2, ClipboardList, Calendar, Trophy, MessageCircle, ChevronLeft, ChevronRight } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
 
 const IntakeForm = () => {
