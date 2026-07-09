@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
@@ -28,10 +28,8 @@ import { toast } from "sonner";
 import { Vita } from "@/components/vita/Vita";
 import { MINDSET_WEEKS, type MindsetWeek } from "@/data/mindsetWeeks";
 import { DEFAULT_LEARN_GUIDES, type LearnGuide } from "@/data/learnGuides";
-
-function startOfDay(d: Date) {
-  return new Date(d.getFullYear(), d.getMonth(), d.getDate());
-}
+import { useProgramDay } from "@/hooks/useProgramDay";
+import { useGamification } from "@/hooks/useGamification";
 
 type BlogPost = {
   id: string;
@@ -42,17 +40,9 @@ type BlogPost = {
 };
 
 export default function Learn() {
-  const { user, subscription } = useAuth();
-  const currentProgramDay = useMemo(() => {
-    const start = subscription?.created_at
-      ? new Date(subscription.created_at)
-      : new Date();
-    const diff = Math.floor(
-      (startOfDay(new Date()).getTime() - startOfDay(start).getTime()) /
-        86400000,
-    );
-    return Math.max(diff + 1, 1);
-  }, [subscription]);
+  const { user } = useAuth();
+  const currentProgramDay = useProgramDay();
+
 
   const [activeWeek, setActiveWeek] = useState<MindsetWeek | null>(null);
   const [guides, setGuides] = useState<LearnGuide[]>(DEFAULT_LEARN_GUIDES);
