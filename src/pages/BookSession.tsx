@@ -46,7 +46,7 @@ const BookSession = () => {
 
         {/* Booking Options */}
         <div className="space-y-6">
-          {/* Primary: Calendly/Cal.com embed placeholder */}
+          {/* Primary booking CTA — opens the Calendly scheduling page in a new tab */}
           <div className="bg-card border border-border rounded-2xl p-8 text-center">
             <Calendar className="h-12 w-12 text-primary mx-auto mb-4" />
             <h2 className="font-heading font-semibold text-xl text-foreground mb-2">

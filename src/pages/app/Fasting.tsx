@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Loader2, Timer, AlertCircle } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import EmptyState from "@/components/ui/empty-state";
 
 type WindowType = "14_10" | "16_8" | "12_12";
 type Status = "active" | "completed" | "broken";
@@ -186,7 +187,7 @@ export default function Fasting() {
           <p className="text-xs text-secondary-fg mt-1">Time remaining until eating window opens</p>
           <div className="mt-4 space-y-1 text-xs">
             <p className="text-tertiary-fg">Fast started: {new Date(active!.fast_start_at).toLocaleString()}</p>
-            <p className="text-[#22C55E]">Eating window opens: {new Date(eatingStartMs).toLocaleTimeString()}</p>
+            <p className="text-status-normal">Eating window opens: {new Date(eatingStartMs).toLocaleTimeString()}</p>
           </div>
           <div className="mt-4 rounded-md bg-accent-muted px-3 py-2">
             <p className="text-[13px] text-accent">VITA says: {vitaMsg}</p>
@@ -205,8 +206,8 @@ export default function Fasting() {
 
       {isEatingWindow && (
         <Card className="p-6 border border-border">
-          <p className="text-xs uppercase tracking-wider text-[#22C55E] font-medium mb-1">Eating window</p>
-          <p className="text-5xl font-bold tabular-nums text-[#22C55E] tracking-tight">
+          <p className="text-xs uppercase tracking-wider text-status-normal font-medium mb-1">Eating window</p>
+          <p className="text-5xl font-bold tabular-nums text-status-normal tracking-tight">
             {fmt(-fastingRemaining)}
           </p>
           <p className="text-xs text-secondary-fg mt-1">Since your eating window opened</p>
@@ -249,7 +250,12 @@ export default function Fasting() {
       <Card className="p-5 border border-border">
         <p className="text-sm font-medium mb-3">Recent fasts</p>
         {history.length === 0 ? (
-          <p className="text-sm text-muted-foreground">No fasts logged yet.</p>
+          <EmptyState
+            title="No fasts logged yet"
+            description="Start your first fast above. Your history will build here as you go."
+            posture="encouraging"
+            vitaSize={56}
+          />
         ) : (
           <div className="divide-y divide-border">
             {history.slice(0, 7).map((f) => (
@@ -261,7 +267,7 @@ export default function Fasting() {
                   {f.planned_duration_hours}h planned · {f.actual_duration_hours ?? "—"}h actual
                 </span>
                 <span
-                  className={`text-xs font-medium ${f.status === "completed" ? "text-[#22C55E]" : "text-[#F59E0B]"}`}
+                  className={`text-xs font-medium ${f.status === "completed" ? "text-status-normal" : "text-status-warning"}`}
                 >
                   {f.status === "completed" ? "Completed" : "Broken"}
                 </span>

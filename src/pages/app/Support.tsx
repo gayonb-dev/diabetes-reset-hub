@@ -20,7 +20,7 @@ export default function Support() {
     <div className="space-y-6 pb-12">
       <div className="text-center">
         <h1 className="font-heading text-2xl font-semibold text-primary">We're here to help.</h1>
-        <div className="my-4 inline-flex h-16 w-16 rounded-full bg-accent items-center justify-center text-white">
+        <div className="my-4 inline-flex h-16 w-16 rounded-full bg-accent items-center justify-center text-accent-foreground">
           <Sparkles className="h-8 w-8" />
         </div>
         <p className="text-sm text-muted-foreground">Choose what you need help with below.</p>

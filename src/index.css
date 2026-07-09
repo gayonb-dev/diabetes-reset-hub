@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700&family=Montserrat:wght@400;500;600;700;800&family=Open+Sans:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -139,11 +139,16 @@
 
 @layer utilities {
   .font-heading {
-    font-family: 'Inter', 'Montserrat', sans-serif;
-    letter-spacing: -0.01em;
+    font-family: 'Fraunces', 'Inter', Georgia, serif;
+    letter-spacing: -0.02em;
+    font-optical-sizing: auto;
+    font-variation-settings: "opsz" 96;
   }
   .font-body {
-    font-family: 'Inter', 'Open Sans', sans-serif;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
   }
   .label-caps {
     font-size: 11px;

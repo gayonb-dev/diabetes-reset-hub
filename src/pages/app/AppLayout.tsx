@@ -19,10 +19,13 @@ import {
   User,
   Timer,
   Cookie,
+  MoreHorizontal,
+  Settings as SettingsIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Vita } from "@/components/vita/Vita";
 import { NotificationsBell } from "@/components/notifications/NotificationsBell";
+import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle, SheetClose } from "@/components/ui/sheet";
 
 
 function navClass({ isActive }: { isActive: boolean }) {
@@ -214,15 +217,58 @@ export default function AppLayout() {
           <NavLink to="/app/progress" className={mobileNavClass}>
             <LineChart className="h-5 w-5" /> Progress
           </NavLink>
-          <NavLink to="/app/learn" className={mobileNavClass}>
-            <BookOpen className="h-5 w-5" /> Learn
+          <NavLink to="/app/meals" className={mobileNavClass}>
+            <UtensilsCrossed className="h-5 w-5" /> Meals
           </NavLink>
           <NavLink to="/app/ask" className={mobileNavClass}>
             <MessageCircleQuestion className="h-5 w-5" /> Ask
           </NavLink>
-          <NavLink to="/app/settings" className={mobileNavClass}>
-            <Menu className="h-5 w-5" /> Settings
-          </NavLink>
+          <Sheet>
+            <SheetTrigger className={`${mobileNavClass({ isActive: false })} focus:outline-none`}>
+              <MoreHorizontal className="h-5 w-5" /> More
+            </SheetTrigger>
+            <SheetContent side="bottom" className="rounded-t-2xl max-h-[75vh]">
+              <SheetHeader className="text-left">
+                <SheetTitle>More</SheetTitle>
+              </SheetHeader>
+              <nav className="grid grid-cols-3 gap-2 pt-4 pb-6">
+                {[
+                  { to: "/app/learn", icon: BookOpen, label: "Learn" },
+                  { to: "/app/workouts", icon: Activity, label: "Workouts" },
+                  { to: "/app/supplements", icon: Pill, label: "Supplements" },
+                  { to: "/app/fasting", icon: Timer, label: "Fasting" },
+                  { to: "/app/cheat-meal", icon: Cookie, label: "Cheat Meal" },
+                  { to: "/app/profile", icon: User, label: "Profile" },
+                  { to: "/app/settings", icon: SettingsIcon, label: "Settings" },
+                  { to: "/app/support", icon: LifeBuoy, label: "Support" },
+                  ...(isAdmin ? [{ to: "/admin", icon: Shield, label: "Admin" }] : []),
+                ].map((item) => (
+                  <SheetClose asChild key={item.to}>
+                    <NavLink
+                      to={item.to}
+                      className={({ isActive }) =>
+                        `flex flex-col items-center gap-1 rounded-xl p-3 text-[12px] transition-colors ${
+                          isActive
+                            ? "bg-primary-muted text-primary"
+                            : "bg-muted/40 text-secondary-fg hover:bg-muted"
+                        }`
+                      }
+                    >
+                      <item.icon className="h-5 w-5" />
+                      <span className="font-medium">{item.label}</span>
+                    </NavLink>
+                  </SheetClose>
+                ))}
+              </nav>
+              <Button
+                variant="ghost"
+                onClick={handleSignOut}
+                className="w-full text-secondary-fg"
+              >
+                <LogOut className="h-4 w-4 mr-2" /> Sign out
+              </Button>
+            </SheetContent>
+          </Sheet>
         </div>
 
         {/* Main */}

@@ -97,7 +97,7 @@ export default function Supplements() {
             <Card
               key={c.key}
               className={`p-5 border-[1.5px] ${
-                locked ? "bg-bg-subtle border-border opacity-90" : "bg-card border-border"
+                locked ? "bg-muted border-border opacity-90" : "bg-card border-border"
               }`}
             >
               <div className="flex items-start gap-3 mb-3">
@@ -174,7 +174,7 @@ export default function Supplements() {
             </Card>
           </div>
         ) : (
-          <Card className="p-4 border border-dashed border-border bg-bg-subtle">
+          <Card className="p-4 border border-dashed border-border bg-muted">
             <p className="text-sm text-tertiary-fg flex items-center gap-2">
               <Lock className="h-4 w-4" /> Unlocks on Day 15 (you're on Day{" "}
               {currentProgramDay}).

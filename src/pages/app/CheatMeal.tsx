@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/sheet";
 import { Loader2, Utensils } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import EmptyState from "@/components/ui/empty-state";
 
 interface CheatMeal {
   id: string;
@@ -161,7 +162,7 @@ export default function CheatMeal() {
                     isUsed
                       ? "bg-accent border-accent text-white"
                       : isPast
-                      ? "border-bg-subtle bg-bg-subtle text-tertiary-fg"
+                      ? "border-muted bg-muted text-tertiary-fg"
                       : "border-border bg-card"
                   }`}
                 >
@@ -223,7 +224,12 @@ export default function CheatMeal() {
         {loading ? (
           <p className="text-sm text-muted-foreground">Loading…</p>
         ) : meals.length === 0 ? (
-          <p className="text-sm text-muted-foreground">No cheat meals logged yet.</p>
+          <EmptyState
+            title="No cheat meals logged yet"
+            description={isUnlocked ? "Log your first when you're ready — one per week, evening only." : `Unlocks on Day 21. You're on Day ${currentProgramDay}.`}
+            posture="encouraging"
+            vitaSize={56}
+          />
         ) : (
           <div className="divide-y divide-border">
             {meals.map((m) => (
@@ -233,7 +239,7 @@ export default function CheatMeal() {
                     {new Date(m.logged_at).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })}
                   </span>
                   {m.fast_start_at && (
-                    <span className="text-xs text-[#22C55E]">Fast started</span>
+                    <span className="text-xs text-status-normal">Fast started</span>
                   )}
                 </div>
                 {m.meal_description && (

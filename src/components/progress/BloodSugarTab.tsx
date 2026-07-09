@@ -50,7 +50,11 @@ function toneFor(v: number, type: ReadingType): "normal" | "warning" | "danger" 
 }
 
 function toneColor(t: "normal" | "warning" | "danger") {
-  return t === "normal" ? "#22C55E" : t === "warning" ? "#F59E0B" : "#EF4444";
+  return t === "normal"
+    ? "hsl(var(--status-normal))"
+    : t === "warning"
+    ? "hsl(var(--status-warning))"
+    : "hsl(var(--status-danger))";
 }
 
 export default function BloodSugarTab() {
@@ -264,13 +268,13 @@ function ReferenceBar({
   return (
     <div className="mt-4">
       <div className="relative h-3 rounded-full overflow-hidden bg-muted">
-        <div className="absolute inset-y-0 left-0 bg-[#22C55E]" style={{ width: `${normalPct}%` }} />
+        <div className="absolute inset-y-0 left-0 bg-status-normal" style={{ width: `${normalPct}%` }} />
         <div
-          className="absolute inset-y-0 bg-[#F59E0B]"
+          className="absolute inset-y-0 bg-status-warning"
           style={{ left: `${normalPct}%`, width: `${diabeticPct - normalPct}%` }}
         />
         <div
-          className="absolute inset-y-0 bg-[#EF4444]"
+          className="absolute inset-y-0 bg-status-danger"
           style={{ left: `${diabeticPct}%`, width: `${100 - diabeticPct}%` }}
         />
         {pct != null && (
@@ -329,8 +333,8 @@ function BloodSugarHistory({ readings, unit }: { readings: Reading[]; unit: Gluc
       <p className="text-sm font-medium mb-3">Blood sugar trend</p>
       <div className="overflow-x-auto">
         <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-40 min-w-[400px]">
-          <line x1="0" x2={W} y1={yNormal} y2={yNormal} stroke="#22C55E" strokeDasharray="4 4" />
-          <line x1="0" x2={W} y1={yDiabetic} y2={yDiabetic} stroke="#F59E0B" strokeDasharray="4 4" />
+          <line x1="0" x2={W} y1={yNormal} y2={yNormal} stroke="hsl(var(--status-normal))" strokeDasharray="4 4" />
+          <line x1="0" x2={W} y1={yDiabetic} y2={yDiabetic} stroke="hsl(var(--status-warning))" strokeDasharray="4 4" />
           <polyline
             points={points}
             fill="none"

@@ -12,8 +12,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        heading: ["Inter", "Montserrat", "sans-serif"],
-        body: ["Inter", "Open Sans", "sans-serif"],
+        heading: ["Fraunces", "Inter", "Georgia", "serif"],
+        body: ["Inter", "system-ui", "sans-serif"],
         sans: ["Inter", "system-ui", "sans-serif"],
       },
       colors: {

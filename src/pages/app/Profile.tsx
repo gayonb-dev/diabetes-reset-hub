@@ -134,7 +134,7 @@ export default function Profile() {
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <StatCard icon={<Flame className="h-4 w-4" />} value={g.streak_count} label="day streak" color="text-accent" />
         <StatCard icon={<Sparkles className="h-4 w-4" />} value={g.reset_points} label="reset pts" color="text-primary" />
-        <StatCard icon={<Heart className="h-4 w-4" />} value={g.helpful_points} label="helpful pts" color="text-[#7C5CBF]" />
+        <StatCard icon={<Heart className="h-4 w-4" />} value={g.helpful_points} label="helpful pts" color="text-accent" />
         <StatCard icon={<CalendarCheck className="h-4 w-4" />} value={compliantDays} label="compliant days" color="text-primary" />
       </div>
 
