@@ -18,7 +18,7 @@ import {
   Pill,
   User,
   Timer,
-  Cookie,
+  
   MoreHorizontal,
   Settings as SettingsIcon,
 } from "lucide-react";
