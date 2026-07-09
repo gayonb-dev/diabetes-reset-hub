@@ -115,7 +115,7 @@ export default function Learn() {
                   key={w.weekNumber}
                   className={`p-4 border ${
                     locked
-                      ? "bg-bg-subtle border-border opacity-80"
+                      ? "bg-muted border-border opacity-80"
                       : "bg-card border-border hover:border-primary/40 cursor-pointer"
                   }`}
                   onClick={() => !locked && setActiveWeek(w)}

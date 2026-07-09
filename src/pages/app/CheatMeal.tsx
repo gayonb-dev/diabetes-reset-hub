@@ -162,7 +162,7 @@ export default function CheatMeal() {
                     isUsed
                       ? "bg-accent border-accent text-white"
                       : isPast
-                      ? "border-bg-subtle bg-bg-subtle text-tertiary-fg"
+                      ? "border-muted bg-muted text-tertiary-fg"
                       : "border-border bg-card"
                   }`}
                 >

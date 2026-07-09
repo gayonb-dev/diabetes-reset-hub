@@ -125,7 +125,7 @@ export default function StreakHistoryModal({
                     {fmt(h.start)} – {fmt(h.end)}
                   </p>
                 </div>
-                <div className="h-1.5 bg-bg-subtle rounded mt-1.5 overflow-hidden">
+                <div className="h-1.5 bg-muted rounded mt-1.5 overflow-hidden">
                   <div
                     className="h-full bg-accent"
                     style={{
@@ -144,7 +144,7 @@ export default function StreakHistoryModal({
 
 function Stat({ label, value }: { label: string; value: number }) {
   return (
-    <div className="bg-bg-subtle rounded-lg px-3 py-2 text-center">
+    <div className="bg-muted rounded-lg px-3 py-2 text-center">
       <p className="text-[18px] font-bold text-foreground tabular-nums">{value}</p>
       <p className="text-[10px] uppercase tracking-wider text-tertiary-fg">{label}</p>
     </div>
