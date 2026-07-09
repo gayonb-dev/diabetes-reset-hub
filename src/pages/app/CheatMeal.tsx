@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/sheet";
 import { Loader2, Utensils } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import EmptyState from "@/components/ui/empty-state";
 
 interface CheatMeal {
   id: string;
@@ -223,7 +224,12 @@ export default function CheatMeal() {
         {loading ? (
           <p className="text-sm text-muted-foreground">Loading…</p>
         ) : meals.length === 0 ? (
-          <p className="text-sm text-muted-foreground">No cheat meals logged yet.</p>
+          <EmptyState
+            title="No cheat meals logged yet"
+            description={isUnlocked ? "Log your first when you're ready — one per week, evening only." : `Unlocks on Day 21. You're on Day ${currentProgramDay}.`}
+            posture="encouraging"
+            vitaSize={56}
+          />
         ) : (
           <div className="divide-y divide-border">
             {meals.map((m) => (

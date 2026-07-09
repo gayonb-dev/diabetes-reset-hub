@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dialog";
 import { Loader2, AlertCircle, CreditCard, ExternalLink } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import EmptyState from "@/components/ui/empty-state";
 
 interface Invoice {
   id: string;
@@ -180,7 +181,12 @@ export default function Billing() {
         {invLoading ? (
           <p className="text-sm text-muted-foreground">Loading…</p>
         ) : invoices.length === 0 ? (
-          <p className="text-sm text-muted-foreground">No charges yet.</p>
+          <EmptyState
+            title="No charges yet"
+            description="Your invoices and receipts will appear here after your first billing cycle."
+            posture="neutral"
+            vitaSize={56}
+          />
         ) : (
           <div className="divide-y divide-border">
             {invoices.map((inv) => {

@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Loader2, Timer, AlertCircle } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import EmptyState from "@/components/ui/empty-state";
 
 type WindowType = "14_10" | "16_8" | "12_12";
 type Status = "active" | "completed" | "broken";
@@ -249,7 +250,12 @@ export default function Fasting() {
       <Card className="p-5 border border-border">
         <p className="text-sm font-medium mb-3">Recent fasts</p>
         {history.length === 0 ? (
-          <p className="text-sm text-muted-foreground">No fasts logged yet.</p>
+          <EmptyState
+            title="No fasts logged yet"
+            description="Start your first fast above. Your history will build here as you go."
+            posture="encouraging"
+            vitaSize={56}
+          />
         ) : (
           <div className="divide-y divide-border">
             {history.slice(0, 7).map((f) => (
