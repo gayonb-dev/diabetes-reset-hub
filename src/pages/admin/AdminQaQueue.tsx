@@ -91,7 +91,11 @@ export default function AdminQaQueue() {
       </div>
 
       {loading ? (
-        <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto mt-12" />
+        <div className="space-y-3">
+          {[0, 1, 2].map((i) => (
+            <Skeleton key={i} className="h-40 w-full rounded-xl" />
+          ))}
+        </div>
       ) : filtered.length === 0 ? (
         <p className="text-center text-muted-foreground py-12">No questions in {tab}.</p>
       ) : (
