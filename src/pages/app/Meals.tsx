@@ -115,11 +115,8 @@ function categorize(item: string): string {
   return "Pantry Staples";
 }
 
-// ----- helpers -----
-function programDayFrom(createdAt: string | null | undefined): number {
-  if (!createdAt) return 1;
-  return Math.max(1, Math.floor((Date.now() - new Date(createdAt).getTime()) / 86400000) + 1);
-}
+// program day now comes from useProgramDay (see import below in body)
+
 
 function GlyBadge({ rating }: { rating: Meal["glycemic_rating"] }) {
   const tone = rating === "low" ? "bg-status-normal/15 text-status-normal" : rating === "medium" ? "bg-status-warning/15 text-status-warning" : "bg-status-danger/15 text-status-danger";
