@@ -562,15 +562,28 @@ export default function Meals() {
         </Button>
       </div>
 
-      <Tabs defaultValue="plan">
-        <TabsList className="bg-muted">
+      <Tabs
+        value={activeTab}
+        onValueChange={(v) => {
+          const next = new URLSearchParams(searchParams);
+          if (v === "plan") next.delete("tab");
+          else next.set("tab", v);
+          setSearchParams(next, { replace: true });
+        }}
+      >
+        <TabsList className="bg-muted flex-wrap h-auto">
           <TabsTrigger value="plan">My Meal Plan</TabsTrigger>
-          <TabsTrigger value="shopping">Shopping List</TabsTrigger>
           <TabsTrigger value="snacks">Snacks</TabsTrigger>
+          <TabsTrigger value="shopping">Shopping List</TabsTrigger>
+          <TabsTrigger value="cheat-meal">Cheat Meal</TabsTrigger>
         </TabsList>
 
         <TabsContent value="snacks" className="mt-4">
           <SnackLibrary dayNumber={programDay} />
+        </TabsContent>
+
+        <TabsContent value="cheat-meal" className="mt-4">
+          <CheatMeal />
         </TabsContent>
 
         <TabsContent value="plan" className="mt-4 space-y-4">
