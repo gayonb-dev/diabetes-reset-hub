@@ -243,20 +243,21 @@ export default function AppLayout() {
                   { to: "/app/support", icon: LifeBuoy, label: "Support" },
                   ...(isAdmin ? [{ to: "/admin", icon: Shield, label: "Admin" }] : []),
                 ].map((item) => (
-                  <NavLink
-                    key={item.to}
-                    to={item.to}
-                    className={({ isActive }) =>
-                      `flex flex-col items-center gap-1 rounded-xl p-3 text-[12px] transition-colors ${
-                        isActive
-                          ? "bg-primary-muted text-primary"
-                          : "bg-muted/40 text-secondary-fg hover:bg-muted"
-                      }`
-                    }
-                  >
-                    <item.icon className="h-5 w-5" />
-                    <span className="font-medium">{item.label}</span>
-                  </NavLink>
+                  <SheetClose asChild key={item.to}>
+                    <NavLink
+                      to={item.to}
+                      className={({ isActive }) =>
+                        `flex flex-col items-center gap-1 rounded-xl p-3 text-[12px] transition-colors ${
+                          isActive
+                            ? "bg-primary-muted text-primary"
+                            : "bg-muted/40 text-secondary-fg hover:bg-muted"
+                        }`
+                      }
+                    >
+                      <item.icon className="h-5 w-5" />
+                      <span className="font-medium">{item.label}</span>
+                    </NavLink>
+                  </SheetClose>
                 ))}
               </nav>
               <Button
