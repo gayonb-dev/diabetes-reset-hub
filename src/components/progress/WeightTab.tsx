@@ -17,6 +17,7 @@ import {
   WEIGHT_RANGE_LB,
 } from "@/lib/units";
 import { useGamification } from "@/hooks/useGamification";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from "recharts";
 
 interface Log {
   id: string;
