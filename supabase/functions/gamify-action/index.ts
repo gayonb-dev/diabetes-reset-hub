@@ -63,11 +63,19 @@ Deno.serve(async (req) => {
     const { data: xpRes } = await supabase.rpc("award_xp", { p_user_id: uid, p_amount: xp });
     const newLevel = xpRes?.[0]?.level ?? priorLevel;
 
+    // Level names/messages MUST stay in sync with src/lib/levels.ts and
+    // src/components/gamification/LevelUpOverlay.tsx.
     const LEVEL_NAMES: Record<number, { name: string; msg: string }> = {
-      2: { name: "Reset Apprentice", msg: "You've moved past beginner" },
-      3: { name: "Reset Practitioner", msg: "The habits are becoming yours" },
-      5: { name: "Reset Veteran", msg: "Most people quit before this" },
-      10: { name: "Reset Master", msg: "You've changed your trajectory" },
+      1:  { name: "The Beginner",        msg: "You started. Most people don't." },
+      2:  { name: "The Builder",         msg: "Foundation set." },
+      3:  { name: "The Momentum Maker",  msg: "Your body is responding." },
+      4:  { name: "The Shifter",         msg: "Numbers are changing." },
+      5:  { name: "The Reverser",        msg: "You are in it now." },
+      6:  { name: "The Reclaimer",       msg: "You did this." },
+      7:  { name: "The Sustainer",       msg: "Maintaining what you built." },
+      8:  { name: "The Champion",        msg: "One full year." },
+      9:  { name: "The Guide",           msg: "Others follow your path." },
+      10: { name: "The Transformer",     msg: "This is who you are now." },
     };
 
     const sendNotif = async (template: string, vars: Record<string, unknown>) => {

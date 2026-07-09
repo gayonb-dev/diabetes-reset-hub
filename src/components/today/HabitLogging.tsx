@@ -1,5 +1,6 @@
 import { useMemo, useState, useEffect } from "react";
 import { useDailyHabits } from "@/hooks/useDailyHabits";
+import { phaseFor } from "@/lib/phase";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -143,7 +144,7 @@ export default function HabitLogging({ currentProgramDay }: Props) {
   ).length;
 
   const showExercise = currentProgramDay >= 15;
-  const phase = currentProgramDay <= 14 ? 1 : currentProgramDay <= 28 ? 2 : 3;
+  const phase = phaseFor(currentProgramDay).index;
 
   return (
     <div className="space-y-3">

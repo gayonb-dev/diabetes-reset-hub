@@ -3,17 +3,41 @@ import { ChevronUp, ChevronDown } from "lucide-react";
 import Vita from "@/components/vita/Vita";
 import { cn } from "@/lib/utils";
 
+export type QuoteSpeaker = "VITA" | "GAYON";
+
+export interface QuoteItem {
+  text: string;
+  speaker?: QuoteSpeaker;
+}
+
 interface VitaQuoteCardProps {
-  quotes: string[];
-  speaker?: "VITA" | "GAYON";
+  /** Either string[] (all VITA) or QuoteItem[] with per-quote speaker. */
+  quotes: string[] | QuoteItem[];
+  /** Fallback speaker if `quotes` is string[]. */
+  speaker?: QuoteSpeaker;
   className?: string;
 }
 
-export function VitaQuoteCard({ quotes, speaker = "VITA", className }: VitaQuoteCardProps) {
+function normalize(
+  quotes: string[] | QuoteItem[],
+  fallback: QuoteSpeaker,
+): QuoteItem[] {
+  return quotes.map((q) =>
+    typeof q === "string" ? { text: q, speaker: fallback } : { speaker: fallback, ...q },
+  );
+}
+
+export function VitaQuoteCard({
+  quotes,
+  speaker = "VITA",
+  className,
+}: VitaQuoteCardProps) {
   const [idx, setIdx] = useState(0);
-  if (quotes.length === 0) return null;
-  const next = () => setIdx((i) => (i + 1) % quotes.length);
-  const prev = () => setIdx((i) => (i - 1 + quotes.length) % quotes.length);
+  const items = normalize(quotes, speaker);
+  if (items.length === 0) return null;
+  const current = items[idx % items.length];
+  const next = () => setIdx((i) => (i + 1) % items.length);
+  const prev = () => setIdx((i) => (i - 1 + items.length) % items.length);
 
   return (
     <div
@@ -24,10 +48,10 @@ export function VitaQuoteCard({ quotes, speaker = "VITA", className }: VitaQuote
     >
       <Vita posture="neutral" size={44} className="shrink-0" />
       <div className="flex-1 min-w-0">
-        <p className="label-caps text-accent mb-1">{speaker} says</p>
-        <p className="text-sm text-foreground leading-relaxed">{quotes[idx]}</p>
+        <p className="label-caps text-accent mb-1">{current.speaker ?? speaker} says</p>
+        <p className="text-sm text-foreground leading-relaxed">{current.text}</p>
       </div>
-      {quotes.length > 1 && (
+      {items.length > 1 && (
         <div className="flex flex-col gap-1 shrink-0">
           <button
             onClick={prev}

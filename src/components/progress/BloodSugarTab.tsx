@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Loader2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import EmptyState from "@/components/ui/empty-state";
 import {
   getUnits,
   setUnits as persistUnits,
@@ -299,7 +300,11 @@ function BloodSugarHistory({ readings, unit }: { readings: Reading[]; unit: Gluc
   if (readings.length === 0)
     return (
       <Card className="p-5 border border-border bg-muted/20">
-        <p className="text-sm text-muted-foreground">Your blood sugar trend will build as you log readings.</p>
+        <EmptyState
+          title="No readings logged yet"
+          description="Your first reading starts the trend. VITA is ready when you are."
+          posture="encouraging"
+        />
       </Card>
     );
 

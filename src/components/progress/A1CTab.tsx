@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Loader2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import EmptyState from "@/components/ui/empty-state";
 
 interface A1C {
   id: string;
@@ -145,7 +146,11 @@ export default function A1CTab() {
       <Card className="p-5 border border-border">
         <p className="text-sm font-medium mb-3">A1C history</p>
         {logs.length === 0 ? (
-          <p className="text-sm text-muted-foreground">No A1C results logged yet.</p>
+          <EmptyState
+            title="No A1C on file yet"
+            description="Your first A1C result anchors everything. Enter it when you have it."
+            posture="encouraging"
+          />
         ) : (
           <div className="divide-y divide-border">
             {logs.map((l) => (

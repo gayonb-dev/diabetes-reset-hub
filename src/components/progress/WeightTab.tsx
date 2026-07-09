@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Loader2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import EmptyState from "@/components/ui/empty-state";
 import {
   getUnits,
   setUnits as persistUnits,
@@ -181,7 +182,11 @@ export default function WeightTab() {
         </Card>
       ) : (
         <Card className="p-5 border border-border bg-muted/20">
-          <p className="text-sm text-muted-foreground">Your chart builds as you log. Start with today.</p>
+          <EmptyState
+            title="No weigh-ins yet"
+            description="First weigh-in sets the baseline. The trend does the talking."
+            posture="encouraging"
+          />
         </Card>
       )}
 
@@ -190,7 +195,11 @@ export default function WeightTab() {
         {loading ? (
           <p className="text-sm text-muted-foreground">Loading…</p>
         ) : logs.length === 0 ? (
-          <p className="text-sm text-muted-foreground">No entries yet.</p>
+          <EmptyState
+            title="No weigh-ins yet"
+            description="First weigh-in sets the baseline. The trend does the talking."
+            posture="encouraging"
+          />
         ) : (
           <div className="divide-y divide-border">
             {logs.slice(0, 14).map((l) => (
