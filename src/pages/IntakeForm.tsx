@@ -91,6 +91,7 @@ const IntakeForm = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
     // PHI gate — intake collects PHI (meds, diabetes type, etc.). Require the
