@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Loader2, Plus } from "lucide-react";
+import AdminListSkeleton from "@/components/admin/AdminListSkeleton";
 import { toast } from "sonner";
 
 interface Row {
