@@ -15,6 +15,7 @@ import { cn } from "@/lib/utils";
 import { SnackLibrary } from "@/components/meals/SnackLibrary";
 import CheatMeal from "@/pages/app/CheatMeal";
 import { useSearchParams } from "react-router-dom";
+import { useProgramDay } from "@/hooks/useProgramDay";
 
 // ----- types -----
 type Ingredient = string | { item: string; quantity: string; unit: string };
@@ -115,11 +116,8 @@ function categorize(item: string): string {
   return "Pantry Staples";
 }
 
-// ----- helpers -----
-function programDayFrom(createdAt: string | null | undefined): number {
-  if (!createdAt) return 1;
-  return Math.max(1, Math.floor((Date.now() - new Date(createdAt).getTime()) / 86400000) + 1);
-}
+// program day now comes from useProgramDay (see import below in body)
+
 
 function GlyBadge({ rating }: { rating: Meal["glycemic_rating"] }) {
   const tone = rating === "low" ? "bg-status-normal/15 text-status-normal" : rating === "medium" ? "bg-status-warning/15 text-status-warning" : "bg-status-danger/15 text-status-danger";
@@ -249,7 +247,7 @@ export default function Meals() {
   const tabParam = searchParams.get("tab");
   const activeTab = ["plan", "snacks", "shopping", "cheat-meal"].includes(tabParam || "") ? (tabParam as string) : "plan";
 
-  const programDay = useMemo(() => programDayFrom(subscription?.created_at), [subscription]);
+  const programDay = useProgramDay();
 
   // Load the two most-recent active plans. Plan 1 = earlier valid_from, Plan 2 = later.
   useEffect(() => {

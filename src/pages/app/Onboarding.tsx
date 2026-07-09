@@ -150,10 +150,20 @@ export default function Onboarding() {
       } as never);
     }
 
+    // Ensure profiles.program_start_date is set on onboarding completion.
+    const today = new Date().toISOString().slice(0, 10);
+    await supabase
+      .from("profiles")
+      .upsert(
+        { user_id: user.id, first_name: firstName.trim(), program_start_date: today },
+        { onConflict: "user_id" },
+      );
+
     setSaving(false);
     // Meal plan generation happens on the next screen (VITA transition).
     navigate("/app/onboarding/meal-setup", { replace: true });
   }
+
 
   // ───── Welcome screen ─────
   if (step === 0) {

@@ -1,11 +1,6 @@
-import { useMemo } from "react";
-import { useAuth } from "@/hooks/useAuth";
+import { useProgramDay } from "@/hooks/useProgramDay";
 import { Card } from "@/components/ui/card";
 import { Lock, ExternalLink, Pill, Apple } from "lucide-react";
-
-function startOfDay(d: Date) {
-  return new Date(d.getFullYear(), d.getMonth(), d.getDate());
-}
 
 type SupplementCard = {
   key: string;
@@ -65,17 +60,7 @@ const CARDS: SupplementCard[] = [
 ];
 
 export default function Supplements() {
-  const { subscription } = useAuth();
-  const currentProgramDay = useMemo(() => {
-    const start = subscription?.created_at
-      ? new Date(subscription.created_at)
-      : new Date();
-    const diff = Math.floor(
-      (startOfDay(new Date()).getTime() - startOfDay(start).getTime()) /
-        86400000,
-    );
-    return Math.max(diff + 1, 1);
-  }, [subscription]);
+  const currentProgramDay = useProgramDay();
 
   const foodGradeUnlocked = currentProgramDay >= 15;
 

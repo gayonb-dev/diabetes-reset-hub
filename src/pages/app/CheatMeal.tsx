@@ -1,6 +1,7 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
+import { useProgramDay } from "@/hooks/useProgramDay";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -36,9 +37,10 @@ function startOfWeek(d: Date) {
 function startOfDay(d: Date) {
   return new Date(d.getFullYear(), d.getMonth(), d.getDate());
 }
+void startOfDay; // reserved for local time calculations
 
 export default function CheatMeal() {
-  const { user, subscription } = useAuth();
+  const { user } = useAuth();
   const [meals, setMeals] = useState<CheatMeal[]>([]);
   const [loading, setLoading] = useState(true);
   const [description, setDescription] = useState("");
@@ -46,10 +48,8 @@ export default function CheatMeal() {
   const [busy, setBusy] = useState(false);
   const [open, setOpen] = useState(false);
 
-  const currentProgramDay = useMemo(() => {
-    const start = subscription?.created_at ? new Date(subscription.created_at) : new Date();
-    return Math.max(1, Math.floor((startOfDay(new Date()).getTime() - startOfDay(start).getTime()) / 86400000) + 1);
-  }, [subscription]);
+  const currentProgramDay = useProgramDay();
+
 
   const refresh = async () => {
     if (!user) return;

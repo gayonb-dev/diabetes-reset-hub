@@ -19,6 +19,7 @@ import SupplementPrompt from "@/components/onboarding/SupplementPrompt";
 import HabitLogging from "@/components/today/HabitLogging";
 import { useDailyHabits } from "@/hooks/useDailyHabits";
 import { useVitaQuotes } from "@/hooks/useVitaQuotes";
+import { useProgramDay } from "@/hooks/useProgramDay";
 import { getUnits, displayGlucose, displayWeight } from "@/lib/units";
 import { phaseFor, dayInPhase, PHASE_TOTAL } from "@/lib/phase";
 
@@ -41,9 +42,8 @@ type ProfileMeta = {
   blood_sugar_unit?: "mgdl" | "mmoll";
 };
 
-function startOfDay(d: Date) {
-  return new Date(d.getFullYear(), d.getMonth(), d.getDate());
-}
+// startOfDay removed — program day now comes from useProgramDay.
+
 
 function bloodSugarTone(mgdl: number): "normal" | "warning" | "danger" {
   if (mgdl < 100) return "normal";
@@ -71,7 +71,7 @@ function DashboardSkeleton() {
 }
 
 export default function Dashboard() {
-  const { user, subscription } = useAuth();
+  const { user } = useAuth();
   const habits = useDailyHabits();
   const [showStreakHistory, setShowStreakHistory] = useState(false);
 
@@ -86,14 +86,8 @@ export default function Dashboard() {
   const [latestReading, setLatestReading] = useState<{ value: number; at: string } | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // current program day from subscription created_at
-  const currentProgramDay = useMemo(() => {
-    const start = subscription?.created_at ? new Date(subscription.created_at) : new Date();
-    const diff = Math.floor(
-      (startOfDay(new Date()).getTime() - startOfDay(start).getTime()) / 86400000,
-    );
-    return Math.max(diff + 1, 1);
-  }, [subscription]);
+  // Single source of truth for program day.
+  const currentProgramDay = useProgramDay();
 
   const phase = phaseFor(currentProgramDay);
   const currentDayInPhase = dayInPhase(currentProgramDay);

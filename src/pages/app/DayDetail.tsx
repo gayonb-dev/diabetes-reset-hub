@@ -5,8 +5,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowLeft, CheckCircle2, Loader2 } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Loader2, Lock } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import { useProgramDay } from "@/hooks/useProgramDay";
+import { useGamification } from "@/hooks/useGamification";
 
 const DAY_CONTENT: Record<number, { title: string; body: string; action: string }> = {
   1: {
@@ -50,8 +52,11 @@ export default function DayDetail() {
   const { day } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const currentProgramDay = useProgramDay();
+  const { recordAction } = useGamification();
   const dayN = Math.max(1, Math.min(7, Number(day) || 1));
   const content = DAY_CONTENT[dayN];
+  const isLocked = dayN > currentProgramDay;
 
   const [notes, setNotes] = useState("");
   const [completed, setCompleted] = useState(false);
@@ -74,7 +79,7 @@ export default function DayDetail() {
   }, [user, dayN]);
 
   const handleComplete = async () => {
-    if (!user) return;
+    if (!user || isLocked) return;
     setSaving(true);
     const { error } = await supabase
       .from("member_progress")
@@ -88,6 +93,8 @@ export default function DayDetail() {
       return;
     }
     setCompleted(true);
+    // Wire streak/XP pipeline
+    recordAction("daily_action").catch(() => {});
     toast({ title: `Day ${dayN} complete ✓`, description: "Nice work. See you tomorrow." });
     if (dayN < 7) setTimeout(() => navigate("/app"), 1200);
   };
@@ -112,35 +119,50 @@ export default function DayDetail() {
       <Card className="p-6">
         <h3 className="font-heading font-bold mb-2">Today's one action</h3>
         <p className="text-muted-foreground mb-4">{content.action}</p>
-        <Textarea
-          placeholder="Optional: how did it go? Any wins or blockers?"
-          value={notes}
-          onChange={(e) => setNotes(e.target.value)}
-          className="mb-4"
-          rows={3}
-        />
-        {completed ? (
-          <div className="flex items-center gap-2 text-primary font-semibold">
-            <CheckCircle2 className="h-5 w-5" /> Day {dayN} marked complete
-          </div>
+
+        {isLocked ? (
+          <>
+            <div className="rounded-md border border-dashed border-border bg-muted/40 p-4 mb-3 flex items-center gap-2 text-sm text-muted-foreground">
+              <Lock className="h-4 w-4" />
+              Unlocks on Day {dayN}. You're on Day {currentProgramDay}.
+            </div>
+            <Button disabled className="w-full">
+              Locked
+            </Button>
+          </>
         ) : (
-          <Button
-            onClick={handleComplete}
-            disabled={saving}
-            className="w-full bg-primary hover:bg-primary-dark text-primary-foreground"
-          >
-            {saving ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Saving...
-              </>
+          <>
+            <Textarea
+              placeholder="Optional: how did it go? Any wins or blockers?"
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              className="mb-4"
+              rows={3}
+            />
+            {completed ? (
+              <div className="flex items-center gap-2 text-primary font-semibold">
+                <CheckCircle2 className="h-5 w-5" /> Day {dayN} marked complete
+              </div>
             ) : (
-              "Mark Day Complete"
+              <Button
+                onClick={handleComplete}
+                disabled={saving}
+                className="w-full bg-primary hover:bg-primary-dark text-primary-foreground"
+              >
+                {saving ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Saving...
+                  </>
+                ) : (
+                  "Mark Day Complete"
+                )}
+              </Button>
             )}
-          </Button>
+          </>
         )}
       </Card>
 
-      {dayN < 7 && completed && (
+      {dayN < 7 && completed && !isLocked && (
         <Link to={`/app/day/${dayN + 1}`}>
           <Button variant="outline" className="w-full">
             Continue to Day {dayN + 1}
@@ -149,7 +171,7 @@ export default function DayDetail() {
       )}
 
       <p className="text-xs text-muted-foreground text-center">
-        Coaching content only, not medical advice.
+        Educational only — not medical advice.
       </p>
     </div>
   );

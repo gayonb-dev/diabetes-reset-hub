@@ -1,7 +1,8 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useParams, useSearchParams, useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
+import { useGamification } from "@/hooks/useGamification";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Check, Clock, Activity } from "lucide-react";
@@ -22,6 +23,7 @@ export default function WorkoutComplete() {
   const sessionId = params.get("session");
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { recordAction } = useGamification();
   const workout = useMemo(() => (slug ? getWorkoutBySlug(slug) : undefined), [slug]);
 
   const [checks, setChecks] = useState<Record<string, boolean>>({});
@@ -29,6 +31,14 @@ export default function WorkoutComplete() {
   const [exercisesDone, setExercisesDone] = useState<number>(0);
   const [logged, setLogged] = useState(false);
   const [saving, setSaving] = useState(false);
+
+  // Fire complete_workout exactly once per session mount.
+  const workoutAwardedRef = useRef(false);
+  useEffect(() => {
+    if (!sessionId || workoutAwardedRef.current) return;
+    workoutAwardedRef.current = true;
+    recordAction("complete_workout").catch(() => {});
+  }, [sessionId, recordAction]);
 
   useEffect(() => {
     if (!sessionId) return;
@@ -45,6 +55,7 @@ export default function WorkoutComplete() {
         }
       });
   }, [sessionId]);
+
 
   if (!workout) {
     return (

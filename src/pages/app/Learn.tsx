@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
@@ -28,10 +28,8 @@ import { toast } from "sonner";
 import { Vita } from "@/components/vita/Vita";
 import { MINDSET_WEEKS, type MindsetWeek } from "@/data/mindsetWeeks";
 import { DEFAULT_LEARN_GUIDES, type LearnGuide } from "@/data/learnGuides";
-
-function startOfDay(d: Date) {
-  return new Date(d.getFullYear(), d.getMonth(), d.getDate());
-}
+import { useProgramDay } from "@/hooks/useProgramDay";
+import { useGamification } from "@/hooks/useGamification";
 
 type BlogPost = {
   id: string;
@@ -42,17 +40,9 @@ type BlogPost = {
 };
 
 export default function Learn() {
-  const { user, subscription } = useAuth();
-  const currentProgramDay = useMemo(() => {
-    const start = subscription?.created_at
-      ? new Date(subscription.created_at)
-      : new Date();
-    const diff = Math.floor(
-      (startOfDay(new Date()).getTime() - startOfDay(start).getTime()) /
-        86400000,
-    );
-    return Math.max(diff + 1, 1);
-  }, [subscription]);
+  const { user } = useAuth();
+  const currentProgramDay = useProgramDay();
+
 
   const [activeWeek, setActiveWeek] = useState<MindsetWeek | null>(null);
   const [guides, setGuides] = useState<LearnGuide[]>(DEFAULT_LEARN_GUIDES);
@@ -103,7 +93,7 @@ export default function Learn() {
       <Tabs defaultValue="mindset">
         <TabsList className="bg-muted">
           <TabsTrigger value="mindset">Mindset</TabsTrigger>
-          <TabsTrigger value="learn">Learn</TabsTrigger>
+          <TabsTrigger value="learn">Guides</TabsTrigger>
           <TabsTrigger value="blog">Blog</TabsTrigger>
         </TabsList>
 
@@ -256,19 +246,25 @@ function MindsetReader({
   userId: string | undefined;
   onClose: () => void;
 }) {
+  const { recordAction } = useGamification();
   const [idx, setIdx] = useState(0);
-  const [startedAt] = useState(Date.now());
+  const [openedAt] = useState(Date.now());
+  const [now, setNow] = useState(Date.now());
   const [completing, setCompleting] = useState(false);
   const totalCards = week.cards.length + (week.assignment ? 1 : 0);
-  const isAssignment = week.assignment && idx === week.cards.length;
   const isLast = idx === totalCards - 1;
 
+  // Live countdown until the 30-second read gate opens.
+  useEffect(() => {
+    const t = setInterval(() => setNow(Date.now()), 500);
+    return () => clearInterval(t);
+  }, []);
+
+  const secondsRemaining = Math.max(0, 30 - Math.floor((now - openedAt) / 1000));
+  const canMarkRead = secondsRemaining === 0;
+
   async function markRead() {
-    if (!userId) return;
-    if (Date.now() - startedAt < 30_000) {
-      toast.info("Take a moment to read — this counts when you've spent 30 seconds with it.");
-      return;
-    }
+    if (!userId || !canMarkRead) return;
     setCompleting(true);
     const today = new Date().toISOString().slice(0, 10);
     const { error } = await supabase.from("mindset_reads").insert({
@@ -278,7 +274,10 @@ function MindsetReader({
     if (error && !error.message.includes("duplicate")) {
       toast.error(error.message);
     } else {
-      toast.success("Mindset ring closed for today.");
+      toast.success(
+        "Mindset ring closed for today ✓ — you can revisit any card, any time.",
+      );
+      recordAction("complete_lesson").catch(() => {});
     }
     setCompleting(false);
     onClose();
@@ -301,9 +300,7 @@ function MindsetReader({
         </div>
 
         {card ? (
-          <p className="text-[16px] leading-[1.7] text-foreground">
-            {card.body}
-          </p>
+          <p className="text-[16px] leading-[1.7] text-foreground">{card.body}</p>
         ) : (
           <div>
             <h3 className="font-heading font-semibold text-lg text-primary mb-2">
@@ -326,10 +323,11 @@ function MindsetReader({
           {isLast ? (
             <Button
               onClick={markRead}
-              disabled={completing}
+              disabled={!canMarkRead || completing}
               className="bg-primary text-primary-foreground"
             >
-              <CheckCircle2 className="h-4 w-4 mr-1.5" /> I read this
+              <CheckCircle2 className="h-4 w-4 mr-1.5" />
+              {canMarkRead ? "I read this ✓" : `Read time: ${secondsRemaining}s`}
             </Button>
           ) : (
             <Button
@@ -345,3 +343,4 @@ function MindsetReader({
     </Dialog>
   );
 }
+

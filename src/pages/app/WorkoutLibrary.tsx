@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
-import { Link, Navigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
@@ -8,12 +8,8 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Shield, Lock, Clock, Activity, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getWorkoutsByTrack, type Workout } from "@/data/workouts";
-
-function programDayFrom(createdAt: string | null | undefined): number {
-  if (!createdAt) return 1;
-  const start = new Date(createdAt).getTime();
-  return Math.max(1, Math.floor((Date.now() - start) / 86400000) + 1);
-}
+import { useProgramDay } from "@/hooks/useProgramDay";
+import { Vita } from "@/components/vita/Vita";
 
 function DifficultyDots({ level }: { level: 1 | 2 | 3 }) {
   return (
@@ -61,15 +57,15 @@ function WorkoutCard({ workout }: { workout: Workout }) {
 }
 
 export default function WorkoutLibrary() {
-  const { user, subscription } = useAuth();
+  const { user } = useAuth();
+  const programDay = useProgramDay();
   const [kneeFriendly, setKneeFriendly] = useState<boolean | null>(null);
   const [resuming, setResuming] = useState<{ slug: string; name: string } | null>(null);
 
-  const programDay = useMemo(() => programDayFrom(subscription?.created_at), [subscription]);
   const unlocked = programDay >= 29;
 
   useEffect(() => {
-    if (!user) return;
+    if (!user || !unlocked) return;
     supabase
       .from("visitor_profiles")
       .select("knee_friendly")
@@ -90,10 +86,37 @@ export default function WorkoutLibrary() {
         const row = (data || [])[0];
         if (row) setResuming({ slug: row.workout_slug, name: row.workout_name });
       });
-  }, [user]);
+  }, [user, unlocked]);
 
   if (!unlocked) {
-    return <Navigate to="/app" replace />;
+    const daysLeft = Math.max(0, 28 - programDay + 1);
+    return (
+      <div className="max-w-xl mx-auto text-center space-y-5 py-8">
+        <div className="flex justify-center">
+          <Vita posture="neutral" size={96} />
+        </div>
+        <h1 className="font-heading font-semibold text-2xl text-foreground">
+          Workouts unlock at Day 29
+        </h1>
+        <p className="text-sm text-muted-foreground leading-relaxed max-w-md mx-auto">
+          Days 1–14 are diet foundation. Days 15–28 add post-meal walks. Structured workouts begin
+          Day 29 — your body will be ready.
+        </p>
+        <Card className="p-4 border border-dashed inline-flex flex-col mx-auto">
+          <p className="text-sm text-foreground">
+            You're on <span className="font-semibold text-primary">Day {programDay}</span> of 28.
+          </p>
+          {daysLeft > 0 && (
+            <p className="text-xs text-muted-foreground mt-1">
+              {daysLeft === 1 ? "1 day" : `${daysLeft} days`} until workouts unlock.
+            </p>
+          )}
+        </Card>
+        <Button asChild variant="outline">
+          <Link to="/app">Back to today</Link>
+        </Button>
+      </div>
+    );
   }
 
   const defaultTrack: "A" | "B" = kneeFriendly ? "B" : "A";

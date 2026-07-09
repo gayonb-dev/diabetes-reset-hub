@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { useGamificationProfile } from "@/hooks/useGamificationProfile";
+import { useProgramDay } from "@/hooks/useProgramDay";
 import BadgeGallery from "@/components/gamification/BadgeGallery";
 import StreakHistoryModal from "@/components/gamification/StreakHistoryModal";
 import { Card } from "@/components/ui/card";
@@ -9,24 +10,14 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { Sparkles, Heart, Flame, CalendarCheck } from "lucide-react";
 
-function startOfDay(d: Date) {
-  return new Date(d.getFullYear(), d.getMonth(), d.getDate());
-}
-
 function initialsOf(email?: string) {
   if (!email) return "U";
   return email.slice(0, 2).toUpperCase();
 }
 
 export default function Profile() {
-  const { user, subscription } = useAuth();
-  const currentProgramDay = useMemo(() => {
-    const start = subscription?.created_at ? new Date(subscription.created_at) : new Date();
-    const diff = Math.floor(
-      (startOfDay(new Date()).getTime() - startOfDay(start).getTime()) / 86400000,
-    );
-    return Math.max(diff + 1, 1);
-  }, [subscription]);
+  const { user } = useAuth();
+  const currentProgramDay = useProgramDay();
 
   const g = useGamificationProfile(currentProgramDay);
   const [showStreak, setShowStreak] = useState(false);
