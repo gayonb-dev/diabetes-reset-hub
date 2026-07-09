@@ -299,7 +299,11 @@ function BloodSugarHistory({ readings, unit }: { readings: Reading[]; unit: Gluc
   if (readings.length === 0)
     return (
       <Card className="p-5 border border-border bg-muted/20">
-        <p className="text-sm text-muted-foreground">Your blood sugar trend will build as you log readings.</p>
+        <EmptyState
+          title="No readings logged yet"
+          description="Your first reading starts the trend. VITA is ready when you are."
+          posture="encouraging"
+        />
       </Card>
     );
 
