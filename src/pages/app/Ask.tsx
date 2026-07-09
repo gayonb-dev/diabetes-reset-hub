@@ -288,13 +288,13 @@ export default function Ask() {
             </div>
 
             {vitaResponse?.kind === "verified" && (
-              <div className="rounded-lg bg-brand-primary-muted border border-brand-primary/30 p-3">
-                <p className="text-[11px] uppercase tracking-wide text-brand-primary font-semibold mb-1">
+              <div className="rounded-lg bg-primary-muted border border-primary/30 p-3">
+                <p className="text-[11px] uppercase tracking-wide text-primary font-semibold mb-1">
                   VITA found a verified answer from the DRM team
                 </p>
                 <p className="text-sm text-foreground whitespace-pre-wrap mb-2">{vitaResponse.answer}</p>
                 {vitaResponse.question_id && (
-                  <Button variant="link" className="h-auto p-0 text-brand-primary" asChild>
+                  <Button variant="link" className="h-auto p-0 text-primary" asChild>
                     <a href={`#q-${vitaResponse.question_id}`}>Open thread →</a>
                   </Button>
                 )}
@@ -312,7 +312,7 @@ export default function Ask() {
                   <p className="text-sm whitespace-pre-wrap">{vitaResponse.answer}</p>
                 )}
                 {vitaResponse.related_content_slug && (
-                  <Link to={`/app/learn`} className="text-xs text-brand-primary underline">
+                  <Link to={`/app/learn`} className="text-xs text-primary underline">
                     Related: {vitaResponse.related_content_slug}
                   </Link>
                 )}
@@ -341,7 +341,7 @@ export default function Ask() {
           <button
             key={k}
             onClick={() => setTab(k)}
-            className={`px-3 py-2 text-sm whitespace-nowrap border-b-2 ${tab === k ? "border-brand-primary text-brand-primary font-medium" : "border-transparent text-muted-foreground"}`}
+            className={`px-3 py-2 text-sm whitespace-nowrap border-b-2 ${tab === k ? "border-primary text-primary font-medium" : "border-transparent text-muted-foreground"}`}
           >{label}</button>
         ))}
         <div className="ml-auto flex gap-2 py-1">
@@ -431,7 +431,7 @@ export default function Ask() {
                     key={t}
                     type="button"
                     onClick={() => setComposeTags((s) => selected ? s.filter((x) => x !== t) : (s.length < 3 ? [...s, t] : s))}
-                    className={`text-[11px] px-2 py-1 rounded-full border ${selected ? "bg-brand-primary text-white border-brand-primary" : "bg-brand-primary-muted text-brand-primary border-transparent"}`}
+                    className={`text-[11px] px-2 py-1 rounded-full border ${selected ? "bg-primary text-primary-foreground border-primary" : "bg-primary-muted text-primary border-transparent"}`}
                   >{t}</button>
                 );
               })}
@@ -544,7 +544,7 @@ function QuestionCard({
           {q.tags?.length > 0 && (
             <div className="flex gap-1 mt-1.5">
               {q.tags.slice(0, 3).map((t) => (
-                <span key={t} className="text-[10px] px-1.5 py-0.5 rounded-full bg-brand-primary-muted text-brand-primary">{t}</span>
+                <span key={t} className="text-[10px] px-1.5 py-0.5 rounded-full bg-primary-muted text-primary">{t}</span>
               ))}
             </div>
           )}
@@ -557,7 +557,7 @@ function QuestionCard({
           {unanswered && <p className="text-[10px] text-accent mt-1">Be first to answer →</p>}
         </div>
         <div className="flex flex-col items-end gap-1 shrink-0">
-          <span className="bg-brand-primary text-white text-[11px] rounded-full px-2 py-0.5 min-w-[1.5rem] text-center">{q.answer_count}</span>
+          <span className="bg-primary text-primary-foreground text-[11px] rounded-full px-2 py-0.5 min-w-[1.5rem] text-center">{q.answer_count}</span>
           <button
             onClick={() => onVote(q.id, "question", "metoo")}
             className={`text-[11px] ${metooed ? "text-accent font-medium" : "text-muted-foreground"}`}
@@ -574,14 +574,14 @@ function QuestionCard({
               key={a.id}
               className={
                 a.is_admin_response
-                  ? "p-3 rounded-lg bg-brand-primary-muted border-l-4 border-brand-primary"
+                  ? "p-3 rounded-lg bg-primary-muted border-l-4 border-primary"
                   : a.is_vita_response
                   ? "p-3 rounded-lg bg-accent-muted"
                   : "p-3 rounded-lg bg-muted/40"
               }
             >
               <div className="flex items-center gap-2 mb-1">
-                {a.is_admin_response && <span className="text-[11px] font-semibold text-brand-primary">Diabetes Reset Method ✓</span>}
+                {a.is_admin_response && <span className="text-[11px] font-semibold text-primary">Diabetes Reset Method ✓</span>}
                 {a.is_vita_response && <span className="text-[11px] font-semibold text-accent">VITA says:</span>}
                 {!a.is_admin_response && !a.is_vita_response && (
                   <span className="text-[11px] text-muted-foreground">
@@ -593,7 +593,7 @@ function QuestionCard({
               </div>
               <p className="text-sm whitespace-pre-wrap">{a.content}</p>
               <div className="mt-2 flex items-center gap-3">
-                <button onClick={() => onVote(a.id, "answer", "helpful")} className="text-[11px] text-muted-foreground hover:text-brand-primary">
+                <button onClick={() => onVote(a.id, "answer", "helpful")} className="text-[11px] text-muted-foreground hover:text-primary">
                   Helpful {a.helpful_count > 0 && `(${a.helpful_count})`}
                 </button>
               </div>
