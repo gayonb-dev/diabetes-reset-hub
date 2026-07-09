@@ -57,7 +57,7 @@ export default function StreakHistoryModal({
         {/* Current streak highlight */}
         <div className="bg-accent-muted border border-accent/40 rounded-2xl p-5 my-3">
           <div className="flex items-center gap-2 mb-1">
-            <Flame className="h-7 w-7 text-accent" fill="#FF8C00" strokeWidth={2.4} />
+            <Flame className="h-7 w-7 text-accent" fill="hsl(var(--streak-fire-end))" strokeWidth={2.4} />
             <span className="font-heading text-[36px] font-bold text-accent leading-none tabular-nums">
               {currentStreak}
             </span>
@@ -71,8 +71,8 @@ export default function StreakHistoryModal({
           <div className="mt-3 flex items-center gap-2 text-[13px]">
             {freezeAvailable ? (
               <>
-                <Shield className="h-4 w-4" style={{ color: "#22C55E" }} fill="#E8F5F1" />
-                <span style={{ color: "#22C55E" }} className="font-medium">
+                <Shield className="h-4 w-4 text-status-normal" fill="hsl(var(--primary-muted))" />
+                <span className="font-medium text-status-normal">
                   1 freeze saved
                 </span>
               </>

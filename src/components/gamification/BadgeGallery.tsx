@@ -66,13 +66,19 @@ export default function BadgeGallery({ category, earnedSlugs, title }: BadgeGall
               title={got ? b.description : b.unlock_hint ?? b.description}
             >
               <div
-                className="relative w-12 h-12 rounded-full flex items-center justify-center text-2xl"
-                style={{ background: got ? `${tierColor[b.tier] ?? "#E8A029"}22` : "#F4F1EC" }}
+                className={`relative w-12 h-12 rounded-full flex items-center justify-center text-2xl ${
+                  got ? "" : "bg-muted"
+                }`}
+                style={
+                  got
+                    ? { background: `${tierColor[b.tier] ?? "hsl(var(--accent))"}22` }
+                    : undefined
+                }
               >
                 <span aria-hidden>{b.icon}</span>
                 {!got && (
                   <Lock
-                    className="absolute -bottom-1 -right-1 h-4 w-4 bg-bg-card rounded-full p-0.5 text-tertiary-fg"
+                    className="absolute -bottom-1 -right-1 h-4 w-4 bg-card rounded-full p-0.5 text-tertiary-fg"
                     strokeWidth={2.5}
                   />
                 )}

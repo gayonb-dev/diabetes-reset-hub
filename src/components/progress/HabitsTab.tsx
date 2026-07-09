@@ -15,10 +15,10 @@ function dateKey(d: Date) {
 }
 
 function ringColor(count: number) {
-  if (count === 4) return "#085041";
-  if (count >= 2) return "#E8A029";
-  if (count === 1) return "rgba(232,160,41,0.4)";
-  return "#F4F1EC";
+  if (count === 4) return "hsl(var(--primary))";
+  if (count >= 2) return "hsl(var(--accent))";
+  if (count === 1) return "hsl(var(--accent) / 0.4)";
+  return "hsl(var(--muted))";
 }
 
 export default function HabitsTab() {
@@ -106,10 +106,10 @@ export default function HabitsTab() {
           ))}
         </div>
         <div className="flex items-center gap-3 mt-4 text-[11px] text-tertiary-fg">
-          <span className="flex items-center gap-1"><span className="h-3 w-3 rounded-sm" style={{ background: "#F4F1EC" }} /> None</span>
-          <span className="flex items-center gap-1"><span className="h-3 w-3 rounded-sm" style={{ background: "rgba(232,160,41,0.4)" }} /> 1</span>
-          <span className="flex items-center gap-1"><span className="h-3 w-3 rounded-sm" style={{ background: "#E8A029" }} /> 2–3</span>
-          <span className="flex items-center gap-1"><span className="h-3 w-3 rounded-sm" style={{ background: "#085041" }} /> 4</span>
+          <span className="flex items-center gap-1"><span className="h-3 w-3 rounded-sm bg-muted" /> None</span>
+          <span className="flex items-center gap-1"><span className="h-3 w-3 rounded-sm bg-accent/40" /> 1</span>
+          <span className="flex items-center gap-1"><span className="h-3 w-3 rounded-sm bg-accent" /> 2–3</span>
+          <span className="flex items-center gap-1"><span className="h-3 w-3 rounded-sm bg-primary" /> 4</span>
         </div>
       </Card>
 
@@ -120,10 +120,10 @@ export default function HabitsTab() {
           </p>
           {selectedRings ? (
             <div className="grid grid-cols-2 gap-2 text-sm">
-              <RingItem label="Water" on={selectedRings.water} color="#2196F3" />
-              <RingItem label="Food" on={selectedRings.food} color="#085041" />
-              <RingItem label="Exercise" on={selectedRings.exercise} color="#E8A029" />
-              <RingItem label="Mindset" on={selectedRings.mindset} color="#7C5CBF" />
+              <RingItem label="Water" on={selectedRings.water} color="hsl(var(--ring-water))" />
+              <RingItem label="Food" on={selectedRings.food} color="hsl(var(--ring-food))" />
+              <RingItem label="Exercise" on={selectedRings.exercise} color="hsl(var(--ring-exercise))" />
+              <RingItem label="Mindset" on={selectedRings.mindset} color="hsl(var(--ring-mindset))" />
             </div>
           ) : (
             <p className="text-sm text-muted-foreground">Nothing logged this day.</p>
@@ -156,7 +156,7 @@ function RingItem({ label, on, color }: { label: string; on: boolean; color: str
     <div className="flex items-center gap-2">
       <span
         className="h-3.5 w-3.5 rounded-full"
-        style={{ background: on ? color : "transparent", border: `2px solid ${on ? color : "#F4F1EC"}` }}
+        style={{ background: on ? color : "transparent", border: `2px solid ${on ? color : "hsl(var(--muted))"}` }}
       />
       <span className={on ? "text-foreground font-medium" : "text-tertiary-fg"}>{label}</span>
     </div>

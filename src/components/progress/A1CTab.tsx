@@ -20,9 +20,9 @@ interface A1C {
 const pctToMmolMol = (p: number) => Math.round((p - 2.15) * 10.929);
 
 function tone(p: number) {
-  if (p < 5.7) return "#22C55E";
-  if (p < 6.5) return "#F59E0B";
-  return "#EF4444";
+  if (p < 5.7) return "hsl(var(--status-normal))";
+  if (p < 6.5) return "hsl(var(--status-warning))";
+  return "hsl(var(--status-danger))";
 }
 
 export default function A1CTab() {

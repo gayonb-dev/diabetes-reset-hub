@@ -33,8 +33,11 @@ export default function LevelUpOverlay({ level, onDismiss }: LevelUpOverlayProps
   return (
     <Dialog open onOpenChange={(o) => !o && onDismiss()}>
       <DialogContent
-        className="max-w-md p-0 overflow-hidden border-0 [&>button]:text-white"
-        style={{ background: "linear-gradient(160deg,#085041 0%,#0A6652 100%)" }}
+        className="max-w-md p-0 overflow-hidden border-0 [&>button]:text-primary-foreground"
+        style={{
+          background:
+            "linear-gradient(160deg, hsl(var(--primary)) 0%, hsl(var(--primary-dark)) 100%)",
+        }}
       >
         <span id="level-up-live" className="sr-only" aria-live="polite" />
         <Confetti />
@@ -104,7 +107,7 @@ function Confetti() {
         const left = (i * 37) % 100;
         const delay = (i % 6) * 0.15;
         const size = 6 + ((i * 3) % 6);
-        const color = i % 2 === 0 ? "#E8A029" : "#FFFFFF";
+        const color = i % 2 === 0 ? "hsl(var(--accent))" : "hsl(var(--primary-foreground))";
         return (
           <span
             key={i}

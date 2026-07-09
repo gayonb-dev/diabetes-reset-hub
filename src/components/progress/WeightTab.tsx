@@ -227,7 +227,7 @@ function WeightChart({ logs, goalLb, unit }: { logs: Log[]; goalLb: number | nul
       <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-40 min-w-[400px]">
         <line x1="0" x2={W} y1={yBase} y2={yBase} stroke="hsl(var(--muted-foreground))" strokeDasharray="2 4" strokeOpacity="0.4" />
         {yGoal != null && (
-          <line x1="0" x2={W} y1={yGoal} y2={yGoal} stroke="#E8A029" strokeDasharray="4 4" />
+          <line x1="0" x2={W} y1={yGoal} y2={yGoal} stroke="hsl(var(--accent))" strokeDasharray="4 4" />
         )}
         <polyline
           points={points}
