@@ -183,10 +183,7 @@ export default function MealSetupTransition() {
 
   if (forcedAdvance && completedCount < TOTAL_WEEKS) {
     return (
-      <div
-        className="min-h-dvh flex items-center justify-center px-6"
-        style={{ backgroundColor: "#085041" }}
-      >
+      <div className="min-h-dvh flex items-center justify-center px-6 bg-primary">
         <VitaErrorCard
           title="Your meal plan is taking longer than expected"
           message={`${completedCount} of ${TOTAL_WEEKS} weeks finished. Retry now, or open the Meals tab and finish the rest there.`}
@@ -220,35 +217,32 @@ export default function MealSetupTransition() {
   const progressPct = Math.round((completedCount / TOTAL_WEEKS) * 100);
 
   return (
-    <div
-      className="min-h-dvh flex flex-col items-center justify-center gap-6 px-6 py-10 text-center"
-      style={{ backgroundColor: "#085041" }}
-    >
+    <div className="min-h-dvh flex flex-col items-center justify-center gap-6 px-6 py-10 text-center bg-primary text-primary-foreground">
       <Vita posture="encouraging" size={120} />
 
       <div className="space-y-2 max-w-sm">
-        <h1 className="text-[20px] font-semibold leading-snug" style={{ color: "#FFFFFF" }}>
+        <h1 className="text-[20px] font-semibold leading-snug">
           Building your 4-week meal plan
         </h1>
-        <p className="text-[13px]" style={{ color: "rgba(255,255,255,0.7)" }}>
+        <p className="text-[13px] text-primary-foreground/70">
           {subText}
+        </p>
+        <p className="text-[11px] text-primary-foreground/50 pt-1">
+          This usually takes 60–120 seconds per week. You can pick your cuisine while VITA works.
         </p>
       </div>
 
       {/* Progress bar */}
       <div className="w-full max-w-xs">
-        <div
-          className="h-2 rounded-full overflow-hidden"
-          style={{ backgroundColor: "rgba(255,255,255,0.15)" }}
-        >
+        <div className="h-2 rounded-full overflow-hidden bg-primary-foreground/15">
           <div
-            className="h-full transition-all duration-500 ease-out"
-            style={{ width: `${progressPct}%`, backgroundColor: "#E8A029" }}
+            className="h-full bg-accent transition-all duration-500 ease-out"
+            style={{ width: `${progressPct}%` }}
           />
         </div>
-        <div className="flex justify-between mt-1.5 text-[10px]" style={{ color: "rgba(255,255,255,0.55)" }}>
+        <div className="flex justify-between mt-1.5 text-[10px] text-primary-foreground/55 tabular-nums">
           {[1, 2, 3, 4].map((n) => (
-            <span key={n} style={{ opacity: completedCount >= n ? 1 : 0.4 }}>
+            <span key={n} className={completedCount >= n ? "opacity-100" : "opacity-40"}>
               {completedCount >= n ? "✓" : "○"} Week {n}
             </span>
           ))}
@@ -256,10 +250,7 @@ export default function MealSetupTransition() {
       </div>
 
       <div className="space-y-2 max-w-md">
-        <p
-          className="text-[11px] uppercase tracking-[0.08em]"
-          style={{ color: "rgba(255,255,255,0.55)" }}
-        >
+        <p className="text-[11px] uppercase tracking-[0.08em] text-primary-foreground/55">
           Cuisine style
         </p>
         <div className="flex flex-wrap gap-2 justify-center">
@@ -270,28 +261,24 @@ export default function MealSetupTransition() {
                 key={c}
                 type="button"
                 onClick={() => pickCuisine(c)}
-                className="px-3.5 py-1.5 rounded-full text-[12px] font-medium border transition-colors"
-                style={{
-                  background: on ? "#E8A029" : "transparent",
-                  borderColor: on ? "#E8A029" : "rgba(255,255,255,0.3)",
-                  color: on ? "#FFFFFF" : "rgba(255,255,255,0.75)",
-                }}
+                className={`px-3.5 py-1.5 rounded-full text-[12px] font-medium border transition-colors ${
+                  on
+                    ? "bg-accent text-primary-foreground border-accent"
+                    : "bg-transparent text-primary-foreground/75 border-primary-foreground/30 hover:border-primary-foreground/60"
+                }`}
               >
                 {c}
               </button>
             );
           })}
         </div>
-        <p className="text-[10px]" style={{ color: "rgba(255,255,255,0.4)" }}>
+        <p className="text-[10px] text-primary-foreground/40">
           Changing cuisine restarts all 4 weeks.
         </p>
       </div>
 
       <div className="space-y-2 max-w-md">
-        <p
-          className="text-[11px] uppercase tracking-[0.08em]"
-          style={{ color: "rgba(255,255,255,0.55)" }}
-        >
+        <p className="text-[11px] uppercase tracking-[0.08em] text-primary-foreground/55">
           Cooking time
         </p>
         <div className="flex flex-wrap gap-1.5 justify-center">
@@ -302,12 +289,11 @@ export default function MealSetupTransition() {
                 key={t}
                 type="button"
                 onClick={() => pickCooking(t)}
-                className="px-3 py-1.5 rounded-full text-[11px] border transition-colors"
-                style={{
-                  background: on ? "rgba(255,255,255,0.15)" : "transparent",
-                  borderColor: on ? "rgba(255,255,255,0.5)" : "rgba(255,255,255,0.25)",
-                  color: on ? "#FFFFFF" : "rgba(255,255,255,0.6)",
-                }}
+                className={`px-3 py-1.5 rounded-full text-[11px] border transition-colors ${
+                  on
+                    ? "bg-primary-foreground/15 text-primary-foreground border-primary-foreground/50"
+                    : "bg-transparent text-primary-foreground/60 border-primary-foreground/25 hover:border-primary-foreground/50"
+                }`}
               >
                 {t}
               </button>
@@ -320,11 +306,8 @@ export default function MealSetupTransition() {
         {[0, 1, 2].map((i) => (
           <span
             key={i}
-            className="inline-block h-2 w-2 rounded-full"
-            style={{
-              backgroundColor: "#E8A029",
-              animation: `vita-dot 1.2s ease-in-out ${i * 0.18}s infinite`,
-            }}
+            className="inline-block h-2 w-2 rounded-full bg-accent"
+            style={{ animation: `vita-dot 1.2s ease-in-out ${i * 0.18}s infinite` }}
           />
         ))}
       </div>
