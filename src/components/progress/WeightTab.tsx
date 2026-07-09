@@ -17,6 +17,7 @@ import {
   WEIGHT_RANGE_LB,
 } from "@/lib/units";
 import { useGamification } from "@/hooks/useGamification";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from "recharts";
 
 interface Log {
   id: string;
@@ -208,44 +209,35 @@ export default function WeightTab() {
 }
 
 function WeightChart({ logs, goalLb, unit }: { logs: Log[]; goalLb: number | null; unit: WeightUnit }) {
-  const W = 600;
-  const H = 140;
-  const values = logs.map((l) => l.weight!);
-  const baseline = values[0];
-  const min = Math.min(...values, goalLb ?? Infinity, baseline) - 2;
-  const max = Math.max(...values, baseline) + 2;
-  const range = max - min || 1;
-  const step = W / Math.max(values.length - 1, 1);
-  const points = values
-    .map((v, i) => `${i * step},${H - ((v - min) / range) * (H - 16) - 8}`)
-    .join(" ");
-  const yBase = H - ((baseline - min) / range) * (H - 16) - 8;
-  const yGoal = goalLb ? H - ((goalLb - min) / range) * (H - 16) - 8 : null;
+  const data = logs.map((l) => ({
+    date: new Date(l.log_date).toLocaleDateString(undefined, { month: "short", day: "numeric" }),
+    weight: unit === "kg" ? Math.round(lbToKg(l.weight!) * 10) / 10 : Math.round(l.weight! * 10) / 10,
+  }));
+  const goalDisplay = goalLb != null ? (unit === "kg" ? Math.round(lbToKg(goalLb) * 10) / 10 : Math.round(goalLb * 10) / 10) : null;
 
   return (
-    <div className="overflow-x-auto">
-      <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-40 min-w-[400px]">
-        <line x1="0" x2={W} y1={yBase} y2={yBase} stroke="hsl(var(--muted-foreground))" strokeDasharray="2 4" strokeOpacity="0.4" />
-        {yGoal != null && (
-          <line x1="0" x2={W} y1={yGoal} y2={yGoal} stroke="hsl(var(--accent))" strokeDasharray="4 4" />
-        )}
-        <polyline
-          points={points}
-          fill="none"
-          stroke="hsl(var(--primary))"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-        {values.map((v, i) => (
-          <circle key={i} cx={i * step} cy={H - ((v - min) / range) * (H - 16) - 8} r="3" fill="hsl(var(--primary))" />
-        ))}
-      </svg>
-      <div className="flex justify-between text-[10px] text-tertiary-fg mt-1">
-        <span>{logs[0] && new Date(logs[0].log_date).toLocaleDateString(undefined, { month: "short", day: "numeric" })}</span>
-        {goalLb && <span className="text-accent">Goal: {displayWeight(goalLb, unit)}</span>}
-        <span>{logs[logs.length - 1] && new Date(logs[logs.length - 1].log_date).toLocaleDateString(undefined, { month: "short", day: "numeric" })}</span>
-      </div>
+    <div className="h-48 w-full">
+      <ResponsiveContainer width="100%" height="100%">
+        <LineChart data={data} margin={{ top: 8, right: 12, left: -12, bottom: 0 }}>
+          <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
+          <XAxis dataKey="date" tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} tickLine={false} axisLine={false} minTickGap={20} />
+          <YAxis tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} tickLine={false} axisLine={false} width={36} domain={["dataMin - 2", "dataMax + 2"]} />
+          <Tooltip
+            contentStyle={{
+              background: "hsl(var(--popover))",
+              border: "1px solid hsl(var(--border))",
+              borderRadius: 8,
+              fontSize: 12,
+              color: "hsl(var(--popover-foreground))",
+            }}
+            formatter={(v: number) => [`${v} ${unit === "kg" ? "kg" : "lb"}`, "Weight"]}
+          />
+          {goalDisplay != null && (
+            <ReferenceLine y={goalDisplay} stroke="hsl(var(--accent))" strokeDasharray="4 4" label={{ value: `Goal ${goalDisplay}`, fill: "hsl(var(--accent))", fontSize: 10, position: "insideTopRight" }} />
+          )}
+          <Line type="monotone" dataKey="weight" stroke="hsl(var(--primary))" strokeWidth={2} dot={{ r: 3, fill: "hsl(var(--primary))" }} activeDot={{ r: 5 }} />
+        </LineChart>
+      </ResponsiveContainer>
     </div>
   );
 }
