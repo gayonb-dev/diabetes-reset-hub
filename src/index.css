@@ -168,6 +168,23 @@
   .text-tertiary-fg {
     color: hsl(var(--text-tertiary));
   }
+  /* Admin console shell — visually distinct from the member app */
+  .admin-shell {
+    background-color: rgb(248 250 252);
+    background-image:
+      linear-gradient(rgba(15, 23, 42, 0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(15, 23, 42, 0.04) 1px, transparent 1px);
+    background-size: 32px 32px;
+    background-position: -1px -1px;
+    color: rgb(15 23 42);
+  }
+  .dark .admin-shell {
+    background-color: rgb(2 6 23);
+    background-image:
+      linear-gradient(rgba(148, 163, 184, 0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(148, 163, 184, 0.06) 1px, transparent 1px);
+    color: rgb(226 232 240);
+  }
 }
 
 html {
