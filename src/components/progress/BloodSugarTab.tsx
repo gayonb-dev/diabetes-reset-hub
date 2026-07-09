@@ -304,16 +304,13 @@ function BloodSugarHistory({ readings, unit }: { readings: Reading[]; unit: Gluc
     );
 
   const sorted = [...readings].reverse();
-  const W = 600;
-  const H = 140;
-  const values = sorted.map((r) => r.value_mgdl);
-  const minV = Math.min(...values, 70);
-  const maxV = Math.max(...values, 180);
-  const range = maxV - minV || 1;
-  const step = W / Math.max(sorted.length - 1, 1);
-  const points = sorted
-    .map((r, i) => `${i * step},${H - ((r.value_mgdl - minV) / range) * (H - 16) - 8}`)
-    .join(" ");
+  const data = sorted.map((r) => ({
+    id: r.id,
+    label: new Date(r.measured_at).toLocaleDateString(undefined, { month: "short", day: "numeric" }),
+    value: unit === "mmoll" ? Number(mgdlToMmoll(r.value_mgdl).toFixed(1)) : Math.round(r.value_mgdl),
+    mgdl: r.value_mgdl,
+    tone: toneFor(r.value_mgdl, r.reading_type),
+  }));
 
   const avg = (arr: number[]) => Math.round(arr.reduce((a, b) => a + b, 0) / arr.length);
   const last7 = readings.filter((r) => Date.now() - new Date(r.measured_at).getTime() < 7 * 86400000);
@@ -326,30 +323,43 @@ function BloodSugarHistory({ readings, unit }: { readings: Reading[]; unit: Gluc
   })();
 
   const fmt = (mg: number) => (unit === "mmoll" ? mgdlToMmoll(mg).toFixed(1) : String(Math.round(mg)));
-  const yNormal = H - ((100 - minV) / range) * (H - 16) - 8;
-  const yDiabetic = H - ((126 - minV) / range) * (H - 16) - 8;
+  const normalRef = unit === "mmoll" ? Number(mgdlToMmoll(100).toFixed(1)) : 100;
+  const diabeticRef = unit === "mmoll" ? Number(mgdlToMmoll(126).toFixed(1)) : 126;
 
   return (
     <Card className="p-5 border border-border">
       <p className="text-sm font-medium mb-3">Blood sugar trend</p>
-      <div className="overflow-x-auto">
-        <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-40 min-w-[400px]">
-          <line x1="0" x2={W} y1={yNormal} y2={yNormal} stroke="hsl(var(--status-normal))" strokeDasharray="4 4" />
-          <line x1="0" x2={W} y1={yDiabetic} y2={yDiabetic} stroke="hsl(var(--status-warning))" strokeDasharray="4 4" />
-          <polyline
-            points={points}
-            fill="none"
-            stroke="hsl(var(--primary))"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-          {sorted.map((r, i) => {
-            const x = i * step;
-            const y = H - ((r.value_mgdl - minV) / range) * (H - 16) - 8;
-            return <circle key={r.id} cx={x} cy={y} r="3" fill={toneColor(toneFor(r.value_mgdl, r.reading_type))} />;
-          })}
-        </svg>
+      <div className="h-48 w-full">
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart data={data} margin={{ top: 8, right: 12, left: -12, bottom: 0 }}>
+            <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
+            <XAxis dataKey="label" tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} tickLine={false} axisLine={false} minTickGap={20} />
+            <YAxis tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} tickLine={false} axisLine={false} width={36} />
+            <Tooltip
+              contentStyle={{
+                background: "hsl(var(--popover))",
+                border: "1px solid hsl(var(--border))",
+                borderRadius: 8,
+                fontSize: 12,
+                color: "hsl(var(--popover-foreground))",
+              }}
+              formatter={(v: number) => [`${v} ${unit === "mmoll" ? "mmol/L" : "mg/dL"}`, "Reading"]}
+            />
+            <ReferenceLine y={normalRef} stroke="hsl(var(--status-normal))" strokeDasharray="4 4" />
+            <ReferenceLine y={diabeticRef} stroke="hsl(var(--status-warning))" strokeDasharray="4 4" />
+            <Line
+              type="monotone"
+              dataKey="value"
+              stroke="hsl(var(--primary))"
+              strokeWidth={2}
+              dot={(props: any) => {
+                const { cx, cy, payload, index } = props;
+                return <Dot key={payload?.id ?? index} cx={cx} cy={cy} r={3} fill={toneColor(payload.tone)} />;
+              }}
+              activeDot={{ r: 5 }}
+            />
+          </LineChart>
+        </ResponsiveContainer>
       </div>
       <div className="grid grid-cols-3 gap-3 mt-3 text-center">
         <div>
