@@ -49,20 +49,48 @@ const IntakeForm = () => {
     if (errors[field]) setErrors((prev) => ({ ...prev, [field]: "" }));
   };
 
+  const validateStep = (s: number) => {
+    const e: Record<string, string> = {};
+    if (s === 0) {
+      if (!form.full_name.trim()) e.full_name = "Full name is required";
+      if (!form.age || isNaN(Number(form.age)) || Number(form.age) < 18 || Number(form.age) > 120) e.age = "Valid age (18-120) is required";
+      if (!form.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) e.email = "Valid email is required";
+      if (!form.country.trim()) e.country = "Country is required";
+    } else if (s === 1) {
+      if (!form.diabetes_type) e.diabetes_type = "Please select your diabetes type";
+    } else if (s === 3) {
+      if (!form.why_now.trim()) e.why_now = "Please share why you want to start now";
+      if (!form.coaching_agreement) e.coaching_agreement = "You must agree to proceed";
+    }
+    return e;
+  };
+
   const validate = () => {
-    const newErrors: Record<string, string> = {};
-    if (!form.full_name.trim()) newErrors.full_name = "Full name is required";
-    if (!form.age || isNaN(Number(form.age)) || Number(form.age) < 18 || Number(form.age) > 120) newErrors.age = "Valid age (18-120) is required";
-    if (!form.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) newErrors.email = "Valid email is required";
-    if (!form.country.trim()) newErrors.country = "Country is required";
-    if (!form.diabetes_type) newErrors.diabetes_type = "Please select your diabetes type";
-    if (!form.why_now.trim()) newErrors.why_now = "Please share why you want to start now";
-    if (!form.coaching_agreement) newErrors.coaching_agreement = "You must agree to proceed";
+    const newErrors: Record<string, string> = {
+      ...validateStep(0),
+      ...validateStep(1),
+      ...validateStep(3),
+    };
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const goNext = () => {
+    const e = validateStep(step);
+    if (Object.keys(e).length) {
+      setErrors((prev) => ({ ...prev, ...e }));
+      toast.error("Please fix the highlighted fields.");
+      return;
+    }
+    setStep((s) => Math.min(STEPS.length - 1, s + 1));
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const goBack = () => {
+    setStep((s) => Math.max(0, s - 1));
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
     e.preventDefault();
     if (!validate()) return;
     // PHI gate — intake collects PHI (meds, diabetes type, etc.). Require the
