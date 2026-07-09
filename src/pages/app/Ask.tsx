@@ -271,7 +271,7 @@ export default function Ask() {
       {/* Layer 1 — VITA Quick Answer */}
       <Card className="p-4 bg-accent-muted border-accent/40">
         <div className="flex items-start gap-3">
-          <div className="h-10 w-10 rounded-full bg-accent flex items-center justify-center text-white shrink-0">
+          <div className="h-10 w-10 rounded-full bg-accent flex items-center justify-center text-accent-foreground shrink-0">
             <Sparkles className="h-5 w-5" />
           </div>
           <div className="flex-1 space-y-3">
