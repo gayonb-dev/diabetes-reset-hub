@@ -195,9 +195,6 @@ export default function AppLayout() {
             <NavLink to="/app/fasting" className={navClass}>
               <Timer className="h-4 w-4" /> Fasting
             </NavLink>
-            <NavLink to="/app/cheat-meal" className={navClass}>
-              <Cookie className="h-4 w-4" /> Cheat Meal
-            </NavLink>
             <NavLink to="/app/ask" className={navClass}>
               <MessageCircleQuestion className="h-4 w-4" /> Ask
             </NavLink>
