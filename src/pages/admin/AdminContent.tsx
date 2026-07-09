@@ -19,6 +19,7 @@ import {
   TabsContent,
 } from "@/components/ui/tabs";
 import { Loader2, Plus, Trash2, Edit, ArrowUp, ArrowDown } from "lucide-react";
+import AdminListSkeleton from "@/components/admin/AdminListSkeleton";
 import { toast } from "sonner";
 import { MINDSET_WEEKS } from "@/data/mindsetWeeks";
 
