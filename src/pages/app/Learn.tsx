@@ -214,8 +214,8 @@ export default function Learn() {
                 );
               })}
             </div>
-          )}
         </TabsContent>
+        )}
       </Tabs>
 
       {activeWeek && (
