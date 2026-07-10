@@ -52,16 +52,34 @@ Deno.serve(async (req) => {
 
     const { data: streak } = await supabase.rpc("bump_streak", { p_user_id: uid });
 
-    // Capture level BEFORE awarding XP to detect level-up
-    const { data: priorStreak } = await supabase
-      .from("user_streaks")
+    // Mirror the authoritative streak into visitor_profiles so the dashboard
+    // reads the same value the sidebar reads.
+    const currentStreak = streak?.[0]?.current_streak ?? 0;
+    await supabase
+      .from("visitor_profiles")
+      .update({ streak_count: currentStreak })
+      .eq("user_id", uid);
+
+    // Level is derived from program day (single source of truth), NOT from XP.
+    const { data: dayRow } = await supabase.rpc("current_program_day", { p_user_id: uid });
+    const programDay = Number(dayRow ?? 1);
+    const LEVEL_DAY_THRESHOLDS = [0, 14, 45, 90, 135, 180, 270, 365, 450, 540];
+    let dayLevel = 1;
+    for (let i = 0; i < LEVEL_DAY_THRESHOLDS.length; i++) {
+      if (programDay >= LEVEL_DAY_THRESHOLDS[i]) dayLevel = i + 1;
+    }
+
+    // Capture prior level from visitor_profiles (the display source of truth).
+    const { data: vp } = await supabase
+      .from("visitor_profiles")
       .select("level")
       .eq("user_id", uid)
       .maybeSingle();
-    const priorLevel = priorStreak?.level ?? 1;
+    const priorLevel = vp?.level ?? 1;
+    const newLevel = dayLevel;
 
+    // Award XP (Reset Points accumulate) — its returned level is ignored.
     const { data: xpRes } = await supabase.rpc("award_xp", { p_user_id: uid, p_amount: xp });
-    const newLevel = xpRes?.[0]?.level ?? priorLevel;
 
     // Level names/messages MUST stay in sync with src/lib/levels.ts and
     // src/components/gamification/LevelUpOverlay.tsx.
@@ -94,6 +112,10 @@ Deno.serve(async (req) => {
     };
 
     if (newLevel > priorLevel && LEVEL_NAMES[newLevel]) {
+      await supabase
+        .from("visitor_profiles")
+        .update({ level: newLevel, level_earned_at: new Date().toISOString() })
+        .eq("user_id", uid);
       await sendNotif("level_up", {
         level_name: LEVEL_NAMES[newLevel].name,
         level_message: LEVEL_NAMES[newLevel].msg,

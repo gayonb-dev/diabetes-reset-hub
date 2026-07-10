@@ -57,18 +57,19 @@ export default function AppLayout() {
       const [{ data }, { data: streak }] = await Promise.all([
         supabase
         .from("visitor_profiles")
-        .select("metadata")
+        .select("metadata, level")
         .eq("user_id", user.id)
           .maybeSingle(),
         supabase
           .from("user_streaks")
-          .select("current_streak, level")
+          .select("current_streak")
           .eq("user_id", user.id)
           .maybeSingle(),
       ]);
       if (cancelled) return;
       const meta = (data?.metadata as Record<string, unknown> | null) || {};
-      const level = streak?.level ?? 1;
+      // Level is now day-derived and maintained by gamify-action + useGamificationProfile.
+      const level = data?.level ?? 1;
       setStreakDays(streak?.current_streak ?? 0);
       setLevelName(level <= 1 ? "Level 1: Getting Started" : `Level ${level}: The Builder`);
       setOnboardCheck(meta.onboarded_at ? "done" : "needs");
