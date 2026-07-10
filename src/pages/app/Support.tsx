@@ -61,11 +61,24 @@ export default function Support() {
           userAgent: navigator.userAgent,
         },
       });
-      if (error) throw error;
+      if (error) {
+        // Surface the real error body from the edge function when available.
+        let detail = (error as Error).message;
+        const ctx = (error as unknown as { context?: Response }).context;
+        if (ctx && typeof ctx.text === "function") {
+          try {
+            const body = await ctx.text();
+            if (body) detail = body.slice(0, 400);
+          } catch {
+            /* ignore */
+          }
+        }
+        throw new Error(detail);
+      }
       setSent(true);
     } catch (e) {
       toast({
-        title: "Couldn't send",
+        title: "Couldn't send — try emailing info@diabetesresetmethod.com",
         description: (e as Error).message,
         variant: "destructive",
       });

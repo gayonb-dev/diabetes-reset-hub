@@ -94,7 +94,7 @@ export default function Learn() {
         <TabsList className="bg-muted">
           <TabsTrigger value="mindset">Mindset</TabsTrigger>
           <TabsTrigger value="learn">Guides</TabsTrigger>
-          <TabsTrigger value="blog">Blog</TabsTrigger>
+          {blogPosts.length > 0 && <TabsTrigger value="blog">Blog</TabsTrigger>}
         </TabsList>
 
         {/* MINDSET TAB */}
@@ -173,21 +173,13 @@ export default function Learn() {
           </Accordion>
         </TabsContent>
 
-        {/* BLOG TAB */}
+        {/* BLOG TAB — only when posts exist */}
+        {blogPosts.length > 0 && (
         <TabsContent value="blog" className="mt-5 space-y-3">
           <p className="text-sm text-secondary-fg">
             Curated reads from trusted sources.
           </p>
-          {blogPosts.length === 0 ? (
-            <Card className="p-6 border-dashed">
-              <EmptyState
-                title="No curated reads yet"
-                description="First curated picks are coming. VITA reads everything first."
-                posture="encouraging"
-              />
-            </Card>
-          ) : (
-            <div className="space-y-3">
+          <div className="space-y-3">
               {blogPosts.map((p) => {
                 const meta = (p.metadata || {}) as Record<string, string>;
                 return (
