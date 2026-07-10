@@ -8,6 +8,7 @@ import { Check, X, Pause, ChevronRight } from "lucide-react";
 import { Vita } from "@/components/vita/Vita";
 import { cn } from "@/lib/utils";
 import { getWorkoutBySlug, REST_SECONDS } from "@/data/workouts";
+import { useProgramDay } from "@/hooks/useProgramDay";
 
 function formatTime(totalSec: number): string {
   const m = Math.floor(totalSec / 60);
@@ -32,7 +33,15 @@ export default function WorkoutSession() {
   const [params] = useSearchParams();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const programDay = useProgramDay();
   const workout = useMemo(() => (slug ? getWorkoutBySlug(slug) : undefined), [slug]);
+
+  // Workouts unlock on Day 29 — redirect earlier days to the locked library view.
+  useEffect(() => {
+    if (programDay > 0 && programDay < 29) {
+      navigate("/app/workouts", { replace: true });
+    }
+  }, [programDay, navigate]);
 
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [currentIdx, setCurrentIdx] = useState(0);
@@ -44,6 +53,7 @@ export default function WorkoutSession() {
   // Create or resume session
   useEffect(() => {
     if (!user || !workout) return;
+    if (programDay > 0 && programDay < 29) return;
     const isResume = params.get("resume") === "1";
     (async () => {
       if (isResume) {
