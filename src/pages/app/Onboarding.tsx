@@ -171,7 +171,7 @@ export default function Onboarding() {
       <div className="min-h-dvh bg-primary text-primary-foreground font-sans flex flex-col items-center justify-center px-10 py-12">
         <p className="text-[22px] font-semibold mb-6 tracking-tight">Diabetes Reset Method</p>
         <Vita posture="celebrating" size={160} />
-        <h1 className="text-[28px] font-bold mt-6 text-center leading-tight">
+        <h1 className="font-heading text-[28px] font-bold mt-6 text-center leading-tight">
           Your reversal starts today.
         </h1>
         <p className="text-base mt-3 text-center text-primary-foreground/70 max-w-sm">
@@ -213,7 +213,7 @@ export default function Onboarding() {
         <Card className="p-8 border-border/60 shadow-sm rounded-2xl bg-card">
           {step === 1 && (
             <>
-              <h1 className="text-[22px] font-semibold mb-2 tracking-tight">
+              <h1 className="font-heading text-[22px] font-semibold mb-2 tracking-tight">
                 Tell us where you are starting.
               </h1>
               <p className="text-sm text-muted-foreground mb-6">
@@ -335,7 +335,7 @@ export default function Onboarding() {
 
           {step === 2 && (
             <>
-              <h1 className="text-[22px] font-semibold mb-2 tracking-tight">
+              <h1 className="font-heading text-[22px] font-semibold mb-2 tracking-tight">
                 What would a win look like for you?
               </h1>
               <p className="text-sm text-muted-foreground mb-6">
@@ -435,7 +435,7 @@ export default function Onboarding() {
 
           {step === 3 && (
             <>
-              <h1 className="text-[22px] font-semibold mb-2 tracking-tight">
+              <h1 className="font-heading text-[22px] font-semibold mb-2 tracking-tight">
                 How do you currently track your blood sugar?
               </h1>
               <p className="text-sm text-muted-foreground mb-6">

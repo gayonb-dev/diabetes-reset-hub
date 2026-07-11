@@ -77,19 +77,19 @@ export default function GettingStartedChecklist({ currentProgramDay }: Props) {
   }
 
   return (
-    <div className="bg-accent-muted border-[1.5px] border-accent/60 rounded-xl overflow-hidden">
+    <div className="bg-card border border-border rounded-xl shadow-warm overflow-hidden">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
         className="w-full flex items-center justify-between px-4 py-3 text-left"
         aria-expanded={open}
       >
-        <span className="text-sm font-semibold text-accent">📋 Getting Ready</span>
+        <span className="text-sm font-semibold text-foreground">Getting Ready</span>
         <span className="flex items-center gap-2">
-          <span className="text-[11px] text-accent font-medium">
+          <span className="text-[11px] text-tertiary-fg font-medium">
             {acquired} of {totalUnlocked} items acquired
           </span>
-          {open ? <ChevronUp className="h-4 w-4 text-accent" /> : <ChevronDown className="h-4 w-4 text-accent" />}
+          {open ? <ChevronUp className="h-4 w-4 text-tertiary-fg" /> : <ChevronDown className="h-4 w-4 text-tertiary-fg" />}
         </span>
       </button>
 

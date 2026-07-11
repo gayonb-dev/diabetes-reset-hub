@@ -31,22 +31,20 @@ export function QuickStats({ stats, className }: QuickStatsProps) {
         const empty = s.value == null || s.value === "";
         const colorCls = toneColor[s.tone ?? "neutral"];
         const inner = (
-          <div className="bg-card border border-border rounded-lg p-3 shadow-warm h-full text-left transition-shadow hover:shadow-md">
-            <p className="text-[10px] text-tertiary-fg mb-1">{s.label}</p>
+          <div className="bg-card border border-border rounded-xl p-3 shadow-warm h-full text-left transition-shadow hover:shadow-md">
+            <p className="stat-label mb-1.5">{s.label}</p>
             {empty ? (
               <>
-                <p className="text-lg font-semibold text-tertiary-fg leading-tight">—</p>
-                <p className="text-[10px] text-accent mt-0.5">{s.emptyHint ?? "Tap to log"}</p>
+                <p className="stat-value text-tertiary-fg">—</p>
+                <p className="text-[10px] text-accent mt-1">{s.emptyHint ?? "Tap to log"}</p>
               </>
             ) : (
               <>
-                <p className={cn("text-lg font-semibold leading-tight", colorCls)}>
-                  {s.value}
-                  {s.unit && (
-                    <span className="text-[10px] font-normal text-tertiary-fg ml-1">{s.unit}</span>
-                  )}
+                <p className={cn("stat-value flex items-baseline flex-wrap", colorCls)}>
+                  <span>{s.value}</span>
+                  {s.unit && <span className="stat-unit">{s.unit}</span>}
                 </p>
-                {s.sub && <p className="text-[10px] text-tertiary-fg mt-0.5">{s.sub}</p>}
+                {s.sub && <p className="text-[10px] text-tertiary-fg mt-1">{s.sub}</p>}
               </>
             )}
           </div>

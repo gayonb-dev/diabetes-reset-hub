@@ -29,10 +29,10 @@ import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle, SheetClose 
 
 
 function navClass({ isActive }: { isActive: boolean }) {
-  return `flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] transition-colors ${
+  return `flex items-center gap-2.5 pl-[10px] pr-3 py-2 rounded-lg text-[13px] border-l-2 transition-colors ${
     isActive
-      ? "bg-white/15 text-white font-medium"
-      : "text-white/60 hover:text-white hover:bg-white/8"
+      ? "border-accent bg-white/5 text-white font-medium"
+      : "border-transparent text-white/60 hover:text-white hover:bg-white/8"
   }`;
 }
 
@@ -85,15 +85,22 @@ export default function AppLayout() {
 
   const trialBanner =
     subscription?.status === "trialing" &&
-    subscription.trial_end_date && (
-      <div className="bg-accent-muted text-foreground px-4 py-2 text-center text-xs">
-        Trial — renews at $67/mo on{" "}
-        {new Date(subscription.trial_end_date).toLocaleDateString()}.{" "}
-        <Link to="/app/billing" className="text-primary underline font-medium">
-          Manage
-        </Link>
-      </div>
-    );
+    subscription.trial_end_date && (() => {
+      const endMs = new Date(subscription.trial_end_date).getTime();
+      const diffMs = Math.max(0, endMs - Date.now());
+      const days = Math.floor(diffMs / 86400000);
+      const hours = Math.floor((diffMs % 86400000) / 3600000);
+      return (
+        <div className="bg-accent-muted border-b border-accent/30 text-foreground px-4 py-2 flex items-center justify-center gap-3 text-xs">
+          <span className="tabular-nums">
+            Trial ends in <strong className="font-semibold">{days}d {hours}h</strong> — renews at $67/mo.
+          </span>
+          <Button asChild size="sm" className="h-7 px-3 text-xs">
+            <Link to="/app/billing">Manage</Link>
+          </Button>
+        </div>
+      );
+    })();
 
   const pastDueBanner = subscription?.status === "past_due" && (
     <div className="bg-destructive/10 text-destructive px-4 py-2 text-center text-xs font-medium">
@@ -294,7 +301,7 @@ export default function AppLayout() {
         </div>
 
         {/* Main */}
-        <main className="flex-1 px-4 md:px-8 py-6 md:py-8 pb-24 md:pb-10 max-w-3xl xl:max-w-5xl mx-auto w-full">
+        <main className="flex-1 px-4 md:px-8 py-6 md:py-8 pb-24 md:pb-10 max-w-3xl lg:max-w-6xl xl:max-w-7xl mx-auto w-full">
           <Outlet />
         </main>
       </div>

@@ -295,7 +295,7 @@ export default function Dashboard() {
   ];
 
   return (
-    <div className="xl:grid xl:grid-cols-[minmax(0,1fr)_320px] xl:gap-6 animate-fade-in">
+    <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_320px] lg:gap-6 animate-fade-in">
       <div className="max-w-[880px] mx-auto space-y-5 min-w-0">
         <SupplementPrompt />
         <LevelUpOverlay level={gam.leveledUpTo} onDismiss={gam.dismissLevelUp} />
@@ -347,12 +347,12 @@ export default function Dashboard() {
             ] as const
           ).map(([habit, d], i) => (
             <div key={habit}>
-              {/* Mobile: 72, Desktop md+: 96 */}
+              {/* Mobile: 88, Desktop md+: 112 */}
               <div className="md:hidden">
-                <HabitRing habit={habit} {...d} size={72} delayMs={i * 100} />
+                <HabitRing habit={habit} {...d} size={88} delayMs={i * 100} />
               </div>
               <div className="hidden md:block">
-                <HabitRing habit={habit} {...d} size={96} delayMs={i * 100} />
+                <HabitRing habit={habit} {...d} size={112} delayMs={i * 100} />
               </div>
             </div>
           ))}
@@ -361,7 +361,7 @@ export default function Dashboard() {
         {/* Row 3 — Today's action card */}
         {action ? (
           <div
-            className={`rounded-2xl border-[1.5px] p-6 transition-colors ${
+            className={`rounded-xl border-[1.5px] p-6 shadow-warm transition-colors ${
               actionDoneToday
                 ? "bg-primary-muted border-primary"
                 : "bg-accent-muted border-accent/60"
@@ -401,7 +401,7 @@ export default function Dashboard() {
             )}
           </div>
         ) : (
-          <div className="bg-card border border-border rounded-2xl p-6">
+          <div className="bg-card border border-border rounded-xl p-6 shadow-warm">
             <p className="label-caps text-tertiary-fg mb-2">Today's Action</p>
             <p className="text-sm text-secondary-fg">
               Your next action will appear here as the program advances.
@@ -421,8 +421,8 @@ export default function Dashboard() {
         {/* Row 5 — Quick stats */}
         <QuickStats stats={stats} />
 
-        {/* Row 6 — VITA quote (in-column below xl; moves to right rail at xl) */}
-        <div className="xl:hidden">
+        {/* Row 6 — VITA quote (in-column below lg; moves to right rail at lg) */}
+        <div className="lg:hidden">
           <VitaQuoteCard quotes={quoteItems} />
         </div>
 
@@ -438,7 +438,7 @@ export default function Dashboard() {
       </div>
 
       {/* Right rail — xl only, sticky */}
-      <aside className="hidden xl:block">
+      <aside className="hidden lg:block">
         <div className="sticky top-6 space-y-4">
           <VitaQuoteCard quotes={quoteItems} />
           <StreakMiniWidget

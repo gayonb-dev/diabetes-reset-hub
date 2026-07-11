@@ -99,7 +99,7 @@ export default function WorkoutComplete() {
         </div>
       </div>
 
-      <h1 className="text-[28px] font-bold text-primary">Workout complete.</h1>
+      <h1 className="font-heading text-[28px] font-bold text-primary">Workout complete.</h1>
 
       <div className="grid grid-cols-2 gap-3">
         <Card className="p-4 text-left">

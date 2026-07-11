@@ -112,8 +112,28 @@ export default function WeightTab() {
 
   const goalLb = parseFloat(localStorage.getItem("drm:goal-weight-lb") || "");
 
+  const latest = logs[0];
+  const latestDisplay = latest
+    ? unit === "kg"
+      ? (Math.round(lbToKg(latest.weight!) * 10) / 10).toString()
+      : (Math.round(latest.weight! * 10) / 10).toString()
+    : null;
+
   return (
     <div className="space-y-5">
+      {latest && (
+        <Card className="p-5 border border-border rounded-xl shadow-warm">
+          <p className="stat-label mb-2">Current weight</p>
+          <p className="metric-hero text-foreground flex items-baseline flex-wrap">
+            <span>{latestDisplay}</span>
+            <span className="stat-unit">{unit}</span>
+          </p>
+          <p className="text-[12px] text-tertiary-fg mt-2">
+            Logged {new Date(latest.log_date).toLocaleDateString()}
+          </p>
+        </Card>
+      )}
+
       <Card className="p-5 border border-border">
         <div className="flex items-center justify-between mb-3">
           <p className="text-sm font-medium">Log today's weight</p>
