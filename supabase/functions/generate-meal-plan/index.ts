@@ -235,7 +235,12 @@ FINAL CHECK BEFORE GENERATING EACH MEAL
 4. Is sodium within limits?
 5. Has this meal appeared in served_meals?
 6. Is there genuine cultural appropriateness?
-If 2, 3, 4, or 5 is yes — regenerate that meal.`;
+If 2, 3, 4, or 5 is yes — regenerate that meal.
+
+---
+
+INGREDIENT ECONOMY — Design each week so core ingredients repeat across at least 3 meals (one protein prepared two ways, one vegetable base reused, one carb base reused). Never include a specialty ingredient used in only one meal. Prefer affordable, widely available items; frozen vegetables are acceptable where they cut cost. The weekly shopping list derived from your plan should be short, cheap, and produce no waste.`;
+
 
 const IF_SYSTEM_PROMPT_ADDITION = `
 
