@@ -8,8 +8,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { ChevronDown, ChevronUp, Check, X, Droplet, Apple, Cookie, Footprints, Brain, Smile, Dumbbell } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
+
 
 interface Props {
   currentProgramDay: number;
@@ -74,6 +75,7 @@ function Section({
 
 export default function HabitLogging({ currentProgramDay }: Props) {
   const { user } = useAuth();
+  const location = useLocation();
   const h = useDailyHabits();
   const { recordAction } = useGamification();
   const [openKey, setOpenKey] = useState<string | null>(null);
@@ -81,6 +83,18 @@ export default function HabitLogging({ currentProgramDay }: Props) {
   const [lowersMeds, setLowersMeds] = useState(false);
   const [customOz, setCustomOz] = useState("");
   const [snackOverflow, setSnackOverflow] = useState<null | "snack_3">(null);
+
+  // Deep-link from Dashboard water tile: /app/today#water-logging
+  useEffect(() => {
+    if (location.hash !== "#water-logging") return;
+    setOpenKey("water");
+    const el = document.getElementById("water-logging");
+    if (el) {
+      // Slight delay so the section can expand before we scroll.
+      setTimeout(() => el.scrollIntoView({ behavior: "smooth", block: "start" }), 60);
+    }
+  }, [location.hash]);
+
 
   useEffect(() => {
     if (!user) return;

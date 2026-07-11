@@ -264,7 +264,8 @@ export default function Dashboard() {
       sub: habits.waterStreak > 1 ? `💧 ${habits.waterStreak}-day streak` : undefined,
       emptyHint: "Tap to log",
       tone: "water" as const,
-      href: "/app/progress",
+      href: "/app/today#water-logging",
+
     },
     {
       label: "Last Weight",
