@@ -35,7 +35,7 @@ export function HabitRing({
 }: HabitRingProps) {
   const { label, color, Icon } = META[habit];
   const pct = target > 0 ? Math.min(value / target, 1) : 0;
-  const stroke = size >= 96 ? 8 : 6;
+  const stroke = size >= 112 ? 10 : size >= 96 ? 8 : 6;
   const r = (size - stroke) / 2;
   const c = 2 * Math.PI * r;
   const offset = c * (1 - pct);
@@ -60,8 +60,8 @@ export function HabitRing({
     if (pct < 1) wasCompleteRef.current = false;
   }, [pct, bloomControls]);
 
-  const labelPx = size >= 96 ? 12 : 11;
-  const subPx = size >= 96 ? 11 : 10;
+  const labelPx = size >= 112 ? 12 : size >= 96 ? 12 : 11;
+  const subPx = size >= 112 ? 15 : size >= 96 ? 13 : 12;
 
   return (
     <div
@@ -112,7 +112,7 @@ export function HabitRing({
           style={{ color }}
         >
           <Icon
-            className={size >= 96 ? "h-6 w-6" : "h-5 w-5"}
+            className={size >= 112 ? "h-7 w-7" : size >= 96 ? "h-6 w-6" : "h-5 w-5"}
             aria-hidden
           />
         </div>
@@ -124,7 +124,7 @@ export function HabitRing({
         {label}
       </span>
       <span
-        className="text-tertiary-fg leading-none"
+        className="ring-value text-secondary-fg"
         style={{ fontSize: subPx }}
       >
         {value}
