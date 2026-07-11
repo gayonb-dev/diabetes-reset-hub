@@ -14,7 +14,9 @@ const ProblemPromiseSection = () => {
     "Meals that stabilize blood sugar AND taste good",
     "10 minutes a day — not a lifestyle overhaul",
     "Ask anything — get an expert-reviewed answer within 48 hours",
+    "Not the standard diabetic diet that keeps you diabetic — a reversal method",
   ];
+
 
   return (
     <section className="bg-background py-10">
