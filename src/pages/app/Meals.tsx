@@ -14,8 +14,9 @@ import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { SnackLibrary } from "@/components/meals/SnackLibrary";
 import CheatMeal from "@/pages/app/CheatMeal";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, Link } from "react-router-dom";
 import { useProgramDay } from "@/hooks/useProgramDay";
+
 
 // ----- types -----
 type Ingredient = string | { item: string; quantity: string; unit: string };
@@ -547,18 +548,17 @@ export default function Meals() {
 
   return (
     <div className="max-w-3xl mx-auto space-y-5">
-      <div className="flex items-start justify-between gap-3">
-        <div>
-          <h1 className="font-heading font-semibold text-2xl text-foreground">My Meals</h1>
-          <p className="text-sm text-muted-foreground">
-            4-week plan, personalized for you. Swap any meal — no waiting.
-          </p>
-        </div>
-        <Button variant="outline" size="sm" onClick={() => regenerate()} disabled={regenerating}>
-          <RefreshCw className={cn("h-3.5 w-3.5 mr-1.5", regenerating && "animate-spin")} />
-          Regenerate
-        </Button>
+      <div>
+        <h1 className="font-heading font-semibold text-2xl text-foreground">My Meals</h1>
+        <p className="text-sm text-muted-foreground">
+          4-week plan, personalized for you. Swap any meal — no waiting. To regenerate the full plan,
+          update your preferences in{" "}
+          <Link to="/app/settings" className="text-primary underline">
+            Settings
+          </Link>.
+        </p>
       </div>
+
 
       <Tabs
         value={activeTab}
