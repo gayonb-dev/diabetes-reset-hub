@@ -125,7 +125,7 @@ export default function AdminCommunity() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between gap-3">
-        <h1 className="text-2xl font-semibold">Community Moderation</h1>
+        <h1 className="font-heading text-2xl font-semibold">Community Moderation</h1>
         <Button
           size="sm"
           variant="outline"
