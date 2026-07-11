@@ -1,4 +1,7 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
+import { Printer } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import BloodSugarTab from "@/components/progress/BloodSugarTab";
 import A1CTab from "@/components/progress/A1CTab";
 import WeightTab from "@/components/progress/WeightTab";
@@ -20,10 +23,19 @@ export default function ProgressPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="font-heading font-semibold text-2xl text-foreground">Progress</h1>
-        <p className="text-sm text-muted-foreground">Log your numbers. The trend is what matters.</p>
+      <div className="flex items-start justify-between gap-3 flex-wrap">
+        <div>
+          <h1 className="font-heading font-semibold text-2xl text-foreground">Progress</h1>
+          <p className="text-sm text-muted-foreground">Log your numbers. The trend is what matters.</p>
+        </div>
+        <Button asChild variant="outline" size="sm">
+          <Link to="/app/progress/report">
+            <Printer className="h-4 w-4 mr-1.5" />
+            Print report for my doctor
+          </Link>
+        </Button>
       </div>
+
 
       <div className="flex gap-1 border-b border-border overflow-x-auto">
         {TABS.map((t) => (
