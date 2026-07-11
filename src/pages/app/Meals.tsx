@@ -430,10 +430,12 @@ export default function Meals() {
     const { plan, key } = current;
     const wk = plan?.plan_data?.[key];
     const items: { item: string; quantity?: string; unit?: string }[] = [];
+    let mealCount = 0;
     const walk = (node: unknown) => {
       if (!node || typeof node !== "object") return;
       const rec = node as Record<string, unknown>;
       if (Array.isArray(rec.ingredients) && typeof rec.name === "string") {
+        mealCount++;
         for (const ing of rec.ingredients as Ingredient[]) {
           items.push({ item: ingredientItemName(ing) });
         }
@@ -451,8 +453,9 @@ export default function Meals() {
       if (!byCat.has(cat)) byCat.set(cat, []);
       byCat.get(cat)!.push(it.item);
     }
-    return byCat;
+    return { byCat, uniqueCount: seen.size, mealCount };
   }, [current]);
+
 
   // ----- Render -----
   if (loading) {
