@@ -114,6 +114,9 @@ export default function Settings() {
   const [initialPrefs, setInitialPrefs] = useState<string>("");
   const [regenerating, setRegenerating] = useState(false);
   const [regenError, setRegenError] = useState<string | null>(null);
+  const [regenCount, setRegenCount] = useState<number>(0);
+  const REGEN_MONTHLY_CAP = 2;
+
 
   useEffect(() => {
     if (!user) return;
@@ -134,8 +137,9 @@ export default function Settings() {
     // Load profile (display name, first name, notification prefs, meal prefs) — single source of truth.
     supabase
       .from("profiles")
-      .select("first_name, community_display_name, notification_prefs, meal_preferences")
+      .select("first_name, community_display_name, notification_prefs, meal_preferences, regenerations_this_month, regen_month")
       .eq("user_id", user.id)
+
       .maybeSingle()
       .then(({ data }) => {
         if (!data) return;
@@ -160,7 +164,21 @@ export default function Settings() {
         setFoodsToAvoid(avoid);
         setCookingTime(ct);
         setInitialPrefs(JSON.stringify({ c, p, avoid, ct }));
+
+        // Regen cap accounting — reset if we've crossed into a new month.
+        const nowMonthStart = new Date();
+        nowMonthStart.setUTCDate(1);
+        nowMonthStart.setUTCHours(0, 0, 0, 0);
+        const nowMonthISO = nowMonthStart.toISOString().slice(0, 10);
+        const storedMonth = (data as unknown as { regen_month?: string | null }).regen_month ?? null;
+        const storedCount = (data as unknown as { regenerations_this_month?: number }).regenerations_this_month ?? 0;
+        if (storedMonth !== nowMonthISO) {
+          setRegenCount(0);
+        } else {
+          setRegenCount(storedCount);
+        }
       });
+
   }, [user]);
 
   const displayNameDirty = displayName.trim() !== initialDisplayName.trim() && displayName.trim().length > 0;
