@@ -62,6 +62,12 @@ const TEMPLATES: Record<string, Template> = {
     prefKey: null,
     body: "VITA says: Your {streak}-day streak reset, {first_name}. That's okay. Every expert has a Day 1 in their past. New one starts now.",
   },
+  streak_freeze_used: {
+    title: "VITA",
+    prefKey: null,
+    body: "VITA says: Your streak freeze saved your {streak}-day streak. You're back — let's keep it going.",
+  },
+
   blood_sugar_missing: {
     title: "VITA",
     prefKey: "vita_morning",
