@@ -54,9 +54,11 @@ verify_jwt = false
 [functions.support-request]
 verify_jwt = false
 
+[functions.support-assistant]
+verify_jwt = true
 
+[functions.cancel-subscription]
+verify_jwt = true
 
-
-
-
-
+[functions.streak-rollover]
+verify_jwt = false

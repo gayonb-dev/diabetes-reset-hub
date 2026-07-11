@@ -53,7 +53,9 @@ const AdminDigest = lazy(() => import("./pages/admin/AdminDigest"));
 const AdminPhiLog = lazy(() => import("./pages/admin/AdminPhiLog"));
 const AdminCommunity = lazy(() => import("./pages/admin/AdminCommunity"));
 const Privacy = lazy(() => import("./pages/Privacy"));
-const ChatWidget = lazy(() => import("./components/chat/ChatWidget"));
+// ChatWidget is mounted per-page on marketing routes only (see src/pages/Index.tsx).
+// It is intentionally NOT mounted here so it never appears inside /app/* or /admin/*.
+
 
 const queryClient = new QueryClient();
 
@@ -151,8 +153,8 @@ const App = () => (
 
               <Route path="*" element={<NotFound />} />
             </Routes>
-            <ChatWidget />
           </Suspense>
+
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>

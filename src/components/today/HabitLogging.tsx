@@ -8,8 +8,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { ChevronDown, ChevronUp, Check, X, Droplet, Apple, Cookie, Footprints, Brain, Smile, Dumbbell } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
+
 
 interface Props {
   currentProgramDay: number;
@@ -74,6 +75,7 @@ function Section({
 
 export default function HabitLogging({ currentProgramDay }: Props) {
   const { user } = useAuth();
+  const location = useLocation();
   const h = useDailyHabits();
   const { recordAction } = useGamification();
   const [openKey, setOpenKey] = useState<string | null>(null);
@@ -81,6 +83,18 @@ export default function HabitLogging({ currentProgramDay }: Props) {
   const [lowersMeds, setLowersMeds] = useState(false);
   const [customOz, setCustomOz] = useState("");
   const [snackOverflow, setSnackOverflow] = useState<null | "snack_3">(null);
+
+  // Deep-link from Dashboard water tile: /app/today#water-logging
+  useEffect(() => {
+    if (location.hash !== "#water-logging") return;
+    setOpenKey("water");
+    const el = document.getElementById("water-logging");
+    if (el) {
+      // Slight delay so the section can expand before we scroll.
+      setTimeout(() => el.scrollIntoView({ behavior: "smooth", block: "start" }), 60);
+    }
+  }, [location.hash]);
+
 
   useEffect(() => {
     if (!user) return;
@@ -184,45 +198,48 @@ export default function HabitLogging({ currentProgramDay }: Props) {
       <h2 className="font-heading text-lg font-semibold text-foreground">Today's logging</h2>
 
       {/* WATER */}
-      <Section
-        icon={Droplet}
-        title="Water"
-        iconColor="hsl(var(--ring-water))"
-        status={`${h.waterOz}oz / ${waterTarget}oz${h.waterStreak > 1 ? `  ·  💧 ${h.waterStreak}-day streak` : ""}`}
-        open={openKey === "water"}
-        onToggle={() => toggle("water")}
-      >
-        <div className="flex flex-wrap gap-2 mt-3">
-          {[8, 12, 16].map((oz) => (
-            <Button key={oz} variant="outline" size="sm" onClick={() => h.addWater(oz)}>
-              +{oz}oz
+      <div id="water-logging" className="scroll-mt-20">
+        <Section
+          icon={Droplet}
+          title="Water"
+          iconColor="hsl(var(--ring-water))"
+          status={`${h.waterOz}oz / ${waterTarget}oz${h.waterStreak > 1 ? `  ·  💧 ${h.waterStreak}-day streak` : ""}`}
+          open={openKey === "water"}
+          onToggle={() => toggle("water")}
+        >
+          <div className="flex flex-wrap gap-2 mt-3">
+            {[8, 12, 16].map((oz) => (
+              <Button key={oz} variant="outline" size="sm" onClick={() => h.addWater(oz)}>
+                +{oz}oz
+              </Button>
+            ))}
+            <Input
+              placeholder="Custom oz"
+              type="number"
+              inputMode="decimal"
+              className="w-28 h-9"
+              value={customOz}
+              onChange={(e) => setCustomOz(e.target.value)}
+            />
+            <Button
+              size="sm"
+              onClick={() => {
+                const v = parseInt(customOz);
+                if (v > 0) {
+                  h.addWater(v);
+                  setCustomOz("");
+                }
+              }}
+            >
+              Add
             </Button>
-          ))}
-          <Input
-            placeholder="Custom oz"
-            type="number"
-            inputMode="decimal"
-            className="w-28 h-9"
-            value={customOz}
-            onChange={(e) => setCustomOz(e.target.value)}
-          />
-          <Button
-            size="sm"
-            onClick={() => {
-              const v = parseInt(customOz);
-              if (v > 0) {
-                h.addWater(v);
-                setCustomOz("");
-              }
-            }}
-          >
-            Add
-          </Button>
-        </div>
-        <p className="text-xs text-tertiary-fg mt-3">
-          Your target: {waterTarget}oz — equal to your body weight ({Math.round(weightLb)} lbs) ÷ 2.
-        </p>
-      </Section>
+          </div>
+          <p className="text-xs text-tertiary-fg mt-3">
+            Your target: {waterTarget}oz — equal to your body weight ({Math.round(weightLb)} lbs) ÷ 2.
+          </p>
+        </Section>
+      </div>
+
 
       {/* MEALS */}
       <Section

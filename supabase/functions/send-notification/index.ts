@@ -40,8 +40,9 @@ const TEMPLATES: Record<string, Template> = {
     title: "VITA",
     prefKey: "streak_at_risk",
     urgent: true,
-    body: "VITA says: {streak}-day streak. {first_name}, you have until midnight. Four rings. You've done this before.",
+    body: "VITA says: Your {streak}-day streak needs one more thing today, {first_name}. Four rings. You've done this before.",
   },
+
   streak_7: {
     title: "VITA",
     prefKey: null,
@@ -62,6 +63,12 @@ const TEMPLATES: Record<string, Template> = {
     prefKey: null,
     body: "VITA says: Your {streak}-day streak reset, {first_name}. That's okay. Every expert has a Day 1 in their past. New one starts now.",
   },
+  streak_freeze_used: {
+    title: "VITA",
+    prefKey: null,
+    body: "VITA says: Your streak freeze saved your {streak}-day streak. You're back — let's keep it going.",
+  },
+
   blood_sugar_missing: {
     title: "VITA",
     prefKey: "vita_morning",

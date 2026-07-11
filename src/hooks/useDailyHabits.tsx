@@ -2,6 +2,17 @@ import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 
+// Cross-hook-instance realtime signal so Dashboard's rings refresh the
+// instant HabitLogging (a separate useDailyHabits instance) writes.
+const HABITS_CHANGED_EVENT = "drm:habits-changed";
+function emitChanged() {
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new CustomEvent(HABITS_CHANGED_EVENT));
+  }
+}
+
+
+
 function todayISO() {
   return new Date().toISOString().slice(0, 10);
 }
@@ -124,11 +135,21 @@ export function useDailyHabits(): DailyHabits {
     refresh();
   }, [refresh]);
 
+  // Listen for cross-instance mutations so Dashboard and HabitLogging
+  // share ring state without a manual reload.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const handler = () => { refresh(); };
+    window.addEventListener(HABITS_CHANGED_EVENT, handler);
+    return () => window.removeEventListener(HABITS_CHANGED_EVENT, handler);
+  }, [refresh]);
+
   const addWater = useCallback(
     async (oz: number) => {
       if (!user) return;
       await supabase.from("water_logs").insert({ member_id: user.id, ounces: oz, log_date: todayISO() });
       await refresh();
+      emitChanged();
     },
     [user, refresh],
   );
@@ -154,6 +175,7 @@ export function useDailyHabits(): DailyHabits {
         .select()
         .maybeSingle();
       if (!error && data) setMeals((p) => ({ ...p, [mt]: data as MealLog }));
+      emitChanged();
     },
     [user, meals],
   );
@@ -185,6 +207,7 @@ export function useDailyHabits(): DailyHabits {
         .select()
         .maybeSingle();
       if (data) setSnacks((p) => ({ ...p, [slot]: data as SnackLog }));
+      emitChanged();
     },
     [user, snacks],
   );
@@ -199,6 +222,7 @@ export function useDailyHabits(): DailyHabits {
         await supabase.from("post_meal_walks").insert({ member_id: user.id, slot, log_date: todayISO() });
         setWalks((p) => ({ ...p, [slot]: true }));
       }
+      emitChanged();
     },
     [user, walks],
   );
@@ -210,6 +234,7 @@ export function useDailyHabits(): DailyHabits {
       { onConflict: "member_id,log_date" },
     );
     setMindsetRead(true);
+    emitChanged();
   }, [user, mindsetRead]);
 
   const setMood = useCallback(
@@ -217,10 +242,13 @@ export function useDailyHabits(): DailyHabits {
       if (!user) return;
       await supabase.from("mood_logs").upsert(
         { member_id: user.id, log_date: todayISO(), mood: m },
+
         { onConflict: "member_id,log_date" },
       );
       setMoodState(m);
+      emitChanged();
     },
+
     [user],
   );
 

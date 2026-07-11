@@ -32,10 +32,11 @@ const HowItWorksSection = () => {
       iconBg: "bg-secondary",
       iconColor: "text-secondary-foreground",
       number: "03",
-      title: "Ongoing Coaching Support",
+      title: "Ongoing Support",
       description:
-        "Submit questions to the coach Q&A library, get optional WhatsApp accountability nudges, and get priority access to 1-on-1 coaching when you're ready.",
+        "Submit questions to the expert Q&A library, get optional WhatsApp accountability nudges, and get priority access to 1-on-1 support sessions when you're ready.",
     },
+
   ];
 
   return (

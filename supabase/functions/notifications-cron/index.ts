@@ -131,18 +131,31 @@ Deno.serve(async (req) => {
       stats.good_morning++;
     }
 
-    // STREAK AT RISK — 20 UTC, only if streak is alive and not yet logged today
+    // STREAK AT RISK — 20 UTC, only if streak is alive AND at least one of
+    // today's 4 rings (water/meal/walk/mindset) is still open.
     if (hourUtc === 20 && (streak?.current_streak ?? 0) > 0) {
       const todayStr = now.toISOString().slice(0, 10);
-      if (streak?.last_active_date !== todayStr) {
-        if (!(await alreadySentToday(supabase, p.user_id, "streak_at_risk"))) {
-          await sendNotification(p.user_id, "streak_at_risk", {
-            streak: streak?.current_streak ?? 0,
-          });
-          stats.streak_at_risk++;
-        }
+      const [water, meals, walks, mindset] = await Promise.all([
+        supabase.from("water_logs").select("ounces").eq("member_id", p.user_id).eq("log_date", todayStr),
+        supabase.from("meal_logs").select("vegetables, protein, complex_carbs").eq("member_id", p.user_id).eq("log_date", todayStr),
+        supabase.from("post_meal_walks").select("slot").eq("member_id", p.user_id).eq("log_date", todayStr),
+        supabase.from("mindset_reads").select("id").eq("member_id", p.user_id).eq("log_date", todayStr).maybeSingle(),
+      ]);
+      const waterOk = (water.data ?? []).reduce((n: number, r: { ounces: number }) => n + (r.ounces || 0), 0) > 0;
+      const mealsOk = (meals.data ?? []).some((m: { vegetables: boolean; protein: boolean; complex_carbs: boolean }) =>
+        m.vegetables && m.protein && m.complex_carbs,
+      );
+      const walksOk = (walks.data ?? []).length > 0;
+      const mindsetOk = !!mindset.data;
+      const anyOpen = !waterOk || !mealsOk || !walksOk || !mindsetOk;
+      if (anyOpen && !(await alreadySentToday(supabase, p.user_id, "streak_at_risk"))) {
+        await sendNotification(p.user_id, "streak_at_risk", {
+          streak: streak?.current_streak ?? 0,
+        });
+        stats.streak_at_risk++;
       }
     }
+
 
     // COMMUNITY MISSION — random hour, only if unanswered questions exist
     if (hourUtc === missionHour && (unansweredCount ?? 0) > 0) {

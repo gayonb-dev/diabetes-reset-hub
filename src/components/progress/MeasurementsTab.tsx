@@ -29,7 +29,11 @@ const SITES = [
 ] as const;
 
 type SiteKey = (typeof SITES)[number]["k"];
-type Entry = { id: string; logged_on: string; values: Partial<Record<SiteKey, number>> };
+type Entry = {
+  id: string;
+  logged_on: string;
+  values: Partial<Record<SiteKey, number>>;
+};
 
 function monthKey(iso: string) {
   return iso.slice(0, 7);
@@ -44,47 +48,49 @@ export default function MeasurementsTab() {
 
   const refresh = async () => {
     if (!user) return;
-    const { data } = await supabase
-      .from("member_progress")
-      .select("id, completed_at, metadata")
-      .eq("user_id", user.id)
-      .order("completed_at", { ascending: false })
+    const { data, error } = await supabase
+      .from("member_measurements")
+      .select("id, measured_at, waist, hips, chest, thigh, arm, neck")
+      .eq("member_id", user.id)
+      .order("measured_at", { ascending: false })
       .limit(24);
-    const arr: Entry[] = (data || [])
-      .filter((r: any) => r.metadata && r.metadata.measurements)
-      .map((r: any) => ({
-        id: r.id,
-        logged_on: r.completed_at,
-        values: r.metadata.measurements,
-      }));
+    if (error) {
+      console.error("load measurements failed", error);
+    }
+    const arr: Entry[] = (data ?? []).map((r) => {
+      const values: Partial<Record<SiteKey, number>> = {};
+      for (const s of SITES) {
+        const v = (r as unknown as Record<string, number | null>)[s.k];
+        if (v != null) values[s.k] = Number(v);
+      }
+      return { id: r.id as string, logged_on: r.measured_at as string, values };
+    });
     setEntries(arr);
     setLoading(false);
   };
 
-  useEffect(() => { refresh(); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [user]);
+  useEffect(() => {
+    refresh();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
 
   const save = async () => {
     if (!user) return;
-    const filled: Partial<Record<SiteKey, number>> = {};
+    const row: Record<string, number | string | null> = { member_id: user.id };
+    let count = 0;
     for (const s of SITES) {
       const v = parseFloat(values[s.k] ?? "");
-      if (!isNaN(v) && v > 0) filled[s.k] = v;
+      if (!isNaN(v) && v > 0) {
+        row[s.k] = v;
+        count++;
+      }
     }
-    if (Object.keys(filled).length === 0) {
+    if (count === 0) {
       toast({ title: "Enter at least one measurement", variant: "destructive" });
       return;
     }
     setSaving(true);
-    // Use a synthetic day number to satisfy unique key (use day-of-program approximation: today's epoch days)
-    const dayNumber = Math.floor(Date.now() / 86400000);
-    const { error } = await supabase.from("member_progress").upsert(
-      {
-        user_id: user.id,
-        day_number: dayNumber,
-        metadata: { measurements: filled, kind: "measurement" },
-      },
-      { onConflict: "user_id,day_number" },
-    );
+    const { error } = await supabase.from("member_measurements").insert(row as never);
     setSaving(false);
     if (error) {
       toast({ title: "Couldn't save", description: error.message, variant: "destructive" });
@@ -95,7 +101,6 @@ export default function MeasurementsTab() {
     refresh();
   };
 
-  // Latest two months comparison
   const groupedByMonth = new Map<string, Entry>();
   for (const e of entries) {
     const k = monthKey(e.logged_on);
@@ -218,7 +223,6 @@ export default function MeasurementsTab() {
           </div>
         </Card>
       )}
-
 
       <Card className="p-5 border border-border">
         <p className="text-sm font-medium mb-3">History</p>

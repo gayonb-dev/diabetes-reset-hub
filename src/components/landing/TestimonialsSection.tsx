@@ -117,8 +117,9 @@ const TestimonialsSection = () => {
               Join Them — Start My Reset
             </Button>
             <p className="text-sm text-muted-foreground italic">
-              Results vary. Educational coaching — not medical care.
+              Results vary. Educational program — not medical care.
             </p>
+
           </div>
         </ScrollReveal>
       </div>

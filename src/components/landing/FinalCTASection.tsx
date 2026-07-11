@@ -21,7 +21,7 @@ const FinalCTASection = ({ onOpenPayment }: FinalCTASectionProps) => {
             Your next blood test starts today.
           </h2>
           <p className="text-primary-foreground/80 text-lg mb-8 max-w-xl mx-auto">
-            $27 unlocks the Reset Sprint, the library, the coach Q&A, and 14 days of full access.
+            $27 unlocks the Reset Sprint, the library, expert Q&A, and 14 days of full access.
             Cancel anytime — keep what's working.
           </p>
 
@@ -38,9 +38,10 @@ const FinalCTASection = ({ onOpenPayment }: FinalCTASectionProps) => {
           </div>
 
           <p className="text-primary-foreground/70 text-sm italic max-w-2xl mx-auto">
-            Educational coaching only. We do not diagnose or treat disease. Always consult your
+            Educational program only. We do not diagnose or treat disease. Always consult your
             healthcare provider before making changes to your diabetes management plan.
           </p>
+
         </ScrollReveal>
       </div>
     </section>

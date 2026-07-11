@@ -114,6 +114,9 @@ export default function Settings() {
   const [initialPrefs, setInitialPrefs] = useState<string>("");
   const [regenerating, setRegenerating] = useState(false);
   const [regenError, setRegenError] = useState<string | null>(null);
+  const [regenCount, setRegenCount] = useState<number>(0);
+  const REGEN_MONTHLY_CAP = 2;
+
 
   useEffect(() => {
     if (!user) return;
@@ -134,8 +137,9 @@ export default function Settings() {
     // Load profile (display name, first name, notification prefs, meal prefs) — single source of truth.
     supabase
       .from("profiles")
-      .select("first_name, community_display_name, notification_prefs, meal_preferences")
+      .select("first_name, community_display_name, notification_prefs, meal_preferences, regenerations_this_month, regen_month")
       .eq("user_id", user.id)
+
       .maybeSingle()
       .then(({ data }) => {
         if (!data) return;
@@ -160,7 +164,21 @@ export default function Settings() {
         setFoodsToAvoid(avoid);
         setCookingTime(ct);
         setInitialPrefs(JSON.stringify({ c, p, avoid, ct }));
+
+        // Regen cap accounting — reset if we've crossed into a new month.
+        const nowMonthStart = new Date();
+        nowMonthStart.setUTCDate(1);
+        nowMonthStart.setUTCHours(0, 0, 0, 0);
+        const nowMonthISO = nowMonthStart.toISOString().slice(0, 10);
+        const storedMonth = (data as unknown as { regen_month?: string | null }).regen_month ?? null;
+        const storedCount = (data as unknown as { regenerations_this_month?: number }).regenerations_this_month ?? 0;
+        if (storedMonth !== nowMonthISO) {
+          setRegenCount(0);
+        } else {
+          setRegenCount(storedCount);
+        }
       });
+
   }, [user]);
 
   const displayNameDirty = displayName.trim() !== initialDisplayName.trim() && displayName.trim().length > 0;
@@ -219,6 +237,21 @@ export default function Settings() {
 
   const regenerateMealPlan = async () => {
     if (!user || !profileId) return;
+
+    // Enforce 2/month cap. Reset counter if we've crossed into a new month.
+    const monthStart = new Date();
+    monthStart.setUTCDate(1);
+    monthStart.setUTCHours(0, 0, 0, 0);
+    const monthISO = monthStart.toISOString().slice(0, 10);
+    if (regenCount >= REGEN_MONTHLY_CAP) {
+      toast({
+        title: "Monthly limit reached",
+        description: `You get ${REGEN_MONTHLY_CAP} fresh meal plans per month. Your counter resets next month.`,
+        variant: "destructive",
+      });
+      return;
+    }
+
     setRegenerating(true);
     setRegenError(null);
 
@@ -228,6 +261,7 @@ export default function Settings() {
         "VITA is taking longer than usual to rebuild your plan. Try again, or open the Meals tab — partial weeks may already be ready.",
       );
     }, 4 * 60 * 1000);
+
 
     try {
       const allergies = foodsToAvoid
@@ -291,9 +325,21 @@ export default function Settings() {
 
       setInitialPrefs(JSON.stringify({ c: cuisines, p: proteins, avoid: foodsToAvoid, ct: cookingTime }));
       setRegenError(null);
+
+      // Increment monthly regeneration counter.
+      const nextCount = regenCount + 1;
+      setRegenCount(nextCount);
+      await supabase
+        .from("profiles")
+        .update({
+          regenerations_this_month: nextCount,
+          regen_month: monthISO,
+        } as never)
+        .eq("user_id", user.id);
+
       toast({
         title: "Meal plan regenerated",
-        description: "Your Meals tab is ready with the new 4-week plan.",
+        description: `Your Meals tab is ready with the new 4-week plan. ${REGEN_MONTHLY_CAP - nextCount} regeneration${REGEN_MONTHLY_CAP - nextCount === 1 ? "" : "s"} remaining this month.`,
       });
     } catch (e) {
       console.error("regenerateMealPlan failed", e);
@@ -303,6 +349,7 @@ export default function Settings() {
       setRegenerating(false);
     }
   };
+
 
   const saveUnits = (next: { weight?: WeightUnit; glucose?: GlucoseUnit }) => {
     setUnits(next);
@@ -592,9 +639,16 @@ export default function Settings() {
           </div>
         </div>
 
+        <p className="text-xs text-muted-foreground mb-2">
+          Regenerations remaining this month:{" "}
+          <span className="font-semibold text-foreground">
+            {Math.max(REGEN_MONTHLY_CAP - regenCount, 0)} / {REGEN_MONTHLY_CAP}
+          </span>
+          {" "}· You get {REGEN_MONTHLY_CAP} fresh meal plans per month.
+        </p>
         <Button
           onClick={regenerateMealPlan}
-          disabled={regenerating}
+          disabled={regenerating || regenCount >= REGEN_MONTHLY_CAP}
           className="bg-primary hover:bg-primary-hover text-primary-foreground min-h-11"
         >
           {regenerating ? (
@@ -602,10 +656,13 @@ export default function Settings() {
           ) : (
             <RefreshCw className="mr-2 h-4 w-4" />
           )}
-          {prefsDirty
-            ? "Regenerate my meal plan with these preferences"
-            : "Regenerate my meal plan"}
+          {regenCount >= REGEN_MONTHLY_CAP
+            ? "Monthly limit reached"
+            : prefsDirty
+              ? "Regenerate my meal plan with these preferences"
+              : "Regenerate my meal plan"}
         </Button>
+
 
         {regenerating && !regenError && (
           <div className="mt-3 flex items-start gap-2 rounded-md bg-primary-muted/60 border border-primary/15 p-3">

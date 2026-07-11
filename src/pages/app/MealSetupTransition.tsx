@@ -230,6 +230,10 @@ export default function MealSetupTransition() {
         <p className="text-[11px] text-primary-foreground/50 pt-1">
           This usually takes 60–120 seconds per week. You can pick your cuisine while VITA works.
         </p>
+        <p className="text-[11px] text-primary-foreground/60 pt-2">
+          You get 2 fresh meal plans per month — you can regenerate later from Settings.
+        </p>
+
       </div>
 
       {/* Progress bar */}

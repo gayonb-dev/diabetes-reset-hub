@@ -1093,6 +1093,51 @@ export type Database = {
           },
         ]
       }
+      member_measurements: {
+        Row: {
+          arm: number | null
+          chest: number | null
+          created_at: string
+          hips: number | null
+          id: string
+          measured_at: string
+          member_id: string
+          neck: number | null
+          notes: string | null
+          thigh: number | null
+          updated_at: string
+          waist: number | null
+        }
+        Insert: {
+          arm?: number | null
+          chest?: number | null
+          created_at?: string
+          hips?: number | null
+          id?: string
+          measured_at?: string
+          member_id: string
+          neck?: number | null
+          notes?: string | null
+          thigh?: number | null
+          updated_at?: string
+          waist?: number | null
+        }
+        Update: {
+          arm?: number | null
+          chest?: number | null
+          created_at?: string
+          hips?: number | null
+          id?: string
+          measured_at?: string
+          member_id?: string
+          neck?: number | null
+          notes?: string | null
+          thigh?: number | null
+          updated_at?: string
+          waist?: number | null
+        }
+        Relationships: []
+      }
       member_progress: {
         Row: {
           completed_at: string
@@ -1452,6 +1497,8 @@ export type Database = {
           meal_preferences: Json
           notification_prefs: Json
           program_start_date: string | null
+          regen_month: string | null
+          regenerations_this_month: number
           updated_at: string
           user_id: string
         }
@@ -1464,6 +1511,8 @@ export type Database = {
           meal_preferences?: Json
           notification_prefs?: Json
           program_start_date?: string | null
+          regen_month?: string | null
+          regenerations_this_month?: number
           updated_at?: string
           user_id: string
         }
@@ -1476,6 +1525,8 @@ export type Database = {
           meal_preferences?: Json
           notification_prefs?: Json
           program_start_date?: string | null
+          regen_month?: string | null
+          regenerations_this_month?: number
           updated_at?: string
           user_id?: string
         }
