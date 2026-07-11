@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -20,10 +21,16 @@ import {
 } from "@/components/ui/select";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { Sparkles, CheckCircle2, Loader2 } from "lucide-react";
+import { Sparkles, CheckCircle2, Loader2, Bot, Send } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import ReactMarkdown from "react-markdown";
 
 type Category = "Bug" | "Question" | "Feedback" | "Billing";
+
+interface ChatTurn {
+  role: "user" | "assistant";
+  content: string;
+}
 
 export default function Support() {
   const { user } = useAuth();
@@ -34,6 +41,60 @@ export default function Support() {
   const [message, setMessage] = useState("");
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
+
+  // In-app support assistant chat
+  const [chat, setChat] = useState<ChatTurn[]>([]);
+  const [chatInput, setChatInput] = useState("");
+  const [chatSending, setChatSending] = useState(false);
+  const chatScrollRef = useRef<HTMLDivElement>(null);
+
+  async function askAssistant() {
+    const q = chatInput.trim();
+    if (!q || chatSending) return;
+    const nextHistory: ChatTurn[] = [...chat, { role: "user", content: q }];
+    setChat(nextHistory);
+    setChatInput("");
+    setChatSending(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("support-assistant", {
+        body: { messages: nextHistory },
+      });
+      if (error) {
+        let detail = (error as Error).message;
+        const ctx = (error as unknown as { context?: Response }).context;
+        if (ctx && typeof ctx.text === "function") {
+          try {
+            const body = await ctx.text();
+            if (body) detail = body.slice(0, 400);
+          } catch {
+            /* ignore */
+          }
+        }
+        throw new Error(detail);
+      }
+      const reply = (data?.reply as string) || "Sorry — I didn't catch that. Try again.";
+      setChat((prev) => [...prev, { role: "assistant", content: reply }]);
+    } catch (e) {
+      setChat((prev) => [
+        ...prev,
+        {
+          role: "assistant",
+          content:
+            "I couldn't reach the assistant. Try again, or use **Report an issue** below to send a support ticket.",
+        },
+      ]);
+      toast({
+        title: "Assistant unavailable",
+        description: (e as Error).message,
+        variant: "destructive",
+      });
+    } finally {
+      setChatSending(false);
+      requestAnimationFrame(() => {
+        chatScrollRef.current?.scrollTo({ top: chatScrollRef.current.scrollHeight, behavior: "smooth" });
+      });
+    }
+  }
 
   function openDialog(cat: Category) {
     setCategory(cat);
@@ -62,7 +123,6 @@ export default function Support() {
         },
       });
       if (error) {
-        // Surface the real error body from the edge function when available.
         let detail = (error as Error).message;
         const ctx = (error as unknown as { context?: Response }).context;
         if (ctx && typeof ctx.text === "function") {
@@ -94,8 +154,67 @@ export default function Support() {
         <div className="my-4 inline-flex h-16 w-16 rounded-full bg-accent items-center justify-center text-accent-foreground">
           <Sparkles className="h-8 w-8" />
         </div>
-        <p className="text-sm text-muted-foreground">Choose what you need help with below.</p>
+        <p className="text-sm text-muted-foreground">Ask the assistant, or send a ticket.</p>
       </div>
+
+      {/* Support assistant chat */}
+      <Card className="p-5 space-y-3">
+        <div className="flex items-center gap-2">
+          <Bot className="h-4 w-4 text-primary" />
+          <p className="text-[11px] uppercase tracking-wider text-muted-foreground">Support assistant</p>
+        </div>
+        <h2 className="text-base font-semibold">Ask a question about the app</h2>
+        <p className="text-sm text-muted-foreground">
+          Where's my meal plan? How do I log water? The assistant answers app navigation and how-to questions.
+          For medical questions, ask your doctor.
+        </p>
+
+        <div
+          ref={chatScrollRef}
+          className="min-h-[80px] max-h-[280px] overflow-y-auto rounded-lg border border-border bg-muted/30 p-3 space-y-3"
+        >
+          {chat.length === 0 && (
+            <p className="text-xs text-muted-foreground italic">
+              Try: "Where do I regenerate my meal plan?"
+            </p>
+          )}
+          {chat.map((turn, i) => (
+            <div
+              key={i}
+              className={
+                turn.role === "user"
+                  ? "text-sm text-foreground ml-6 bg-primary-muted rounded-md px-3 py-2"
+                  : "text-sm text-foreground mr-6 bg-background border border-border rounded-md px-3 py-2 prose prose-sm max-w-none"
+              }
+            >
+              {turn.role === "assistant" ? <ReactMarkdown>{turn.content}</ReactMarkdown> : turn.content}
+            </div>
+          ))}
+          {chatSending && (
+            <p className="text-xs text-muted-foreground inline-flex items-center gap-2">
+              <Loader2 className="h-3 w-3 animate-spin" /> Thinking…
+            </p>
+          )}
+        </div>
+
+        <div className="flex gap-2">
+          <Input
+            value={chatInput}
+            onChange={(e) => setChatInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                askAssistant();
+              }
+            }}
+            placeholder="Ask about the app…"
+            disabled={chatSending}
+          />
+          <Button onClick={askAssistant} disabled={chatSending || !chatInput.trim()} size="icon">
+            <Send className="h-4 w-4" />
+          </Button>
+        </div>
+      </Card>
 
       <Card className="p-5 space-y-2">
         <p className="text-[11px] uppercase tracking-wider text-muted-foreground">App Issues</p>
