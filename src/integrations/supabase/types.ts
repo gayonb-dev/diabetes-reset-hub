@@ -1499,6 +1499,7 @@ export type Database = {
           program_start_date: string | null
           regen_month: string | null
           regenerations_this_month: number
+          timezone: string | null
           updated_at: string
           user_id: string
         }
@@ -1513,6 +1514,7 @@ export type Database = {
           program_start_date?: string | null
           regen_month?: string | null
           regenerations_this_month?: number
+          timezone?: string | null
           updated_at?: string
           user_id: string
         }
@@ -1527,6 +1529,7 @@ export type Database = {
           program_start_date?: string | null
           regen_month?: string | null
           regenerations_this_month?: number
+          timezone?: string | null
           updated_at?: string
           user_id?: string
         }
@@ -1808,6 +1811,7 @@ export type Database = {
           helpful_points: number
           id: string
           last_active_date: string | null
+          last_rollover_date: string | null
           level: number
           longest_streak: number
           total_xp: number
@@ -1820,6 +1824,7 @@ export type Database = {
           helpful_points?: number
           id?: string
           last_active_date?: string | null
+          last_rollover_date?: string | null
           level?: number
           longest_streak?: number
           total_xp?: number
@@ -1832,6 +1837,7 @@ export type Database = {
           helpful_points?: number
           id?: string
           last_active_date?: string | null
+          last_rollover_date?: string | null
           level?: number
           longest_streak?: number
           total_xp?: number
