@@ -202,3 +202,10 @@ html {
   50% { box-shadow: 0 0 0 6px hsl(var(--accent) / 0); }
 }
 .animate-ring-pulse { animation: ring-pulse 1.8s ease-in-out infinite; }
+
+@media print {
+  .no-print { display: none !important; }
+  html, body { background: #ffffff !important; color: #0f172a !important; }
+  .report-section { page-break-inside: avoid; }
+  a { color: inherit !important; text-decoration: none !important; }
+}

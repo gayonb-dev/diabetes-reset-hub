@@ -37,6 +37,8 @@ const Onboarding = lazy(() => import("./pages/app/Onboarding"));
 const MealSetupTransition = lazy(() => import("./pages/app/MealSetupTransition"));
 const CoachingWaitlist = lazy(() => import("./pages/app/CoachingWaitlist"));
 const AppProgress = lazy(() => import("./pages/app/Progress"));
+const ProgressReport = lazy(() => import("./pages/app/ProgressReport"));
+
 const Settings = lazy(() => import("./pages/app/Settings"));
 const Profile = lazy(() => import("./pages/app/Profile"));
 const Fasting = lazy(() => import("./pages/app/Fasting"));
@@ -101,6 +103,16 @@ const App = () => (
               <Route path="/auth/callback" element={<AuthCallback />} />
               <Route path="/privacy" element={<Privacy />} />
 
+              {/* Doctor-shareable progress report — plain page, no AppLayout */}
+              <Route
+                path="/app/progress/report"
+                element={
+                  <AuthGuard>
+                    <ProgressReport />
+                  </AuthGuard>
+                }
+              />
+
               {/* Onboarding (auth required, no active sub needed yet) */}
               <Route
                 path="/app/onboarding"
@@ -118,6 +130,7 @@ const App = () => (
                   </AuthGuard>
                 }
               />
+
 
               {/* Member app */}
               <Route

@@ -39,13 +39,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setSubscription(null);
       return;
     }
-    const [{ data: roles }, { data: sub }] = await Promise.all([
+    const [{ data: roles }, { data: sub }, { data: prof }] = await Promise.all([
       supabase.from("user_roles").select("role").eq("user_id", u.id),
       supabase.from("subscriptions").select("*").eq("user_id", u.id).maybeSingle(),
+      supabase.from("profiles").select("timezone").eq("user_id", u.id).maybeSingle(),
     ]);
     setIsAdmin(!!roles?.some((r) => r.role === "admin"));
     setSubscription((sub as Subscription) ?? null);
+
+    // Auto-capture IANA timezone on first authenticated load (zero effort).
+    try {
+      const currentTz = (prof as { timezone?: string | null } | null)?.timezone ?? null;
+      if (!currentTz) {
+        const detected = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        if (detected) {
+          await supabase.from("profiles").update({ timezone: detected } as never).eq("user_id", u.id);
+        }
+      }
+    } catch (e) {
+      console.warn("timezone auto-capture failed", e);
+    }
   };
+
 
   const refreshSubscription = async () => {
     if (!user) return;

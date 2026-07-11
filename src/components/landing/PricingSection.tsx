@@ -94,7 +94,14 @@ const PricingSection = ({ onOpenPayment }: PricingSectionProps) => {
                   <Shield className="h-4 w-4 text-primary" />
                   <span>30-day money-back guarantee on every charge</span>
                 </div>
+                <p className="text-center text-xs text-muted-foreground mt-3 leading-relaxed">
+                  Cancel inside the app in one click — no emails, no phone calls, no retention screens. Access continues to the end of your billing period.
+                </p>
+                <p className="text-center text-xs text-muted-foreground mt-2 leading-relaxed">
+                  100% ad-free. No ads interrupt your logging, and your health data is never sold.
+                </p>
               </div>
+
 
               <div className="px-8 pb-8">
                 <div className="grid grid-cols-3 gap-4">

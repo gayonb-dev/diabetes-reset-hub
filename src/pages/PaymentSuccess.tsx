@@ -22,7 +22,11 @@ const PaymentSuccess = () => {
           <p className="text-muted-foreground max-w-md mx-auto">
             Your payment was successful. This 5-day challenge is your first step toward lowering your blood sugar, losing weight, and feeling better in your body.
           </p>
+          <p className="text-xs text-muted-foreground max-w-md mx-auto mt-3">
+            You're in control: cancel anytime in one click from Settings → Billing.
+          </p>
         </div>
+
 
         <div className="bg-background border border-border rounded-2xl shadow-lg p-6 md:p-8 mb-8">
           <h2 className="font-heading font-semibold text-xl text-foreground mb-5">

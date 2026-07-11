@@ -20,7 +20,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Loader2, CreditCard, Shield, Download, Trash2, LogOut, ArrowRight, UtensilsCrossed, RefreshCw, User, Bell } from "lucide-react";
+import { Loader2, CreditCard, Shield, Download, Trash2, LogOut, ArrowRight, UtensilsCrossed, RefreshCw, User, Bell, Clock } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
 import VitaErrorCard from "@/components/vita/VitaErrorCard";
@@ -117,6 +117,27 @@ export default function Settings() {
   const [regenCount, setRegenCount] = useState<number>(0);
   const REGEN_MONTHLY_CAP = 2;
 
+  // Timezone (IANA)
+  const [timezone, setTimezone] = useState<string>("");
+  const [initialTimezone, setInitialTimezone] = useState<string>("");
+  const [tzSaving, setTzSaving] = useState(false);
+  const tzOptions = (() => {
+    try {
+      const fn = (Intl as unknown as { supportedValuesOf?: (k: string) => string[] }).supportedValuesOf;
+      if (typeof fn === "function") return fn("timeZone");
+    } catch {
+      /* ignore */
+    }
+    return [
+      "America/New_York", "America/Chicago", "America/Denver", "America/Los_Angeles",
+      "America/Jamaica", "America/Toronto", "America/Mexico_City", "America/Sao_Paulo",
+      "Europe/London", "Europe/Paris", "Europe/Berlin", "Europe/Madrid",
+      "Africa/Lagos", "Africa/Johannesburg", "Asia/Dubai", "Asia/Kolkata",
+      "Asia/Singapore", "Asia/Tokyo", "Australia/Sydney", "Pacific/Auckland",
+    ];
+  })();
+
+
 
   useEffect(() => {
     if (!user) return;
@@ -134,15 +155,20 @@ export default function Settings() {
         }
       });
 
-    // Load profile (display name, first name, notification prefs, meal prefs) — single source of truth.
+    // Load profile (display name, first name, notification prefs, meal prefs, timezone) — single source of truth.
     supabase
       .from("profiles")
-      .select("first_name, community_display_name, notification_prefs, meal_preferences, regenerations_this_month, regen_month")
+      .select("first_name, community_display_name, notification_prefs, meal_preferences, regenerations_this_month, regen_month, timezone")
       .eq("user_id", user.id)
 
       .maybeSingle()
       .then(({ data }) => {
         if (!data) return;
+        const tz = (data as unknown as { timezone?: string | null }).timezone
+          ?? (typeof Intl !== "undefined" ? Intl.DateTimeFormat().resolvedOptions().timeZone : "America/New_York");
+        setTimezone(tz);
+        setInitialTimezone(tz);
+
         const fn = data.first_name ?? "";
         const dn = data.community_display_name ?? fn ?? "";
         setFirstName(fn);
@@ -487,6 +513,52 @@ export default function Settings() {
           </div>
         </div>
       </Card>
+
+      {/* Timezone */}
+      <Card className="p-5 border-border">
+        <h2 className="font-semibold text-base flex items-center gap-2 mb-1">
+          <Clock className="h-4 w-4 text-primary" /> Timezone
+        </h2>
+        <p className="text-xs text-muted-foreground mb-3">
+          Your timezone — used for reminder timing.
+        </p>
+        <Input
+          list="tz-options"
+          value={timezone}
+          onChange={(e) => setTimezone(e.target.value)}
+          placeholder="Start typing… e.g. America/Jamaica"
+        />
+        <datalist id="tz-options">
+          {tzOptions.map((tz) => (
+            <option key={tz} value={tz} />
+          ))}
+        </datalist>
+        <Button
+          onClick={async () => {
+            if (!user || !timezone || timezone === initialTimezone) return;
+            setTzSaving(true);
+            const { error } = await supabase
+              .from("profiles")
+              .update({ timezone } as never)
+              .eq("user_id", user.id);
+            setTzSaving(false);
+            if (error) {
+              toast({ title: "Couldn't save timezone", description: error.message, variant: "destructive" });
+            } else {
+              setInitialTimezone(timezone);
+              toast({ title: "Timezone saved" });
+            }
+          }}
+          disabled={tzSaving || !timezone || timezone === initialTimezone}
+          variant="outline"
+          size="sm"
+          className="mt-3"
+        >
+          {tzSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          Save timezone
+        </Button>
+      </Card>
+
 
       {/* WhatsApp */}
       <Card className="p-5 border-border">
