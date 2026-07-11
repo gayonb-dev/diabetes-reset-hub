@@ -155,15 +155,20 @@ export default function Settings() {
         }
       });
 
-    // Load profile (display name, first name, notification prefs, meal prefs) — single source of truth.
+    // Load profile (display name, first name, notification prefs, meal prefs, timezone) — single source of truth.
     supabase
       .from("profiles")
-      .select("first_name, community_display_name, notification_prefs, meal_preferences, regenerations_this_month, regen_month")
+      .select("first_name, community_display_name, notification_prefs, meal_preferences, regenerations_this_month, regen_month, timezone")
       .eq("user_id", user.id)
 
       .maybeSingle()
       .then(({ data }) => {
         if (!data) return;
+        const tz = (data as unknown as { timezone?: string | null }).timezone
+          ?? (typeof Intl !== "undefined" ? Intl.DateTimeFormat().resolvedOptions().timeZone : "America/New_York");
+        setTimezone(tz);
+        setInitialTimezone(tz);
+
         const fn = data.first_name ?? "";
         const dn = data.community_display_name ?? fn ?? "";
         setFirstName(fn);
