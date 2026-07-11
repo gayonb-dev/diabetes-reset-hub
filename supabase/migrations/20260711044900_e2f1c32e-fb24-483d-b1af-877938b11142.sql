@@ -1,0 +1,64 @@
+-- 1. Content type check: add blog + guide
+ALTER TABLE public.content_items DROP CONSTRAINT IF EXISTS content_items_type_check;
+ALTER TABLE public.content_items ADD CONSTRAINT content_items_type_check
+  CHECK (type = ANY (ARRAY['recipe','plate_method','movement','mini_challenge','article','reset_day','blog','guide']));
+
+-- 2. Profiles timezone
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS timezone text;
+
+-- 3. Streaks last_rollover_date
+ALTER TABLE public.user_streaks ADD COLUMN IF NOT EXISTS last_rollover_date date;
+
+-- 4. Seed Days 15–42 (is_extension_day = false). Extension rows E1–E7 stay intact.
+INSERT INTO public.daily_actions (day_number, phase_number, day_name, action_title, action_description, action_type, sub_tasks, is_extension_day) VALUES
+(15, 2, 'Day 15: Your First Walking Day', 'Day 15 — Your First Walking Day', 'Today the second pillar activates. Ten minutes after each meal, walk. Not a workout — blood sugar management. Muscle contractions pull glucose out of your bloodstream without needing insulin''s help.', 'habit', '["Walk 10 minutes after breakfast","Walk 10 minutes after lunch","Walk 10 minutes after dinner","Log each walk in Today"]'::jsonb, false),
+(16, 2, 'Day 16: Make the Walk Automatic', 'Day 16 — Make the Walk Automatic', 'Attach each walk to something you already do. Finish eating, plate in the sink, shoes on, out the door. The habit forms in the transition, not the walk itself.', 'habit', '["Pick your walking trigger (dishes done, table cleared)","Complete all 3 walks","Note how you feel after the dinner walk vs. yesterday"]'::jsonb, false),
+(17, 2, 'Day 17: The 2-Hour Reading Experiment', 'Day 17 — The 2-Hour Reading Experiment', 'Today, take one post-meal reading 2 hours after a meal you walked after. Compare it to a reading from Phase 1. You''re collecting evidence that this works on YOUR body.', 'reflection', '["Log a 2-hour post-meal reading after your walked lunch","Compare with a Phase 1 post-meal reading in Progress","All 3 walks"]'::jsonb, false),
+(18, 2, 'Day 18: Weather-Proof Your Walks', 'Day 18 — Weather-Proof Your Walks', 'Rain, heat, or a rough day will come. Decide now what your indoor version is — marching on the spot through a song playlist, walking the corridor, stairs. No zero days.', 'habit', '["Choose your indoor backup plan","Complete all 3 walks (indoor counts)","Hit your water target"]'::jsonb, false),
+(19, 2, 'Day 19: Walk With Someone', 'Day 19 — Walk With Someone', 'Invite someone to one walk today — partner, child, friend on the phone. Accountability you enjoy is accountability that lasts.', 'habit', '["One walk with company (in person or on a call)","All 3 walks complete","Log all 3 plate-method meals"]'::jsonb, false),
+(20, 2, 'Day 20: Foundation Check', 'Day 20 — Foundation Check', 'Tomorrow, intermittent fasting unlocks if your foundation is solid. Today, run a clean day: 3 plate-method meals, 3 walks, water target, mindset read. This is the qualifying lap.', 'challenge', '["3 plate-method meals logged","3 walks logged","Water target hit","Mindset card read"]'::jsonb, false),
+(21, 2, 'Day 21: Intermittent Fasting Unlocks', 'Day 21 — Intermittent Fasting Unlocks', 'The Fasting tab is now open. Read the Intermittent Fasting Guide in Learn before you decide anything. IF is optional — a tool, not a requirement. If you take medication that lowers blood sugar, talk to your doctor first.', 'education', '["Read the IF Guide in Learn","Decide: trying IF this week, or not yet (both are valid)","All 3 walks"]'::jsonb, false),
+(22, 2, 'Day 22: Protein First', 'Day 22 — Protein First', 'Whatever you eat first hits your bloodstream first. Today, start every meal with the protein on your plate, then vegetables, carbs last. Same food, flatter curve.', 'habit', '["Eat protein first at all 3 meals","All 3 walks","Log a post-meal reading if you can"]'::jsonb, false),
+(23, 2, 'Day 23: The Snack Audit', 'Day 23 — The Snack Audit', 'Look at your last week of snacks. Were they in the window (2.5–3 hrs after meals)? Were they from the library? Tighten one thing today.', 'reflection', '["Review this week''s snack timing","Choose today''s snacks from the Snack Library","All 3 walks"]'::jsonb, false),
+(24, 2, 'Day 24: Sleep Is a Blood Sugar Tool', 'Day 24 — Sleep Is a Blood Sugar Tool', 'One poor night can measurably blunt insulin sensitivity the next day. Tonight: screens off 30 minutes earlier, bedroom cooler, same wake time tomorrow.', 'education', '["Set a tonight bedtime and keep it","Screens off 30 min before","All 3 walks"]'::jsonb, false),
+(25, 2, 'Day 25: Ten Days of Walks', 'Day 25 — Ten Days of Walks', 'You''ve banked 30 walks. That is not a small thing — that''s 30 separate interventions on your glucose. Today, notice the other changes: energy, sleep, mood.', 'reflection', '["All 3 walks","Write one sentence in your blood sugar log notes: what feels different","Water target"]'::jsonb, false),
+(26, 2, 'Day 26: Restaurant-Proof the Plate', 'Day 26 — Restaurant-Proof the Plate', 'Eating out is not a threat; it''s a test you can pass. Half the plate vegetables (order a side salad or extra veg), quarter protein, quarter carbs, water to drink. Practice it today or plan it for the weekend.', 'challenge', '["Plan or execute one plate-method meal away from home","All 3 walks","All meals logged"]'::jsonb, false),
+(27, 2, 'Day 27: Teach It to Someone', 'Day 27 — Teach It to Someone', 'Explain the plate method to one person today, out loud. If you can teach it in 30 seconds, you own it for life.', 'habit', '["Explain the plate method to someone","All 3 walks","Mindset card read"]'::jsonb, false),
+(28, 2, 'Day 28: Phase 2 Complete', 'Day 28 — Phase 2 Complete', 'Fourteen days of diet. Fourteen more with walks layered on. Tomorrow, structured workouts unlock — short, joint-friendly, designed for where you are. Tonight, rest well. You''ve earned the next level.', 'habit', '["All 3 walks","All 3 meals","Read tomorrow''s preview in the Workouts tab (it unlocks in the morning)"]'::jsonb, false),
+(29, 3, 'Day 29: First Workout Day', 'Day 29 — First Workout Day', 'The Workouts tab is open. Pick Track A (standard) or Track B (knee-friendly). Your first session is short by design — the goal today is done, not impressive.', 'habit', '["Complete your first workout (either track)","Keep 2 of your 3 post-meal walks (workout replaces one)","Log everything"]'::jsonb, false),
+(30, 3, 'Day 30: Measurement Day', 'Day 30 — Measurement Day', 'The tape measure sees what the scale hides. Waist, hips, chest. Same time of day as your Day 1 numbers, same conditions.', 'measurement', '["Log your monthly measurements in Progress","Compare with Day 1 — write one line about what changed","Walks/workout per your new schedule"]'::jsonb, false),
+(31, 3, 'Day 31: Muscle Is Your Glucose Sponge', 'Day 31 — Muscle Is Your Glucose Sponge', 'Every workout builds tissue that absorbs glucose. This is why exercise compounds — you''re not burning sugar once, you''re building the machinery that handles it forever.', 'education', '["Workout or 3 walks per your schedule","Protein at every meal today","Water target"]'::jsonb, false),
+(32, 3, 'Day 32: The Rest Day Rule', 'Day 32 — The Rest Day Rule', 'Rest days are training days for recovery. No workout today — but walks stay. Movement every day, intensity some days.', 'habit', '["3 post-meal walks","Stretch 5 minutes before bed","Mindset card"]'::jsonb, false),
+(33, 3, 'Day 33: Second Workout', 'Day 33 — Second Workout', 'Same track as Day 29, or switch — your call. Notice: was anything easier than the first time? That''s adaptation, and it''s fast at the start.', 'challenge', '["Complete workout #2","2 walks","Log a post-meal reading"]'::jsonb, false),
+(34, 3, 'Day 34: Kitchen Reset', 'Day 34 — Kitchen Reset', 'Ten minutes: clear one shelf of anything that fights your plate. Not the whole kitchen — one shelf. Make the right choice the easy choice.', 'habit', '["Clear one shelf/drawer","All meals plate-method","Walks per schedule"]'::jsonb, false),
+(35, 3, 'Day 35: Five Weeks In', 'Day 35 — Five Weeks In', 'Thirty-five days of decisions. Check your Progress tab: blood sugar trend, weight trend. The direction matters more than any single number.', 'reflection', '["Review your trends in Progress","Workout or walks per schedule","Share one win in the community (Ask → Wins) if you have one — someone on Day 3 needs to see it"]'::jsonb, false),
+(36, 3, 'Day 36: Mindset Week 6 Unlocks', 'Day 36 — Mindset Week 6 Unlocks', 'Momentum is this week''s theme in Learn. Read the first card today — it pairs with exactly where you are.', 'habit', '["Read Mindset Week 6, card 1","Walks/workout per schedule","Water target"]'::jsonb, false),
+(37, 3, 'Day 37: The Plateau Truth', 'Day 37 — The Plateau Truth', 'If the scale has stalled, read this twice: fat loss and glucose repair continue even when weight pauses. Your post-meal readings are the honest metric this week.', 'reflection', '["Log 2 post-meal readings today","All meals logged","Walks/workout per schedule"]'::jsonb, false),
+(38, 3, 'Day 38: Workout Three', 'Day 38 — Workout Three', 'Third session. If Track A has felt too easy, this is the day to try the next progression. If it''s felt hard, repeat — repetition is progress too.', 'challenge', '["Complete workout #3","2 walks","Protein-first at all meals"]'::jsonb, false),
+(39, 3, 'Day 39: Hydration Audit', 'Day 39 — Hydration Audit', 'Check your water logs this week. If you''re consistently short, move the target earlier: half your daily water before 2 PM.', 'habit', '["Half your water target by 2 PM","Full target by evening","Walks per schedule"]'::jsonb, false),
+(40, 3, 'Day 40: Forty Days', 'Day 40 — Forty Days', 'Most programs lose people by Day 10. You''re at 40. Today, do nothing new — just execute the basics cleanly and let that be the point.', 'reflection', '["3 plate-method meals","Walks/workout per schedule","Mindset card"]'::jsonb, false),
+(41, 3, 'Day 41: Prep for Week 7', 'Day 41 — Prep for Week 7', 'Sunday-style reset whatever day this lands on: glance at your Week 3 meal plan in Meals, note 2 ingredients to buy, pick your workout days for the coming week.', 'habit', '["Review the week ahead in Meals","Set your 3 workout/walk days","Water target"]'::jsonb, false),
+(42, 3, 'Day 42: Six Weeks Complete', 'Day 42 — Six Weeks Complete', 'Six weeks. Your A1C test at Day 90 is now seven weeks away — and every day between now and then is already writing that number. Keep voting.', 'reflection', '["All rings closed today","Write one line: the biggest change since Day 1","Book nothing, change nothing — just show up tomorrow"]'::jsonb, false);
+
+-- 5. Seed 5 blog entries (external links)
+INSERT INTO public.content_items (type, slug, title, summary, day_unlock, sort_order, is_active, metadata) VALUES
+('blog', 'blog-post-meal-walks-study', 'The Study Behind Your Post-Meal Walks',
+ 'A randomized 120-day trial: 15-minute walks after each meal beat one long daily walk for blood glucose and HbA1c. This is the research your Phase 2 walks are built on.',
+ 15, 1, true,
+ '{"source":"Diabetology & Metabolic Syndrome (via PubMed Central)","url":"https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5580296/"}'::jsonb),
+('blog', 'blog-cleveland-walking-after-eating', 'Walking After Eating — What Actually Happens',
+ 'Cleveland Clinic''s diabetes education team explains why even short post-meal walks stabilize blood sugar and insulin, and what targets to aim for.',
+ 15, 2, true,
+ '{"source":"Cleveland Clinic","url":"https://health.clevelandclinic.org/walking-after-eating"}'::jsonb),
+('blog', 'blog-even-10-minutes', 'Even 10 Minutes Counts',
+ 'New research on why a 10-minute walk immediately after eating blunts the glucose spike — and why timing matters more than duration.',
+ 15, 3, true,
+ '{"source":"Scientific Reports (via PubMed Central)","url":"https://pmc.ncbi.nlm.nih.gov/articles/PMC12216464/"}'::jsonb),
+('blog', 'blog-remission-programs', 'What Diabetes Remission Programs Get Right (and What They Cost)',
+ 'DiaTribe''s honest review of Virta, Level2 and clinical remission programs — useful context on what remission requires and why daily execution is the whole game.',
+ 15, 4, true,
+ '{"source":"DiaTribe","url":"https://diatribe.org/diabetes-management/want-achieve-type-2-diabetes-remission-try-these-coaching-programs"}'::jsonb),
+('blog', 'blog-time-in-range', 'Time in Range: The Metric Your Doctor Will Ask About Next',
+ 'Beyond A1C — why ''time in range'' is becoming the standard for judging blood sugar control, and the tools people use to improve it.',
+ 15, 5, true,
+ '{"source":"DiaTribe","url":"https://diatribe.org/diabetes-technology/8-apps-improve-your-time-range"}'::jsonb);
