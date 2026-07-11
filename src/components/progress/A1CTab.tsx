@@ -81,6 +81,21 @@ export default function A1CTab() {
 
   return (
     <div className="space-y-5">
+      {latest && (
+        <Card className="p-5 border border-border rounded-xl shadow-warm">
+          <p className="stat-label mb-2">Latest A1C</p>
+          <p className="metric-hero flex items-baseline flex-wrap" style={{ color: tone(latest.value_percent) }}>
+            <span>{latest.value_percent.toFixed(1)}</span>
+            <span className="stat-unit">%</span>
+          </p>
+          <p className="text-[12px] text-tertiary-fg mt-2">
+            Measured {new Date(latest.measured_on).toLocaleDateString()}
+            {latest.source ? ` · ${latest.source}` : ""}
+          </p>
+        </Card>
+      )}
+
+
       {latestBelow65 && (
         <Card className="p-4 border-2 border-accent bg-accent-muted">
           <p className="text-sm leading-relaxed">

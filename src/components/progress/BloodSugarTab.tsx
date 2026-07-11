@@ -149,8 +149,38 @@ export default function BloodSugarTab() {
 
   const showMedPrompt = fastingBelow126Days >= 30 && !medPromptDismissed;
 
+  const latestReading = readings[0];
+  const latestDisplay = latestReading
+    ? unit === "mmoll"
+      ? mgdlToMmoll(latestReading.value_mgdl).toFixed(1)
+      : String(Math.round(latestReading.value_mgdl))
+    : null;
+  const latestTone = latestReading ? toneFor(latestReading.value_mgdl, latestReading.reading_type) : null;
+  const latestToneCls =
+    latestTone === "normal"
+      ? "text-status-normal"
+      : latestTone === "warning"
+      ? "text-status-warning"
+      : latestTone === "danger"
+      ? "text-status-danger"
+      : "text-foreground";
+
   return (
     <div className="space-y-5">
+      {latestReading && (
+        <Card className="p-5 border border-border rounded-xl shadow-warm">
+          <p className="stat-label mb-2">Latest reading</p>
+          <p className={`metric-hero ${latestToneCls} flex items-baseline flex-wrap`}>
+            <span>{latestDisplay}</span>
+            <span className="stat-unit">{unit === "mmoll" ? "mmol/L" : "mg/dL"}</span>
+          </p>
+          <p className="text-[12px] text-tertiary-fg mt-2">
+            {READING_TYPES.find((r) => r.k === latestReading.reading_type)?.label} ·{" "}
+            {new Date(latestReading.measured_at).toLocaleDateString()}
+          </p>
+        </Card>
+      )}
+
       {/* Top info bar */}
       <div className="rounded-lg bg-primary-muted px-4 py-3">
         <p className="text-[13px] text-primary">
