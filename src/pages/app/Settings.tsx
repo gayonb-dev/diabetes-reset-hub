@@ -514,6 +514,52 @@ export default function Settings() {
         </div>
       </Card>
 
+      {/* Timezone */}
+      <Card className="p-5 border-border">
+        <h2 className="font-semibold text-base flex items-center gap-2 mb-1">
+          <Clock className="h-4 w-4 text-primary" /> Timezone
+        </h2>
+        <p className="text-xs text-muted-foreground mb-3">
+          Your timezone — used for reminder timing.
+        </p>
+        <Input
+          list="tz-options"
+          value={timezone}
+          onChange={(e) => setTimezone(e.target.value)}
+          placeholder="Start typing… e.g. America/Jamaica"
+        />
+        <datalist id="tz-options">
+          {tzOptions.map((tz) => (
+            <option key={tz} value={tz} />
+          ))}
+        </datalist>
+        <Button
+          onClick={async () => {
+            if (!user || !timezone || timezone === initialTimezone) return;
+            setTzSaving(true);
+            const { error } = await supabase
+              .from("profiles")
+              .update({ timezone } as never)
+              .eq("user_id", user.id);
+            setTzSaving(false);
+            if (error) {
+              toast({ title: "Couldn't save timezone", description: error.message, variant: "destructive" });
+            } else {
+              setInitialTimezone(timezone);
+              toast({ title: "Timezone saved" });
+            }
+          }}
+          disabled={tzSaving || !timezone || timezone === initialTimezone}
+          variant="outline"
+          size="sm"
+          className="mt-3"
+        >
+          {tzSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          Save timezone
+        </Button>
+      </Card>
+
+
       {/* WhatsApp */}
       <Card className="p-5 border-border">
         <div className="flex items-start justify-between gap-3 mb-3">
