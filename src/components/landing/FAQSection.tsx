@@ -19,10 +19,16 @@ const FAQSection = () => {
         "If you do nothing, your membership continues at $67/month, charged automatically. You can cancel anytime before day 15 from your member dashboard — one click, no call required, no email required. If you cancel inside the 14 days, no monthly charges are ever made and you still keep your $27 7-Day Reset program.",
     },
     {
+      question: "How do I cancel?",
+      answer:
+        "In the app: Settings → Billing → Cancel. One click, done, confirmation on screen. You keep full access until your period ends, and the 30-day money-back guarantee applies to every charge.",
+    },
+    {
       question: "Is there a money-back guarantee?",
       answer:
         "Yes — we offer a 30-day money-back guarantee on every charge, including the initial $27 and any monthly renewal. Email Info@diabetesresetmethod.com within 30 days of the charge and we'll refund it in full within 5 business days. No hoops, no questions, no need to call.",
     },
+
     {
       question: "Do I need special foods, supplements, or a gym?",
       answer:
