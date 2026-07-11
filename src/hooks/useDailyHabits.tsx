@@ -2,6 +2,17 @@ import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 
+// Cross-hook-instance realtime signal so Dashboard's rings refresh the
+// instant HabitLogging (a separate useDailyHabits instance) writes.
+const HABITS_CHANGED_EVENT = "drm:habits-changed";
+function emitChanged() {
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new CustomEvent(HABITS_CHANGED_EVENT));
+  }
+}
+
+
+
 function todayISO() {
   return new Date().toISOString().slice(0, 10);
 }
