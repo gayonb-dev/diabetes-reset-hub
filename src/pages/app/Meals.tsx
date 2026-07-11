@@ -643,7 +643,12 @@ export default function Meals() {
           <p className="text-xs text-muted-foreground">
             Generated from Week {weekIdx}'s meals. Checked items move to the bottom.
           </p>
-          {[...shopping.entries()].map(([cat, items]) => {
+          {shopping.mealCount > 0 && shopping.uniqueCount > 0 && (
+            <p className="text-sm font-medium text-foreground">
+              {shopping.uniqueCount} ingredients cover all {shopping.mealCount} meals this week.
+            </p>
+          )}
+          {[...shopping.byCat.entries()].map(([cat, items]) => {
             const tip = CATEGORY_RULES.find((c) => c.category === cat)?.tip;
             const sorted = [...items].sort((a, b) => Number(!!shoppingChecked[a]) - Number(!!shoppingChecked[b]));
             return (
@@ -675,10 +680,11 @@ export default function Meals() {
               </Card>
             );
           })}
-          {shopping.size === 0 && (
+          {shopping.byCat.size === 0 && (
             <p className="text-sm text-muted-foreground">No ingredients found in this week.</p>
           )}
         </TabsContent>
+
       </Tabs>
 
       <Badge variant="outline" className="text-[11px]">Day {programDay}</Badge>
