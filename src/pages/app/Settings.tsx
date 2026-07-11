@@ -237,6 +237,21 @@ export default function Settings() {
 
   const regenerateMealPlan = async () => {
     if (!user || !profileId) return;
+
+    // Enforce 2/month cap. Reset counter if we've crossed into a new month.
+    const monthStart = new Date();
+    monthStart.setUTCDate(1);
+    monthStart.setUTCHours(0, 0, 0, 0);
+    const monthISO = monthStart.toISOString().slice(0, 10);
+    if (regenCount >= REGEN_MONTHLY_CAP) {
+      toast({
+        title: "Monthly limit reached",
+        description: `You get ${REGEN_MONTHLY_CAP} fresh meal plans per month. Your counter resets next month.`,
+        variant: "destructive",
+      });
+      return;
+    }
+
     setRegenerating(true);
     setRegenError(null);
 
@@ -246,6 +261,7 @@ export default function Settings() {
         "VITA is taking longer than usual to rebuild your plan. Try again, or open the Meals tab — partial weeks may already be ready.",
       );
     }, 4 * 60 * 1000);
+
 
     try {
       const allergies = foodsToAvoid
@@ -309,9 +325,21 @@ export default function Settings() {
 
       setInitialPrefs(JSON.stringify({ c: cuisines, p: proteins, avoid: foodsToAvoid, ct: cookingTime }));
       setRegenError(null);
+
+      // Increment monthly regeneration counter.
+      const nextCount = regenCount + 1;
+      setRegenCount(nextCount);
+      await supabase
+        .from("profiles")
+        .update({
+          regenerations_this_month: nextCount,
+          regen_month: monthISO,
+        } as never)
+        .eq("user_id", user.id);
+
       toast({
         title: "Meal plan regenerated",
-        description: "Your Meals tab is ready with the new 4-week plan.",
+        description: `Your Meals tab is ready with the new 4-week plan. ${REGEN_MONTHLY_CAP - nextCount} regeneration${REGEN_MONTHLY_CAP - nextCount === 1 ? "" : "s"} remaining this month.`,
       });
     } catch (e) {
       console.error("regenerateMealPlan failed", e);
@@ -321,6 +349,7 @@ export default function Settings() {
       setRegenerating(false);
     }
   };
+
 
   const saveUnits = (next: { weight?: WeightUnit; glucose?: GlucoseUnit }) => {
     setUnits(next);
