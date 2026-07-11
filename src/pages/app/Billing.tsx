@@ -11,7 +11,7 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { Loader2, AlertCircle, CreditCard, ExternalLink } from "lucide-react";
+import { Loader2, AlertCircle, CreditCard, ExternalLink, RotateCcw } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import EmptyState from "@/components/ui/empty-state";
 
@@ -49,9 +49,11 @@ const INVOICE_STATUS: Record<string, { label: string; color: string }> = {
 };
 
 export default function Billing() {
-  const { subscription } = useAuth();
+  const { subscription, refreshSubscription } = useAuth();
   const [loading, setLoading] = useState(false);
   const [cancelOpen, setCancelOpen] = useState(false);
+  const [cancelling, setCancelling] = useState(false);
+  const [reactivating, setReactivating] = useState(false);
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | null>(null);
   const [invLoading, setInvLoading] = useState(true);
@@ -79,10 +81,56 @@ export default function Billing() {
         });
       } else {
         window.open(data.url, "_blank");
-        setCancelOpen(false);
       }
     } finally {
       setLoading(false);
+    }
+  };
+
+  const invokeCancel = async (cancel: boolean) => {
+    const setter = cancel ? setCancelling : setReactivating;
+    setter(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("cancel-subscription", {
+        body: { cancel },
+      });
+      if (error) {
+        let detail = (error as Error).message;
+        const ctx = (error as unknown as { context?: Response }).context;
+        if (ctx && typeof ctx.text === "function") {
+          try {
+            const body = await ctx.text();
+            if (body) detail = body.slice(0, 400);
+          } catch {
+            /* ignore */
+          }
+        }
+        throw new Error(detail);
+      }
+      await refreshSubscription();
+      if (cancel) {
+        const when = data?.current_period_end
+          ? new Date(data.current_period_end).toLocaleDateString()
+          : "the end of your current period";
+        toast({
+          title: "Subscription cancelled",
+          description: `You keep full access until ${when}. Reactivate anytime before then with one tap.`,
+        });
+        setCancelOpen(false);
+      } else {
+        toast({
+          title: "Subscription reactivated",
+          description: "Welcome back — your membership will renew as normal.",
+        });
+      }
+    } catch (e) {
+      toast({
+        title: cancel ? "Couldn't cancel" : "Couldn't reactivate",
+        description: (e as Error).message,
+        variant: "destructive",
+      });
+    } finally {
+      setter(false);
     }
   };
 
@@ -120,7 +168,7 @@ export default function Billing() {
         )}
 
         <dl className="text-sm space-y-2">
-          {nextChargeDate && (
+          {nextChargeDate && !subscription.cancel_at_period_end && (
             <div className="flex justify-between">
               <dt className="text-secondary-fg">{subscription.status === "trialing" ? "First charge" : "Next charge"}</dt>
               <dd className="font-medium text-foreground">
@@ -131,14 +179,31 @@ export default function Billing() {
         </dl>
 
         {subscription.cancel_at_period_end && (
-          <div className="flex items-start gap-2 text-sm text-foreground bg-muted/60 p-3 rounded-md mt-4">
-            <AlertCircle className="h-4 w-4 mt-0.5 text-muted-foreground" />
-            <span>
-              Membership ends on{" "}
-              {subscription.current_period_end &&
-                new Date(subscription.current_period_end).toLocaleDateString()}
-              . No further charges.
-            </span>
+          <div className="mt-4 space-y-3">
+            <div className="flex items-start gap-2 text-sm text-foreground bg-muted/60 p-3 rounded-md">
+              <AlertCircle className="h-4 w-4 mt-0.5 text-muted-foreground" />
+              <span>
+                Your subscription is cancelled. You keep full access until{" "}
+                <span className="font-medium">
+                  {subscription.current_period_end
+                    ? new Date(subscription.current_period_end).toLocaleDateString()
+                    : "the end of the current period"}
+                </span>
+                . Reactivate anytime before then with one tap.
+              </span>
+            </div>
+            <Button
+              onClick={() => invokeCancel(false)}
+              disabled={reactivating}
+              className="w-full h-12 bg-primary hover:bg-primary/90 text-primary-foreground"
+            >
+              {reactivating ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <RotateCcw className="mr-2 h-4 w-4" />
+              )}
+              Reactivate my subscription
+            </Button>
           </div>
         )}
       </Card>
@@ -218,14 +283,16 @@ export default function Billing() {
         )}
       </Card>
 
-      <div className="text-center pt-4">
-        <button
-          onClick={() => setCancelOpen(true)}
-          className="text-sm text-destructive hover:underline"
-        >
-          Cancel subscription
-        </button>
-      </div>
+      {!subscription.cancel_at_period_end && (
+        <div className="text-center pt-4">
+          <button
+            onClick={() => setCancelOpen(true)}
+            className="text-sm text-destructive hover:underline"
+          >
+            Cancel subscription
+          </button>
+        </div>
+      )}
 
       <p className="text-xs text-muted-foreground text-center">
         Questions? Email{" "}
@@ -234,7 +301,7 @@ export default function Billing() {
         </a>
       </p>
 
-      <Dialog open={cancelOpen} onOpenChange={setCancelOpen}>
+      <Dialog open={cancelOpen} onOpenChange={(v) => !cancelling && setCancelOpen(v)}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Are you sure you want to cancel?</DialogTitle>
@@ -243,20 +310,24 @@ export default function Billing() {
               {subscription.current_period_end
                 ? new Date(subscription.current_period_end).toLocaleDateString()
                 : "the end of the current period"}
-              . If you change your mind, you can reactivate at any time.
+              . If you change your mind, you can reactivate at any time with one tap.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="gap-2 sm:gap-2">
-            <Button onClick={() => setCancelOpen(false)} className="bg-primary hover:bg-primary/90">
+            <Button
+              onClick={() => setCancelOpen(false)}
+              disabled={cancelling}
+              className="bg-primary hover:bg-primary/90"
+            >
               Keep my subscription
             </Button>
             <Button
-              onClick={openPortal}
-              disabled={loading}
+              onClick={() => invokeCancel(true)}
+              disabled={cancelling}
               variant="ghost"
               className="text-destructive hover:text-destructive/80"
             >
-              {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {cancelling && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Cancel anyway
             </Button>
           </DialogFooter>
