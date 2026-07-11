@@ -103,6 +103,16 @@ const App = () => (
               <Route path="/auth/callback" element={<AuthCallback />} />
               <Route path="/privacy" element={<Privacy />} />
 
+              {/* Doctor-shareable progress report — plain page, no AppLayout */}
+              <Route
+                path="/app/progress/report"
+                element={
+                  <AuthGuard>
+                    <ProgressReport />
+                  </AuthGuard>
+                }
+              />
+
               {/* Onboarding (auth required, no active sub needed yet) */}
               <Route
                 path="/app/onboarding"
@@ -120,6 +130,7 @@ const App = () => (
                   </AuthGuard>
                 }
               />
+
 
               {/* Member app */}
               <Route
