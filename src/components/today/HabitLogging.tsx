@@ -198,45 +198,48 @@ export default function HabitLogging({ currentProgramDay }: Props) {
       <h2 className="font-heading text-lg font-semibold text-foreground">Today's logging</h2>
 
       {/* WATER */}
-      <Section
-        icon={Droplet}
-        title="Water"
-        iconColor="hsl(var(--ring-water))"
-        status={`${h.waterOz}oz / ${waterTarget}oz${h.waterStreak > 1 ? `  ·  💧 ${h.waterStreak}-day streak` : ""}`}
-        open={openKey === "water"}
-        onToggle={() => toggle("water")}
-      >
-        <div className="flex flex-wrap gap-2 mt-3">
-          {[8, 12, 16].map((oz) => (
-            <Button key={oz} variant="outline" size="sm" onClick={() => h.addWater(oz)}>
-              +{oz}oz
+      <div id="water-logging" className="scroll-mt-20">
+        <Section
+          icon={Droplet}
+          title="Water"
+          iconColor="hsl(var(--ring-water))"
+          status={`${h.waterOz}oz / ${waterTarget}oz${h.waterStreak > 1 ? `  ·  💧 ${h.waterStreak}-day streak` : ""}`}
+          open={openKey === "water"}
+          onToggle={() => toggle("water")}
+        >
+          <div className="flex flex-wrap gap-2 mt-3">
+            {[8, 12, 16].map((oz) => (
+              <Button key={oz} variant="outline" size="sm" onClick={() => h.addWater(oz)}>
+                +{oz}oz
+              </Button>
+            ))}
+            <Input
+              placeholder="Custom oz"
+              type="number"
+              inputMode="decimal"
+              className="w-28 h-9"
+              value={customOz}
+              onChange={(e) => setCustomOz(e.target.value)}
+            />
+            <Button
+              size="sm"
+              onClick={() => {
+                const v = parseInt(customOz);
+                if (v > 0) {
+                  h.addWater(v);
+                  setCustomOz("");
+                }
+              }}
+            >
+              Add
             </Button>
-          ))}
-          <Input
-            placeholder="Custom oz"
-            type="number"
-            inputMode="decimal"
-            className="w-28 h-9"
-            value={customOz}
-            onChange={(e) => setCustomOz(e.target.value)}
-          />
-          <Button
-            size="sm"
-            onClick={() => {
-              const v = parseInt(customOz);
-              if (v > 0) {
-                h.addWater(v);
-                setCustomOz("");
-              }
-            }}
-          >
-            Add
-          </Button>
-        </div>
-        <p className="text-xs text-tertiary-fg mt-3">
-          Your target: {waterTarget}oz — equal to your body weight ({Math.round(weightLb)} lbs) ÷ 2.
-        </p>
-      </Section>
+          </div>
+          <p className="text-xs text-tertiary-fg mt-3">
+            Your target: {waterTarget}oz — equal to your body weight ({Math.round(weightLb)} lbs) ÷ 2.
+          </p>
+        </Section>
+      </div>
+
 
       {/* MEALS */}
       <Section
