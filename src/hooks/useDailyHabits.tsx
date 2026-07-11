@@ -246,7 +246,9 @@ export function useDailyHabits(): DailyHabits {
         { onConflict: "member_id,log_date" },
       );
       setMoodState(m);
+      emitChanged();
     },
+
     [user],
   );
 
