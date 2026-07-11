@@ -117,6 +117,27 @@ export default function Settings() {
   const [regenCount, setRegenCount] = useState<number>(0);
   const REGEN_MONTHLY_CAP = 2;
 
+  // Timezone (IANA)
+  const [timezone, setTimezone] = useState<string>("");
+  const [initialTimezone, setInitialTimezone] = useState<string>("");
+  const [tzSaving, setTzSaving] = useState(false);
+  const tzOptions = (() => {
+    try {
+      const fn = (Intl as unknown as { supportedValuesOf?: (k: string) => string[] }).supportedValuesOf;
+      if (typeof fn === "function") return fn("timeZone");
+    } catch {
+      /* ignore */
+    }
+    return [
+      "America/New_York", "America/Chicago", "America/Denver", "America/Los_Angeles",
+      "America/Jamaica", "America/Toronto", "America/Mexico_City", "America/Sao_Paulo",
+      "Europe/London", "Europe/Paris", "Europe/Berlin", "Europe/Madrid",
+      "Africa/Lagos", "Africa/Johannesburg", "Asia/Dubai", "Asia/Kolkata",
+      "Asia/Singapore", "Asia/Tokyo", "Australia/Sydney", "Pacific/Auckland",
+    ];
+  })();
+
+
 
   useEffect(() => {
     if (!user) return;
