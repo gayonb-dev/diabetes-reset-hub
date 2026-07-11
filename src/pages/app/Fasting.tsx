@@ -179,17 +179,17 @@ export default function Fasting() {
       )}
 
       {isFasting && (
-        <Card className="p-6 border border-border">
-          <p className="text-xs uppercase tracking-wider text-accent font-medium mb-1">Fasting</p>
-          <p className="text-5xl font-bold tabular-nums text-foreground tracking-tight">
+        <Card className="p-6 border border-border rounded-xl shadow-warm">
+          <p className="label-caps text-accent mb-1">Fasting</p>
+          <p className="countdown-hero text-foreground">
             {fmt(fastingRemaining)}
           </p>
-          <p className="text-xs text-secondary-fg mt-1">Time remaining until eating window opens</p>
+          <p className="text-xs text-secondary-fg mt-2">Time remaining until eating window opens</p>
           <div className="mt-4 space-y-1 text-xs">
             <p className="text-tertiary-fg">Fast started: {new Date(active!.fast_start_at).toLocaleString()}</p>
             <p className="text-status-normal">Eating window opens: {new Date(eatingStartMs).toLocaleTimeString()}</p>
           </div>
-          <div className="mt-4 rounded-md bg-accent-muted px-3 py-2">
+          <div className="mt-4 rounded-lg bg-accent-muted px-3 py-2">
             <p className="text-[13px] text-accent">VITA says: {vitaMsg}</p>
           </div>
           <button
@@ -205,12 +205,12 @@ export default function Fasting() {
       )}
 
       {isEatingWindow && (
-        <Card className="p-6 border border-border">
-          <p className="text-xs uppercase tracking-wider text-status-normal font-medium mb-1">Eating window</p>
-          <p className="text-5xl font-bold tabular-nums text-status-normal tracking-tight">
+        <Card className="p-6 border border-border rounded-xl shadow-warm">
+          <p className="label-caps text-status-normal mb-1">Eating window</p>
+          <p className="countdown-hero text-status-normal">
             {fmt(-fastingRemaining)}
           </p>
-          <p className="text-xs text-secondary-fg mt-1">Since your eating window opened</p>
+          <p className="text-xs text-secondary-fg mt-2">Since your eating window opened</p>
           <p className="text-xs text-tertiary-fg mt-2">{windowLabel(active!.window_type)}</p>
           <Button
             onClick={() => endFast("completed")}
