@@ -35,8 +35,9 @@ const HeroSection = () => {
 
             <h2 className="font-body text-xl sm:text-2xl text-muted-foreground leading-relaxed">
               A membership built for Type 2 Diabetes and prediabetes. Start with a 7-Day Reset Sprint,
-              then unlock recipes, coach Q&A, and weekly accountability — for less than a copay.
+              then unlock recipes, expert Q&A, and weekly accountability — for less than a copay.
             </h2>
+
 
             <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
               <span className="flex items-center gap-1">

@@ -22,9 +22,10 @@ const Footer = () => {
 
         <div className="border-t border-background/20 pt-8">
           <p className="text-background/60 text-sm text-center mb-4">
-            Educational coaching only. We do not diagnose, treat, cure, or prevent any disease.
+            Educational program only. We do not diagnose, treat, cure, or prevent any disease.
             Always consult your healthcare provider before making changes to your diet, exercise, or medication.
           </p>
+
           <p className="text-background/40 text-sm text-center">
             © {currentYear} The Diabetes Reset Method. All rights reserved. ·{" "}
             <a href="/login" className="hover:text-background/70 underline underline-offset-4">

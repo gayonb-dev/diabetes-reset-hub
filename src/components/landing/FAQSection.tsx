@@ -10,8 +10,9 @@ const FAQSection = () => {
     {
       question: "What exactly am I paying for at $27?",
       answer:
-        "Your $27 unlocks immediate access to the Diabetes Reset Method membership: the 7-Day Reset Sprint, the recipe and plate-method library (unlocks Day 6), coach Q&A, and 14 days of full access to everything. After those 14 days the membership renews at $67/month — unless you cancel before day 15.",
+        "Your $27 unlocks immediate access to the Diabetes Reset Method membership: the 7-Day Reset Sprint, the recipe and plate-method library (unlocks Day 6), expert Q&A, and 14 days of full access to everything. After those 14 days the membership renews at $67/month — unless you cancel before day 15.",
     },
+
     {
       question: "What happens after my 14 days of full access?",
       answer:

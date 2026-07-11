@@ -13,7 +13,7 @@ const ProblemPromiseSection = () => {
     "Small, diabetes-specific actions you can start today",
     "Meals that stabilize blood sugar AND taste good",
     "10 minutes a day — not a lifestyle overhaul",
-    "Ask the coach anything — get a real answer within 48 hours",
+    "Ask anything — get an expert-reviewed answer within 48 hours",
   ];
 
   return (

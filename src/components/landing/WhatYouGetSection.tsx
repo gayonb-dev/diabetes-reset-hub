@@ -25,8 +25,8 @@ const WhatYouGetSection = () => {
     },
     {
       icon: MessageCircle,
-      title: "Coach Q&A Library",
-      description: "Ask a question. Get a coach-reviewed answer added to your member library.",
+      title: "Expert Q&A Library",
+      description: "Ask anything — get an expert-reviewed answer added to your member library.",
     },
     {
       icon: BookOpen,
@@ -35,9 +35,10 @@ const WhatYouGetSection = () => {
     },
     {
       icon: Users,
-      title: "Live Coaching Waitlist",
-      description: "First access to small-group coaching cohorts when they open up.",
+      title: "1-on-1 Support Sessions Waitlist",
+      description: "Priority access to 1-on-1 support sessions when new spots open up.",
     },
+
   ];
 
   return (
