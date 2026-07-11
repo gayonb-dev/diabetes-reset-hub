@@ -156,6 +156,50 @@
     letter-spacing: 0.08em;
     text-transform: uppercase;
   }
+  .stat-value {
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.01em;
+  }
+  @media (min-width: 768px) {
+    .stat-value { font-size: 32px; }
+  }
+  .stat-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: hsl(var(--text-tertiary));
+  }
+  .stat-unit {
+    font-size: 13px;
+    font-weight: 400;
+    color: hsl(var(--muted-foreground));
+    margin-left: 4px;
+    font-variant-numeric: tabular-nums;
+  }
+  .ring-value {
+    font-size: 15px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.1;
+  }
+  .metric-hero {
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+  }
+  .countdown-hero {
+    font-size: 56px;
+    font-weight: 700;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.03em;
+  }
   .shadow-warm {
     box-shadow: 0 4px 12px rgba(8, 80, 65, 0.06), 0 1px 4px rgba(0, 0, 0, 0.04);
   }

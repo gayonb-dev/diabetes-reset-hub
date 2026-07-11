@@ -1,71 +1,50 @@
-## Ten-item build — approved as written
+## Visual finish pass — plan (with VITA-card guardrail)
 
-### Locked changes
-- support-assistant: `verify_jwt = true`, model `google/gemini-2.5-flash` via Lovable AI Gateway, mode json.
-- Landing ChatWidget remains the only anonymous chatbot.
-- Streak freeze cap stays a boolean (1 held).
+Strictly in-brand: uses existing tokens (`src/index.css`, `tailwind.config.ts`). No external theme imports.
 
-### 1. Measurements — dedicated table
-Migration: `public.member_measurements` (member_id → auth.users, measured_at, waist/hips/chest/thigh/arm/neck numeric nullable, notes, updated_at trigger). GRANTs + RLS `auth.uid() = member_id`. Rewrite `MeasurementsTab.tsx` to insert/read from this table; delete all `member_progress` writes.
+### 1. Numeric typography system
+Add utilities to `src/index.css`:
+- `.stat-value` → 28px (32px md+), 700, tabular, `leading-none`
+- `.stat-label` → 11px caps, tertiary-fg (above the value)
+- `.stat-unit` → 13px, muted-foreground, tabular, sits beside value
+- `.ring-value` → 15px, 600, tabular (beneath each ring)
+- `.metric-hero` → 32px, 700, tabular (Latest BS / Weight / A1C)
+- `.countdown-hero` → 56px, 700, tabular (Fasting timer)
 
-### 2. Rings update without reload
-`useDailyHabits.tsx`: dispatch `new CustomEvent("drm:habits-changed")` after every mutation (addWater, saveMeal, setSnack, toggleWalk, markMindsetRead, setMood). Add a `useEffect` in the same hook listening for the event and calling `refresh()` — Dashboard's separate hook instance receives it and re-fetches instantly.
+Apply:
+- `QuickStats.tsx` — reorder to label-above / value / unit-beside.
+- `HabitRing.tsx` — value/target line uses `.ring-value` at all sizes.
+- `Fasting.tsx` — active countdown → `.countdown-hero`.
+- `BloodSugarTab.tsx`, `WeightTab.tsx`, `A1CTab.tsx` — add a compact "Latest" hero card at top of each tab with the value rendered via `.metric-hero` (uses data already fetched).
 
-### 3. Water Today tile
-`Dashboard.tsx`: Water card `to="/app/today#water-logging"`. `HabitLogging.tsx`: `id="water-logging"` on the water section; mount effect scrolls it into view when hash matches.
+### 2. Rings at hero scale
+`Dashboard.tsx` — bump `HabitRing` `size` from 72/96 to **88 mobile / 112 md+**. Rings stay in Row 2 (directly after the greeting) — that position is already correct. `HabitRing.tsx` — extend stroke logic: `stroke = size >= 112 ? 10 : size >= 96 ? 8 : 6`; scale icon to `h-7 w-7` at ≥112. Framer-motion draw-on and bloom logic untouched.
 
-### 4. Meal-plan regeneration cap (2/month)
-Migration: `profiles.regenerations_this_month int default 0`, `regen_month date`. `Settings.regenerateMealPlan` reads, resets on month change, blocks at ≥ 2, increments then invokes. Show "X / 2 remaining"; disable at 0. `MealSetupTransition.tsx` adds "You get 2 fresh meal plans per month." `Meals.tsx` removes standalone Regenerate button; error retry links to Settings.
+### 3. One type + shape system
+- Add `font-heading` to non-serif h1s: `Privacy.tsx`, `NotFound.tsx`, `WorkoutComplete.tsx`, `Onboarding.tsx` (three h1s), `AdminCommunity.tsx`. (`ProgressReport.tsx` intentionally stays sans — it is the print-for-doctor document.)
+- Radius sweep: cards `rounded-xl` (12px), inputs `rounded-lg` (8px). Fix any `rounded-2xl` on standard cards (Dashboard today's-action card, Fasting cards using `Card`, mobile sheet).
+- Shadow sweep: resting cards use `shadow-warm`; keep `shadow-elevated` for modals/popovers only.
 
-### 5. Swap verified AI-free
-Already local-only in `Meals.handleSwap`. Report as verified, no code change.
+### 4. Right-rail dead-space fix
+- `AppLayout.tsx` main: `max-w-3xl xl:max-w-5xl` → `max-w-3xl lg:max-w-6xl xl:max-w-7xl`.
+- `Dashboard.tsx` grid: `xl:grid xl:grid-cols-[minmax(0,1fr)_320px]` → `lg:grid lg:grid-cols-[minmax(0,1fr)_320px]`, and move the in-column VITA fallback from `xl:hidden` to `lg:hidden`, and the aside from `hidden xl:block` to `hidden lg:block`.
+- Playwright screenshot Dashboard at 1280, 1440, 1680; iterate if any width still shows a dead third; attach the three PNGs.
 
-### 6. Split chatbot
-- `App.tsx`: remove global `<ChatWidget />`. Mount in `Index.tsx` (marketing).
-- New `supabase/functions/support-assistant/index.ts` — `verify_jwt = true`, `google/gemini-2.5-flash` via Lovable AI Gateway, mode json. Rejects sales prompts; answers app navigation only.
-- `Support.tsx`: add chat panel posting to `support-assistant`, render reply with react-markdown; keep existing Report/Billing buttons and mailto.
+### 5. Chrome quieting
+- Sidebar active NavLink (`AppLayout.tsx` `navClass`): add `border-l-2 border-accent` on active, `border-l-2 border-transparent` on inactive, adjust `pl` to preserve alignment. Drop the full pill fill; keep a subtle `bg-white/5` on active.
+- Trial banner (`AppLayout.tsx`): restyle to `bg-accent-muted border-b border-accent/30 text-foreground` with a live **days:hours** countdown to `trial_end_date`, and the "Manage" link becomes a `Button size="sm" variant="default"` (primary green).
+- `GettingStartedChecklist.tsx` — flatten fully to global card: `bg-card border border-border rounded-xl shadow-warm`; retire the amber tinted background/border and amber "Getting Ready" heading (heading becomes `text-foreground`, count uses `text-tertiary-fg`).
+- `VitaQuoteCard.tsx` — global card treatment (`bg-card border border-border rounded-xl shadow-warm`) **plus one subtle amber signature**: keep the amber `VITA SAYS` label caps in place. No amber border/edge — the label alone marks it as a VITA moment.
 
-### 7. Streak freeze / streak break rollover
-- New `supabase/functions/streak-rollover/index.ts` (service role, `verify_jwt = false`, `x-internal-secret` gated). For each profile evaluates yesterday's 4 rings:
-  - completed → no-op;
-  - missed + freeze available → set `streak_freeze_available=false`, keep streak, insert `streak_freeze_used` notification;
-  - missed + no freeze → `user_streaks.current_streak=0` and mirror `visitor_profiles.streak_count=0`.
-- After processing, if new `current_streak` is a positive multiple of 7 and `streak_freeze_available=false`, set true.
-- pg_cron via `supabase--insert`: daily 07:00 UTC POST to `/functions/v1/streak-rollover` with `x-internal-secret`.
+### 6. Final greps (reported verbatim in completion report)
+- `rg "#[0-9a-fA-F]{3,6}" src --glob '!src/index.css' --glob '!src/integrations/**' --glob '!tailwind.config.ts'` — expected: Vita.tsx (mascot palette), BadgeGallery.tsx (bronze/silver/gold metals), ProgressReport.tsx (print chart colors, doctor doc).
+- `rg "<h1[^>]*font-sans"` — expected: zero.
+- `rg -n "\.dark\s*\{" src/index.css` and confirm the `.dark {}` block is byte-identical to current.
 
-### 8. True in-app one-click cancel
-- New `supabase/functions/cancel-subscription/index.ts` — `verify_jwt = true`. Validates JWT via `getClaims`, looks up user's subscription id (subscriptions table, fallback Stripe by email), calls `stripe.subscriptions.update(id, { cancel_at_period_end: body.cancel })`. Returns `{ cancel_at_period_end, current_period_end }`.
-- `Billing.tsx`: "Cancel anyway" invokes `cancel-subscription` with `{ cancel: true }` — no redirect. Success copy: "Your subscription is cancelled. You keep full access until {current_period_end}. Reactivate anytime before then with one tap." When `cancel_at_period_end`, render visible "Reactivate" button invoking with `{ cancel: false }`.
-- Verify `stripe-subscription-webhook` syncs `cancel_at_period_end` and `current_period_end` on `customer.subscription.updated`; add the sync if missing.
-- `customer-portal` stays for payment-method/invoices only.
+### Files expected to change
+`src/index.css`, `src/components/dashboard/QuickStats.tsx`, `HabitRing.tsx`, `GettingStartedChecklist.tsx`, `VitaQuoteCard.tsx`, `src/pages/app/AppLayout.tsx`, `Dashboard.tsx`, `Fasting.tsx`, `src/components/progress/{BloodSugarTab,WeightTab,A1CTab}.tsx`, `src/pages/Privacy.tsx`, `src/pages/NotFound.tsx`, `src/pages/app/WorkoutComplete.tsx`, `src/pages/app/Onboarding.tsx`, `src/pages/admin/AdminCommunity.tsx`.
 
-### 9. Coaching copy sweep
-Edit landing components (`HeroSection`, `PricingSection`, `FAQSection`, `FinalCTASection`, `WhatYouGetSection`, `WhyThisWorksSection`, `Footer`, plus any card copy):
-- `coach Q&A` → `expert Q&A`
-- `Ongoing Coaching Support` → `Ongoing Support`
-- `Priority access to 1-on-1 coaching` → `Priority access to 1-on-1 support sessions`
-- `Ask the coach anything` → `Ask anything — get an expert-reviewed answer`
-- Footer `Educational coaching only` → `Educational program only`
-
-After sweep: `rg -i coach src/components/landing/ src/pages/Index.tsx` and list residuals with one-line justification. No DB identifier renames.
-
-### 10. Wire three notifications
-- (a) **streak-at-risk:** `notifications-cron` — extend to trigger when any of the 4 rings is still open at the local 20:00 hour; TZ fallback UTC-5 when `profiles.timezone` is null. Body: "Your {N}-day streak needs one more thing today." Confirm pg_cron hourly runner exists (add if missing).
-- (b) **level-up:** verify `gamify-action` inserts `level_up` notification; force a level bump on test account, confirm bell renders it.
-- (c) **freeze consumed:** `streak-rollover` (Item 7) inserts `streak_freeze_used` — "Your streak freeze saved your {N}-day streak."
-
-### Verification (end of build)
-- Measurements save row in `member_measurements`; history renders.
-- Log water/meal/walk/mindset → all four Dashboard rings update without reload.
-- Water Today tile lands on Today, scrolls to water card.
-- Settings shows "2/2 remaining"; 3rd regen blocked. Meals has no Regenerate button.
-- `rg 'invoke|ai\.gateway' src/pages/app/Meals.tsx` returns nothing for swap.
-- `/app/*` no floating bubble; Support chat answers navigation, refuses sales.
-- Force streak-rollover: freeze consumed + notification; second miss resets streak; 7-day multiple re-awards freeze.
-- Cancel test sub in-app — no Stripe portal redirect; Reactivate button flips it back.
-- `rg -i coach` residuals listed with justification.
-- All three notification types render in bell popover.
-
-### Files
-- **New:** `supabase/migrations/<ts>_measurements_regen_cap.sql`, `supabase/functions/support-assistant/index.ts`, `supabase/functions/streak-rollover/index.ts`, `supabase/functions/cancel-subscription/index.ts`
-- **Edited:** `src/components/progress/MeasurementsTab.tsx`, `src/hooks/useDailyHabits.tsx`, `src/components/today/HabitLogging.tsx`, `src/pages/app/Dashboard.tsx`, `src/pages/app/Settings.tsx`, `src/pages/app/MealSetupTransition.tsx`, `src/pages/app/Meals.tsx`, `src/pages/app/Billing.tsx`, `src/App.tsx`, `src/pages/Index.tsx`, `src/pages/app/Support.tsx`, `src/components/landing/{HeroSection,PricingSection,FAQSection,FinalCTASection,WhatYouGetSection,WhyThisWorksSection,Footer}.tsx`, `supabase/functions/notifications-cron/index.ts`, `supabase/functions/stripe-subscription-webhook/index.ts` (only if sync missing), `supabase/config.toml`
+### Verification
+- `tsgo` clean.
+- Playwright screenshots Dashboard at 1280 / 1440 / 1680.
+- Three grep outputs verbatim.
