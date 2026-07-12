@@ -30,9 +30,11 @@ interface Props {
 
 export default function GettingStartedChecklist({ currentProgramDay }: Props) {
   const { user } = useAuth();
-  const [open, setOpen] = useState(false);
   const [profileId, setProfileId] = useState<string | null>(null);
   const [state, setState] = useState<Record<string, boolean>>({});
+  const [metadata, setMetadata] = useState<Record<string, unknown>>({});
+  const [completedAt, setCompletedAt] = useState<string | null>(null);
+  const [userOpen, setUserOpen] = useState<boolean | null>(null);
 
   useEffect(() => {
     if (!user) return;
@@ -40,12 +42,15 @@ export default function GettingStartedChecklist({ currentProgramDay }: Props) {
     (async () => {
       const { data } = await supabase
         .from("visitor_profiles")
-        .select("id, getting_started_checklist")
+        .select("id, getting_started_checklist, metadata")
         .eq("user_id", user.id)
         .maybeSingle();
       if (cancelled || !data) return;
       setProfileId(data.id);
       setState((data.getting_started_checklist as Record<string, boolean>) ?? {});
+      const meta = (data.metadata as Record<string, unknown>) ?? {};
+      setMetadata(meta);
+      setCompletedAt((meta.getting_started_completed_at as string) ?? null);
     })();
     return () => {
       cancelled = true;
@@ -62,9 +67,33 @@ export default function GettingStartedChecklist({ currentProgramDay }: Props) {
   );
   const acquired = unlocked.filter((i) => state[i.slug]).length;
   const totalUnlocked = unlocked.length;
+  const allAcquired = ITEMS.every((i) => state[i.slug]);
+
+  // Persist completed_at once, when the user first finishes all items.
+  useEffect(() => {
+    if (!profileId || !allAcquired || completedAt) return;
+    const now = new Date().toISOString();
+    setCompletedAt(now);
+    const nextMeta = { ...metadata, getting_started_completed_at: now };
+    setMetadata(nextMeta);
+    void supabase
+      .from("visitor_profiles")
+      .update({ metadata: nextMeta as never })
+      .eq("id", profileId);
+  }, [profileId, allAcquired, completedAt, metadata]);
 
   // Spec: card only shows Days 1–29.
   if (currentProgramDay > 29) return null;
+
+  // Permanent hide 3 days after completion.
+  if (allAcquired && completedAt) {
+    const ageMs = Date.now() - new Date(completedAt).getTime();
+    if (ageMs > 3 * 86400000) return null;
+  }
+
+  const isCompleteCollapsedMode = allAcquired && !!completedAt;
+  const open = userOpen ?? (isCompleteCollapsedMode ? false : false);
+
 
   async function toggle(slug: string) {
     const next = { ...state, [slug]: !state[slug] };
