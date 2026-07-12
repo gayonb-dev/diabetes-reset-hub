@@ -45,7 +45,6 @@ function mobileNavClass({ isActive }: { isActive: boolean }) {
 export default function AppLayout() {
   const { signOut, subscription, isAdmin, user } = useAuth();
   const navigate = useNavigate();
-  const [streakDays, setStreakDays] = useState<number | null>(null);
   const [levelName, setLevelName] = useState("Level 1: Getting Started");
 
   // Onboarding gate: redirect new users (no onboarded_at) to /app/onboarding.
@@ -54,28 +53,20 @@ export default function AppLayout() {
     if (!user) return;
     let cancelled = false;
     (async () => {
-      const [{ data }, { data: streak }] = await Promise.all([
-        supabase
+      const { data } = await supabase
         .from("visitor_profiles")
         .select("metadata, level")
         .eq("user_id", user.id)
-          .maybeSingle(),
-        supabase
-          .from("user_streaks")
-          .select("current_streak")
-          .eq("user_id", user.id)
-          .maybeSingle(),
-      ]);
+        .maybeSingle();
       if (cancelled) return;
       const meta = (data?.metadata as Record<string, unknown> | null) || {};
-      // Level is now day-derived and maintained by gamify-action + useGamificationProfile.
       const level = data?.level ?? 1;
-      setStreakDays(streak?.current_streak ?? 0);
       setLevelName(level <= 1 ? "Level 1: Getting Started" : `Level ${level}: The Builder`);
       setOnboardCheck(meta.onboarded_at ? "done" : "needs");
     })();
     return () => { cancelled = true; };
   }, [user?.id]);
+
 
   const handleSignOut = async () => {
     await signOut();
