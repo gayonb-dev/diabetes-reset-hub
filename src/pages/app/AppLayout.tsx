@@ -45,7 +45,6 @@ function mobileNavClass({ isActive }: { isActive: boolean }) {
 export default function AppLayout() {
   const { signOut, subscription, isAdmin, user } = useAuth();
   const navigate = useNavigate();
-  const [streakDays, setStreakDays] = useState<number | null>(null);
   const [levelName, setLevelName] = useState("Level 1: Getting Started");
 
   // Onboarding gate: redirect new users (no onboarded_at) to /app/onboarding.
@@ -54,28 +53,20 @@ export default function AppLayout() {
     if (!user) return;
     let cancelled = false;
     (async () => {
-      const [{ data }, { data: streak }] = await Promise.all([
-        supabase
+      const { data } = await supabase
         .from("visitor_profiles")
         .select("metadata, level")
         .eq("user_id", user.id)
-          .maybeSingle(),
-        supabase
-          .from("user_streaks")
-          .select("current_streak")
-          .eq("user_id", user.id)
-          .maybeSingle(),
-      ]);
+        .maybeSingle();
       if (cancelled) return;
       const meta = (data?.metadata as Record<string, unknown> | null) || {};
-      // Level is now day-derived and maintained by gamify-action + useGamificationProfile.
       const level = data?.level ?? 1;
-      setStreakDays(streak?.current_streak ?? 0);
       setLevelName(level <= 1 ? "Level 1: Getting Started" : `Level ${level}: The Builder`);
       setOnboardCheck(meta.onboarded_at ? "done" : "needs");
     })();
     return () => { cancelled = true; };
   }, [user?.id]);
+
 
   const handleSignOut = async () => {
     await signOut();
@@ -166,20 +157,6 @@ export default function AppLayout() {
           </div>
 
 
-          {/* Streak badge */}
-          <div className="bg-accent/15 border border-accent/30 rounded-lg px-3 py-2 mb-5 min-h-[52px]">
-            {streakDays === null ? (
-              <>
-                <div className="h-5 w-10 rounded bg-white/10 animate-pulse" />
-                <div className="h-2.5 w-16 rounded bg-white/10 animate-pulse mt-2" />
-              </>
-            ) : (
-              <>
-                <p className="text-lg font-semibold text-accent leading-none">🔥 {streakDays}</p>
-                <p className="text-[10px] text-white/45 mt-1">day streak</p>
-              </>
-            )}
-          </div>
 
           <nav className="flex-1 space-y-0.5">
             <NavLink to="/app" end className={navClass}>
