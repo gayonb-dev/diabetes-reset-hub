@@ -92,7 +92,8 @@ export default function GettingStartedChecklist({ currentProgramDay }: Props) {
   }
 
   const isCompleteCollapsedMode = allAcquired && !!completedAt;
-  const open = userOpen ?? (isCompleteCollapsedMode ? false : false);
+  const open = userOpen ?? false;
+
 
 
   async function toggle(slug: string) {
