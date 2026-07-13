@@ -193,6 +193,10 @@ export default function Ask() {
           await supabase.rpc("award_helpful_points", { p_user_id: q.author_id, p_amount: 2 });
         }
       }
+      // Helpful vote on an answer → recheck author's badges (helper).
+      if (vote_type === "helpful" && target_type === "answer") {
+        supabase.functions.invoke("award-badges", { body: {} }).catch(() => {});
+      }
     }
     await refresh();
   };
@@ -216,6 +220,7 @@ export default function Ask() {
     }
     setComposeText(""); setComposeTags([]); setComposeOpen(false);
     toast({ title: "Posted!" });
+    supabase.functions.invoke("award-badges", { body: {} }).catch(() => {});
     await refresh();
   };
 
