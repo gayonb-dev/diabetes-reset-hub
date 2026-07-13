@@ -195,7 +195,7 @@ export default function Ask() {
       }
       // Helpful vote on an answer → recheck author's badges (helper).
       if (vote_type === "helpful" && target_type === "answer") {
-        supabase.functions.invoke("award-badges", { body: {} }).catch(() => {});
+        supabase.functions.invoke("award-badges", { body: { for_answer_id: target_id } }).catch(() => {});
       }
     }
     await refresh();
