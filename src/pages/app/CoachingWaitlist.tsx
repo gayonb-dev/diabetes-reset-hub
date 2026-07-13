@@ -121,6 +121,7 @@ export default function CoachingWaitlist() {
               value={form.phone}
               onChange={(e) => setForm({ ...form, phone: e.target.value })}
             />
+            <p className="text-xs text-muted-foreground mt-1">Optional — used only for WhatsApp accountability messages if you opt in. Never for calls or marketing.</p>
           </div>
           <div>
             <Label>Why now? (optional)</Label>

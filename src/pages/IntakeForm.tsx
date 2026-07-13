@@ -272,6 +272,7 @@ const IntakeForm = () => {
                 <div>
                   <label className="text-sm font-medium text-foreground mb-1 block">Phone Number</label>
                   <Input type="tel" inputMode="tel" autoComplete="tel" value={form.phone} onChange={(e) => updateField("phone", e.target.value)} className={inputClass("phone")} placeholder="+1 (876) 000-0000" />
+                  <p className="text-xs text-muted-foreground mt-1">Optional — used only for WhatsApp accountability messages if you opt in. Never for calls or marketing.</p>
                 </div>
               </div>
               <div>

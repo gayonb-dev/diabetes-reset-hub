@@ -581,6 +581,7 @@ export default function Settings() {
               value={waPhone}
               onChange={(e) => setWaPhone(e.target.value)}
             />
+            <p className="text-xs text-muted-foreground">Optional — used only for WhatsApp accountability messages if you opt in. Never for calls or marketing.</p>
           </div>
         )}
         <Button onClick={saveWhatsapp} disabled={waSaving} variant="outline" size="sm" className="mt-3">

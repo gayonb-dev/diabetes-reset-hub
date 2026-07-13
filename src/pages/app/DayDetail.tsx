@@ -92,17 +92,17 @@ export default function DayDetail() {
     if (!user || !action) return;
     const arr = Array.from(nextChecked);
     const status = markComplete ? "completed" : arr.length > 0 ? "in_progress" : "pending";
-    const payload: Record<string, unknown> = {
+    const payload = {
       member_id: user.id,
       action_id: action.id,
       day_number: dayN,
       status,
       sub_tasks_completed: arr,
+      ...(markComplete ? { completed_at: new Date().toISOString() } : {}),
     };
-    if (markComplete) payload.completed_at = new Date().toISOString();
     const { error } = await supabase
       .from("member_daily_progress")
-      .upsert(payload, { onConflict: "member_id,action_id" });
+      .upsert(payload as never, { onConflict: "member_id,action_id" });
     if (error) {
       toast({ title: "Couldn't save", description: error.message, variant: "destructive" });
       return false;
