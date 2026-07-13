@@ -121,6 +121,29 @@ export default function WorkoutSession() {
     return () => clearTimeout(t);
   }, [resting, restRemaining]);
 
+  // Loading: neutral skeleton — NEVER redirect to library and NEVER render a
+  // "locked" state on the sentinel-0 program day.
+  if (dayLoading) {
+    return (
+      <div className="max-w-xl mx-auto space-y-4" aria-busy="true">
+        <div className="flex items-start justify-between gap-4">
+          <div className="space-y-2 flex-1">
+            <div className="h-6 w-40 bg-muted rounded animate-pulse" />
+            <div className="h-3 w-16 bg-muted rounded animate-pulse" />
+          </div>
+          <Vita posture="neutral" size={48} />
+        </div>
+        <div className="h-1.5 w-full bg-muted rounded animate-pulse" />
+        <Card className="p-5 border-border space-y-4">
+          <div className="h-5 w-48 bg-muted rounded animate-pulse" />
+          <div className="h-8 w-24 bg-muted rounded animate-pulse" />
+          <div className="h-3 w-full bg-muted rounded animate-pulse" />
+          <div className="h-10 w-full bg-muted rounded animate-pulse" />
+        </Card>
+      </div>
+    );
+  }
+
   if (!workout) {
     return (
       <div className="text-center py-12">
