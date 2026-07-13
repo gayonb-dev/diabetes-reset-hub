@@ -243,6 +243,7 @@ export default function Ask() {
     }
     setWinLabel(""); setWinStat(""); setWinOpen(false);
     toast({ title: "Shared with the community" });
+    supabase.functions.invoke("award-badges", { body: {} }).catch(() => {});
     await refresh();
   };
 
