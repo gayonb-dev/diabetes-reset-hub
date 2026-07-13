@@ -34,9 +34,12 @@ export default function WorkoutSession() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const programDay = useProgramDay();
+  const dayLoading = programDay === 0;
   const workout = useMemo(() => (slug ? getWorkoutBySlug(slug) : undefined), [slug]);
 
   // Workouts unlock on Day 29 — redirect earlier days to the locked library view.
+  // Guard on `programDay > 0` so the sentinel-0 "loading" state never triggers
+  // a redirect that would kick Day-29+ members back to the library.
   useEffect(() => {
     if (programDay > 0 && programDay < 29) {
       navigate("/app/workouts", { replace: true });
@@ -53,7 +56,9 @@ export default function WorkoutSession() {
   // Create or resume session
   useEffect(() => {
     if (!user || !workout) return;
-    if (programDay > 0 && programDay < 29) return;
+    // Wait for real program day; skip work while loading, and never insert for
+    // members below Day 29.
+    if (programDay === 0 || programDay < 29) return;
     const isResume = params.get("resume") === "1";
     (async () => {
       if (isResume) {
@@ -94,7 +99,8 @@ export default function WorkoutSession() {
         startedAtRef.current = Date.now();
       }
     })();
-  }, [user, workout, params]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, workout, params, programDay]);
 
   // Timer
   useEffect(() => {

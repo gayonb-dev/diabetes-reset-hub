@@ -59,10 +59,10 @@ function WorkoutCard({ workout }: { workout: Workout }) {
 export default function WorkoutLibrary() {
   const { user } = useAuth();
   const programDay = useProgramDay();
+  const loading = programDay === 0;
+  const unlocked = programDay >= 29;
   const [kneeFriendly, setKneeFriendly] = useState<boolean | null>(null);
   const [resuming, setResuming] = useState<{ slug: string; name: string } | null>(null);
-
-  const unlocked = programDay >= 29;
 
   useEffect(() => {
     if (!user || !unlocked) return;
@@ -87,6 +87,32 @@ export default function WorkoutLibrary() {
         if (row) setResuming({ slug: row.workout_slug, name: row.workout_name });
       });
   }, [user, unlocked]);
+
+  // Loading: render a neutral skeleton — NEVER the locked panel — so a
+  // Day-29+ member never sees "Workouts unlock at Day 29" flash for one frame
+  // while useProgramDay is still resolving.
+  if (loading) {
+    return (
+      <div className="max-w-3xl mx-auto space-y-5" aria-busy="true">
+        <div className="flex items-center gap-3">
+          <Vita posture="neutral" size={48} />
+          <div className="space-y-2 flex-1">
+            <div className="h-5 w-40 bg-muted rounded animate-pulse" />
+            <div className="h-3 w-64 bg-muted rounded animate-pulse" />
+          </div>
+        </div>
+        <div className="grid sm:grid-cols-2 gap-3">
+          {[0, 1, 2, 3].map((i) => (
+            <Card key={i} className="p-4 border-border">
+              <div className="h-4 w-32 bg-muted rounded animate-pulse mb-2" />
+              <div className="h-3 w-24 bg-muted rounded animate-pulse mb-4" />
+              <div className="h-9 w-full bg-muted rounded animate-pulse" />
+            </Card>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   if (!unlocked) {
     const daysLeft = Math.max(0, 28 - programDay + 1);
