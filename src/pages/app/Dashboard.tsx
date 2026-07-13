@@ -210,7 +210,7 @@ export default function Dashboard() {
     return () => {
       cancelled = true;
     };
-  }, [user, currentProgramDay]);
+  }, [user, currentProgramDay, refetchTick]);
 
   if (loading) return <DashboardSkeleton />;
 
