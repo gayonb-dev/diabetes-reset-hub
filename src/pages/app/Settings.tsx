@@ -897,7 +897,7 @@ export default function Settings() {
         </p>
         <div className="flex flex-wrap gap-2">
           <Button onClick={exportData} variant="outline" size="sm">
-            <Download className="mr-1.5 h-3.5 w-3.5" /> Export my data
+            <Download className="mr-1.5 h-3.5 w-3.5" /> Export my data (CSV)
           </Button>
           <Button
             onClick={() => setDeleteOpen(true)}
@@ -908,6 +908,13 @@ export default function Settings() {
             <Trash2 className="mr-1.5 h-3.5 w-3.5" /> Delete my data
           </Button>
         </div>
+        <button
+          type="button"
+          onClick={exportDataJson}
+          className="text-[11px] text-muted-foreground hover:text-primary underline mt-2"
+        >
+          Developer format (JSON)
+        </button>
         <p className="text-[11px] text-muted-foreground mt-3">
           Deletion is permanent and purges within 24 hours. See our{" "}
           <Link to="/privacy" className="underline text-primary">privacy policy</Link>.
