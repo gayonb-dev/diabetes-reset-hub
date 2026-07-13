@@ -34,9 +34,12 @@ export default function WorkoutSession() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const programDay = useProgramDay();
+  const dayLoading = programDay === 0;
   const workout = useMemo(() => (slug ? getWorkoutBySlug(slug) : undefined), [slug]);
 
   // Workouts unlock on Day 29 — redirect earlier days to the locked library view.
+  // Guard on `programDay > 0` so the sentinel-0 "loading" state never triggers
+  // a redirect that would kick Day-29+ members back to the library.
   useEffect(() => {
     if (programDay > 0 && programDay < 29) {
       navigate("/app/workouts", { replace: true });
@@ -53,7 +56,9 @@ export default function WorkoutSession() {
   // Create or resume session
   useEffect(() => {
     if (!user || !workout) return;
-    if (programDay > 0 && programDay < 29) return;
+    // Wait for real program day; skip work while loading, and never insert for
+    // members below Day 29.
+    if (programDay === 0 || programDay < 29) return;
     const isResume = params.get("resume") === "1";
     (async () => {
       if (isResume) {
@@ -94,7 +99,8 @@ export default function WorkoutSession() {
         startedAtRef.current = Date.now();
       }
     })();
-  }, [user, workout, params]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, workout, params, programDay]);
 
   // Timer
   useEffect(() => {
@@ -114,6 +120,29 @@ export default function WorkoutSession() {
     const t = setTimeout(() => setRestRemaining((r) => r - 1), 1000);
     return () => clearTimeout(t);
   }, [resting, restRemaining]);
+
+  // Loading: neutral skeleton — NEVER redirect to library and NEVER render a
+  // "locked" state on the sentinel-0 program day.
+  if (dayLoading) {
+    return (
+      <div className="max-w-xl mx-auto space-y-4" aria-busy="true">
+        <div className="flex items-start justify-between gap-4">
+          <div className="space-y-2 flex-1">
+            <div className="h-6 w-40 bg-muted rounded animate-pulse" />
+            <div className="h-3 w-16 bg-muted rounded animate-pulse" />
+          </div>
+          <Vita posture="neutral" size={48} />
+        </div>
+        <div className="h-1.5 w-full bg-muted rounded animate-pulse" />
+        <Card className="p-5 border-border space-y-4">
+          <div className="h-5 w-48 bg-muted rounded animate-pulse" />
+          <div className="h-8 w-24 bg-muted rounded animate-pulse" />
+          <div className="h-3 w-full bg-muted rounded animate-pulse" />
+          <div className="h-10 w-full bg-muted rounded animate-pulse" />
+        </Card>
+      </div>
+    );
+  }
 
   if (!workout) {
     return (

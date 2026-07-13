@@ -98,7 +98,7 @@ export default function Dashboard() {
     () =>
       vitaQuotes.map((q) => ({
         text: q.text,
-        speaker: q.category === "gayon_says" ? "GAYON" : "VITA",
+        speaker: q.category === "founder_says" ? "FOUNDER" : "VITA",
       })),
     [vitaQuotes],
   );

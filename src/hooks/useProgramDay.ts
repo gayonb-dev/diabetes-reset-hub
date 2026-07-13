@@ -20,6 +20,14 @@ function computeDay(iso: string | null | undefined): number {
   return Math.max(1, diff + 1);
 }
 
+/**
+ * Returns the member's 1-indexed program day, or `0` while still loading.
+ *
+ * Callers MUST treat `0` as "not ready" — never as a real day number — and
+ * render a loading state instead of any day-gated content. Rendering a
+ * locked/pre-Day-29 view on `0` would flash "locked" for a frame on a member
+ * who is actually far past that boundary.
+ */
 export function useProgramDay(): number {
   const { user, subscription } = useAuth();
   const [startDate, setStartDate] = useState<string | null>(null);
@@ -47,6 +55,9 @@ export function useProgramDay(): number {
     };
   }, [user]);
 
-  if (!loaded) return computeDay(subscription?.created_at);
+  // Sentinel: 0 = not ready. Do NOT compute from subscription during load —
+  // that would return `1` for members whose subscription row lags the profile
+  // read, briefly bouncing Day-29+ users out of gated views (workouts).
+  if (!loaded) return 0;
   return computeDay(startDate ?? subscription?.created_at);
 }

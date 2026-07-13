@@ -3,7 +3,7 @@ import { ChevronUp, ChevronDown } from "lucide-react";
 import Vita from "@/components/vita/Vita";
 import { cn } from "@/lib/utils";
 
-export type QuoteSpeaker = "VITA" | "GAYON";
+export type QuoteSpeaker = "VITA" | "FOUNDER";
 
 export interface QuoteItem {
   text: string;
@@ -48,7 +48,9 @@ export function VitaQuoteCard({
     >
       <Vita posture="neutral" size={44} className="shrink-0" />
       <div className="flex-1 min-w-0">
-        <p className="label-caps text-accent mb-1">{current.speaker ?? speaker} says</p>
+        <p className="label-caps text-accent mb-1">
+          {(current.speaker ?? speaker) === "FOUNDER" ? "FROM THE FOUNDER" : "VITA says"}
+        </p>
         <p className="text-sm text-foreground leading-relaxed">{current.text}</p>
       </div>
       {items.length > 1 && (
