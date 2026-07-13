@@ -103,6 +103,20 @@ export default function Dashboard() {
     [vitaQuotes],
   );
 
+  const [refetchTick, setRefetchTick] = useState(0);
+
+  // Refetch today's action + progress on habit changes and on window focus.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const bump = () => setRefetchTick((n) => n + 1);
+    window.addEventListener("drm:habits-changed", bump);
+    window.addEventListener("focus", bump);
+    return () => {
+      window.removeEventListener("drm:habits-changed", bump);
+      window.removeEventListener("focus", bump);
+    };
+  }, []);
+
   useEffect(() => {
     if (!user) return;
     let cancelled = false;
@@ -196,7 +210,7 @@ export default function Dashboard() {
     return () => {
       cancelled = true;
     };
-  }, [user, currentProgramDay]);
+  }, [user, currentProgramDay, refetchTick]);
 
   if (loading) return <DashboardSkeleton />;
 

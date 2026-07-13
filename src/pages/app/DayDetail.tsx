@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 import { ArrowLeft, CheckCircle2, Loader2, Lock } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { useProgramDay } from "@/hooks/useProgramDay";
@@ -18,6 +19,20 @@ type ActionRow = {
   action_description: string | null;
   sub_tasks: unknown;
 };
+
+function parseSubTasks(v: unknown): string[] {
+  if (!v) return [];
+  if (Array.isArray(v)) return v.map((x) => (typeof x === "string" ? x : x?.task_id ?? String(x))).filter(Boolean);
+  return [];
+}
+function parseCompleted(v: unknown): string[] {
+  if (!v) return [];
+  if (Array.isArray(v)) return v.filter((x) => typeof x === "string");
+  if (typeof v === "object") {
+    return Object.entries(v as Record<string, boolean>).filter(([, ok]) => ok).map(([k]) => k);
+  }
+  return [];
+}
 
 export default function DayDetail() {
   const { day } = useParams();
@@ -33,6 +48,9 @@ export default function DayDetail() {
   const [notes, setNotes] = useState("");
   const [completed, setCompleted] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [checked, setChecked] = useState<Set<string>>(new Set());
+
+  const subTasks = useMemo(() => parseSubTasks(action?.sub_tasks), [action]);
 
   useEffect(() => {
     if (!user) return;
@@ -50,7 +68,7 @@ export default function DayDetail() {
 
       const { data: prog } = await supabase
         .from("member_daily_progress")
-        .select("status, notes")
+        .select("status, notes, sub_tasks_completed")
         .eq("member_id", user.id)
         .eq("day_number", dayN)
         .maybeSingle();
@@ -62,6 +80,7 @@ export default function DayDetail() {
         setCompleted(false);
         setNotes("");
       }
+      setChecked(new Set(parseCompleted(prog?.sub_tasks_completed)));
       setLoading(false);
     })();
     return () => {
@@ -69,9 +88,54 @@ export default function DayDetail() {
     };
   }, [user, dayN]);
 
+  const persistSubTasks = async (nextChecked: Set<string>, markComplete = false) => {
+    if (!user || !action) return;
+    const arr = Array.from(nextChecked);
+    const status = markComplete ? "completed" : arr.length > 0 ? "in_progress" : "pending";
+    const payload = {
+      member_id: user.id,
+      action_id: action.id,
+      day_number: dayN,
+      status,
+      sub_tasks_completed: arr,
+      ...(markComplete ? { completed_at: new Date().toISOString() } : {}),
+    };
+    const { error } = await supabase
+      .from("member_daily_progress")
+      .upsert(payload as never, { onConflict: "member_id,action_id" });
+    if (error) {
+      toast({ title: "Couldn't save", description: error.message, variant: "destructive" });
+      return false;
+    }
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent("drm:habits-changed"));
+    }
+    return true;
+  };
+
+  const toggleSubTask = async (key: string) => {
+    if (isLocked || completed) return;
+    const next = new Set(checked);
+    if (next.has(key)) next.delete(key); else next.add(key);
+    setChecked(next); // optimistic
+    // Auto-complete when all sub-tasks checked
+    if (subTasks.length > 0 && next.size >= subTasks.length) {
+      const ok = await persistSubTasks(new Set(subTasks), true);
+      if (ok) {
+        setCompleted(true);
+        recordAction("daily_action").catch(() => {});
+        toast({ title: `Day ${dayN} complete ✓`, description: "Nice work. See you tomorrow." });
+        setTimeout(() => navigate("/app"), 1200);
+      }
+    } else {
+      await persistSubTasks(next, false);
+    }
+  };
+
   const handleComplete = async () => {
     if (!user || isLocked || !action) return;
     setSaving(true);
+    // Include sub_tasks_completed so Dashboard counter never disagrees.
     const { error } = await supabase
       .from("member_daily_progress")
       .upsert(
@@ -81,6 +145,7 @@ export default function DayDetail() {
           day_number: dayN,
           status: "completed",
           notes,
+          sub_tasks_completed: subTasks,
           completed_at: new Date().toISOString(),
         },
         { onConflict: "member_id,action_id" },
@@ -91,6 +156,10 @@ export default function DayDetail() {
       return;
     }
     setCompleted(true);
+    setChecked(new Set(subTasks));
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent("drm:habits-changed"));
+    }
     recordAction("daily_action").catch(() => {});
     toast({ title: `Day ${dayN} complete ✓`, description: "Nice work. See you tomorrow." });
     setTimeout(() => navigate("/app"), 1200);
@@ -133,6 +202,39 @@ export default function DayDetail() {
               {action.action_description}
             </p>
           </Card>
+
+          {subTasks.length > 0 && (
+            <Card className="p-6">
+              <h3 className="font-heading font-bold mb-3">Steps</h3>
+              <ul className="divide-y divide-border">
+                {subTasks.map((task) => {
+                  const on = checked.has(task);
+                  return (
+                    <li key={task}>
+                      <label
+                        className="flex items-start gap-3 py-3 min-h-11 cursor-pointer select-none"
+                      >
+                        <Checkbox
+                          checked={on}
+                          disabled={isLocked || completed}
+                          onCheckedChange={() => toggleSubTask(task)}
+                          className="mt-0.5"
+                        />
+                        <span className={`text-sm leading-relaxed ${on ? "line-through text-muted-foreground" : "text-foreground"}`}>
+                          {task}
+                        </span>
+                      </label>
+                    </li>
+                  );
+                })}
+              </ul>
+              {!completed && subTasks.length > 0 && (
+                <p className="text-xs text-muted-foreground mt-3">
+                  {checked.size} of {subTasks.length} done — finishing all will mark today complete.
+                </p>
+              )}
+            </Card>
+          )}
 
           <Card className="p-6">
             <h3 className="font-heading font-bold mb-4">Today's one action</h3>

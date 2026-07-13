@@ -408,6 +408,119 @@ export default function Settings() {
 
   const exportData = async () => {
     if (!user) return;
+    const JSZipMod = await import("jszip");
+    const JSZip = JSZipMod.default;
+
+    const [
+      { data: readings },
+      { data: healthRows },
+      { data: a1c },
+      { data: measurements },
+      { data: meals },
+      { data: fasts },
+      { data: actions },
+    ] = await Promise.all([
+      supabase.from("blood_sugar_readings").select("*").eq("member_id", user.id),
+      supabase.from("health_logs").select("*").eq("user_id", user.id),
+      supabase.from("a1c_logs").select("*").eq("member_id", user.id).order("measured_on", { ascending: true }),
+      supabase.from("member_measurements").select("*").eq("member_id", user.id).order("measured_at", { ascending: true }),
+      supabase.from("meal_logs").select("*").eq("member_id", user.id).order("log_date", { ascending: true }),
+      supabase.from("if_fasting_log").select("*").eq("member_id", user.id).order("fast_start_at", { ascending: true }),
+      supabase
+        .from("member_daily_progress")
+        .select("day_number, status, completed_at, notes, daily_actions(action_title)")
+        .eq("member_id", user.id)
+        .order("day_number", { ascending: true }),
+    ]);
+
+    const toCsv = (headers: string[], rows: Array<Array<string | number | null | undefined>>) => {
+      const esc = (v: unknown) => {
+        if (v === null || v === undefined) return "";
+        const s = String(v);
+        return /[",\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+      };
+      return [headers.join(","), ...rows.map((r) => r.map(esc).join(","))].join("\n");
+    };
+
+    const zip = new JSZip();
+    zip.file(
+      "readings.csv",
+      toCsv(
+        ["Measured at", "Reading (mg/dL)", "Meal context", "Notes"],
+        (readings ?? []).map((r: any) => [r.measured_at, r.value_mgdl, r.meal_context ?? "", r.notes ?? ""]),
+      ),
+    );
+    zip.file(
+      "weights.csv",
+      toCsv(
+        ["Date", "Weight (lb)", "Notes"],
+        (healthRows ?? [])
+          .filter((r: any) => r.weight != null)
+          .map((r: any) => [r.log_date, r.weight, r.notes ?? ""]),
+      ),
+    );
+    zip.file(
+      "a1c.csv",
+      toCsv(
+        ["Measured on", "A1C (%)", "A1C (mmol/mol)", "Source", "Notes"],
+        (a1c ?? []).map((r: any) => [r.measured_on, r.value_percent, r.value_mmol_mol ?? "", r.source ?? "", r.notes ?? ""]),
+      ),
+    );
+    zip.file(
+      "measurements.csv",
+      toCsv(
+        ["Measured at", "Waist", "Hips", "Chest", "Thigh", "Arm", "Neck", "Notes"],
+        (measurements ?? []).map((r: any) => [
+          r.measured_at, r.waist ?? "", r.hips ?? "", r.chest ?? "", r.thigh ?? "", r.arm ?? "", r.neck ?? "", r.notes ?? "",
+        ]),
+      ),
+    );
+    zip.file(
+      "meals.csv",
+      toCsv(
+        ["Date", "Meal", "Vegetables", "Protein", "Complex carbs", "Notes"],
+        (meals ?? []).map((r: any) => [
+          r.log_date, r.meal_type,
+          r.vegetables ? "yes" : "no",
+          r.protein ? "yes" : "no",
+          r.complex_carbs ? "yes" : "no",
+          r.free_text ?? "",
+        ]),
+      ),
+    );
+    zip.file(
+      "fasts.csv",
+      toCsv(
+        ["Start", "End", "Planned hours", "Actual hours", "Window", "Status", "Notes"],
+        (fasts ?? []).map((r: any) => [
+          r.fast_start_at, r.fast_end_at ?? "", r.planned_duration_hours,
+          r.actual_duration_hours ?? "", r.window_type, r.status, r.notes ?? "",
+        ]),
+      ),
+    );
+    zip.file(
+      "actions_completed.csv",
+      toCsv(
+        ["Day", "Action", "Status", "Completed at", "Notes"],
+        (actions ?? []).map((r: any) => [
+          r.day_number, r.daily_actions?.action_title ?? "", r.status, r.completed_at ?? "", r.notes ?? "",
+        ]),
+      ),
+    );
+
+    const blob = await zip.generateAsync({ type: "blob" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    const today = new Date().toISOString().slice(0, 10);
+    a.href = url;
+    a.download = `drm-export-${today}.zip`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast({ title: "Export downloaded" });
+  };
+
+  const exportDataJson = async () => {
+    if (!user) return;
     const [{ data: logs }, { data: progress }, { data: streak }, { data: badges }] = await Promise.all([
       supabase.from("health_logs").select("*").eq("user_id", user.id),
       supabase.from("member_progress").select("*").eq("user_id", user.id),
@@ -424,7 +537,7 @@ export default function Settings() {
     a.download = `drm-data-${user.id}.json`;
     a.click();
     URL.revokeObjectURL(url);
-    toast({ title: "Export downloaded" });
+    toast({ title: "Developer JSON downloaded" });
   };
 
   const deleteAccount = async () => {
@@ -581,6 +694,7 @@ export default function Settings() {
               value={waPhone}
               onChange={(e) => setWaPhone(e.target.value)}
             />
+            <p className="text-xs text-muted-foreground">Optional — used only for WhatsApp accountability messages if you opt in. Never for calls or marketing.</p>
           </div>
         )}
         <Button onClick={saveWhatsapp} disabled={waSaving} variant="outline" size="sm" className="mt-3">
@@ -783,7 +897,7 @@ export default function Settings() {
         </p>
         <div className="flex flex-wrap gap-2">
           <Button onClick={exportData} variant="outline" size="sm">
-            <Download className="mr-1.5 h-3.5 w-3.5" /> Export my data
+            <Download className="mr-1.5 h-3.5 w-3.5" /> Export my data (CSV)
           </Button>
           <Button
             onClick={() => setDeleteOpen(true)}
@@ -794,6 +908,13 @@ export default function Settings() {
             <Trash2 className="mr-1.5 h-3.5 w-3.5" /> Delete my data
           </Button>
         </div>
+        <button
+          type="button"
+          onClick={exportDataJson}
+          className="text-[11px] text-muted-foreground hover:text-primary underline mt-2"
+        >
+          Developer format (JSON)
+        </button>
         <p className="text-[11px] text-muted-foreground mt-3">
           Deletion is permanent and purges within 24 hours. See our{" "}
           <Link to="/privacy" className="underline text-primary">privacy policy</Link>.
