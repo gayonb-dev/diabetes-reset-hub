@@ -89,6 +89,26 @@ async function evaluateSlugs(admin: SB, uid: string): Promise<string[]> {
   add("win-sharer", await existsRow("win_posts", "author_id", uid));
   add("first-question", await existsRow("community_questions", "author_id", uid));
 
+  // voice-of-the-community: ≥5 of user's questions have an admin response
+  // (matches badge copy: "5 questions received DRM admin responses").
+  // VITA (AI) and verified peer answers do NOT count.
+  {
+    const { data: myQs } = await admin
+      .from("community_questions").select("id").eq("author_id", uid);
+    const qIds = (myQs ?? []).map((q: { id: string }) => q.id);
+    if (qIds.length) {
+      const { data: ansRows } = await admin
+        .from("community_answers")
+        .select("question_id")
+        .in("question_id", qIds)
+        .eq("is_admin_response", true);
+      const voiceCount = new Set(
+        (ansRows ?? []).map((r: { question_id: string }) => r.question_id),
+      ).size;
+      add("voice-of-the-community", voiceCount >= 5);
+    }
+  }
+
   // full-plate
   const { count: fullPlate } = await admin
     .from("meal_logs").select("id", { head: true, count: "exact" })
