@@ -42,7 +42,6 @@ export default function Support() {
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
 
-  // In-app support assistant chat
   const [chat, setChat] = useState<ChatTurn[]>([]);
   const [chatInput, setChatInput] = useState("");
   const [chatSending, setChatSending] = useState(false);
@@ -220,31 +219,14 @@ export default function Support() {
         <p className="text-[11px] uppercase tracking-wider text-muted-foreground">App Issues</p>
         <h2 className="text-base font-semibold">Something not working right?</h2>
         <p className="text-sm text-muted-foreground">
-          Report bugs, crashes, or anything behaving unexpectedly in the app.
+          Report bugs, crashes, billing questions, or anything behaving unexpectedly.
         </p>
-        <p className="text-xs text-accent">⏱ We respond to app issues within 24 hours.</p>
+        <p className="text-xs text-accent">⏱ We respond within 24 hours.</p>
         <Button
           className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
           onClick={() => openDialog("Bug")}
         >
           Report an issue →
-        </Button>
-        <p className="text-xs text-muted-foreground text-center pt-1 select-text">
-          or email info@diabetesresetmethod.com
-        </p>
-      </Card>
-
-      <Card className="p-5 space-y-2">
-        <p className="text-[11px] uppercase tracking-wider text-muted-foreground">Billing</p>
-        <h2 className="text-base font-semibold">Questions about your subscription?</h2>
-        <p className="text-sm text-muted-foreground">
-          Payment issues, plan changes, or anything billing-related.
-        </p>
-        <Button
-          className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
-          onClick={() => openDialog("Billing")}
-        >
-          Contact billing support →
         </Button>
         <p className="text-xs text-muted-foreground text-center pt-1 select-text">
           or email info@diabetesresetmethod.com

@@ -123,6 +123,25 @@ Deno.serve(async (req) => {
       .eq("id", chosen.id);
     if (ue) throw new Error(ue.message);
 
+    // Award the "featured" badge to the pinned question's author.
+    const { data: qRow } = await admin
+      .from("community_questions").select("author_id").eq("id", chosen.id).maybeSingle();
+    if (qRow?.author_id) {
+      try {
+        await fetch(`${SUPABASE_URL}/functions/v1/award-badges`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${SERVICE_ROLE}`,
+            "apikey": SERVICE_ROLE,
+          },
+          body: JSON.stringify({ user_id: qRow.author_id }),
+        });
+      } catch (e) {
+        console.error("[select-qotd] award-badges chain failed", e);
+      }
+    }
+
     console.log("[select-qotd] pinned", chosen.id, "via", source);
     return new Response(
       JSON.stringify({ ok: true, source, question_id: chosen.id }),
