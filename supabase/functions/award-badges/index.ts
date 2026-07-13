@@ -319,7 +319,7 @@ Deno.serve(async (req) => {
     const isServiceRole =
       authHeader === `Bearer ${SERVICE_ROLE}` || apiKey === SERVICE_ROLE;
 
-    const body = await req.json().catch(() => ({} as { user_id?: string; notify?: boolean }));
+    const body = await req.json().catch(() => ({} as { user_id?: string; notify?: boolean; for_answer_id?: string }));
 
     let uid: string | null = null;
     if (isServiceRole) {
@@ -340,6 +340,35 @@ Deno.serve(async (req) => {
         });
       }
       uid = user.id;
+
+      // Optional: recheck the author of an answer the caller voted helpful on.
+      // Trust boundary: caller must have an existing 'helpful' vote row on that
+      // answer. Prevents arbitrary author-recheck triggering.
+      if (typeof body.for_answer_id === "string" && body.for_answer_id) {
+        const { data: ans } = await admin
+          .from("community_answers")
+          .select("author_id")
+          .eq("id", body.for_answer_id)
+          .maybeSingle();
+        if (!ans?.author_id) {
+          return new Response(JSON.stringify({ error: "answer_not_found" }), {
+            status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+        const { count: voteCount } = await admin
+          .from("community_votes")
+          .select("id", { head: true, count: "exact" })
+          .eq("voter_id", uid)
+          .eq("target_id", body.for_answer_id)
+          .eq("target_type", "answer")
+          .eq("vote_type", "helpful");
+        if ((voteCount ?? 0) === 0) {
+          return new Response(JSON.stringify({ error: "forbidden" }), {
+            status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+        uid = ans.author_id as string;
+      }
     }
     if (!uid) {
       return new Response(JSON.stringify({ error: "missing user_id" }), {
