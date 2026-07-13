@@ -7,7 +7,7 @@ export type VitaQuoteCategory =
   | "science"
   | "wit"
   | "accountability"
-  | "gayon_says"
+  | "founder_says"
   | "bonus_insight";
 
 export interface VitaQuote {
@@ -23,7 +23,7 @@ const CATEGORY_WEIGHTS: Record<VitaQuoteCategory, number> = {
   science: 0.15,
   wit: 0.15,
   accountability: 0.10,
-  gayon_says: 0.025,
+  founder_says: 0.025,
   bonus_insight: 0.025,
 };
 
@@ -67,7 +67,7 @@ function selectDaily(all: VitaQuote[], seedKey: string, count = 5): VitaQuote[] 
   if (all.length === 0) return [];
   const buckets: Record<VitaQuoteCategory, VitaQuote[]> = {
     program_tip: [], mindset: [], science: [], wit: [],
-    accountability: [], gayon_says: [], bonus_insight: [],
+    accountability: [], founder_says: [], bonus_insight: [],
   };
   for (const q of all) buckets[q.category]?.push(q);
 
