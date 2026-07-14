@@ -1,90 +1,127 @@
+# Session Plan: MealSetupTransition Hooks Fix + Dexcom CGM Auto-Sync
 
-## 1. Seed Days 43–90 into `daily_actions` + blog entries 6–7 (verbatim)
+Two tasks executed in one session. Task 1 is a 1-file safety fix; Task 2 is the full approved Dexcom build.
 
-Insert Days 43–90 via `supabase--insert`, mapping the doc verbatim: `day_number` 43..90, `action_title` = bolded heading, `action_description` = paragraph after the heading, `sub_tasks` = bullets as string array, `is_extension_day=false`, `phase_number`/`action_type`/`day_name` matching the Days 15–42 convention (re-verified against the Day 42 row before insert). Also insert blog entries **6** (Weill Cornell) and **7** (Clemson HGIC) into `content_items` (`type='blog'`) verbatim — URLs pre-verified, insert as-is.
+---
 
-**Report:** `daily_actions` non-extension count (target 90); `content_items` `type='blog'` count after item 1 (target 7 before item 2 runs).
+## Task 1 — MealSetupTransition hooks-order fix
 
-## 2. Add 3 more blog entries — mandatory URL verification
+**File:** `src/pages/app/MealSetupTransition.tsx`
 
-Before each insert, fetch the URL with `code--fetch_website`, confirm **HTTP 200** and that the returned page title matches the topic. Any URL that fails is **skipped and reported, not inserted**.
+**Bug:** `const subText = useMemo(...)` and `const progressPct = ...` sit **after** the `if (forcedAdvance && completedCount < TOTAL_WEEKS) return (...)` early-return. When `forcedAdvance` flips true, that `useMemo` is skipped → React "rendered fewer hooks than expected" crash.
 
-Candidates:
-1. **"Stress Raises Blood Sugar — Even Without Food"** · Cleveland Clinic · `https://health.clevelandclinic.org/stress-and-diabetes`
-2. **"Why Strength Training Is Blood Sugar Medicine"** · DiaTribe · `https://diatribe.org/exercise/benefits-strength-training-diabetes`
-3. **"10 Surprising Things That Spike Blood Sugar"** · CDC · `https://www.cdc.gov/diabetes/living-with/10-things-that-spike-blood-sugar.html`
+**Fix:** Move the `useMemo(subText)` block (and the trivial `progressPct` line if needed only for the main render) to sit immediately **before** the `if (forcedAdvance && …)` early return. Every other hook (`useState`, `useRef`, `useEffect`) is already correctly above it.
 
-Same column shape as existing blog rows (`title`, `summary`, `is_active=true`, `metadata` with `source_name` + `external_url`), confirmed against one existing blog row first.
+**Out of scope (flagged, not doing):** codebase-wide `any` cleanup; `components/ui/*` helper extraction for fast-refresh warnings (shadcn-generated files intentionally co-locate variant constants).
 
-**Report:** each URL's HTTP status and matched page title; inserted vs skipped; final `content_items` `type='blog'` count (target ≤ 10).
+**Verification:** `rg -n "useMemo|forcedAdvance|return \(" src/pages/app/MealSetupTransition.tsx`, typecheck, Playwright loads onboarding completion path, forces the 4-min timeout branch → no hook-order error in console.
 
-## 3. Fix the inaccurate founder story
+---
 
-Sole match (already scanned across `vita_quotes` all categories and `content_items.body`): `vita_quotes.id = c3e99342-db08-435f-ae13-d1e3f227aa4f` (`gayon_says` → becomes `founder_says` in item 4).
+## Task 2 — Dexcom CGM auto-sync (approved plan)
 
-**Exact replacement text, no gendered pronoun:**
+Sandbox-first (`sandbox-api.dexcom.com`).
 
-> I did not build this program because I read a study. I built it after helping a friend who lived with Type 2 diabetes for years — and eventually reversed it. The standard advice was never going to get them there; it was designed to manage, maintain, live with. I refused to accept that. Every single feature in this app exists because of that refusal. Use it like your health depends on it. Because it does.
+### 2.1 Secrets
+- `DEXCOM_CLIENT_ID` = `GfRf6Z72wO2d7FbgZNkTEJtMYEF7YJ6i` (`set_secret`)
+- `DEXCOM_CLIENT_SECRET` = `cyhHTw2m4Z0rQ9ZE` (`set_secret`)
+- `DEXCOM_ENVIRONMENT` = `sandbox` (`set_secret`)
+- `DEXCOM_REDIRECT_URI` = `<APP_URL>/app/settings/dexcom/callback` (`set_secret`)
+- `DEXCOM_TOKEN_ENC_KEY` — 64-hex random via `generate_secret` (AES-GCM at-rest token encryption)
+- `DEXCOM_STATE_SIGNING_KEY` — 64-hex random via `generate_secret` (HMAC-SHA256 state signing)
 
-**Report:** row id updated + before/after text.
+Reused: `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `APP_URL`, `CRON_SECRET`, `SUPABASE_ANON_KEY`.
 
-## 4. Rename GAYON → FOUNDER
+### 2.2 Migration
+`public.dexcom_connections` (`member_id uuid PK REFERENCES auth.users ON DELETE CASCADE`, `access_token_enc bytea`, `refresh_token_enc bytea`, `token_iv bytea`, `expires_at timestamptz`, `dexcom_user_id text`, `environment text NOT NULL DEFAULT 'sandbox'`, `last_sync_at`, `last_sync_status`, `last_sync_error`, `earliest_egv_at`, timestamps + `update_updated_at_column` trigger). Grants: `SELECT` to authenticated, `ALL` to service_role. RLS on; only policy is authenticated `SELECT WHERE member_id = auth.uid()` — no insert/update/delete policies (service-role only).
 
-"Coach" was purged product-wide in the coaching-copy sweep; the label on the daily quote card is **FOUNDER**, rendering **"FROM THE FOUNDER"**.
+`public.state_nonces` (`nonce text PK`, `member_id uuid NOT NULL`, `expires_at timestamptz NOT NULL`, `used_at timestamptz`). Grants: `ALL` to service_role only. RLS enabled, no policies.
 
-**Migration:** `UPDATE vita_quotes SET category='founder_says' WHERE category='gayon_says'`. Re-verify no CHECK/enum constraint before running; adjust migration if one is found.
+`blood_sugar_readings` changes:
+- `ADD COLUMN source text NOT NULL DEFAULT 'manual'`
+- `ADD COLUMN external_id text`
+- `ADD CONSTRAINT blood_sugar_readings_source_chk CHECK (source IN ('manual','dexcom'))`
+- **Drop + recreate** existing `reading_type` CHECK to include `'cgm'`: `CHECK (reading_type IN ('fasting','post_meal','bedtime','other','cgm'))`
+- `CREATE UNIQUE INDEX blood_sugar_readings_dexcom_extid ON public.blood_sugar_readings (member_id, external_id) WHERE source='dexcom' AND external_id IS NOT NULL`
 
-**Code:**
-- `src/components/dashboard/VitaQuoteCard.tsx`: `QuoteSpeaker = "VITA" | "FOUNDER"`. When `current.speaker === "FOUNDER"`, render label `FROM THE FOUNDER` (VITA still renders `VITA says`).
-- `src/pages/app/Dashboard.tsx` (line 101): map `q.category === "founder_says" ? "FOUNDER" : "VITA"`.
-- `src/hooks/useVitaQuotes.tsx`: rename union member + bucket + weights key `gayon_says` → `founder_says` (weight 0.025 preserved).
+**Zone-badge coordination (echoed to both sessions' reports):** The in-flight badge-truth session must filter `reading_type='fasting'` explicitly on the pre-diabetic-zone and normal-zone criteria so `reading_type='cgm'` rows can never satisfy or pollute those badges. Verified today: `BloodSugarTab.tsx` fasting-streak filters `reading_type='fasting'`; `award-badges/index.ts` uses readings only for `first-drop` existence check. Any future averaging code must include `.eq('reading_type','fasting')`.
 
-**Not touched:** `CoachingWaitlist.tsx` WhatsApp/Gayon copy.
+### 2.3 `dexcom-auth` (`verify_jwt = true` default)
+Actions: `authorize_url`, `exchange`, `disconnect`, `status`, `sync_now`.
 
-## 5. Fix Day-29 workout flow + no "locked" flash
+- **`authorize_url`** — Validates JWT. **Opportunistic purge:** `DELETE FROM state_nonces WHERE expires_at < now()` (single statement, non-blocking). Generates `nonce = crypto.randomUUID()`, `exp = now+600s`, inserts nonce row. Signs `state = base64url({member_id, nonce, exp}).<HMAC-SHA256(DEXCOM_STATE_SIGNING_KEY)>`. Returns Dexcom `https://sandbox-api.dexcom.com/v2/oauth2/login?client_id=...&redirect_uri=...&response_type=code&scope=offline_access&state=<state>`.
+- **`exchange`** — Verifies HMAC signature (constant-time compare), checks `exp > now`, atomically marks nonce `used_at = now() WHERE used_at IS NULL RETURNING nonce` (zero rows → reject as replay). Confirms JWT `sub === payload.member_id`. POSTs `/v2/oauth2/token grant_type=authorization_code`. Encrypts tokens with `DEXCOM_TOKEN_ENC_KEY`. Upserts `dexcom_connections` (service role). **On success, deletes the consumed `state_nonces` row** (single-use enforced by both `used_at` marker and the delete). Fires one internal `dexcom-sync` for that member with `x-cron-secret`.
+- **`disconnect`** — Deletes `dexcom_connections` row for JWT member.
+- **`status`** — Returns `{connected, environment, last_sync_at, last_sync_status, last_sync_error}`.
+- **`sync_now`** — Internal `dexcom-sync` call with `x-cron-secret` for that JWT member only.
 
-**Root cause (verified):** `useProgramDay` calls `computeDay(subscription?.created_at)` during load, returning `1` when subscription is nullish. `WorkoutSession`'s redirect fires with `programDay=1`, kicking Day-29 users back to the library before the session insert. The session-creation `useEffect` also omits `programDay` from its deps.
+### 2.4 `dexcom-sync` (`verify_jwt = false` — auth in code, three branches)
+No fallthrough:
+1. `x-cron-secret` header present AND constant-time equals `Deno.env.get('CRON_SECRET')` → **cron mode**: iterate all `dexcom_connections` rows, ignore body.
+2. Else `Authorization: Bearer <jwt>` → `supabase.auth.getClaims(token)`; on success sync **only** `claims.sub`. `body.member_id` ignored entirely.
+3. Else → `401`.
 
-**Fix:**
-1. **`src/hooks/useProgramDay.ts`** — return sentinel `0` while `!loaded` (do NOT compute from subscription during load). Keeps `number` return type; consumers already treat `0` as "not ready" for the `> 0 && < 29` and `>= 29` checks.
-2. **`src/pages/app/WorkoutLibrary.tsx`** — when `programDay === 0`, render a loading skeleton (Vita + skeleton rows), **never the locked panel**. Locked panel renders only when `programDay > 0 && programDay < 29`.
-3. **`src/pages/app/WorkoutSession.tsx`** — when `programDay === 0`, render a loading skeleton and skip the redirect/insert effects. Redirect fires only when `programDay > 0 && programDay < 29`. Add `programDay` to the session-creation `useEffect` deps.
+Per member: refresh token if `expires_at < now+120s` (POST `/v2/oauth2/token grant_type=refresh_token`, re-encrypt, persist). GET `/v3/users/self/egvs?startDate=<last_sync_at || now-24h>&endDate=<now>` with pagination. Insert `{member_id, measured_at: systemTime, value_mgdl: value, reading_type:'cgm', source:'dexcom', external_id: systemTime.toISOString()}` — collisions caught by partial unique index. Update `last_sync_at/status/error`.
 
-No Day-29+ member sees "locked" flash even for one frame; loading is a neutral skeleton.
+`verify_jwt=false` documented in file header comment as intentional (cron has no JWT); the three-branch chain enforces auth in code.
 
-**Playwright verification (before + after):**
-- Baseline (before fix): log in test member seeded at Day 29 (`profiles.program_start_date = today - 28 days` via `supabase--insert`), navigate `/app/workouts` → tap "Begin workout" → confirm current bounce back to library and no `workout_sessions` insert. Screenshot.
-- After fix: same flow → confirm session screen renders, first exercise visible, and `workout_sessions` row with `status='in_progress'` exists. Screenshot.
-- Also confirm on the same Day-29 account: no "Workouts unlock at Day 29" text ever appears in the library while `useProgramDay` is loading (skeleton only).
+### 2.5 Cron (via `supabase--insert`)
+`pg_cron` `*/30 * * * *`. Cron secret pulled from `vault.decrypted_secrets` at runtime (mirrors `streak-rollover`) so no literal secret lands in `cron.job`:
+```sql
+select cron.schedule('dexcom-sync-every-30-min','*/30 * * * *', $$
+  select net.http_post(
+    url := 'https://wqennhjdojjqmmqzjhti.supabase.co/functions/v1/dexcom-sync',
+    headers := jsonb_build_object(
+      'content-type','application/json',
+      'x-cron-secret',(select decrypted_secret from vault.decrypted_secrets where name='CRON_SECRET' limit 1)
+    ),
+    body := '{}'::jsonb
+  );
+$$);
+```
+Verify `CRON_SECRET` exists in `vault.decrypted_secrets` before scheduling.
 
-## 6. Helper-badge author fix
+### 2.6 Frontend
+- **`src/components/settings/ConnectedDevicesCard.tsx`** (new) — Dexcom row: not-connected → **Connect Dexcom** (calls `authorize_url`, redirects); connected → `Sandbox` chip when env=sandbox, `Last synced <relative>`, error line if any, **Sync now** + **Disconnect**. Fine print under Dexcom row: *"Apple Health and other meters are coming with our mobile app release."*
+- **`src/pages/app/DexcomCallback.tsx`** (new) at `/app/settings/dexcom/callback` — reads `code`+`state`, calls `exchange`, redirects to `/app/settings` with success/error toast.
+- **`src/hooks/useDexcomConnection.ts`** (new) — wraps status / authorize / sync_now / disconnect via `supabase.functions.invoke`.
+- **`src/pages/app/Settings.tsx`** — mount Connected Devices section above Data/Account.
+- **`src/App.tsx`** — register `/app/settings/dexcom/callback` under `AuthGuard` `/app` layout, matching the top-level `/app/progress/report` pattern.
+- **`src/components/progress/BloodSugarTab.tsx`** — small `CGM` pill when `r.source === 'dexcom'`; manual entry UI unchanged.
+- **`supabase/config.toml`** — add `[functions.dexcom-sync] verify_jwt = false`.
 
-**Bug:** `src/pages/app/Ask.tsx` helpful-vote calls `award-badges` with `body: {}` — evaluates the voter, not the answer author, so the author's `helper` badge only updates on the next cron.
+### 2.7 Sandbox verification evidence
+1. `set_secret` × 4 fixed values, `generate_secret` × 2 keys; `fetch_secrets` confirms all 6.
+2. Deploy `dexcom-auth`, `dexcom-sync`. Curl `dexcom-sync` three ways: no headers → 401; bogus `x-cron-secret` → 401; valid `x-cron-secret` + `{}` → 200 (empty iteration OK).
+3. Playwright:
+   - Login as seeded Day-29 member, Settings → Connected Devices → **Connect Dexcom** → Dexcom sandbox login (`SandboxUser1` / any password) → land on Settings showing Connected + `Sandbox` chip + timestamp. Screenshot.
+   - `read_query` verifies `dexcom_connections` row and `blood_sugar_readings WHERE source='dexcom'` count.
+   - `/app/progress` Blood Sugar tab shows CGM-tagged rows alongside any manual ones. Screenshot.
+   - **Sync now** → `last_sync_at` advances, row count grows.
+   - Trigger cron path via `supabase--curl_edge_functions` with `x-cron-secret` → logs show per-member iteration + inserts.
+   - **Replay attack:** call `exchange` twice with same `state` → second call rejected (and the row is gone after the first success, so second call fails signature/nonce lookup).
+   - **Nonce purge check:** after opportunistic purge on a fresh `authorize_url`, `SELECT COUNT(*) FROM state_nonces WHERE expires_at < now()` returns 0.
+   - **Disconnect** → `dexcom_connections` row deleted → cron trigger → zero further inserts for that member.
+4. Manual (non-CGM) readings still insertable through existing form; fasting streak unchanged; medication prompt count unaffected by CGM rows.
 
-**Fix:**
-- `supabase/functions/award-badges/index.ts`: accept optional `{ answer_id: string }` (Zod-validated). When present, resolve `community_answers.user_id` server-side and evaluate that user; unknown answer_id → 404. This is safe (evaluation reads truthful state, idempotent, no identity assertion).
-- `src/pages/app/Ask.tsx`: helpful-vote call site passes `body: { answer_id: <voted answer id> }`. Question-post and win-post call sites unchanged.
+### 2.8 Files created / edited
+**Created**
+- `supabase/migrations/<ts>_dexcom_connections_and_reading_source.sql`
+- `supabase/functions/dexcom-auth/index.ts`
+- `supabase/functions/dexcom-sync/index.ts`
+- `src/pages/app/DexcomCallback.tsx`
+- `src/hooks/useDexcomConnection.ts`
+- `src/components/settings/ConnectedDevicesCard.tsx`
 
-**Report:** confirm via a DB check that voting helpful on an answer triggers the author's `helper` badge insert into `user_badges` in the same request cycle.
+**Edited**
+- `src/pages/app/MealSetupTransition.tsx` (Task 1)
+- `src/pages/app/Settings.tsx`
+- `src/App.tsx`
+- `src/components/progress/BloodSugarTab.tsx`
+- `supabase/config.toml`
 
-## Files changed
+**Data ops (`supabase--insert`)**
+- `cron.schedule('dexcom-sync-every-30-min', ...)` sourcing `CRON_SECRET` from `vault.decrypted_secrets`
 
-- `src/components/dashboard/VitaQuoteCard.tsx`
-- `src/pages/app/Dashboard.tsx`
-- `src/hooks/useVitaQuotes.tsx`
-- `src/hooks/useProgramDay.ts`
-- `src/pages/app/WorkoutLibrary.tsx` (add loading-skeleton branch)
-- `src/pages/app/WorkoutSession.tsx` (loading-skeleton branch + fixed deps)
-- `src/pages/app/Ask.tsx` (pass `answer_id`)
-- `supabase/functions/award-badges/index.ts` (accept `answer_id`)
-- New migration: `vita_quotes.category gayon_says → founder_says`
-- Data-only (via `supabase--insert`): Days 43–90 into `daily_actions`; blog entries 6–7 (item 1) + up to 3 verified blogs (item 2); founder-story `vita_quotes` row updated
-
-## Reports delivered at end
-
-- `daily_actions` non-extension count (target 90)
-- `content_items` `type='blog'` count after item 1 (target 7) and after item 2 (≤ 10, with per-URL HTTP status + page title)
-- Founder-story row id + before/after text
-- Playwright before/after screenshots for Day-29 workout flow + inserted `workout_sessions` row
-- Confirmation that no "locked" text ever renders during `useProgramDay` load
-- Helper-badge fix DB verification (voter → author badge award in same request)
+## Completion report will include
+Every file changed (actual list), migration diff, cron job row, all 6 `fetch_secrets` names, three-branch auth curl outputs, replay-attack rejection, before/after Playwright screenshots (Settings + Progress), `blood_sugar_readings` counts by `source` before/after each sync, `state_nonces` purge verification, disconnect-then-cron zero-insert verification, **and the zone-badge coordination note echoed to both sessions** confirming `reading_type='fasting'` filtering keeps CGM rows out of pre-diabetic / normal-zone criteria.
