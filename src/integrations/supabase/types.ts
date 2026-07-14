@@ -130,29 +130,35 @@ export type Database = {
       blood_sugar_readings: {
         Row: {
           created_at: string
+          external_id: string | null
           id: string
           measured_at: string
           member_id: string
           notes: string | null
           reading_type: string
+          source: string
           value_mgdl: number
         }
         Insert: {
           created_at?: string
+          external_id?: string | null
           id?: string
           measured_at?: string
           member_id: string
           notes?: string | null
           reading_type: string
+          source?: string
           value_mgdl: number
         }
         Update: {
           created_at?: string
+          external_id?: string | null
           id?: string
           measured_at?: string
           member_id?: string
           notes?: string | null
           reading_type?: string
+          source?: string
           value_mgdl?: number
         }
         Relationships: []
@@ -705,6 +711,57 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      dexcom_connections: {
+        Row: {
+          access_token_enc: string
+          created_at: string
+          dexcom_user_id: string | null
+          earliest_egv_at: string | null
+          environment: string
+          expires_at: string
+          last_sync_at: string | null
+          last_sync_error: string | null
+          last_sync_status: string | null
+          member_id: string
+          refresh_iv: string
+          refresh_token_enc: string
+          token_iv: string
+          updated_at: string
+        }
+        Insert: {
+          access_token_enc: string
+          created_at?: string
+          dexcom_user_id?: string | null
+          earliest_egv_at?: string | null
+          environment?: string
+          expires_at: string
+          last_sync_at?: string | null
+          last_sync_error?: string | null
+          last_sync_status?: string | null
+          member_id: string
+          refresh_iv: string
+          refresh_token_enc: string
+          token_iv: string
+          updated_at?: string
+        }
+        Update: {
+          access_token_enc?: string
+          created_at?: string
+          dexcom_user_id?: string | null
+          earliest_egv_at?: string | null
+          environment?: string
+          expires_at?: string
+          last_sync_at?: string | null
+          last_sync_error?: string | null
+          last_sync_status?: string | null
+          member_id?: string
+          refresh_iv?: string
+          refresh_token_enc?: string
+          token_iv?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       dunning_attempts: {
         Row: {
@@ -1703,6 +1760,33 @@ export type Database = {
           member_id?: string
           slot?: string
           snack_name?: string | null
+        }
+        Relationships: []
+      }
+      state_nonces: {
+        Row: {
+          created_at: string
+          expires_at: string
+          member_id: string
+          nonce: string
+          purpose: string
+          used_at: string | null
+        }
+        Insert: {
+          created_at?: string
+          expires_at: string
+          member_id: string
+          nonce: string
+          purpose?: string
+          used_at?: string | null
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string
+          member_id?: string
+          nonce?: string
+          purpose?: string
+          used_at?: string | null
         }
         Relationships: []
       }
