@@ -181,6 +181,14 @@ export default function MealSetupTransition() {
     }
   }, [completedCount, navigate]);
 
+  // Hooks MUST run before any early return. Keep useMemo above the forcedAdvance branch.
+  const subText = useMemo(() => {
+    if (completedCount >= TOTAL_WEEKS) return "Opening your meal plan…";
+    return `${completedCount} of ${TOTAL_WEEKS} weeks ready…`;
+  }, [completedCount]);
+
+  const progressPct = Math.round((completedCount / TOTAL_WEEKS) * 100);
+
   if (forcedAdvance && completedCount < TOTAL_WEEKS) {
     return (
       <div className="min-h-dvh flex items-center justify-center px-6 bg-primary">
@@ -209,12 +217,6 @@ export default function MealSetupTransition() {
     startGeneration({ cuisine, cookingTime: t }).catch(console.error);
   }
 
-  const subText = useMemo(() => {
-    if (completedCount >= TOTAL_WEEKS) return "Opening your meal plan…";
-    return `${completedCount} of ${TOTAL_WEEKS} weeks ready…`;
-  }, [completedCount]);
-
-  const progressPct = Math.round((completedCount / TOTAL_WEEKS) * 100);
 
   return (
     <div className="min-h-dvh flex flex-col items-center justify-center gap-6 px-6 py-10 text-center bg-primary text-primary-foreground">
