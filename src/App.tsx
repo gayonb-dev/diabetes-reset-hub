@@ -115,6 +115,17 @@ const App = () => (
                 }
               />
 
+              {/* Dexcom OAuth callback — plain page, no AppLayout */}
+              <Route
+                path="/app/settings/dexcom/callback"
+                element={
+                  <AuthGuard requireActiveSub={false}>
+                    <DexcomCallback />
+                  </AuthGuard>
+                }
+              />
+
+
               {/* Onboarding (auth required, no active sub needed yet) */}
               <Route
                 path="/app/onboarding"
