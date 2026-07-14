@@ -62,3 +62,7 @@ verify_jwt = true
 
 [functions.streak-rollover]
 verify_jwt = false
+
+[functions.dexcom-sync]
+verify_jwt = false
+

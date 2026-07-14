@@ -38,6 +38,8 @@ const MealSetupTransition = lazy(() => import("./pages/app/MealSetupTransition")
 const CoachingWaitlist = lazy(() => import("./pages/app/CoachingWaitlist"));
 const AppProgress = lazy(() => import("./pages/app/Progress"));
 const ProgressReport = lazy(() => import("./pages/app/ProgressReport"));
+const DexcomCallback = lazy(() => import("./pages/app/DexcomCallback"));
+
 
 const Settings = lazy(() => import("./pages/app/Settings"));
 const Profile = lazy(() => import("./pages/app/Profile"));
