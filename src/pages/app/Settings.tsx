@@ -25,6 +25,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
 import VitaErrorCard from "@/components/vita/VitaErrorCard";
 import { getUnits, setUnits, WeightUnit, GlucoseUnit } from "@/lib/units";
+import ConnectedDevicesCard from "@/components/settings/ConnectedDevicesCard";
+
 
 const CUISINE_OPTIONS = [
   "International (balanced)",
@@ -873,8 +875,12 @@ export default function Settings() {
         )}
       </Card>
 
+      {/* Connected Devices — Dexcom CGM auto-sync */}
+      <ConnectedDevicesCard />
+
       {/* Billing link */}
       <Card className="p-5 border-border">
+
 
         <h2 className="font-semibold text-base flex items-center gap-2 mb-1">
           <CreditCard className="h-4 w-4 text-primary" /> Billing
