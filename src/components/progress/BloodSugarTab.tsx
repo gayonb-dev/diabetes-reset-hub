@@ -19,7 +19,7 @@ import {
 import { useGamification } from "@/hooks/useGamification";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine, ReferenceArea, Dot } from "recharts";
 
-type ReadingType = "fasting" | "post_meal" | "bedtime" | "other";
+type ReadingType = "fasting" | "post_meal" | "bedtime" | "other" | "cgm";
 
 interface Reading {
   id: string;
@@ -27,7 +27,9 @@ interface Reading {
   reading_type: ReadingType;
   measured_at: string;
   notes: string | null;
+  source?: string | null;
 }
+
 
 const READING_TYPES: { k: ReadingType; label: string }[] = [
   { k: "fasting", label: "Fasting" },
@@ -42,7 +44,9 @@ const RANGES = {
   post_meal: { normal: 140, diabetic: 200, max: 300 },
   bedtime: { normal: 120, diabetic: 180, max: 250 },
   other: { normal: 140, diabetic: 200, max: 300 },
+  cgm: { normal: 140, diabetic: 200, max: 300 },
 };
+
 
 function toneFor(v: number, type: ReadingType): "normal" | "warning" | "danger" {
   const r = RANGES[type];
@@ -128,7 +132,9 @@ export default function BloodSugarTab() {
     persistUnits({ glucose: u });
   }
 
-  // 30-day-below-126-fasting streak for medication conversation prompt
+  // 30-day-below-126-fasting streak for medication conversation prompt.
+  // NOTE: Explicitly filters reading_type='fasting' so Dexcom CGM rows
+  // (reading_type='cgm') never satisfy or pollute this fasting-based signal.
   const fastingBelow126Days = useMemo(() => {
     const fasting = readings.filter((r) => r.reading_type === "fasting");
     if (fasting.length === 0) return 0;
@@ -146,6 +152,7 @@ export default function BloodSugarTab() {
     }
     return streak;
   }, [readings]);
+
 
   const showMedPrompt = fastingBelow126Days >= 30 && !medPromptDismissed;
 
@@ -174,10 +181,19 @@ export default function BloodSugarTab() {
             <span>{latestDisplay}</span>
             <span className="stat-unit">{unit === "mmoll" ? "mmol/L" : "mg/dL"}</span>
           </p>
-          <p className="text-[12px] text-tertiary-fg mt-2">
-            {READING_TYPES.find((r) => r.k === latestReading.reading_type)?.label} ·{" "}
-            {new Date(latestReading.measured_at).toLocaleDateString()}
+          <p className="text-[12px] text-tertiary-fg mt-2 flex items-center gap-2 flex-wrap">
+            <span>
+              {READING_TYPES.find((r) => r.k === latestReading.reading_type)?.label ??
+                (latestReading.reading_type === "cgm" ? "CGM" : latestReading.reading_type)}{" "}
+              · {new Date(latestReading.measured_at).toLocaleDateString()}
+            </span>
+            {latestReading.source === "dexcom" && (
+              <span className="text-[10px] uppercase tracking-wide px-1.5 py-0.5 rounded-full bg-accent-muted text-accent-foreground border border-accent/40">
+                CGM
+              </span>
+            )}
           </p>
+
         </Card>
       )}
 

@@ -38,6 +38,8 @@ const MealSetupTransition = lazy(() => import("./pages/app/MealSetupTransition")
 const CoachingWaitlist = lazy(() => import("./pages/app/CoachingWaitlist"));
 const AppProgress = lazy(() => import("./pages/app/Progress"));
 const ProgressReport = lazy(() => import("./pages/app/ProgressReport"));
+const DexcomCallback = lazy(() => import("./pages/app/DexcomCallback"));
+
 
 const Settings = lazy(() => import("./pages/app/Settings"));
 const Profile = lazy(() => import("./pages/app/Profile"));
@@ -112,6 +114,17 @@ const App = () => (
                   </AuthGuard>
                 }
               />
+
+              {/* Dexcom OAuth callback — plain page, no AppLayout */}
+              <Route
+                path="/app/settings/dexcom/callback"
+                element={
+                  <AuthGuard requireActiveSub={false}>
+                    <DexcomCallback />
+                  </AuthGuard>
+                }
+              />
+
 
               {/* Onboarding (auth required, no active sub needed yet) */}
               <Route
