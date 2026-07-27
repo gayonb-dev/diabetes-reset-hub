@@ -57,6 +57,7 @@ const AdminDigest = lazy(() => import("./pages/admin/AdminDigest"));
 const AdminPhiLog = lazy(() => import("./pages/admin/AdminPhiLog"));
 const AdminCommunity = lazy(() => import("./pages/admin/AdminCommunity"));
 const Privacy = lazy(() => import("./pages/Privacy"));
+const OAuthConsent = lazy(() => import("./pages/OAuthConsent"));
 // ChatWidget is mounted per-page on marketing routes only (see src/pages/Index.tsx).
 // It is intentionally NOT mounted here so it never appears inside /app/* or /admin/*.
 
@@ -104,6 +105,8 @@ const App = () => (
               <Route path="/login" element={<Login />} />
               <Route path="/auth/callback" element={<AuthCallback />} />
               <Route path="/privacy" element={<Privacy />} />
+              <Route path="/.lovable/oauth/consent" element={<OAuthConsent />} />
+
 
               {/* Doctor-shareable progress report — plain page, no AppLayout */}
               <Route
