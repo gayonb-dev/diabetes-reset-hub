@@ -14,6 +14,9 @@ export default function Login() {
 
   const expired = params.get("expired") === "1";
   const inactive = params.get("inactive") === "1";
+  const rawNext = params.get("next") ?? "";
+  // Only accept same-origin relative paths as next targets.
+  const next = /^\/(?!\/)/.test(rawNext) ? rawNext : "";
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,7 +29,7 @@ export default function Login() {
     setSending(true);
     try {
       await supabase.functions.invoke("send-magic-link", {
-        body: { email: email.trim().toLowerCase() },
+        body: { email: email.trim().toLowerCase(), next: next || undefined },
       });
       setSent(true);
     } catch {
@@ -35,6 +38,7 @@ export default function Login() {
       setSending(false);
     }
   };
+
 
   return (
     <div className="min-h-dvh flex items-center justify-center bg-gradient-to-b from-primary/5 to-background p-4">
@@ -75,7 +79,7 @@ export default function Login() {
                   setSending(true);
                   try {
                     await supabase.functions.invoke("send-magic-link", {
-                      body: { email: email.trim().toLowerCase() },
+                      body: { email: email.trim().toLowerCase(), next: next || undefined },
                     });
                   } catch {}
                   setSending(false);
