@@ -18,24 +18,35 @@ export default function AuthCallback() {
       | "email"
       | null;
 
+    const waitForSession = async (timeoutMs = 3000) => {
+      const start = Date.now();
+      while (Date.now() - start < timeoutMs) {
+        const { data } = await supabase.auth.getSession();
+        if (data.session) return true;
+        await new Promise((r) => setTimeout(r, 50));
+      }
+      return false;
+    };
+
     (async () => {
       // New flow: token_hash in query string — verify via POST so email
       // scanners that prefetch the GET link can't consume the token.
       if (token_hash && type) {
         const { error } = await supabase.auth.verifyOtp({ token_hash, type });
-        if (!error) {
-          navigate(next, { replace: true });
+        if (error) {
+          navigate("/login?expired=1", { replace: true });
           return;
         }
-        navigate("/login?expired=1", { replace: true });
+        // Wait for onAuthStateChange to persist the session before navigating,
+        // otherwise AuthGuard renders with stale user=null and bounces to /login.
+        const ok = await waitForSession();
+        navigate(ok ? next : "/login?expired=1", { replace: true });
         return;
       }
 
       // Legacy flow: hash-fragment session set by Supabase /verify redirect.
-      await new Promise((r) => setTimeout(r, 600));
-      const { data } = await supabase.auth.getSession();
-      if (data.session) navigate(next, { replace: true });
-      else navigate("/login?expired=1", { replace: true });
+      const ok = await waitForSession();
+      navigate(ok ? next : "/login?expired=1", { replace: true });
     })();
   }, [navigate, params]);
 
