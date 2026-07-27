@@ -26,9 +26,13 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { email } = await req.json();
+    const { email, next: rawNext } = await req.json();
     const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const cleanEmail = String(email || "").trim().toLowerCase();
+    // Only accept same-origin relative paths as next targets.
+    const nextPath =
+      typeof rawNext === "string" && /^\/(?!\/)/.test(rawNext) ? rawNext : "/app";
+
 
     // Always return 200 to prevent enumeration
     const okResponse = new Response(
@@ -93,10 +97,11 @@ serve(async (req) => {
 
     if (!allowedUserId) return okResponse;
 
+    const nextParam = encodeURIComponent(nextPath);
     const { data: linkData, error } = await sb.auth.admin.generateLink({
       type: "magiclink",
       email: cleanEmail,
-      options: { redirectTo: `${APP_URL}/auth/callback?next=/app` },
+      options: { redirectTo: `${APP_URL}/auth/callback?next=${nextParam}` },
     });
 
     // Build our own confirm URL using token_hash. This avoids the
@@ -105,8 +110,9 @@ serve(async (req) => {
     // verifyOtp runs as a client POST, so prefetchers can't burn the token.
     const tokenHash = (linkData as any)?.properties?.hashed_token;
     const loginUrl = tokenHash
-      ? `${APP_URL}/auth/callback?token_hash=${encodeURIComponent(tokenHash)}&type=magiclink&next=/app`
+      ? `${APP_URL}/auth/callback?token_hash=${encodeURIComponent(tokenHash)}&type=magiclink&next=${nextParam}`
       : (linkData as any)?.properties?.action_link;
+
 
     if (!error && loginUrl) {
       await sendResend(

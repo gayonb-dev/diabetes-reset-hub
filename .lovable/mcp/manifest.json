@@ -1,0 +1,224 @@
+{
+  "version": 1,
+  "sdk_version": "0.24.0",
+  "path": "/functions/v1/mcp",
+  "auth": {
+    "type": "oauth",
+    "issuer": "https://wqennhjdojjqmmqzjhti.supabase.co/auth/v1",
+    "accepted_audiences": [
+      "authenticated"
+    ]
+  },
+  "mcp": {
+    "server": {
+      "name": "diabetes-reset-method",
+      "version": "0.1.0",
+      "title": "The Diabetes Reset Method"
+    },
+    "tools": [
+      {
+        "name": "get_program_status",
+        "title": "Get program status",
+        "description": "Return the signed-in member's current program day, streak counters, XP/level, and subscription status.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {}
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "get_today_action",
+        "title": "Get today's action",
+        "description": "Return today's daily action (title, description, learning objective, sub-tasks) for the signed-in member, plus whether they've already completed it.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "day_number": {
+              "description": "Optional. Override the day to fetch; defaults to the member's current program day.",
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 120
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_blood_sugar_readings",
+        "title": "List blood sugar readings",
+        "description": "List the signed-in member's recent blood sugar readings (fasting, post-meal, random, or CGM), newest first.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "days": {
+              "description": "Days back to include (default 7).",
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 90
+            },
+            "limit": {
+              "description": "Max rows to return (default 50).",
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 200
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "log_blood_sugar",
+        "title": "Log a blood sugar reading",
+        "description": "Insert a manual blood sugar reading for the signed-in member. Value must be in mg/dL.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "value_mgdl": {
+              "type": "number",
+              "minimum": 20,
+              "maximum": 800,
+              "description": "Blood glucose in mg/dL."
+            },
+            "reading_type": {
+              "type": "string",
+              "enum": [
+                "fasting",
+                "post_meal",
+                "random",
+                "bedtime"
+              ],
+              "description": "Context for the reading."
+            },
+            "measured_at": {
+              "description": "ISO timestamp; defaults to now.",
+              "type": "string",
+              "format": "date-time",
+              "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+            },
+            "notes": {
+              "type": "string",
+              "maxLength": 500
+            }
+          },
+          "required": [
+            "value_mgdl",
+            "reading_type"
+          ]
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "log_daily_health",
+        "title": "Log daily health entry",
+        "description": "Upsert today's daily health log (weight in lbs, energy 1-10, notes) for the signed-in member.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "weight_lbs": {
+              "type": "number",
+              "minimum": 50,
+              "maximum": 700
+            },
+            "energy": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 10
+            },
+            "notes": {
+              "type": "string",
+              "maxLength": 1000
+            },
+            "log_date": {
+              "description": "YYYY-MM-DD; defaults to today (UTC).",
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_recent_health_logs",
+        "title": "List recent health logs",
+        "description": "Return the signed-in member's recent daily health logs (weight, energy, notes), newest first.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "days": {
+              "description": "Days back (default 14).",
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 180
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "complete_program_day",
+        "title": "Mark a program day complete",
+        "description": "Mark a specific program day complete for the signed-in member. The database enforces that the day must already be unlocked.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "day_number": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 120
+            },
+            "notes": {
+              "type": "string",
+              "maxLength": 1000
+            }
+          },
+          "required": [
+            "day_number"
+          ]
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}
