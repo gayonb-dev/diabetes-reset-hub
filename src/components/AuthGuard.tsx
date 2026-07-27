@@ -11,8 +11,9 @@ interface Props {
 }
 
 export default function AuthGuard({ children, requireAdmin, requireActiveSub = true }: Props) {
-  const { user, loading, isAdmin, subscription } = useAuth();
+  const { user, loading, isAdmin, subscription, refreshAuthState } = useAuth();
   const loc = useLocation();
+  const [authRecheck, setAuthRecheck] = useState<"idle" | "checking" | "failed">("idle");
 
   // When we'd otherwise block due to inactive sub, check onboarding state:
   // a new user with no onboarded_at gets routed to onboarding instead of login.
@@ -40,7 +41,41 @@ export default function AuthGuard({ children, requireAdmin, requireActiveSub = t
     };
   }, [inactive, user?.id]);
 
-  if (loading) {
+  useEffect(() => {
+    if (loading || user || authRecheck !== "idle") return;
+
+    const callbackJustFinished = (() => {
+      try {
+        const raw = window.sessionStorage.getItem("drm_auth_callback_completed_at");
+        if (!raw) return false;
+        const completedAt = Number(raw);
+        return Number.isFinite(completedAt) && Date.now() - completedAt < 10000;
+      } catch {
+        return false;
+      }
+    })();
+
+    setAuthRecheck("checking");
+    refreshAuthState().then((ok) => {
+      if (ok) {
+        try {
+          window.sessionStorage.removeItem("drm_auth_callback_completed_at");
+        } catch {}
+        setAuthRecheck("idle");
+        return;
+      }
+      setAuthRecheck(callbackJustFinished ? "checking" : "failed");
+      if (callbackJustFinished) {
+        window.setTimeout(() => setAuthRecheck("idle"), 400);
+      }
+    });
+  }, [authRecheck, loading, refreshAuthState, user]);
+
+  useEffect(() => {
+    if (user && authRecheck !== "idle") setAuthRecheck("idle");
+  }, [authRecheck, user]);
+
+  if (loading || authRecheck === "checking") {
     return (
       <div className="min-h-dvh flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -49,7 +84,8 @@ export default function AuthGuard({ children, requireAdmin, requireActiveSub = t
   }
 
   if (!user) {
-    return <Navigate to={`/login?next=${encodeURIComponent(loc.pathname)}`} replace />;
+    const next = `${loc.pathname}${loc.search}`;
+    return <Navigate to={`/login?next=${encodeURIComponent(next)}`} replace />;
   }
 
   if (requireAdmin && !isAdmin) {

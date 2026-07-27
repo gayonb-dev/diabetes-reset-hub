@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useState, ReactNode } from "react";
 import { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -20,6 +20,7 @@ interface AuthCtx {
   loading: boolean;
   isAdmin: boolean;
   subscription: Subscription | null;
+  refreshAuthState: () => Promise<boolean>;
   refreshSubscription: () => Promise<void>;
   signOut: () => Promise<void>;
 }
@@ -33,7 +34,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isAdmin, setIsAdmin] = useState(false);
   const [subscription, setSubscription] = useState<Subscription | null>(null);
 
-  const loadUserData = async (u: User | null) => {
+  const loadUserData = useCallback(async (u: User | null) => {
     if (!u) {
       setIsAdmin(false);
       setSubscription(null);
@@ -59,7 +60,37 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } catch (e) {
       console.warn("timezone auto-capture failed", e);
     }
-  };
+  }, []);
+
+  const refreshAuthState = useCallback(async () => {
+    setLoading(true);
+    try {
+      const { data: sessionData } = await supabase.auth.getSession();
+      if (!sessionData.session) {
+        setSession(null);
+        setUser(null);
+        setIsAdmin(false);
+        setSubscription(null);
+        return false;
+      }
+
+      const { data: userData, error: userError } = await supabase.auth.getUser();
+      if (userError || !userData.user) {
+        setSession(null);
+        setUser(null);
+        setIsAdmin(false);
+        setSubscription(null);
+        return false;
+      }
+
+      setSession(sessionData.session);
+      setUser(userData.user);
+      await loadUserData(userData.user);
+      return true;
+    } finally {
+      setLoading(false);
+    }
+  }, [loadUserData]);
 
 
   const refreshSubscription = async () => {
@@ -149,7 +180,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
 
     return () => authSub.unsubscribe();
-  }, []);
+  }, [loadUserData]);
 
   const signOut = async () => {
     await supabase.auth.signOut();
@@ -157,7 +188,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   return (
     <Ctx.Provider
-      value={{ user, session, loading, isAdmin, subscription, refreshSubscription, signOut }}
+      value={{ user, session, loading, isAdmin, subscription, refreshAuthState, refreshSubscription, signOut }}
     >
       {children}
     </Ctx.Provider>
