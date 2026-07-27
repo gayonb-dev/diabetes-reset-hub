@@ -18,12 +18,23 @@ export default function AuthCallback() {
       | "email"
       | null;
 
-    const waitForSession = async (timeoutMs = 3000) => {
+    const safeNext = /^\/(?!\/)/.test(next) ? next : "/app";
+
+    const markCallbackComplete = () => {
+      try {
+        window.sessionStorage.setItem("drm_auth_callback_completed_at", String(Date.now()));
+      } catch {}
+    };
+
+    const waitForVerifiedSession = async (timeoutMs = 8000) => {
       const start = Date.now();
       while (Date.now() - start < timeoutMs) {
-        const { data } = await supabase.auth.getSession();
-        if (data.session) return true;
-        await new Promise((r) => setTimeout(r, 50));
+        const { data: sessionData } = await supabase.auth.getSession();
+        if (sessionData.session) {
+          const { data: userData, error: userError } = await supabase.auth.getUser();
+          if (!userError && userData.user) return true;
+        }
+        await new Promise((r) => setTimeout(r, 100));
       }
       return false;
     };
@@ -39,14 +50,16 @@ export default function AuthCallback() {
         }
         // Wait for onAuthStateChange to persist the session before navigating,
         // otherwise AuthGuard renders with stale user=null and bounces to /login.
-        const ok = await waitForSession();
-        navigate(ok ? next : "/login?expired=1", { replace: true });
+        const ok = await waitForVerifiedSession();
+        if (ok) markCallbackComplete();
+        navigate(ok ? safeNext : "/login?expired=1", { replace: true });
         return;
       }
 
       // Legacy flow: hash-fragment session set by Supabase /verify redirect.
-      const ok = await waitForSession();
-      navigate(ok ? next : "/login?expired=1", { replace: true });
+      const ok = await waitForVerifiedSession();
+      if (ok) markCallbackComplete();
+      navigate(ok ? safeNext : "/login?expired=1", { replace: true });
     })();
   }, [navigate, params]);
 
