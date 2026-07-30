@@ -83,6 +83,30 @@ export default function OAuthConsent() {
       setError(error.message);
       return;
     }
+
+    if (approve) {
+      // Record the grant from this first-party session so Settings can list
+      // and revoke it. MCP tool calls require a matching row.
+      const clientId =
+        details?.client?.client_id ?? details?.client?.id ?? details?.client_id ?? null;
+      const { data: sess } = await supabase.auth.getSession();
+      const memberId = sess.session?.user?.id;
+      if (clientId && memberId) {
+        const scopes =
+          details?.scopes ?? (details?.scope ? details.scope.split(/\s+/).filter(Boolean) : []);
+        await supabase.from("oauth_client_grants").upsert(
+          {
+            member_id: memberId,
+            client_id: clientId,
+            client_name: details?.client?.name ?? details?.client?.client_name ?? null,
+            scopes,
+            approved_at: new Date().toISOString(),
+          },
+          { onConflict: "member_id,client_id" },
+        );
+      }
+    }
+
     const target = data?.redirect_url ?? data?.redirect_to;
     if (!target) {
       setBusy(false);
