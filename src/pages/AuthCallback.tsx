@@ -7,10 +7,8 @@ export default function AuthCallback() {
   const navigate = useNavigate();
   const [params] = useSearchParams();
   const hasRunRef = useRef(false);
-  const runCountRef = useRef(0);
 
   useEffect(() => {
-    runCountRef.current += 1;
     const next = params.get("next") || "/app";
     const token_hash = params.get("token_hash");
     const type = params.get("type") as
@@ -23,21 +21,10 @@ export default function AuthCallback() {
 
     const safeNext = /^\/(?!\/)/.test(next) ? next : "/app";
 
-    console.info("[auth-debug] AuthCallback effect entry", {
-      run: runCountRef.current,
-      alreadyRan: hasRunRef.current,
-      hasTokenHash: !!token_hash,
-      type,
-      safeNext,
-    });
-
+    // Magic-link tokens are single-use: a duplicate effect run would consume or
+    // fail the token and bounce a already-successful login. Run exactly once.
     if (hasRunRef.current) return;
     hasRunRef.current = true;
-
-    const navigateWithDebug = (target: string, reason: string) => {
-      console.info("[auth-debug] AuthCallback navigate", { target, reason });
-      navigate(target, { replace: true });
-    };
 
     const markCallbackComplete = () => {
       try {
@@ -63,32 +50,30 @@ export default function AuthCallback() {
       // scanners that prefetch the GET link can't consume the token.
       if (token_hash && type) {
         const { error } = await supabase.auth.verifyOtp({ token_hash, type });
-        console.info("[auth-debug] AuthCallback verifyOtp result", {
-          ok: !error,
-          errorMessage: error?.message ?? null,
-        });
         if (error) {
+          // A "used token" error with a live session means this login already
+          // succeeded — treat it as success rather than expiring it.
           const { data: sessionData } = await supabase.auth.getSession();
           if (sessionData.session) {
             markCallbackComplete();
-            navigateWithDebug(safeNext, "verifyOtp error but live session exists");
+            navigate(safeNext, { replace: true });
             return;
           }
-          navigateWithDebug("/login?expired=1", "verifyOtp error and no live session");
+          navigate("/login?expired=1", { replace: true });
           return;
         }
         // Wait for onAuthStateChange to persist the session before navigating,
         // otherwise AuthGuard renders with stale user=null and bounces to /login.
         const ok = await waitForVerifiedSession();
         if (ok) markCallbackComplete();
-        navigateWithDebug(ok ? safeNext : "/login?expired=1", ok ? "verified session ready" : "verified session timed out");
+        navigate(ok ? safeNext : "/login?expired=1", { replace: true });
         return;
       }
 
       // Legacy flow: hash-fragment session set by Supabase /verify redirect.
       const ok = await waitForVerifiedSession();
       if (ok) markCallbackComplete();
-      navigateWithDebug(ok ? safeNext : "/login?expired=1", ok ? "legacy session ready" : "legacy session timed out");
+      navigate(ok ? safeNext : "/login?expired=1", { replace: true });
     })();
   }, [navigate, params]);
 
