@@ -269,12 +269,18 @@ async function syncNow(userId: string): Promise<Response> {
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
+  let action = "";
   try {
     const gate = await requireUser(req);
     if (gate instanceof Response) return gate;
     const { userId } = gate;
     const body = await req.json().catch(() => ({}));
-    const action = String(body?.action || "");
+    action = String(body?.action || "");
+    const missing = SECRET_NAMES.filter((n) => !(Deno.env.get(n) ?? "").length);
+    if (missing.length) {
+      console.error("[dexcom-auth]", action, "missing_secrets", missing.join(","));
+      return json(500, { error: "missing_secrets", missing });
+    }
     switch (action) {
       case "authorize_url":
         return await authorizeUrl(userId);
@@ -292,7 +298,7 @@ Deno.serve(async (req) => {
         return json(400, { error: "unknown_action" });
     }
   } catch (e) {
-    console.error("dexcom-auth error", e);
+    console.error("[dexcom-auth]", action, e);
     return json(500, { error: e instanceof Error ? e.message : "server_error" });
   }
 });
