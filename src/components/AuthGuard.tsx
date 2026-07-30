@@ -104,18 +104,6 @@ export default function AuthGuard({ children, requireAdmin, requireActiveSub = t
     if (onboardState === "needs") {
       return <Navigate to="/app/onboarding" replace />;
     }
-    console.info("[auth-debug] AuthGuard redirect", {
-      target: "/login?inactive=1",
-      reason: "inactive subscription after onboarding complete",
-      hasUser: !!user,
-      loading,
-      authRecheck,
-      subscriptionStatus: subscription?.status ?? null,
-      requireAdmin: !!requireAdmin,
-      requireActiveSub: !!requireActiveSub,
-      path: loc.pathname,
-      search: loc.search,
-    });
     return <Navigate to="/login?inactive=1" replace />;
   }
 
