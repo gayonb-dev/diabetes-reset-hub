@@ -6,10 +6,54 @@
 import { auth, defineMcp } from "npm:@lovable.dev/mcp-js@0.24.0";
 
 // src/lib/mcp/tools/get-program-status.ts
-import { createClient } from "npm:@supabase/supabase-js@^2.93.1";
+import { createClient as createClient2 } from "npm:@supabase/supabase-js@^2.93.1";
 import { defineTool } from "npm:@lovable.dev/mcp-js@0.24.0";
+
+// src/lib/mcp/guard.ts
+import { createClient } from "npm:@supabase/supabase-js@^2.93.1";
+function adminClient() {
+  return createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY, {
+    auth: { persistSession: false, autoRefreshToken: false }
+  });
+}
+async function requireGrant(ctx) {
+  if (!ctx.isAuthenticated()) {
+    return { content: [{ type: "text", text: "401 Unauthorized: not authenticated" }], isError: true };
+  }
+  const userId = ctx.getUserId();
+  const clientId = ctx.getClientId();
+  if (!userId || !clientId) {
+    return {
+      content: [
+        { type: "text", text: "401 Unauthorized: token carries no OAuth client identity" }
+      ],
+      isError: true
+    };
+  }
+  const { data, error } = await adminClient().from("oauth_client_grants").select("id").eq("member_id", userId).eq("client_id", clientId).maybeSingle();
+  if (error) {
+    return {
+      content: [{ type: "text", text: `401 Unauthorized: could not verify access (${error.message})` }],
+      isError: true
+    };
+  }
+  if (!data) {
+    return {
+      content: [
+        {
+          type: "text",
+          text: "401 Unauthorized: this assistant's access was revoked. Reconnect from Settings \u2192 Connect an AI assistant."
+        }
+      ],
+      isError: true
+    };
+  }
+  return null;
+}
+
+// src/lib/mcp/tools/get-program-status.ts
 function sb(ctx) {
-  return createClient(process.env.SUPABASE_URL, process.env.SUPABASE_PUBLISHABLE_KEY, {
+  return createClient2(process.env.SUPABASE_URL, process.env.SUPABASE_PUBLISHABLE_KEY, {
     global: { headers: { Authorization: `Bearer ${ctx.getToken()}` } },
     auth: { persistSession: false, autoRefreshToken: false }
   });
@@ -21,8 +65,8 @@ var get_program_status_default = defineTool({
   inputSchema: {},
   annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: false },
   handler: async (_input, ctx) => {
-    if (!ctx.isAuthenticated())
-      return { content: [{ type: "text", text: "Not authenticated" }], isError: true };
+    const denied = await requireGrant(ctx);
+    if (denied) return denied;
     const client = sb(ctx);
     const userId = ctx.getUserId();
     const [dayRes, streakRes, subRes, profileRes] = await Promise.all([
@@ -45,11 +89,11 @@ var get_program_status_default = defineTool({
 });
 
 // src/lib/mcp/tools/get-today-action.ts
-import { createClient as createClient2 } from "npm:@supabase/supabase-js@^2.93.1";
+import { createClient as createClient3 } from "npm:@supabase/supabase-js@^2.93.1";
 import { defineTool as defineTool2 } from "npm:@lovable.dev/mcp-js@0.24.0";
 import { z } from "npm:zod@^4.4.3";
 function sb2(ctx) {
-  return createClient2(process.env.SUPABASE_URL, process.env.SUPABASE_PUBLISHABLE_KEY, {
+  return createClient3(process.env.SUPABASE_URL, process.env.SUPABASE_PUBLISHABLE_KEY, {
     global: { headers: { Authorization: `Bearer ${ctx.getToken()}` } },
     auth: { persistSession: false, autoRefreshToken: false }
   });
@@ -63,8 +107,8 @@ var get_today_action_default = defineTool2({
   },
   annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: false },
   handler: async ({ day_number }, ctx) => {
-    if (!ctx.isAuthenticated())
-      return { content: [{ type: "text", text: "Not authenticated" }], isError: true };
+    const denied = await requireGrant(ctx);
+    if (denied) return denied;
     const client = sb2(ctx);
     const userId = ctx.getUserId();
     let day = day_number;
@@ -86,11 +130,11 @@ var get_today_action_default = defineTool2({
 });
 
 // src/lib/mcp/tools/list-blood-sugar.ts
-import { createClient as createClient3 } from "npm:@supabase/supabase-js@^2.93.1";
+import { createClient as createClient4 } from "npm:@supabase/supabase-js@^2.93.1";
 import { defineTool as defineTool3 } from "npm:@lovable.dev/mcp-js@0.24.0";
 import { z as z2 } from "npm:zod@^4.4.3";
 function sb3(ctx) {
-  return createClient3(process.env.SUPABASE_URL, process.env.SUPABASE_PUBLISHABLE_KEY, {
+  return createClient4(process.env.SUPABASE_URL, process.env.SUPABASE_PUBLISHABLE_KEY, {
     global: { headers: { Authorization: `Bearer ${ctx.getToken()}` } },
     auth: { persistSession: false, autoRefreshToken: false }
   });
@@ -105,8 +149,8 @@ var list_blood_sugar_default = defineTool3({
   },
   annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: false },
   handler: async ({ days, limit }, ctx) => {
-    if (!ctx.isAuthenticated())
-      return { content: [{ type: "text", text: "Not authenticated" }], isError: true };
+    const denied = await requireGrant(ctx);
+    if (denied) return denied;
     const client = sb3(ctx);
     const since = new Date(Date.now() - (days ?? 7) * 864e5).toISOString();
     const { data, error } = await client.from("blood_sugar_readings").select("id, measured_at, value_mgdl, reading_type, source, notes").eq("member_id", ctx.getUserId()).gte("measured_at", since).order("measured_at", { ascending: false }).limit(limit ?? 50);
@@ -119,11 +163,11 @@ var list_blood_sugar_default = defineTool3({
 });
 
 // src/lib/mcp/tools/log-blood-sugar.ts
-import { createClient as createClient4 } from "npm:@supabase/supabase-js@^2.93.1";
+import { createClient as createClient5 } from "npm:@supabase/supabase-js@^2.93.1";
 import { defineTool as defineTool4 } from "npm:@lovable.dev/mcp-js@0.24.0";
 import { z as z3 } from "npm:zod@^4.4.3";
 function sb4(ctx) {
-  return createClient4(process.env.SUPABASE_URL, process.env.SUPABASE_PUBLISHABLE_KEY, {
+  return createClient5(process.env.SUPABASE_URL, process.env.SUPABASE_PUBLISHABLE_KEY, {
     global: { headers: { Authorization: `Bearer ${ctx.getToken()}` } },
     auth: { persistSession: false, autoRefreshToken: false }
   });
@@ -140,8 +184,8 @@ var log_blood_sugar_default = defineTool4({
   },
   annotations: { readOnlyHint: false, destructiveHint: false, openWorldHint: false },
   handler: async ({ value_mgdl, reading_type, measured_at, notes }, ctx) => {
-    if (!ctx.isAuthenticated())
-      return { content: [{ type: "text", text: "Not authenticated" }], isError: true };
+    const denied = await requireGrant(ctx);
+    if (denied) return denied;
     const { data, error } = await sb4(ctx).from("blood_sugar_readings").insert({
       member_id: ctx.getUserId(),
       value_mgdl,
@@ -159,11 +203,11 @@ var log_blood_sugar_default = defineTool4({
 });
 
 // src/lib/mcp/tools/log-health.ts
-import { createClient as createClient5 } from "npm:@supabase/supabase-js@^2.93.1";
+import { createClient as createClient6 } from "npm:@supabase/supabase-js@^2.93.1";
 import { defineTool as defineTool5 } from "npm:@lovable.dev/mcp-js@0.24.0";
 import { z as z4 } from "npm:zod@^4.4.3";
 function sb5(ctx) {
-  return createClient5(process.env.SUPABASE_URL, process.env.SUPABASE_PUBLISHABLE_KEY, {
+  return createClient6(process.env.SUPABASE_URL, process.env.SUPABASE_PUBLISHABLE_KEY, {
     global: { headers: { Authorization: `Bearer ${ctx.getToken()}` } },
     auth: { persistSession: false, autoRefreshToken: false }
   });
@@ -180,8 +224,8 @@ var log_health_default = defineTool5({
   },
   annotations: { readOnlyHint: false, destructiveHint: false, openWorldHint: false },
   handler: async ({ weight_lbs, energy, notes, log_date }, ctx) => {
-    if (!ctx.isAuthenticated())
-      return { content: [{ type: "text", text: "Not authenticated" }], isError: true };
+    const denied = await requireGrant(ctx);
+    if (denied) return denied;
     if (weight_lbs == null && energy == null && !notes)
       return {
         content: [{ type: "text", text: "Provide at least one of weight_lbs, energy, or notes." }],
@@ -208,11 +252,11 @@ var log_health_default = defineTool5({
 });
 
 // src/lib/mcp/tools/list-recent-health.ts
-import { createClient as createClient6 } from "npm:@supabase/supabase-js@^2.93.1";
+import { createClient as createClient7 } from "npm:@supabase/supabase-js@^2.93.1";
 import { defineTool as defineTool6 } from "npm:@lovable.dev/mcp-js@0.24.0";
 import { z as z5 } from "npm:zod@^4.4.3";
 function sb6(ctx) {
-  return createClient6(process.env.SUPABASE_URL, process.env.SUPABASE_PUBLISHABLE_KEY, {
+  return createClient7(process.env.SUPABASE_URL, process.env.SUPABASE_PUBLISHABLE_KEY, {
     global: { headers: { Authorization: `Bearer ${ctx.getToken()}` } },
     auth: { persistSession: false, autoRefreshToken: false }
   });
@@ -226,8 +270,8 @@ var list_recent_health_default = defineTool6({
   },
   annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: false },
   handler: async ({ days }, ctx) => {
-    if (!ctx.isAuthenticated())
-      return { content: [{ type: "text", text: "Not authenticated" }], isError: true };
+    const denied = await requireGrant(ctx);
+    if (denied) return denied;
     const since = new Date(Date.now() - (days ?? 14) * 864e5).toISOString().slice(0, 10);
     const { data, error } = await sb6(ctx).from("health_logs").select("log_date, weight, blood_sugar, energy, notes").eq("user_id", ctx.getUserId()).gte("log_date", since).order("log_date", { ascending: false });
     if (error) return { content: [{ type: "text", text: error.message }], isError: true };
@@ -239,11 +283,11 @@ var list_recent_health_default = defineTool6({
 });
 
 // src/lib/mcp/tools/complete-day.ts
-import { createClient as createClient7 } from "npm:@supabase/supabase-js@^2.93.1";
+import { createClient as createClient8 } from "npm:@supabase/supabase-js@^2.93.1";
 import { defineTool as defineTool7 } from "npm:@lovable.dev/mcp-js@0.24.0";
 import { z as z6 } from "npm:zod@^4.4.3";
 function sb7(ctx) {
-  return createClient7(process.env.SUPABASE_URL, process.env.SUPABASE_PUBLISHABLE_KEY, {
+  return createClient8(process.env.SUPABASE_URL, process.env.SUPABASE_PUBLISHABLE_KEY, {
     global: { headers: { Authorization: `Bearer ${ctx.getToken()}` } },
     auth: { persistSession: false, autoRefreshToken: false }
   });
@@ -258,8 +302,8 @@ var complete_day_default = defineTool7({
   },
   annotations: { readOnlyHint: false, destructiveHint: false, openWorldHint: false },
   handler: async ({ day_number, notes }, ctx) => {
-    if (!ctx.isAuthenticated())
-      return { content: [{ type: "text", text: "Not authenticated" }], isError: true };
+    const denied = await requireGrant(ctx);
+    if (denied) return denied;
     const { data, error } = await sb7(ctx).from("member_progress").insert({
       user_id: ctx.getUserId(),
       day_number,
