@@ -878,6 +878,8 @@ export default function Settings() {
       {/* Connected Devices — Dexcom CGM auto-sync */}
       <ConnectedDevicesCard />
 
+      <AIAssistantCard />
+
       {/* Billing link */}
       <Card className="p-5 border-border">
 
