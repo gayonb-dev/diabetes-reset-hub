@@ -9,21 +9,52 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
 
-const CLIENT_ID = Deno.env.get("DEXCOM_CLIENT_ID")!;
-const CLIENT_SECRET = Deno.env.get("DEXCOM_CLIENT_SECRET")!;
-const ENV = Deno.env.get("DEXCOM_ENVIRONMENT") || "sandbox";
-const REDIRECT_URI = Deno.env.get("DEXCOM_REDIRECT_URI")!;
-const TOKEN_ENC_KEY = Deno.env.get("DEXCOM_TOKEN_ENC_KEY")!;
-const STATE_SIGNING_KEY = Deno.env.get("DEXCOM_STATE_SIGNING_KEY")!;
-const CRON_SECRET = Deno.env.get("CRON_SECRET")!;
-const SB_URL = Deno.env.get("SUPABASE_URL")!;
-const SRV_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-const ANON = Deno.env.get("SUPABASE_ANON_KEY")!;
+// Non-throwing lookups: a missing secret must surface as a logged, JSON error
+// from the handler, not kill the isolate at module evaluation (which produced
+// boot/shutdown logs with zero error output).
+const env = (name: string): string => Deno.env.get(name) ?? "";
+
+const CLIENT_ID = env("DEXCOM_CLIENT_ID");
+const CLIENT_SECRET = env("DEXCOM_CLIENT_SECRET");
+const ENV = env("DEXCOM_ENVIRONMENT") || "sandbox";
+const REDIRECT_URI = env("DEXCOM_REDIRECT_URI");
+const TOKEN_ENC_KEY = env("DEXCOM_TOKEN_ENC_KEY");
+const STATE_SIGNING_KEY = env("DEXCOM_STATE_SIGNING_KEY");
+const CRON_SECRET = env("CRON_SECRET");
+const SB_URL = env("SUPABASE_URL");
+const SRV_KEY = env("SUPABASE_SERVICE_ROLE_KEY");
+const ANON = env("SUPABASE_ANON_KEY");
+
+const SECRET_NAMES = [
+  "DEXCOM_CLIENT_ID",
+  "DEXCOM_CLIENT_SECRET",
+  "DEXCOM_ENVIRONMENT",
+  "DEXCOM_REDIRECT_URI",
+  "DEXCOM_TOKEN_ENC_KEY",
+  "DEXCOM_STATE_SIGNING_KEY",
+  "CRON_SECRET",
+  "SUPABASE_URL",
+  "SUPABASE_SERVICE_ROLE_KEY",
+  "SUPABASE_ANON_KEY",
+] as const;
+
+function secretPresenceMap(): Record<string, { present: boolean; len: number }> {
+  const out: Record<string, { present: boolean; len: number }> = {};
+  for (const n of SECRET_NAMES) {
+    const v = Deno.env.get(n) ?? "";
+    out[n] = { present: v.length > 0, len: v.length };
+  }
+  return out;
+}
+
+// Names and lengths only — never values.
+console.log("[dexcom-auth] boot secret presence", JSON.stringify(secretPresenceMap()));
 
 const DEXCOM_BASE =
   ENV === "production" ? "https://api.dexcom.com" : "https://sandbox-api.dexcom.com";
 
 const admin = createClient(SB_URL, SRV_KEY, { auth: { persistSession: false } });
+
 
 function b64url(bytes: Uint8Array): string {
   let s = btoa(String.fromCharCode(...bytes));
