@@ -109,12 +109,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     // 1) Set listener FIRST
     const { data: { subscription: authSub } } = supabase.auth.onAuthStateChange((event, s) => {
-      console.info("[auth-debug] onAuthStateChange", {
-        event,
-        hasSession: !!s,
-        hasUser: !!s?.user,
-        userId: s?.user?.id ?? null,
-      });
 
       // Avoid churning user/session state on TOKEN_REFRESHED (fired on every
       // tab focus). Otherwise components that key effects off `user` reset
