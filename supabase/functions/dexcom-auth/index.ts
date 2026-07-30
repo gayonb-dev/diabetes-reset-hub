@@ -130,7 +130,10 @@ async function authorizeUrl(userId: string): Promise<Response> {
     purpose: "dexcom_oauth",
     expires_at: new Date(exp).toISOString(),
   });
-  if (error) return json(500, { error: "nonce_insert_failed" });
+  if (error) {
+    console.error("[dexcom-auth] nonce_insert_failed", error);
+    return json(500, { error: "nonce_insert_failed", details: error.message });
+  }
 
   const payload = b64url(new TextEncoder().encode(JSON.stringify({ m: userId, n: nonce, e: exp })));
   const sig = b64url(await hmacSign(STATE_SIGNING_KEY, payload));
