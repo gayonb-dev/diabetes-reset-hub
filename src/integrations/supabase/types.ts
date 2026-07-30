@@ -1354,6 +1354,39 @@ export type Database = {
         }
         Relationships: []
       }
+      oauth_client_grants: {
+        Row: {
+          approved_at: string
+          client_id: string
+          client_name: string | null
+          created_at: string
+          id: string
+          member_id: string
+          scopes: string[]
+          updated_at: string
+        }
+        Insert: {
+          approved_at?: string
+          client_id: string
+          client_name?: string | null
+          created_at?: string
+          id?: string
+          member_id: string
+          scopes?: string[]
+          updated_at?: string
+        }
+        Update: {
+          approved_at?: string
+          client_id?: string
+          client_name?: string | null
+          created_at?: string
+          id?: string
+          member_id?: string
+          scopes?: string[]
+          updated_at?: string
+        }
+        Relationships: []
+      }
       orders: {
         Row: {
           amount: number
