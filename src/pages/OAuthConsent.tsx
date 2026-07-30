@@ -5,7 +5,15 @@ import { Button } from "@/components/ui/button";
 import { Loader2, ShieldCheck } from "lucide-react";
 
 type AuthzDetails = {
-  client?: { name?: string; client_name?: string; client_uri?: string; logo_uri?: string };
+  client?: {
+    id?: string;
+    client_id?: string;
+    name?: string;
+    client_name?: string;
+    client_uri?: string;
+    logo_uri?: string;
+  };
+  client_id?: string;
   redirect_uri?: string;
   scope?: string;
   scopes?: string[];
