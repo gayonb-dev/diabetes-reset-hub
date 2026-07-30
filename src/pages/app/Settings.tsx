@@ -26,6 +26,7 @@ import { toast } from "@/hooks/use-toast";
 import VitaErrorCard from "@/components/vita/VitaErrorCard";
 import { getUnits, setUnits, WeightUnit, GlucoseUnit } from "@/lib/units";
 import ConnectedDevicesCard from "@/components/settings/ConnectedDevicesCard";
+import AIAssistantCard from "@/components/settings/AIAssistantCard";
 
 
 const CUISINE_OPTIONS = [
