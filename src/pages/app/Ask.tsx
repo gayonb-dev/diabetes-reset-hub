@@ -249,18 +249,26 @@ export default function Ask() {
 
   const reactToWin = async (win: WinPost, key: string) => {
     if (!user) return;
-    const has = myVotes[win.id]?.has(`reaction:${key}`);
-    if (has) return; // one-way reaction
-    await supabase.from("community_votes").insert({
+    // One reaction per member per post: UNIQUE (voter_id, target_type, target_id, vote_type)
+    const alreadyReacted = [...(myVotes[win.id] ?? [])].some((v) => v === "reaction" || v.startsWith("reaction:"));
+    if (alreadyReacted) {
+      toast({ title: "You already reacted to this win" });
+      return;
+    }
+    const { error } = await supabase.from("community_votes").insert({
       voter_id: user.id, target_id: win.id, target_type: "answer", vote_type: "reaction", reaction_emoji: key,
     });
+    if (error) {
+      toast({ title: "Couldn't react", description: error.message, variant: "destructive" });
+      return;
+    }
+    // reaction_counts is maintained server-side by the sync_win_post_reactions trigger
     const next = { ...win.reaction_counts, [key]: (win.reaction_counts[key] || 0) + 1 };
-    await supabase.from("win_posts").update({ reaction_counts: next }).eq("id", win.id);
     if (win.author_id !== user.id) {
       await supabase.rpc("award_helpful_points", { p_user_id: win.author_id, p_amount: 1 });
     }
     // local optimistic
-    setMyVotes((m) => ({ ...m, [win.id]: new Set([...(m[win.id] ?? []), `reaction:${key}`]) }));
+    setMyVotes((m) => ({ ...m, [win.id]: new Set([...(m[win.id] ?? []), "reaction", `reaction:${key}`]) }));
     setWins((w) => w.map((x) => x.id === win.id ? { ...x, reaction_counts: next } : x));
   };
 
