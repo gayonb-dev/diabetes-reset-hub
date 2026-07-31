@@ -37,7 +37,7 @@ export default function AdminLayout() {
   return (
     <div className="min-h-dvh admin-shell">
       {showDesktopBanner && (
-        <div className="lg:hidden bg-amber-100 text-amber-900 dark:bg-amber-900/40 dark:text-amber-100 text-xs px-4 py-2 flex items-center justify-between gap-3">
+        <div className="lg:hidden bg-accent-muted text-accent-foreground border-b border-accent/30 text-xs px-4 py-2 flex items-center justify-between gap-3">
           <span className="flex items-center gap-1.5">
             <Monitor className="h-3.5 w-3.5 shrink-0" />
             Best viewed on desktop for the full admin experience.
