@@ -12,13 +12,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { ResponsiveSelect } from "@/components/ui/responsive-select";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Sparkles, CheckCircle2, Loader2, Bot, Send } from "lucide-react";
@@ -223,7 +217,7 @@ export default function Support() {
         </p>
         <p className="text-xs text-accent">⏱ We respond within 24 hours.</p>
         <Button
-          className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
+          className="w-full max-lg:h-[52px] bg-primary hover:bg-primary/90 text-primary-foreground"
           onClick={() => openDialog("Bug")}
         >
           Report an issue →
@@ -242,7 +236,7 @@ export default function Support() {
         </p>
         <Button
           variant="outline"
-          className="w-full border-primary text-primary"
+          className="w-full max-lg:h-[52px] border-primary text-primary"
           onClick={() => navigate("/app/ask")}
         >
           Ask the community →
@@ -273,20 +267,18 @@ export default function Support() {
               <div className="space-y-3">
                 <div>
                   <Label className="text-sm">Category</Label>
-                  <Select
+                  <ResponsiveSelect
                     value={category}
                     onValueChange={(v) => setCategory(v as Category)}
-                  >
-                    <SelectTrigger className="mt-1.5">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Bug">Bug</SelectItem>
-                      <SelectItem value="Question">Question</SelectItem>
-                      <SelectItem value="Feedback">Feedback</SelectItem>
-                      <SelectItem value="Billing">Billing</SelectItem>
-                    </SelectContent>
-                  </Select>
+                    className="mt-1.5"
+                    title="Category"
+                    options={[
+                      { value: "Bug", label: "Bug" },
+                      { value: "Question", label: "Question" },
+                      { value: "Feedback", label: "Feedback" },
+                      { value: "Billing", label: "Billing" },
+                    ]}
+                  />
                 </div>
                 <div>
                   <Label className="text-sm">Message</Label>
@@ -307,7 +299,7 @@ export default function Support() {
                 <Button variant="ghost" onClick={() => setOpen(false)} disabled={sending}>
                   Cancel
                 </Button>
-                <Button onClick={submit} disabled={sending}>
+                <Button onClick={submit} disabled={sending} className="max-lg:h-[52px] max-lg:flex-1">
                   {sending ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Sending…

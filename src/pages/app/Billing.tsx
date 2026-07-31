@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
@@ -14,6 +14,7 @@ import {
 import { Loader2, AlertCircle, CreditCard, ExternalLink, RotateCcw } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import EmptyState from "@/components/ui/empty-state";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface Invoice {
   id: string;
@@ -50,6 +51,7 @@ const INVOICE_STATUS: Record<string, { label: string; color: string }> = {
 
 export default function Billing() {
   const { subscription, refreshSubscription } = useAuth();
+  const isMobile = useIsMobile();
   const [loading, setLoading] = useState(false);
   const [cancelOpen, setCancelOpen] = useState(false);
   const [cancelling, setCancelling] = useState(false);
@@ -141,6 +143,8 @@ export default function Billing() {
       </div>
     );
   }
+
+  const visibleInvoices = useMemo(() => (isMobile ? invoices.slice(0, 6) : invoices), [invoices, isMobile]);
 
   const status = STATUS_LABEL[subscription.status] ?? { label: subscription.status, color: "text-foreground" };
   const nextChargeDate =
@@ -254,7 +258,7 @@ export default function Billing() {
           />
         ) : (
           <div className="divide-y divide-border">
-            {invoices.map((inv) => {
+            {visibleInvoices.map((inv) => {
               const st = INVOICE_STATUS[inv.status ?? ""] ?? { label: inv.status ?? "—", color: "text-muted-foreground" };
               return (
                 <div key={inv.id} className="py-2.5 flex items-center justify-between text-sm">

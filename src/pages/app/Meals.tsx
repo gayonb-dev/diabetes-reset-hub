@@ -458,6 +458,33 @@ export default function Meals() {
     return { byCat, uniqueCount: seen.size, mealCount };
   }, [current]);
 
+  // Shopping list print/share (M9) — same underlying data, presentational entry points only.
+  const shoppingText = useMemo(() => {
+    const lines: string[] = [`Shopping list — Week ${weekIdx}`];
+    for (const [cat, items] of shopping.byCat.entries()) {
+      lines.push(`\n${cat}`);
+      for (const item of items) lines.push(`- ${item}`);
+    }
+    return lines.join("\n");
+  }, [shopping, weekIdx]);
+
+  function handlePrintList() {
+    window.print();
+  }
+
+  async function handleShareList() {
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: "Shopping list", text: shoppingText });
+      } else {
+        await navigator.clipboard.writeText(shoppingText);
+        toast({ title: "Copied to clipboard" });
+      }
+    } catch {
+      // user cancelled share — no-op
+    }
+  }
+
 
   // ----- Render -----
   if (loading) {
@@ -650,41 +677,103 @@ export default function Meals() {
               {shopping.uniqueCount} ingredients cover all {shopping.mealCount} meals this week.
             </p>
           )}
-          {[...shopping.byCat.entries()].map(([cat, items]) => {
-            const tip = CATEGORY_RULES.find((c) => c.category === cat)?.tip;
-            const sorted = [...items].sort((a, b) => Number(!!shoppingChecked[a]) - Number(!!shoppingChecked[b]));
-            return (
-              <Card key={cat} className="p-4 border-border">
-                <h3 className="font-medium text-foreground">{cat}</h3>
-                {tip && <p className="text-[11px] text-muted-foreground mt-0.5">{tip}</p>}
-                <ul className="mt-3 space-y-1.5">
-                  {sorted.map((item) => {
-                    const checked = !!shoppingChecked[item];
-                    return (
-                      <li
-                        key={item}
-                        className={cn(
-                          "flex items-center gap-2 text-sm",
-                          checked && "text-muted-foreground line-through opacity-60",
-                        )}
-                      >
-                        <Checkbox
-                          checked={checked}
-                          onCheckedChange={(v) =>
-                            setShoppingChecked((p) => ({ ...p, [item]: Boolean(v) }))
-                          }
-                        />
-                        <span>{item}</span>
-                      </li>
-                    );
-                  })}
-                </ul>
-              </Card>
-            );
-          })}
+
+          <div className="flex flex-col lg:flex-row lg:items-center gap-2">
+            <Button
+              onClick={handleShareList}
+              className="w-full h-[52px] lg:w-auto lg:h-9 bg-primary hover:bg-primary/90 text-primary-foreground"
+            >
+              <Share2 className="h-4 w-4 mr-2" /> Share list
+            </Button>
+            <Button
+              variant="outline"
+              onClick={handlePrintList}
+              className="hidden lg:inline-flex lg:h-9"
+            >
+              <Printer className="h-4 w-4 mr-2" /> Print / Download
+            </Button>
+          </div>
+
+          <div className="grid lg:grid-cols-1 gap-4">
+            {[...shopping.byCat.entries()].map(([cat, items]) => {
+              const tip = CATEGORY_RULES.find((c) => c.category === cat)?.tip;
+              const sorted = [...items].sort((a, b) => Number(!!shoppingChecked[a]) - Number(!!shoppingChecked[b]));
+              return (
+                <Card key={cat} className="border-border overflow-hidden">
+                  <h3 className="sticky top-0 z-10 bg-background font-medium text-foreground px-4 py-3 border-b border-border">
+                    {cat}
+                  </h3>
+                  <div className="p-4 pt-3">
+                    {tip && <p className="text-[11px] text-muted-foreground mb-2">{tip}</p>}
+                    <ul className="space-y-1">
+                      {sorted.map((item) => {
+                        const checked = !!shoppingChecked[item];
+                        return (
+                          <li
+                            key={item}
+                            className={cn(
+                              "flex items-center gap-2 text-sm min-h-11",
+                              checked && "text-muted-foreground line-through opacity-60",
+                            )}
+                          >
+                            <span className="flex items-center justify-center h-11 w-11 -m-3 shrink-0">
+                              <Checkbox
+                                checked={checked}
+                                onCheckedChange={(v) =>
+                                  setShoppingChecked((p) => ({ ...p, [item]: Boolean(v) }))
+                                }
+                              />
+                            </span>
+                            <span>{item}</span>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </div>
+                </Card>
+              );
+            })}
+          </div>
           {shopping.byCat.size === 0 && (
             <p className="text-sm text-muted-foreground">No ingredients found in this week.</p>
           )}
+
+          {/* Mobile floating print/share entry point (M9) */}
+          <button
+            type="button"
+            onClick={() => setToolsSheetOpen(true)}
+            aria-label="Print or share shopping list"
+            className="fixed bottom-[calc(env(safe-area-inset-bottom)+5rem)] right-4 z-20 h-14 w-14 rounded-full bg-primary text-primary-foreground shadow-warm flex items-center justify-center lg:hidden"
+          >
+            <MoreHorizontal className="h-5 w-5" />
+          </button>
+          <Sheet open={toolsSheetOpen} onOpenChange={setToolsSheetOpen}>
+            <SheetContent side="bottom" className="rounded-t-2xl">
+              <SheetHeader className="text-left">
+                <SheetTitle>Shopping list</SheetTitle>
+              </SheetHeader>
+              <div className="space-y-2 mt-3 pb-[calc(env(safe-area-inset-bottom)+1rem)]">
+                <Button
+                  className="w-full h-[52px] justify-start bg-transparent text-foreground hover:bg-muted border border-border"
+                  onClick={() => {
+                    setToolsSheetOpen(false);
+                    handlePrintList();
+                  }}
+                >
+                  <Download className="h-4 w-4 mr-2" /> Download PDF
+                </Button>
+                <Button
+                  className="w-full h-[52px] justify-start bg-transparent text-foreground hover:bg-muted border border-border"
+                  onClick={() => {
+                    setToolsSheetOpen(false);
+                    handleShareList();
+                  }}
+                >
+                  <Share2 className="h-4 w-4 mr-2" /> Share
+                </Button>
+              </div>
+            </SheetContent>
+          </Sheet>
         </TabsContent>
 
       </Tabs>

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { NavLink, Outlet } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
@@ -13,6 +14,8 @@ import {
   FileText,
   Shield,
   ShieldCheck,
+  Monitor,
+  X,
 } from "lucide-react";
 
 const tabs = [
@@ -30,8 +33,25 @@ const tabs = [
 
 export default function AdminLayout() {
   const { signOut, user } = useAuth();
+  const [showDesktopBanner, setShowDesktopBanner] = useState(true);
   return (
     <div className="min-h-dvh admin-shell">
+      {showDesktopBanner && (
+        <div className="lg:hidden bg-amber-100 text-amber-900 dark:bg-amber-900/40 dark:text-amber-100 text-xs px-4 py-2 flex items-center justify-between gap-3">
+          <span className="flex items-center gap-1.5">
+            <Monitor className="h-3.5 w-3.5 shrink-0" />
+            Best viewed on desktop for the full admin experience.
+          </span>
+          <button
+            type="button"
+            aria-label="Dismiss"
+            onClick={() => setShowDesktopBanner(false)}
+            className="h-8 w-8 flex items-center justify-center shrink-0"
+          >
+            <X className="h-3.5 w-3.5" />
+          </button>
+        </div>
+      )}
       {/* Distinct admin identity strip */}
       <div className="bg-slate-900 text-slate-100 text-[11px] tracking-widest uppercase">
         <div className="container mx-auto px-4 py-1.5 flex items-center justify-between">
