@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { supabase } from "@/integrations/supabase/client";
 import { ChevronDown, ChevronUp, Check, Lock, ExternalLink } from "lucide-react";
 
@@ -35,6 +36,7 @@ export default function GettingStartedChecklist({ currentProgramDay }: Props) {
   const [metadata, setMetadata] = useState<Record<string, unknown>>({});
   const [completedAt, setCompletedAt] = useState<string | null>(null);
   const [userOpen, setUserOpen] = useState<boolean | null>(null);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     if (!user) return;
@@ -92,7 +94,7 @@ export default function GettingStartedChecklist({ currentProgramDay }: Props) {
   }
 
   const isCompleteCollapsedMode = allAcquired && !!completedAt;
-  const open = userOpen ?? false;
+  const open = userOpen ?? !isMobile;
 
 
 

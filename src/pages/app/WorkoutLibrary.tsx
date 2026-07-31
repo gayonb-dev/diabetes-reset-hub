@@ -47,7 +47,7 @@ function WorkoutCard({ workout }: { workout: Workout }) {
           {workout.exercises.length} exercises
         </span>
       </div>
-      <Button asChild className="bg-primary hover:bg-primary-hover text-primary-foreground mt-1">
+      <Button asChild className="bg-primary hover:bg-primary-hover text-primary-foreground mt-1 h-[52px] lg:h-10 w-full">
         <Link to={`/app/workouts/${workout.slug}`}>
           Begin workout <ChevronRight className="h-4 w-4 ml-1" />
         </Link>
@@ -184,7 +184,7 @@ export default function WorkoutLibrary() {
               ? "Standard track — choose this if you'd like to test a higher-impact session today."
               : "Standard track — based on your profile, no knee modifications needed. Switch to Knee-Friendly anytime."}
           </p>
-          <div className="grid sm:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
             {getWorkoutsByTrack("A").map((w) => (
               <WorkoutCard key={w.slug} workout={w} />
             ))}
@@ -196,7 +196,7 @@ export default function WorkoutLibrary() {
             <Shield className="h-3.5 w-3.5 text-primary" />
             Knee-Friendly — zero high-impact movements. Every skip and jumping jack is replaced.
           </p>
-          <div className="grid sm:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
             {getWorkoutsByTrack("B").map((w) => (
               <WorkoutCard key={w.slug} workout={w} />
             ))}
