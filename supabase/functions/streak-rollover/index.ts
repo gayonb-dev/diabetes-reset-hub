@@ -9,11 +9,7 @@
 
 import { createClient } from "npm:@supabase/supabase-js@2.57.2";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "content-type, x-internal-secret",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-};
+import { corsHeaders, preflightHeaders } from "../_shared/cors.ts";
 
 const INTERNAL_SECRET = Deno.env.get("INTERNAL_FUNCTION_SECRET")!;
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
