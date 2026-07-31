@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import AuthGuard from "@/components/AuthGuard";
+import ClockSkewBanner from "@/components/ClockSkewBanner";
 import Index from "./pages/Index";
 
 // Lazy-loaded routes — keep the landing page bundle small.
@@ -71,6 +72,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <AuthProvider>
+          <ClockSkewBanner />
           <Suspense fallback={null}>
             <Routes>
               <Route path="/" element={<Index />} />
