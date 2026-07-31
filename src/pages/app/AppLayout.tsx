@@ -27,6 +27,9 @@ import { Vita } from "@/components/vita/Vita";
 import { NotificationsBell } from "@/components/notifications/NotificationsBell";
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle, SheetClose } from "@/components/ui/sheet";
 import { useVisualViewport } from "@/hooks/useVisualViewport";
+import { OfflineBanner } from "@/components/system/OfflineBanner";
+import { useBackButtonClose } from "@/hooks/useBackButtonClose";
+
 
 
 function navClass({ isActive }: { isActive: boolean }) {
