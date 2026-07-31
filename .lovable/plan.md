@@ -1,77 +1,44 @@
-## Goal
+## Verified current state
 
-Stop `dexcom-sync` from throwing `Invalid time value`, and make the failure mode observable instead of generic. Three distinct code paths can produce that identical error: record timestamps, the sync cursor, and token-expiry arithmetic.
+- `blood_sugar_readings` has one relevant unique index: `blood_sugar_readings_dexcom_extid` on `(member_id, external_id) WHERE source='dexcom' AND external_id IS NOT NULL` — partial, so PostgREST's `onConflict` can never infer it. Diagnosis confirmed.
+- Duplicate check already run: **0 duplicate `(member_id, source, external_id)` groups** with non-null `external_id`. No dedupe step needed.
+- `dexcom_connections` currently has **0 rows** — the live double-sync can only run after you reconnect.
 
-Confirmed against the current file: line 132 is `new Date(rec.systemTime + "Z").toISOString().replace("ZZ", "Z")` — the `.replace` runs on the *result* of `toISOString()`, so it can never repair a double-`Z` input; `toISOString()` throws first. Lines 108–110 build the cursor from `conn.last_sync_at` with no validity check, and line 116 calls `cursor.toISOString()` unconditionally. Line 90 computes `new Date(Date.now() + (t.expires_in - 30) * 1000).toISOString()` with no numeric validation, and line 70 compares `conn.expires_at` as a raw string.
+## 1. Migration (idempotent)
 
-## 1. New shared time module
+```sql
+DROP INDEX IF EXISTS public.blood_sugar_readings_dexcom_extid;
 
-Create `supabase/functions/_shared/dexcom-time.ts`:
+CREATE UNIQUE INDEX IF NOT EXISTS blood_sugar_readings_source_extid
+  ON public.blood_sugar_readings (member_id, source, external_id);
+```
 
-- `parseDexcomTime(s: unknown): Date | null`
-  - Return `null` for non-strings / empty after `trim()`.
-  - Append `Z` **only** when the trimmed string does not already end in `Z`/`z` or a `±HH:MM` / `±HHMM` offset (regex `/(?:[Zz]|[+-]\d{2}:?\d{2})$/`).
-  - Construct the `Date`; return `null` when `isNaN(getTime())`.
-- `toIsoOrNull(s: unknown): string | null` — thin wrapper used at the mapping site.
-- `safeExpiresInSeconds(raw: unknown, tag: string): number` — `Number(raw)`; if not finite or not `> 0`, log `console.warn(\`[${tag}] invalid expires_in\`, JSON.stringify(raw))` and return `3600`.
+Safe for manual readings: `external_id` is NULL for them and Postgres treats NULLs as distinct in unique indexes, so manual rows never collide with each other or with CGM rows. Both statements are replay-safe.
 
-Kept separate from `dexcom-crypto.ts` so crypto stays single-purpose.
+## 2. Edge function
 
-## 2. Use it at the record mapping site (lines 126–136)
+`supabase/functions/dexcom-sync/index.ts` (~line 192):
 
-Replace the `.filter().map()` with a loop that:
-- parses `rec.systemTime` via `parseDexcomTime`;
-- **skips** records that parse to `null` rather than throwing;
-- counts skips, and on the **first** skip logs `console.warn("[dexcom-sync] unparseable systemTime", JSON.stringify(rec.systemTime))` (raw value, once per invocation).
+```ts
+.upsert(rows, { onConflict: "member_id,source,external_id", ignoreDuplicates: true });
+```
 
-Insert count reported becomes the number of rows actually built.
+`ignoreDuplicates: true` unchanged; nothing else in the file changes. Deploy `dexcom-sync` after the edit.
 
-## 3. Cursor guard (lines 107–116)
+## 3. Verification report (after you reconnect)
 
-- Parse `conn.last_sync_at` through `parseDexcomTime`.
-- If present but unparseable, fall back to `now - 24h` and log `console.warn("[dexcom-sync] invalid last_sync_at cursor, falling back to now-24h", conn.member_id, conn.last_sync_at)`.
-- Only a valid Date ever reaches `toISOString()` at line 116.
+Run the sync, then report:
 
-## 4. Real error text on failure
+- raw first EGV record verbatim + its actual `systemTime` format
+- token response `expires_in` value and `typeof`
+- **one inserted CGM row's stored `measured_at` shown next to the raw `systemTime` it came from**, to prove the conversion is numerically correct and not merely non-throwing
+- insert count on run 1
+- final `last_sync_status` / `last_sync_error`
+- `count(*)` where `source='dexcom'`
 
-`syncOne` throws bare strings that the catch block already writes verbatim via `markError`. Tighten it so the cause is always attached:
-
-- Wrap the mapping/insert block so any throw is re-raised as `Error("<original message> | firstBadSystemTime=<raw>")` when a bad timestamp was seen in that chunk.
-- The member-facing "please disconnect and connect again" copy stays gated on `TokenDecryptError` only — unchanged.
-- `markError` continues truncating at 500 chars.
-
-## 5. Log the raw shape once
-
-On the first chunk returning a non-empty `records` array, log `console.info("[dexcom-sync] first EGV record", JSON.stringify(records[0]))` — one-shot flag per invocation so it does not spam.
-
-## 6. Token-expiry arithmetic guard (both functions)
-
-`dexcom-sync` line 90 and the equivalent token-write in `dexcom-auth`:
-
-- Replace `(t.expires_in - 30)` with `safeExpiresInSeconds(t.expires_in, "dexcom-sync" | "dexcom-auth") - 30`, so a missing, non-numeric, or string `expires_in` can never yield `NaN`.
-- Log the raw token response's `expires_in` value and `typeof` once per token exchange: `console.info("[dexcom-*] expires_in", JSON.stringify(t.expires_in), typeof t.expires_in)`.
-
-`dexcom-sync` line 68–72 (`refreshIfNeeded`):
-
-- Parse `conn.expires_at` via `parseDexcomTime`. If it is `null` (invalid), treat the token as **expired** and take the refresh branch, logging `console.warn("[dexcom-sync] invalid expires_at, forcing refresh", conn.member_id, conn.expires_at)`.
-- Replace the current string comparison with a numeric `Date` comparison against `now + 120s`.
-
-## 7. Deploy and verify
-
-- Deploy `dexcom-sync` and `dexcom-auth`.
-- Invoke sync for your connection with your member JWT.
-- Report:
-  - the raw first EGV record verbatim and the actual v3 `systemTime` format it revealed,
-  - the token response's `expires_in` value **and its type**,
-  - the `expires_at` currently stored on your `dexcom_connections` row (read before and after the run),
-  - how many readings were inserted,
-  - the final `last_sync_status` / `last_sync_error`,
-  - a count of CGM-tagged rows in `blood_sugar_readings`.
+Then run the sync a second time and confirm **0 new rows**, proving the dedupe index works rather than just silencing the error.
 
 ## Files changed
 
-- `supabase/functions/_shared/dexcom-time.ts` (new)
+- `supabase/migrations/<new>.sql` (new)
 - `supabase/functions/dexcom-sync/index.ts`
-- `supabase/functions/dexcom-auth/index.ts`
-
-Not touched: `_shared/dexcom-crypto.ts`, `_shared/cors.ts`, `config.toml`, the reconnect copy, or the auth branches.
