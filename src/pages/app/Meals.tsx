@@ -7,7 +7,8 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ChevronDown, ChevronUp, RefreshCw, Clock, Repeat2, Loader2 } from "lucide-react";
+import { ChevronDown, ChevronUp, RefreshCw, Clock, Repeat2, Loader2, Share2, Printer, Download, MoreHorizontal } from "lucide-react";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Vita } from "@/components/vita/Vita";
 import VitaErrorCard from "@/components/vita/VitaErrorCard";
 import { toast } from "@/hooks/use-toast";
@@ -140,7 +141,7 @@ function MealCard({ slot, meal, planId, day, weekIdx, onSwap }: {
     <Card className="border-border overflow-hidden">
       <button
         type="button"
-        className="w-full text-left p-4 flex items-start justify-between gap-3"
+        className="w-full min-h-[56px] text-left p-4 flex items-start justify-between gap-3"
         onClick={() => setExpanded((e) => !e)}
       >
         <div className="flex-1 min-w-0">
@@ -244,6 +245,7 @@ export default function Meals() {
   const [weekIdx, setWeekIdx] = useState<1 | 2 | 3 | 4>(1);
   const [cuisines, setCuisines] = useState<string[]>([]);
   const [shoppingChecked, setShoppingChecked] = useState<Record<string, boolean>>({});
+  const [toolsSheetOpen, setToolsSheetOpen] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
   const tabParam = searchParams.get("tab");
   const activeTab = ["plan", "snacks", "shopping", "cheat-meal"].includes(tabParam || "") ? (tabParam as string) : "plan";
@@ -588,13 +590,13 @@ export default function Meals() {
         </TabsContent>
 
         <TabsContent value="plan" className="mt-4 space-y-4">
-          <div className="flex gap-2 flex-wrap">
+          <div className="flex gap-2 overflow-x-auto flex-nowrap pb-1 -mx-1 px-1">
             {weekOptions.map((w) => (
               <button
                 key={w}
                 onClick={() => setWeekIdx(w)}
                 className={cn(
-                  "px-3 py-1.5 rounded-full text-xs font-medium border transition-colors",
+                  "shrink-0 whitespace-nowrap min-h-11 px-4 rounded-full text-xs font-medium border transition-colors",
                   weekIdx === w
                     ? "bg-primary text-primary-foreground border-primary"
                     : "border-border text-muted-foreground hover:border-primary/40",

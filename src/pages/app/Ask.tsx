@@ -391,7 +391,7 @@ export default function Ask() {
                   <button
                     key={r.key}
                     onClick={() => reactToWin(w, r.key)}
-                    className="flex items-center gap-1 px-2 py-1 rounded-full bg-card border text-sm hover:bg-muted"
+                    className="flex h-11 min-w-11 items-center justify-center gap-1 px-2 rounded-full bg-card border text-sm hover:bg-muted"
                     aria-label={r.label}
                   >
                     <span>{r.emoji}</span>
@@ -425,46 +425,103 @@ export default function Ask() {
         </div>
       )}
 
-      {/* Compose */}
-      <Dialog open={composeOpen} onOpenChange={setComposeOpen}>
-        <DialogContent>
-          <DialogHeader><DialogTitle>Ask the community</DialogTitle></DialogHeader>
-          <Textarea
-            value={composeText}
-            onChange={(e) => setComposeText(e.target.value)}
-            placeholder="What's your question?"
-            maxLength={500}
-            rows={4}
-          />
-          <div className="text-xs text-muted-foreground text-right">{composeText.length}/500</div>
-          <div>
-            <p className="text-xs font-medium mb-2">Tags (up to 3)</p>
-            <div className="flex flex-wrap gap-1.5">
-              {TAGS.map((t) => {
-                const selected = composeTags.includes(t);
-                return (
-                  <button
-                    key={t}
-                    type="button"
-                    onClick={() => setComposeTags((s) => selected ? s.filter((x) => x !== t) : (s.length < 3 ? [...s, t] : s))}
-                    className={`text-[11px] px-2 py-1 rounded-full border ${selected ? "bg-primary text-primary-foreground border-primary" : "bg-primary-muted text-primary border-transparent"}`}
-                  >{t}</button>
-                );
-              })}
+      {/* Compose — full-screen sheet on mobile, dialog on desktop */}
+      {isMobile ? (
+        composeOpen && (
+          <div className="fixed inset-0 z-50 bg-background flex flex-col">
+            <div className="flex items-center justify-between px-4 py-3 border-b border-border shrink-0">
+              <button
+                type="button"
+                onClick={() => setComposeOpen(false)}
+                className="h-11 px-2 -ml-2 flex items-center text-sm text-muted-foreground"
+              >
+                Cancel
+              </button>
+              <h2 className="font-heading font-semibold text-base">Ask the community</h2>
+              <div className="w-14" />
+            </div>
+            <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
+              <Textarea
+                ref={composeTextareaRef}
+                autoFocus
+                value={composeText}
+                onChange={(e) => setComposeText(e.target.value)}
+                placeholder="What's your question?"
+                maxLength={500}
+                rows={8}
+                className="text-base"
+              />
+              <div className="text-xs text-muted-foreground text-right">{composeText.length}/500</div>
+              <label className="flex items-center gap-2 text-sm min-h-11">
+                <input type="checkbox" checked={composeAnon} onChange={(e) => setComposeAnon(e.target.checked)} />
+                Post anonymously (as "DRM Member")
+              </label>
+            </div>
+            {/* Tag chips — horizontal scroll row, pinned above the compose action / keyboard */}
+            <div className="shrink-0 border-t border-border px-4 py-2 overflow-x-auto whitespace-nowrap">
+              <div className="inline-flex gap-1.5">
+                {TAGS.map((t) => {
+                  const selected = composeTags.includes(t);
+                  return (
+                    <button
+                      key={t}
+                      type="button"
+                      onClick={() => setComposeTags((s) => selected ? s.filter((x) => x !== t) : (s.length < 3 ? [...s, t] : s))}
+                      className={`text-[11px] px-2.5 py-1.5 rounded-full border whitespace-nowrap ${selected ? "bg-primary text-primary-foreground border-primary" : "bg-primary-muted text-primary border-transparent"}`}
+                    >{t}</button>
+                  );
+                })}
+              </div>
+            </div>
+            <div className="shrink-0 px-4 pb-[calc(env(safe-area-inset-bottom)+0.75rem)] pt-2 border-t border-border">
+              <Button onClick={submitQuestion} disabled={posting || composeText.trim().length < 10} className="w-full h-[52px]">
+                {posting && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                Post to community
+              </Button>
             </div>
           </div>
-          <label className="flex items-center gap-2 text-sm">
-            <input type="checkbox" checked={composeAnon} onChange={(e) => setComposeAnon(e.target.checked)} />
-            Post anonymously (as "DRM Member")
-          </label>
-          <DialogFooter>
-            <Button onClick={submitQuestion} disabled={posting || composeText.trim().length < 10} className="w-full">
-              {posting && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-              Post to community
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+        )
+      ) : (
+        <Dialog open={composeOpen} onOpenChange={setComposeOpen}>
+          <DialogContent>
+            <DialogHeader><DialogTitle>Ask the community</DialogTitle></DialogHeader>
+            <Textarea
+              value={composeText}
+              onChange={(e) => setComposeText(e.target.value)}
+              placeholder="What's your question?"
+              maxLength={500}
+              rows={4}
+            />
+            <div className="text-xs text-muted-foreground text-right">{composeText.length}/500</div>
+            <div>
+              <p className="text-xs font-medium mb-2">Tags (up to 3)</p>
+              <div className="flex flex-wrap gap-1.5">
+                {TAGS.map((t) => {
+                  const selected = composeTags.includes(t);
+                  return (
+                    <button
+                      key={t}
+                      type="button"
+                      onClick={() => setComposeTags((s) => selected ? s.filter((x) => x !== t) : (s.length < 3 ? [...s, t] : s))}
+                      className={`text-[11px] px-2 py-1 rounded-full border ${selected ? "bg-primary text-primary-foreground border-primary" : "bg-primary-muted text-primary border-transparent"}`}
+                    >{t}</button>
+                  );
+                })}
+              </div>
+            </div>
+            <label className="flex items-center gap-2 text-sm">
+              <input type="checkbox" checked={composeAnon} onChange={(e) => setComposeAnon(e.target.checked)} />
+              Post anonymously (as "DRM Member")
+            </label>
+            <DialogFooter>
+              <Button onClick={submitQuestion} disabled={posting || composeText.trim().length < 10} className="w-full">
+                {posting && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                Post to community
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
 
       {/* Win compose */}
       <Dialog open={winOpen} onOpenChange={setWinOpen}>
