@@ -25,7 +25,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
 import VitaErrorCard from "@/components/vita/VitaErrorCard";
 import { getUnits, setUnits, WeightUnit, GlucoseUnit } from "@/lib/units";
-import ConnectedDevicesCard from "@/components/settings/ConnectedDevicesCard";
+// PARKED 2026-07-31 — Dexcom US partner applications are closed (Stelo only),
+// so production access isn't available and members can't complete a connection.
+// Reactivate by uncommenting this import + the mount below, and rescheduling the
+// dexcom-sync-every-30-min cron job.
+// import ConnectedDevicesCard from "@/components/settings/ConnectedDevicesCard";
 import AIAssistantCard from "@/components/settings/AIAssistantCard";
 
 
