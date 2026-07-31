@@ -446,9 +446,16 @@ export default function Dashboard() {
         {/* Row 5 — Quick stats */}
         <QuickStats stats={stats} />
 
-        {/* Row 6 — VITA quote (in-column below lg; moves to right rail at lg) */}
-        <div className="lg:hidden">
+        {/* Row 6 — Right-rail content (in-column below lg; moves to right rail at lg) */}
+        <div className="lg:hidden space-y-4">
           <VitaQuoteCard quotes={quoteItems} />
+          <StreakMiniWidget
+            streak={gam.streak_count}
+            history={gam.streak_history}
+            freezeAvailable={gam.streak_freeze_available}
+            onOpen={() => setShowStreakHistory(true)}
+          />
+          <UpcomingActions actions={upcoming} />
         </div>
 
         {/* Daily habit logging (Section 9) */}

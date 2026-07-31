@@ -74,9 +74,6 @@ export function VitaQuoteCard({
       )}
     </div>
   );
-
-    </div>
-  );
 }
 
 export default VitaQuoteCard;
