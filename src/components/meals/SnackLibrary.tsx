@@ -68,7 +68,7 @@ export function SnackLibrary({ dayNumber }: { dayNumber: number }) {
       <p className="text-xs text-muted-foreground">
         Pick any unlocked snack between meals — ideally 2.5–3 hours after eating.
       </p>
-      <div className="grid sm:grid-cols-2 gap-3">
+      <div className="grid lg:grid-cols-2 gap-3">
         {snacks.map((s) => {
           const locked = dayNumber < s.unlock_day;
           return (
