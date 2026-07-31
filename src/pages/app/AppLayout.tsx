@@ -51,6 +51,9 @@ export default function AppLayout() {
   const { signOut, subscription, isAdmin, user } = useAuth();
   const navigate = useNavigate();
   const [levelName, setLevelName] = useState("Level 1: Getting Started");
+  const [moreOpen, setMoreOpen] = useState(false);
+  useBackButtonClose(moreOpen, () => setMoreOpen(false));
+
 
   // Onboarding gate: redirect new users (no onboarded_at) to /app/onboarding.
   const [onboardCheck, setOnboardCheck] = useState<"loading" | "needs" | "done">("loading");
