@@ -120,11 +120,29 @@ async function syncOne(conn: ConnRow): Promise<{ inserted: number; through: stri
   const accessToken = await refreshIfNeeded(conn);
   // Dexcom /v3/users/self/egvs requires startDate/endDate up to 24h span; loop if needed.
   const now = new Date();
-  const start = conn.last_sync_at
-    ? new Date(new Date(conn.last_sync_at).getTime() - 60_000)
-    : new Date(now.getTime() - 24 * 3600 * 1000);
+  const fallbackStart = new Date(now.getTime() - 24 * 3600 * 1000);
+  let start: Date;
+  if (conn.last_sync_at) {
+    const parsed = parseDexcomTime(conn.last_sync_at);
+    if (parsed === null) {
+      console.warn(
+        "[dexcom-sync] invalid last_sync_at cursor, falling back to now-24h",
+        conn.member_id,
+        JSON.stringify(conn.last_sync_at),
+      );
+      start = fallbackStart;
+    } else {
+      start = new Date(parsed.getTime() - 60_000);
+    }
+  } else {
+    start = fallbackStart;
+  }
   let cursor = start;
   let totalInserted = 0;
+  let loggedFirstRecord = false;
+  let firstBadSystemTime: string | null = null;
+  let skipped = 0;
+
   while (cursor < now) {
     const chunkEnd = new Date(Math.min(cursor.getTime() + 23 * 3600 * 1000, now.getTime()));
     const url = new URL(`${DEXCOM_BASE}/v3/users/self/egvs`);
@@ -135,30 +153,66 @@ async function syncOne(conn: ConnRow): Promise<{ inserted: number; through: stri
     });
     const body = await r.json().catch(() => ({}));
     if (!r.ok) throw new Error(`egv_fetch_failed:${r.status}:${JSON.stringify(body)}`);
-    const records: Array<{ systemTime: string; value: number; recordId?: string }> =
+    const records: Array<{ systemTime?: string; value?: number; recordId?: string }> =
       body.records ?? body.egvs ?? [];
+
     if (records.length) {
-      const rows = records
-        .filter((rec) => typeof rec.value === "number" && rec.systemTime)
-        .map((rec) => ({
+      if (!loggedFirstRecord) {
+        console.info("[dexcom-sync] first EGV record", JSON.stringify(records[0]));
+        loggedFirstRecord = true;
+      }
+
+      const rows: Array<Record<string, unknown>> = [];
+      for (const rec of records) {
+        if (typeof rec.value !== "number" || !rec.systemTime) continue;
+        const measuredAt = parseDexcomTime(rec.systemTime);
+        if (measuredAt === null) {
+          skipped++;
+          if (firstBadSystemTime === null) {
+            firstBadSystemTime = String(rec.systemTime);
+            console.warn("[dexcom-sync] unparseable systemTime", JSON.stringify(rec.systemTime));
+          }
+          continue;
+        }
+        rows.push({
           member_id: conn.member_id,
           value_mgdl: Math.round(rec.value),
           reading_type: "cgm",
-          measured_at: new Date(rec.systemTime + "Z").toISOString().replace("ZZ", "Z"),
+          measured_at: measuredAt.toISOString(),
           notes: null,
           source: "dexcom",
           external_id: rec.recordId || rec.systemTime,
-        }));
+        });
+      }
+
       if (rows.length) {
-        const { error } = await admin
-          .from("blood_sugar_readings")
-          .upsert(rows, { onConflict: "member_id,external_id", ignoreDuplicates: true });
-        if (error) throw new Error(`insert_failed:${error.message}`);
+        try {
+          const { error } = await admin
+            .from("blood_sugar_readings")
+            .upsert(rows, { onConflict: "member_id,external_id", ignoreDuplicates: true });
+          if (error) throw new Error(`insert_failed:${error.message}`);
+        } catch (e) {
+          const base = e instanceof Error ? e.message : String(e);
+          throw new Error(
+            firstBadSystemTime
+              ? `${base} | firstBadSystemTime=${firstBadSystemTime}`
+              : base,
+          );
+        }
         totalInserted += rows.length;
       }
     }
     cursor = chunkEnd;
   }
+
+  if (skipped > 0) {
+    console.warn(
+      "[dexcom-sync] skipped records with unparseable systemTime",
+      skipped,
+      firstBadSystemTime,
+    );
+  }
+
   const through = now.toISOString();
   await admin
     .from("dexcom_connections")
@@ -166,6 +220,7 @@ async function syncOne(conn: ConnRow): Promise<{ inserted: number; through: stri
     .eq("member_id", conn.member_id);
   return { inserted: totalInserted, through };
 }
+
 
 async function markError(memberId: string, err: string) {
   await admin
