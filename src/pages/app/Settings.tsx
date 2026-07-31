@@ -885,8 +885,12 @@ export default function Settings() {
         )}
       </Card>
 
-      {/* Connected Devices — Dexcom CGM auto-sync */}
-      <ConnectedDevicesCard />
+      {/* Connected Devices — Dexcom CGM auto-sync.
+          PARKED 2026-07-31 — Dexcom US partner applications are closed (Stelo only),
+          so production access isn't available and members can't complete a connection.
+          Reactivate by uncommenting this mount (and its import above) and rescheduling
+          the dexcom-sync-every-30-min cron job. */}
+      {/* <ConnectedDevicesCard /> */}
 
       <AIAssistantCard />
 
