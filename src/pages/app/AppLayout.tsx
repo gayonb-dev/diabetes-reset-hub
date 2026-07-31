@@ -26,6 +26,7 @@ import { Button } from "@/components/ui/button";
 import { Vita } from "@/components/vita/Vita";
 import { NotificationsBell } from "@/components/notifications/NotificationsBell";
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle, SheetClose } from "@/components/ui/sheet";
+import { useVisualViewport } from "@/hooks/useVisualViewport";
 
 
 function navClass({ isActive }: { isActive: boolean }) {
@@ -43,6 +44,7 @@ function mobileNavClass({ isActive }: { isActive: boolean }) {
 }
 
 export default function AppLayout() {
+  useVisualViewport();
   const { signOut, subscription, isAdmin, user } = useAuth();
   const navigate = useNavigate();
   const [levelName, setLevelName] = useState("Level 1: Getting Started");
