@@ -1,80 +1,77 @@
-## Scope
+## Goal
 
-Sessions B and C in full, plus M21 (offline banner). **M20 swipe gestures are dropped** — post-launch.
+Stop `dexcom-sync` from throwing `Invalid time value`, and make the failure mode observable instead of generic. Three distinct code paths can produce that identical error: record timestamps, the sync cursor, and token-expiry arithmetic.
 
-### Standing corrections (override the attached spec)
-- Rings 88px mobile / 112px desktop; ring values stay visible in tabular numerals.
-- Content widths unchanged (`max-w-3xl lg:max-w-6xl xl:max-w-7xl` + 320px rail).
-- Single shell breakpoint at `lg` (1024px); no new `md:` shell switches.
-- Sidebar streak badge stays removed.
-- Cheat Meal is the 4th tab inside `/app/meals`.
-- Design tokens only — no raw hex outside `index.css`, `tailwind.config.ts`, `Vita.tsx`, badge metals.
+Confirmed against the current file: line 132 is `new Date(rec.systemTime + "Z").toISOString().replace("ZZ", "Z")` — the `.replace` runs on the *result* of `toISOString()`, so it can never repair a double-`Z` input; `toISOString()` throws first. Lines 108–110 build the cursor from `conn.last_sync_at` with no validity check, and line 116 calls `cursor.toISOString()` unconditionally. Line 90 computes `new Date(Date.now() + (t.expires_in - 30) * 1000).toISOString()` with no numeric validation, and line 70 compares `conn.expires_at` as a raw string.
 
----
+## 1. New shared time module
 
-## Session B — Core screens
+Create `supabase/functions/_shared/dexcom-time.ts`:
 
-**M4 Dashboard** — `Dashboard.tsx`, `QuickStats.tsx`, `JourneyTrack.tsx`, `GettingStartedChecklist.tsx`
-Greeting stacks (name line, then streak • level pill). Rings single row, `flex-1` equal widths, 10px gap, 9px labels, values visible. Action card + journey track full width, 16px padding; journey dots `overflow-x-auto flex-nowrap` inside the card. Quick stats 2×2 (BS+Water, Weight+A1C), 8px gap. Rail contents fall into the main column below `lg` in order: VITA quote → streak card → Coming Up. Checklist collapsed by default on mobile.
+- `parseDexcomTime(s: unknown): Date | null`
+  - Return `null` for non-strings / empty after `trim()`.
+  - Append `Z` **only** when the trimmed string does not already end in `Z`/`z` or a `±HH:MM` / `±HHMM` offset (regex `/(?:[Zz]|[+-]\d{2}:?\d{2})$/`).
+  - Construct the `Date`; return `null` when `isNaN(getTime())`.
+- `toIsoOrNull(s: unknown): string | null` — thin wrapper used at the mapping site.
+- `safeExpiresInSeconds(raw: unknown, tag: string): number` — `Number(raw)`; if not finite or not `> 0`, log `console.warn(\`[${tag}] invalid expires_in\`, JSON.stringify(raw))` and return `3600`.
 
-**M5 Onboarding** — `Onboarding.tsx`
-Inputs ≥52px; segmented controls with >3 options become a vertical radio list; multi-select chips wrap, 8px gap, 44px min height; CTA fixed bottom, 16px padding + safe-area inset.
+Kept separate from `dexcom-crypto.ts` so crypto stays single-purpose.
 
-**M6 Blood sugar log** — `BloodSugarTab.tsx`
-56px/24px input; unit toggle above, right-aligned; reading-type selector horizontally scrollable; full-width reference bar; 80px notes; full-width 52px save fixed above safe-area inset.
+## 2. Use it at the record mapping site (lines 126–136)
 
-**M7 Habit logging** — `HabitLogging.tsx`
-52px section headers; snack slot picker becomes a searchable bottom sheet; Days 15–28 walk buttons stack vertically, 52px full width, `primary` logged / `primary-muted` pending.
+Replace the `.filter().map()` with a loop that:
+- parses `rec.systemTime` via `parseDexcomTime`;
+- **skips** records that parse to `null` rather than throwing;
+- counts skips, and on the **first** skip logs `console.warn("[dexcom-sync] unparseable systemTime", JSON.stringify(rec.systemTime))` (raw value, once per invocation).
 
-**M9 Meals** — `Meals.tsx`, `SnackLibrary.tsx`
-Horizontally scrollable week selector, 44px tabs; full-width day cards, 56px meal rows, swap always visible; single-column Snack Library and Shopping List; sticky category headers; 44×44 checkboxes; full-width 52px share; print/download becomes a floating icon button bottom-right above the bottom nav opening a sheet (Download PDF / Share).
+Insert count reported becomes the number of rows actually built.
 
----
+## 3. Cursor guard (lines 107–116)
 
-## Session C — Per-section, to the numbers
+- Parse `conn.last_sync_at` through `parseDexcomTime`.
+- If present but unparseable, fall back to `now - 24h` and log `console.warn("[dexcom-sync] invalid last_sync_at cursor, falling back to now-24h", conn.member_id, conn.last_sync_at)`.
+- Only a valid Date ever reaches `toISOString()` at line 116.
 
-**M8 Workouts** — `WorkoutLibrary.tsx`, `WorkoutSession.tsx`, `WorkoutComplete.tsx`
-Single-column library; 52px full-width begin button; VITA 40px in-session; sets/reps at 24px; modification note always visible; rest timer becomes a full-screen takeover with 64px centered countdown; post-workout VITA `celebrating` at 120px with 48px checklist rows.
+## 4. Real error text on failure
 
-**M10 Settings** — `Settings.tsx`
-Sticky section labels; 52×32 toggles; bottom-sheet time pickers; sign-out moved to the very bottom; delete-account confirmation unchanged from desktop.
+`syncOne` throws bare strings that the catch block already writes verbatim via `markError`. Tighten it so the cause is always attached:
 
-**M11 Ask** — `Ask.tsx`
-Tapping the VITA bar opens a full-screen compose view with autofocus; vote and answer counts remain visible; 44×44 reaction buttons; tag chips scroll horizontally above the keyboard.
+- Wrap the mapping/insert block so any throw is re-raised as `Error("<original message> | firstBadSystemTime=<raw>")` when a bad timestamp was seen in that chunk.
+- The member-facing "please disconnect and connect again" copy stays gated on `TokenDecryptError` only — unchanged.
+- `markError` continues truncating at 500 chars.
 
-**M12 Fasting** — `Fasting.tsx`
-56px countdown; 60px full-width begin button; 44px end-fast link; compact horizontal eating-schedule timeline; last 7 fasts.
+## 5. Log the raw shape once
 
-**M13 Profile** — `Profile.tsx`, `BadgeGallery.tsx` — 2×2 stats grid, 3-column badge gallery, last 3 community items.
+On the first chunk returning a non-empty `records` array, log `console.info("[dexcom-sync] first EGV record", JSON.stringify(records[0]))` — one-shot flag per invocation so it does not spam.
 
-**M14 Billing** — `Billing.tsx` — last 6 history entries on mobile.
+## 6. Token-expiry arithmetic guard (both functions)
 
-**M15 Admin** — `AdminLayout.tsx` — non-blocking, dismissible "best viewed on desktop" banner on every `/admin` route below `lg`.
+`dexcom-sync` line 90 and the equivalent token-write in `dexcom-auth`:
 
-**M16 Support** — `Support.tsx` — 52px full-width CTAs.
+- Replace `(t.expires_in - 30)` with `safeExpiresInSeconds(t.expires_in, "dexcom-sync" | "dexcom-auth") - 30`, so a missing, non-numeric, or string `expires_in` can never yield `NaN`.
+- Log the raw token response's `expires_in` value and `typeof` once per token exchange: `console.info("[dexcom-*] expires_in", JSON.stringify(t.expires_in), typeof t.expires_in)`.
 
-**M17 Learn/Library** — `Learn.tsx`, `Library.tsx` — single-column cards, 44px targets per spec.
+`dexcom-sync` line 68–72 (`refreshIfNeeded`):
 
-**M18 Cheat Meal** — `CheatMeal.tsx` (tab inside `/app/meals`) — 7 equal day columns, 44px min width, 56px height; 56px full-width log button.
+- Parse `conn.expires_at` via `parseDexcomTime`. If it is `null` (invalid), treat the token as **expired** and take the refresh branch, logging `console.warn("[dexcom-sync] invalid expires_at, forcing refresh", conn.member_id, conn.expires_at)`.
+- Replace the current string comparison with a numeric `Date` comparison against `now + 120s`.
 
-**M19 item 6** — shared `ResponsiveSelect` (Select on desktop, bottom sheet on mobile); every member-facing dropdown converted and itemised in the report. Admin dropdowns untouched.
-**M19 item 7** — native `<input type="date">` / `type="time"` on mobile.
-Android back closes the More sheet / any bottom sheet instead of navigating (history-state hook).
+## 7. Deploy and verify
 
----
+- Deploy `dexcom-sync` and `dexcom-auth`.
+- Invoke sync for your connection with your member JWT.
+- Report:
+  - the raw first EGV record verbatim and the actual v3 `systemTime` format it revealed,
+  - the token response's `expires_in` value **and its type**,
+  - the `expires_at` currently stored on your `dexcom_connections` row (read before and after the run),
+  - how many readings were inserted,
+  - the final `last_sync_status` / `last_sync_error`,
+  - a count of CGM-tagged rows in `blood_sugar_readings`.
 
-## M21 Offline banner
-`OfflineBanner` mounted in `AppLayout`, listens to `online`/`offline`, token-based colors, shows a brief "Back online" confirmation and clears 2s after reconnect.
+## Files changed
 
----
+- `supabase/functions/_shared/dexcom-time.ts` (new)
+- `supabase/functions/dexcom-sync/index.ts`
+- `supabase/functions/dexcom-auth/index.ts`
 
-## Technical notes
-New files: `src/components/ui/responsive-select.tsx`, `src/components/ui/search-sheet.tsx`, `src/components/system/OfflineBanner.tsx`, `src/hooks/useBackButtonClose.ts`. Presentation-only — no schema, copy, or business-logic changes.
-
-## Verification
-- Playwright screenshots at **360px, 375px, and 390px** for every screen listed in B and C.
-- Assert `scrollWidth <= clientWidth` on every route at all three widths.
-- Assert **no interactive target under 44px** on every screen (measure all buttons/links/inputs/role=tab, report violations).
-- Explicitly assert the **VITA quote card renders exactly once** at 360/375/390/1023/1024/1280/1536 — catching both duplication and disappearance around the old `xl:hidden` fallback now that the rail is at `lg`.
-- Back-button check: More sheet and a bottom sheet each close without route change.
-- **Per-section status table** (M4–M19, M21) with done / partial / not-done, plus the full file-change list.
+Not touched: `_shared/dexcom-crypto.ts`, `_shared/cors.ts`, `config.toml`, the reconnect copy, or the auth branches.
