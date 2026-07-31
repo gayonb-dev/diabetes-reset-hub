@@ -193,6 +193,16 @@ Deno.serve(async (req) => {
         const r = await syncOne(conn);
         results.push({ member_id: conn.member_id, ok: true, inserted: r.inserted });
       } catch (e) {
+        // Legacy rows written before the bytea hex fix cannot be decrypted.
+        // Surface a member-actionable message instead of throwing.
+        if (e instanceof TokenDecryptError) {
+          const msg =
+            "Your Dexcom connection needs to be reconnected — please disconnect and connect again in Settings.";
+          console.error("sync skipped (undecryptable tokens)", conn.member_id);
+          await markError(conn.member_id, msg);
+          results.push({ member_id: conn.member_id, ok: false, error: msg });
+          continue;
+        }
         const msg = e instanceof Error ? e.message : String(e);
         console.error("sync failed", conn.member_id, msg);
         await markError(conn.member_id, msg);
