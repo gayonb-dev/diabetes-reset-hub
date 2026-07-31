@@ -143,13 +143,17 @@ export default function GettingStartedChecklist({ currentProgramDay }: Props) {
                   type="button"
                   onClick={() => toggle(item.slug)}
                   aria-label={`Mark ${item.label} ${done ? "not acquired" : "acquired"}`}
-                  className={`shrink-0 mt-0.5 h-5 w-5 rounded border-2 flex items-center justify-center transition-colors ${
-                    done
-                      ? "bg-status-normal border-status-normal text-primary-foreground"
-                      : "border-tertiary-fg/40 bg-card"
-                  }`}
+                  className="shrink-0 -m-3 h-11 w-11 flex items-center justify-center"
                 >
-                  {done && <Check className="h-3.5 w-3.5" strokeWidth={3} />}
+                  <span
+                    className={`h-5 w-5 rounded border-2 flex items-center justify-center transition-colors ${
+                      done
+                        ? "bg-status-normal border-status-normal text-primary-foreground"
+                        : "border-tertiary-fg/40 bg-card"
+                    }`}
+                  >
+                    {done && <Check className="h-3.5 w-3.5" strokeWidth={3} />}
+                  </span>
                 </button>
                 <div className="flex-1 min-w-0">
                   <p className={`text-sm font-medium ${done ? "text-tertiary-fg line-through" : "text-foreground"}`}>
