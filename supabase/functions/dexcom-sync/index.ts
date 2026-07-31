@@ -189,7 +189,7 @@ async function syncOne(conn: ConnRow): Promise<{ inserted: number; through: stri
         try {
           const { error } = await admin
             .from("blood_sugar_readings")
-            .upsert(rows, { onConflict: "member_id,external_id", ignoreDuplicates: true });
+            .upsert(rows, { onConflict: "member_id,source,external_id", ignoreDuplicates: true });
           if (error) throw new Error(`insert_failed:${error.message}`);
         } catch (e) {
           const base = e instanceof Error ? e.message : String(e);
