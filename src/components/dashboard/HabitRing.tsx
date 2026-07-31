@@ -60,8 +60,7 @@ export function HabitRing({
     if (pct < 1) wasCompleteRef.current = false;
   }, [pct, bloomControls]);
 
-  const labelPx = size >= 112 ? 12 : size >= 96 ? 12 : 11;
-  const subPx = size >= 112 ? 15 : size >= 96 ? 13 : 12;
+  const labelPx = size >= 112 ? 12 : size >= 96 ? 12 : 9;
 
   return (
     <div
@@ -123,10 +122,7 @@ export function HabitRing({
       >
         {label}
       </span>
-      <span
-        className="ring-value text-secondary-fg"
-        style={{ fontSize: subPx }}
-      >
+      <span className="ring-value text-secondary-fg">
         {value}
         {unit ? ` ${unit}` : ""} / {target}
         {unit ? ` ${unit}` : ""}
