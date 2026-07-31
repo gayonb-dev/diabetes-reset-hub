@@ -148,7 +148,9 @@ export default function AppLayout() {
 
   return (
     <div className="min-h-dvh bg-background flex flex-col">
+      <OfflineBanner />
       {trialBanner}
+
       {pastDueBanner}
       <div className="flex flex-1">
         {/* Sidebar — dark green */}
