@@ -85,6 +85,18 @@ export default function AuthGuard({ children, requireAdmin, requireActiveSub = t
 
   if (!user) {
     const next = `${loc.pathname}${loc.search}`;
+    console.warn("[auth-debug] AuthGuard redirect", {
+      target: `/login?next=${encodeURIComponent(next)}`,
+      reason: "no user after loading + recheck",
+      hasUser: false,
+      loading,
+      authRecheck,
+      subscriptionStatus: subscription?.status ?? null,
+      requireAdmin: !!requireAdmin,
+      requireActiveSub,
+      path: loc.pathname,
+      search: loc.search,
+    });
 
     return <Navigate to={`/login?next=${encodeURIComponent(next)}`} replace />;
   }
@@ -104,8 +116,21 @@ export default function AuthGuard({ children, requireAdmin, requireActiveSub = t
     if (onboardState === "needs") {
       return <Navigate to="/app/onboarding" replace />;
     }
+    console.warn("[auth-debug] AuthGuard redirect", {
+      target: "/login?inactive=1",
+      reason: "no active subscription",
+      hasUser: true,
+      loading,
+      authRecheck,
+      subscriptionStatus: subscription?.status ?? null,
+      requireAdmin: !!requireAdmin,
+      requireActiveSub,
+      path: loc.pathname,
+      search: loc.search,
+    });
     return <Navigate to="/login?inactive=1" replace />;
   }
+
 
   return <>{children}</>;
 }
