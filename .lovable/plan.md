@@ -1,44 +1,38 @@
+# Park the Dexcom integration (preserve for reactivation)
+
 ## Verified current state
+- `ConnectedDevicesCard` is mounted once, at `src/pages/app/Settings.tsx:885`, imported at line 28.
+- pg_cron job `dexcom-sync-every-30-min` (jobid 21, schedule `*/30 * * * *`) is **active**.
+- `blood_sugar_readings` where `source='dexcom'`: **276 rows**.
+- `dexcom_connections`: **1 row**.
 
-- `blood_sugar_readings` has one relevant unique index: `blood_sugar_readings_dexcom_extid` on `(member_id, external_id) WHERE source='dexcom' AND external_id IS NOT NULL` — partial, so PostgREST's `onConflict` can never infer it. Diagnosis confirmed.
-- Duplicate check already run: **0 duplicate `(member_id, source, external_id)` groups** with non-null `external_id`. No dedupe step needed.
-- `dexcom_connections` currently has **0 rows** — the live double-sync can only run after you reconnect.
+## 1. Hide the card from Settings
+`src/pages/app/Settings.tsx` — comment out the `<ConnectedDevicesCard />` mount and its import, each with a note:
 
-## 1. Migration (idempotent)
+```
+// PARKED 2026-07-31 — Dexcom US partner applications are closed (Stelo only),
+// so production access isn't available and members can't complete a connection.
+// Reactivate by uncommenting this mount + rescheduling the dexcom-sync cron.
+```
 
+No other file is touched. `ConnectedDevicesCard.tsx`, `useDexcomConnection.ts`, `DexcomCallback.tsx`, and the `/app/settings/dexcom/callback` route all stay exactly as they are.
+
+## 2. Unschedule the cron
+Run `cron.unschedule('dexcom-sync-every-30-min')` via the data tool (job data, not schema). Both edge functions stay deployed, `config.toml` unchanged, all Dexcom secrets untouched. Reactivation is a single `cron.schedule` call with the same name and `*/30 * * * *`.
+
+## 3. Delete sandbox test data
 ```sql
-DROP INDEX IF EXISTS public.blood_sugar_readings_dexcom_extid;
-
-CREATE UNIQUE INDEX IF NOT EXISTS blood_sugar_readings_source_extid
-  ON public.blood_sugar_readings (member_id, source, external_id);
+DELETE FROM public.blood_sugar_readings WHERE source = 'dexcom';   -- 276 expected
+DELETE FROM public.dexcom_connections;                              -- 1 expected
 ```
+Actual deleted counts reported back, plus a post-delete count confirming Progress now shows only manually-logged readings.
 
-Safe for manual readings: `external_id` is NULL for them and Postgres treats NULLs as distinct in unique indexes, so manual rows never collide with each other or with CGM rows. Both statements are replay-safe.
+## 4. Explicitly untouched
+`dexcom_connections` and `state_nonces` tables, every migration, `_shared/dexcom-crypto.ts`, `_shared/dexcom-time.ts`, the `source` / `external_id` columns, the `blood_sugar_readings_source_extid` unique index, and the CGM tag rendering in `BloodSugarTab.tsx` (it simply never matches once the rows are gone).
 
-## 2. Edge function
-
-`supabase/functions/dexcom-sync/index.ts` (~line 192):
-
-```ts
-.upsert(rows, { onConflict: "member_id,source,external_id", ignoreDuplicates: true });
-```
-
-`ignoreDuplicates: true` unchanged; nothing else in the file changes. Deploy `dexcom-sync` after the edit.
-
-## 3. Verification report (after you reconnect)
-
-Run the sync, then report:
-
-- raw first EGV record verbatim + its actual `systemTime` format
-- token response `expires_in` value and `typeof`
-- **one inserted CGM row's stored `measured_at` shown next to the raw `systemTime` it came from**, to prove the conversion is numerically correct and not merely non-throwing
-- insert count on run 1
-- final `last_sync_status` / `last_sync_error`
-- `count(*)` where `source='dexcom'`
-
-Then run the sync a second time and confirm **0 new rows**, proving the dedupe index works rather than just silencing the error.
+## 5. Untouched
+The "Connect an AI assistant" card stays mounted and live.
 
 ## Files changed
-
-- `supabase/migrations/<new>.sql` (new)
-- `supabase/functions/dexcom-sync/index.ts`
+- `src/pages/app/Settings.tsx` (only file edited)
+- Plus one data operation (cron unschedule + two deletes) — no schema migration.
