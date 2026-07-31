@@ -1,37 +1,23 @@
-## 1. Fix the dexcom-auth boot crash
+## Diagnosis
 
-`supabase/functions/dexcom-auth/index.ts` line 10 imports `corsHeaders` from `npm:@supabase/supabase-js@2/cors`, which is not a real package export — the isolate dies at module load, so the browser sees "Failed to send a request to the Edge Function" and logs show boot/shutdown with no output.
+- The deployed `OPTIONS /dexcom-auth` currently returns **HTTP 200** with the expected CORS headers, so the preflight is not failing in a direct test.
+- An unauthenticated `POST /dexcom-auth` returns the platform gateway response **HTTP 401** with `UNAUTHORIZED_NO_AUTH_HEADER`; it never reaches `dexcom-auth`'s own `requireUser` gate. This confirms `verify_jwt = true` enforces authentication ahead of the function.
+- Recent function logs show only isolate boot/shutdown events and no request handling, consistent with requests rejected before function code runs.
+- The browser failure is therefore the gateway JWT layer rejecting the request before the function runs — not a missing secret or boot failure. Removing the redundant gateway check makes CORS and auth responses come consistently from the function itself.
 
-- Delete that import; define `corsHeaders` inline as a plain object exactly as `support-request/index.ts` does: `Access-Control-Allow-Origin: *`, `Access-Control-Allow-Headers: authorization, x-client-info, apikey, content-type`, `Access-Control-Allow-Methods: POST, OPTIONS`.
-- **Same bug in `supabase/functions/dexcom-sync/index.ts` line 10** — identical fake subpath, same fix.
-- Grep of all `npm:` imports under `supabase/functions/`: the only invalid subpath is `@supabase/supabase-js@2/cors` in those two Dexcom functions. `mcp/index.ts` uses `npm:@lovable.dev/mcp-js@0.24.0/stacks/supabase`, a real published subpath export — left as-is. Everything else imports bare package roots.
-- Add to `supabase/config.toml`:
-  ```toml
-  [functions.dexcom-auth]
-  verify_jwt = true
-  ```
-- Redeploy both functions, curl deployed `dexcom-auth` with no auth, and report the raw HTTP status and body (expect JSON 401, proving it boots).
+## Fix
 
-## 2. Device clock-skew guard
+1. Change only the function-specific configuration in `supabase/config.toml`:
+   - `[functions.dexcom-auth] verify_jwt = false`
+2. Keep `dexcom-auth`'s existing `requireUser()` validation unchanged — every non-`OPTIONS` action still requires and cryptographically validates a bearer token via `getClaims()` before any Dexcom or database operation.
+3. Do not weaken `dexcom-sync`, OAuth state/nonce validation, token encryption, or any Dexcom secret handling.
 
-New hook `src/hooks/useClockSkew.ts`:
-- One request to `${VITE_SUPABASE_URL}/auth/v1/health?_=${Date.now()}` using `fetch(url, { method: 'HEAD', cache: 'no-store' })` — cache-busting param plus `no-store` so a cached `Date` header can never trigger a false banner.
-- If the response is non-2xx, the fetch throws, or the `Date` header is missing → treat as a failed check, no banner.
-- Compares the server `Date` against `Date.now()` captured when the response resolves; returns `{ skewMs, checked }`.
-- Logs the measurement once: `console.warn('[clock] skew', { skewMs, serverTime, deviceTime })`.
+## Verification
 
-New component `src/components/ClockSkewBanner.tsx`:
-- Renders only when the check succeeded and `Math.abs(skewMs) > 120000`.
-- Copy: "Your device clock is off by about {N} minutes, which can stop you from signing in. Set your device date and time to update automatically, then reload this page."
-- **Reload** button (`window.location.reload()`) plus a dismiss control.
-- Dismissal in React state only — never localStorage — so it reappears next session while the clock is still wrong.
-- Brand tokens only (`bg-accent-muted`, `border-accent/30`, `text-foreground`), no raw hex.
+1. Confirm browser-style `OPTIONS` returns **200** with allowed origin, methods, and all requested headers — report raw status and body.
+2. Confirm unauthenticated `POST` now reaches function code and returns its JSON **401 `{"error":"unauthorized"}`** instead of the gateway's `UNAUTHORIZED_NO_AUTH_HEADER` — report raw status and body.
+3. From an authenticated session, invoke `authorize_url` and confirm a 200 with a Dexcom sandbox URL containing valid `client_id`, `redirect_uri`, `state`, and no `undefined` segments.
+4. Exercise Settings → Connect Dexcom and verify it reaches the Dexcom authorization page without `FunctionsFetchError`.
+5. Review fresh `dexcom-auth` logs to confirm requests reach the handler; report exact HTTP results and files changed.
 
-Mounting:
-- `src/App.tsx` — global, on app load.
-- `src/pages/Login.tsx` — at the top of the login card, where the failure is reported.
-
-Re-check runs on reload; banner disappears once skew is under threshold.
-
-### Not changed
-Auth logic, `[auth-debug]` instrumentation, magic-link function, or any Dexcom behavior beyond the import fix.
+**Security rationale:** equivalent security — the function handles `OPTIONS` before auth, and `requireUser()` rejects every unauthenticated or invalid-JWT request before dispatching any action.
