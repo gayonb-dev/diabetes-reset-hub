@@ -195,10 +195,10 @@ async function exchange(userId: string, code: string, state: string): Promise<Re
   const { error: upErr } = await admin.from("dexcom_connections").upsert(
     {
       member_id: userId,
-      access_token_enc: accEnc.ct,
-      token_iv: accEnc.iv,
-      refresh_token_enc: refEnc.ct,
-      refresh_iv: refEnc.iv,
+      access_token_enc: bytesToPgHex(accEnc.ct),
+      token_iv: bytesToPgHex(accEnc.iv),
+      refresh_token_enc: bytesToPgHex(refEnc.ct),
+      refresh_iv: bytesToPgHex(refEnc.iv),
       expires_at: expiresAt,
       environment: ENV,
       last_sync_status: "connected",
