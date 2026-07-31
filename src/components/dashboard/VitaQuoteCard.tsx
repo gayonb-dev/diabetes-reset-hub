@@ -41,6 +41,7 @@ export function VitaQuoteCard({
 
   return (
     <div
+      data-testid="vita-quote-card"
       className={cn(
         "bg-card border border-border rounded-xl px-4 py-3 shadow-warm flex items-center gap-3",
         className,
@@ -54,18 +55,18 @@ export function VitaQuoteCard({
         <p className="text-sm text-foreground leading-relaxed">{current.text}</p>
       </div>
       {items.length > 1 && (
-        <div className="flex flex-col gap-1 shrink-0">
+        <div className="flex flex-row lg:flex-col gap-1 shrink-0">
           <button
             onClick={prev}
             aria-label="Previous tip"
-            className="text-tertiary-fg hover:text-foreground transition-colors"
+            className="h-11 w-11 lg:h-6 lg:w-6 flex items-center justify-center rounded-lg text-tertiary-fg hover:text-foreground transition-colors"
           >
             <ChevronUp className="h-4 w-4" />
           </button>
           <button
             onClick={next}
             aria-label="Next tip"
-            className="text-tertiary-fg hover:text-foreground transition-colors"
+            className="h-11 w-11 lg:h-6 lg:w-6 flex items-center justify-center rounded-lg text-tertiary-fg hover:text-foreground transition-colors"
           >
             <ChevronDown className="h-4 w-4" />
           </button>

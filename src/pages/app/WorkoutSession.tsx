@@ -9,6 +9,7 @@ import { Vita } from "@/components/vita/Vita";
 import { cn } from "@/lib/utils";
 import { getWorkoutBySlug, REST_SECONDS } from "@/data/workouts";
 import { useProgramDay } from "@/hooks/useProgramDay";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 function formatTime(totalSec: number): string {
   const m = Math.floor(totalSec / 60);
@@ -35,6 +36,7 @@ export default function WorkoutSession() {
   const { user } = useAuth();
   const programDay = useProgramDay();
   const dayLoading = programDay === 0;
+  const isMobile = useIsMobile();
   const workout = useMemo(() => (slug ? getWorkoutBySlug(slug) : undefined), [slug]);
 
   // Workouts unlock on Day 29 — redirect earlier days to the locked library view.
@@ -185,6 +187,10 @@ export default function WorkoutSession() {
     setCurrentIdx((i) => i + 1);
   }
 
+  function addRestTime(sec: number) {
+    setRestRemaining((r) => r + sec);
+  }
+
   async function pauseAndExit() {
     if (sessionId) {
       await supabase
@@ -213,7 +219,7 @@ export default function WorkoutSession() {
           <h1 className="font-heading font-semibold text-xl text-foreground">{workout.name}</h1>
           <p className="text-sm text-muted-foreground tabular-nums">{formatTime(elapsed)}</p>
         </div>
-        <Vita posture="encouraging" size={48} />
+        <Vita posture="encouraging" size={isMobile ? 40 : 48} />
       </div>
 
       {/* Progress dots */}
@@ -231,27 +237,55 @@ export default function WorkoutSession() {
 
       {/* Rest or exercise card */}
       {resting ? (
-        <Card className="p-6 border-border bg-primary-muted/40 text-center space-y-4">
-          <p className="text-xs font-medium uppercase tracking-wide text-primary">Rest</p>
-          <p className="text-5xl font-semibold text-foreground tabular-nums">{restRemaining}s</p>
-          <BreathingVita />
-          <Button
-            variant="ghost"
-            size="sm"
-            className="text-muted-foreground"
-            onClick={() => {
-              setResting(false);
-              setRestRemaining(0);
-            }}
-          >
-            Skip rest
-          </Button>
-        </Card>
+        <>
+          {/* Mobile: full-screen takeover */}
+          <div className="lg:hidden fixed inset-0 z-50 bg-card flex flex-col items-center justify-center gap-6 px-6">
+            <p className="text-xs font-medium uppercase tracking-wide text-primary">Rest</p>
+            <p className="text-[64px] leading-none font-semibold text-foreground tabular-nums">{restRemaining}s</p>
+            <BreathingVita />
+            <div className="flex items-center gap-3 w-full max-w-xs">
+              <Button
+                variant="outline"
+                className="flex-1 h-[52px]"
+                onClick={() => addRestTime(15)}
+              >
+                +15s
+              </Button>
+              <Button
+                variant="ghost"
+                className="flex-1 h-[52px] text-muted-foreground"
+                onClick={() => {
+                  setResting(false);
+                  setRestRemaining(0);
+                }}
+              >
+                Skip rest
+              </Button>
+            </div>
+          </div>
+          {/* Desktop/tablet: inline card */}
+          <Card className="hidden lg:block p-6 border-border bg-primary-muted/40 text-center space-y-4">
+            <p className="text-xs font-medium uppercase tracking-wide text-primary">Rest</p>
+            <p className="text-5xl font-semibold text-foreground tabular-nums">{restRemaining}s</p>
+            <BreathingVita />
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-muted-foreground"
+              onClick={() => {
+                setResting(false);
+                setRestRemaining(0);
+              }}
+            >
+              Skip rest
+            </Button>
+          </Card>
+        </>
       ) : (
         <Card className="p-5 border-border space-y-4">
           <div>
             <h3 className="text-lg font-semibold text-foreground">{current.name}</h3>
-            <p className="text-[22px] font-semibold text-accent mt-1">
+            <p className="text-2xl tabular-nums font-semibold text-accent mt-1">
               {current.reps || current.duration}
             </p>
           </div>

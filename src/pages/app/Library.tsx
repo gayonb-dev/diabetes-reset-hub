@@ -82,7 +82,7 @@ export default function Library() {
       <Tabs defaultValue="recipes">
         <TabsList className="bg-muted">
           {TABS.map((t) => (
-            <TabsTrigger key={t.key} value={t.key}>
+            <TabsTrigger key={t.key} value={t.key} className="min-h-11">
               {t.label}
             </TabsTrigger>
           ))}
@@ -99,7 +99,7 @@ export default function Library() {
                   </p>
                 </Card>
               ) : (
-                <div className="grid sm:grid-cols-2 gap-3">
+                <div className="grid lg:grid-cols-2 gap-3">
                   {list.map((it) => {
                     const meta = (it.metadata || {}) as Record<string, string>;
                     const tag = [meta.tag, meta.duration].filter(Boolean).join(" · ");

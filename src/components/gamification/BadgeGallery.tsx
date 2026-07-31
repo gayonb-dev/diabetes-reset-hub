@@ -54,7 +54,7 @@ export default function BadgeGallery({ category, earnedSlugs, title }: BadgeGall
       {title && (
         <h2 className="font-heading text-lg font-semibold text-foreground mb-3">{title}</h2>
       )}
-      <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
+      <div className="grid grid-cols-3 lg:grid-cols-4 gap-3">
         {rows.map((b) => {
           const got = earned.has(b.slug);
           return (

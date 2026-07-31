@@ -92,14 +92,14 @@ export default function Learn() {
 
       <Tabs defaultValue="mindset">
         <TabsList className="bg-muted">
-          <TabsTrigger value="mindset">Mindset</TabsTrigger>
-          <TabsTrigger value="learn">Guides</TabsTrigger>
-          {blogPosts.length > 0 && <TabsTrigger value="blog">Blog</TabsTrigger>}
+          <TabsTrigger value="mindset" className="min-h-11">Mindset</TabsTrigger>
+          <TabsTrigger value="learn" className="min-h-11">Guides</TabsTrigger>
+          {blogPosts.length > 0 && <TabsTrigger value="blog" className="min-h-11">Blog</TabsTrigger>}
         </TabsList>
 
         {/* MINDSET TAB */}
         <TabsContent value="mindset" className="mt-5">
-          <div className="grid sm:grid-cols-2 gap-3">
+          <div className="grid lg:grid-cols-2 gap-3">
             {MINDSET_WEEKS.map((w) => {
               const locked = currentProgramDay < w.unlockDay;
               return (

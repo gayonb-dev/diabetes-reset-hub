@@ -7,7 +7,8 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ChevronDown, ChevronUp, RefreshCw, Clock, Repeat2, Loader2 } from "lucide-react";
+import { ChevronDown, ChevronUp, RefreshCw, Clock, Repeat2, Loader2, Share2, Printer, Download, MoreHorizontal } from "lucide-react";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Vita } from "@/components/vita/Vita";
 import VitaErrorCard from "@/components/vita/VitaErrorCard";
 import { toast } from "@/hooks/use-toast";
@@ -140,7 +141,7 @@ function MealCard({ slot, meal, planId, day, weekIdx, onSwap }: {
     <Card className="border-border overflow-hidden">
       <button
         type="button"
-        className="w-full text-left p-4 flex items-start justify-between gap-3"
+        className="w-full min-h-[56px] text-left p-4 flex items-start justify-between gap-3"
         onClick={() => setExpanded((e) => !e)}
       >
         <div className="flex-1 min-w-0">
@@ -244,6 +245,7 @@ export default function Meals() {
   const [weekIdx, setWeekIdx] = useState<1 | 2 | 3 | 4>(1);
   const [cuisines, setCuisines] = useState<string[]>([]);
   const [shoppingChecked, setShoppingChecked] = useState<Record<string, boolean>>({});
+  const [toolsSheetOpen, setToolsSheetOpen] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
   const tabParam = searchParams.get("tab");
   const activeTab = ["plan", "snacks", "shopping", "cheat-meal"].includes(tabParam || "") ? (tabParam as string) : "plan";
@@ -456,6 +458,33 @@ export default function Meals() {
     return { byCat, uniqueCount: seen.size, mealCount };
   }, [current]);
 
+  // Shopping list print/share (M9) — same underlying data, presentational entry points only.
+  const shoppingText = useMemo(() => {
+    const lines: string[] = [`Shopping list — Week ${weekIdx}`];
+    for (const [cat, items] of shopping.byCat.entries()) {
+      lines.push(`\n${cat}`);
+      for (const item of items) lines.push(`- ${item}`);
+    }
+    return lines.join("\n");
+  }, [shopping, weekIdx]);
+
+  function handlePrintList() {
+    window.print();
+  }
+
+  async function handleShareList() {
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: "Shopping list", text: shoppingText });
+      } else {
+        await navigator.clipboard.writeText(shoppingText);
+        toast({ title: "Copied to clipboard" });
+      }
+    } catch {
+      // user cancelled share — no-op
+    }
+  }
+
 
   // ----- Render -----
   if (loading) {
@@ -588,13 +617,13 @@ export default function Meals() {
         </TabsContent>
 
         <TabsContent value="plan" className="mt-4 space-y-4">
-          <div className="flex gap-2 flex-wrap">
+          <div className="flex gap-2 overflow-x-auto flex-nowrap pb-1 -mx-1 px-1">
             {weekOptions.map((w) => (
               <button
                 key={w}
                 onClick={() => setWeekIdx(w)}
                 className={cn(
-                  "px-3 py-1.5 rounded-full text-xs font-medium border transition-colors",
+                  "shrink-0 whitespace-nowrap min-h-11 px-4 rounded-full text-xs font-medium border transition-colors",
                   weekIdx === w
                     ? "bg-primary text-primary-foreground border-primary"
                     : "border-border text-muted-foreground hover:border-primary/40",
@@ -648,41 +677,103 @@ export default function Meals() {
               {shopping.uniqueCount} ingredients cover all {shopping.mealCount} meals this week.
             </p>
           )}
-          {[...shopping.byCat.entries()].map(([cat, items]) => {
-            const tip = CATEGORY_RULES.find((c) => c.category === cat)?.tip;
-            const sorted = [...items].sort((a, b) => Number(!!shoppingChecked[a]) - Number(!!shoppingChecked[b]));
-            return (
-              <Card key={cat} className="p-4 border-border">
-                <h3 className="font-medium text-foreground">{cat}</h3>
-                {tip && <p className="text-[11px] text-muted-foreground mt-0.5">{tip}</p>}
-                <ul className="mt-3 space-y-1.5">
-                  {sorted.map((item) => {
-                    const checked = !!shoppingChecked[item];
-                    return (
-                      <li
-                        key={item}
-                        className={cn(
-                          "flex items-center gap-2 text-sm",
-                          checked && "text-muted-foreground line-through opacity-60",
-                        )}
-                      >
-                        <Checkbox
-                          checked={checked}
-                          onCheckedChange={(v) =>
-                            setShoppingChecked((p) => ({ ...p, [item]: Boolean(v) }))
-                          }
-                        />
-                        <span>{item}</span>
-                      </li>
-                    );
-                  })}
-                </ul>
-              </Card>
-            );
-          })}
+
+          <div className="flex flex-col lg:flex-row lg:items-center gap-2">
+            <Button
+              onClick={handleShareList}
+              className="w-full h-[52px] lg:w-auto lg:h-9 bg-primary hover:bg-primary/90 text-primary-foreground"
+            >
+              <Share2 className="h-4 w-4 mr-2" /> Share list
+            </Button>
+            <Button
+              variant="outline"
+              onClick={handlePrintList}
+              className="hidden lg:inline-flex lg:h-9"
+            >
+              <Printer className="h-4 w-4 mr-2" /> Print / Download
+            </Button>
+          </div>
+
+          <div className="grid lg:grid-cols-1 gap-4">
+            {[...shopping.byCat.entries()].map(([cat, items]) => {
+              const tip = CATEGORY_RULES.find((c) => c.category === cat)?.tip;
+              const sorted = [...items].sort((a, b) => Number(!!shoppingChecked[a]) - Number(!!shoppingChecked[b]));
+              return (
+                <Card key={cat} className="border-border overflow-hidden">
+                  <h3 className="sticky top-0 z-10 bg-background font-medium text-foreground px-4 py-3 border-b border-border">
+                    {cat}
+                  </h3>
+                  <div className="p-4 pt-3">
+                    {tip && <p className="text-[11px] text-muted-foreground mb-2">{tip}</p>}
+                    <ul className="space-y-1">
+                      {sorted.map((item) => {
+                        const checked = !!shoppingChecked[item];
+                        return (
+                          <li
+                            key={item}
+                            className={cn(
+                              "flex items-center gap-2 text-sm min-h-11",
+                              checked && "text-muted-foreground line-through opacity-60",
+                            )}
+                          >
+                            <span className="flex items-center justify-center h-11 w-11 -m-3 shrink-0">
+                              <Checkbox
+                                checked={checked}
+                                onCheckedChange={(v) =>
+                                  setShoppingChecked((p) => ({ ...p, [item]: Boolean(v) }))
+                                }
+                              />
+                            </span>
+                            <span>{item}</span>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </div>
+                </Card>
+              );
+            })}
+          </div>
           {shopping.byCat.size === 0 && (
             <p className="text-sm text-muted-foreground">No ingredients found in this week.</p>
           )}
+
+          {/* Mobile floating print/share entry point (M9) */}
+          <button
+            type="button"
+            onClick={() => setToolsSheetOpen(true)}
+            aria-label="Print or share shopping list"
+            className="fixed bottom-[calc(env(safe-area-inset-bottom)+5rem)] right-4 z-20 h-14 w-14 rounded-full bg-primary text-primary-foreground shadow-warm flex items-center justify-center lg:hidden"
+          >
+            <MoreHorizontal className="h-5 w-5" />
+          </button>
+          <Sheet open={toolsSheetOpen} onOpenChange={setToolsSheetOpen}>
+            <SheetContent side="bottom" className="rounded-t-2xl">
+              <SheetHeader className="text-left">
+                <SheetTitle>Shopping list</SheetTitle>
+              </SheetHeader>
+              <div className="space-y-2 mt-3 pb-[calc(env(safe-area-inset-bottom)+1rem)]">
+                <Button
+                  className="w-full h-[52px] justify-start bg-transparent text-foreground hover:bg-muted border border-border"
+                  onClick={() => {
+                    setToolsSheetOpen(false);
+                    handlePrintList();
+                  }}
+                >
+                  <Download className="h-4 w-4 mr-2" /> Download PDF
+                </Button>
+                <Button
+                  className="w-full h-[52px] justify-start bg-transparent text-foreground hover:bg-muted border border-border"
+                  onClick={() => {
+                    setToolsSheetOpen(false);
+                    handleShareList();
+                  }}
+                >
+                  <Share2 className="h-4 w-4 mr-2" /> Share
+                </Button>
+              </div>
+            </SheetContent>
+          </Sheet>
         </TabsContent>
 
       </Tabs>

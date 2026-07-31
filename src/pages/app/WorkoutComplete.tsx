@@ -130,7 +130,7 @@ export default function WorkoutComplete() {
                 key={item.key}
                 onClick={() => toggle(item.key)}
                 className={cn(
-                  "w-full text-left rounded-lg border p-3 flex items-center gap-3 transition-colors",
+                  "w-full text-left rounded-lg border p-3 min-h-12 flex items-center gap-3 transition-colors",
                   done
                     ? "border-primary border-2 bg-primary-muted"
                     : "border-border hover:border-primary/40",

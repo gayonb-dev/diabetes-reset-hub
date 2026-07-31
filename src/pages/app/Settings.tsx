@@ -574,7 +574,7 @@ export default function Settings() {
 
       {/* Profile */}
       <Card className="p-5 border-border">
-        <h2 className="font-semibold text-base flex items-center gap-2 mb-1">
+        <h2 className="font-semibold text-base flex items-center gap-2 mb-1 max-lg:sticky max-lg:top-0 max-lg:z-10 max-lg:bg-card max-lg:py-1">
           <User className="h-4 w-4 text-primary" /> Profile
         </h2>
         <p className="text-xs text-muted-foreground mb-4">
@@ -609,7 +609,7 @@ export default function Settings() {
       {/* Units */}
 
       <Card className="p-5 border-border">
-        <h2 className="font-semibold text-base mb-1">Units</h2>
+        <h2 className="font-semibold text-base mb-1 max-lg:sticky max-lg:top-0 max-lg:z-10 max-lg:bg-card max-lg:py-1">Units</h2>
         <p className="text-xs text-muted-foreground mb-4">How we show your numbers.</p>
 
         <div className="grid sm:grid-cols-2 gap-4">
@@ -632,7 +632,7 @@ export default function Settings() {
 
       {/* Timezone */}
       <Card className="p-5 border-border">
-        <h2 className="font-semibold text-base flex items-center gap-2 mb-1">
+        <h2 className="font-semibold text-base flex items-center gap-2 mb-1 max-lg:sticky max-lg:top-0 max-lg:z-10 max-lg:bg-card max-lg:py-1">
           <Clock className="h-4 w-4 text-primary" /> Timezone
         </h2>
         <p className="text-xs text-muted-foreground mb-3">
@@ -680,12 +680,16 @@ export default function Settings() {
       <Card className="p-5 border-border">
         <div className="flex items-start justify-between gap-3 mb-3">
           <div>
-            <h2 className="font-semibold text-base">WhatsApp updates</h2>
+            <h2 className="font-semibold text-base max-lg:sticky max-lg:top-0 max-lg:z-10 max-lg:bg-card max-lg:py-1">WhatsApp updates</h2>
             <p className="text-xs text-muted-foreground mt-0.5">
               Weekly Reset Brief — recipes, tips, a nudge.
             </p>
           </div>
-          <Switch checked={waOptedIn} onCheckedChange={setWaOptedIn} />
+          <Switch
+            checked={waOptedIn}
+            onCheckedChange={setWaOptedIn}
+            className="max-lg:h-8 max-lg:w-[52px] max-lg:[&>span]:h-7 max-lg:[&>span]:w-7"
+          />
         </div>
         {waOptedIn && (
           <div className="space-y-2">
@@ -708,7 +712,7 @@ export default function Settings() {
 
       {/* Notifications */}
       <Card className="p-5 border-border">
-        <h2 className="font-semibold text-base flex items-center gap-2 mb-1">
+        <h2 className="font-semibold text-base flex items-center gap-2 mb-1 max-lg:sticky max-lg:top-0 max-lg:z-10 max-lg:bg-card max-lg:py-1">
           <Bell className="h-4 w-4 text-primary" /> Notifications
         </h2>
         <p className="text-xs text-muted-foreground mb-4">
@@ -724,6 +728,7 @@ export default function Settings() {
               <Switch
                 checked={notifPrefs[key] ?? true}
                 onCheckedChange={(v) => toggleNotif(key, Boolean(v))}
+                className="max-lg:h-8 max-lg:w-[52px] max-lg:[&>span]:h-7 max-lg:[&>span]:w-7"
               />
             </div>
           ))}
@@ -733,7 +738,7 @@ export default function Settings() {
       {/* Meal Plan Preferences — Section 5 (Section 20 of spec) */}
 
       <Card className="p-5 border-border">
-        <h2 className="font-semibold text-base flex items-center gap-2 mb-1">
+        <h2 className="font-semibold text-base flex items-center gap-2 mb-1 max-lg:sticky max-lg:top-0 max-lg:z-10 max-lg:bg-card max-lg:py-1">
           <UtensilsCrossed className="h-4 w-4 text-primary" /> Meal Plan Preferences
         </h2>
         <p className="text-xs text-muted-foreground mb-5">
@@ -885,7 +890,7 @@ export default function Settings() {
       <Card className="p-5 border-border">
 
 
-        <h2 className="font-semibold text-base flex items-center gap-2 mb-1">
+        <h2 className="font-semibold text-base flex items-center gap-2 mb-1 max-lg:sticky max-lg:top-0 max-lg:z-10 max-lg:bg-card max-lg:py-1">
           <CreditCard className="h-4 w-4 text-primary" /> Billing
         </h2>
         <p className="text-xs text-muted-foreground mb-3">Manage subscription, update card, cancel.</p>
@@ -898,7 +903,7 @@ export default function Settings() {
 
       {/* Privacy & data */}
       <Card className="p-5 border-border">
-        <h2 className="font-semibold text-base flex items-center gap-2 mb-1">
+        <h2 className="font-semibold text-base flex items-center gap-2 mb-1 max-lg:sticky max-lg:top-0 max-lg:z-10 max-lg:bg-card max-lg:py-1">
           <Shield className="h-4 w-4 text-primary" /> Privacy & data
         </h2>
         <p className="text-xs text-muted-foreground mb-4">

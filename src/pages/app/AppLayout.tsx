@@ -27,6 +27,9 @@ import { Vita } from "@/components/vita/Vita";
 import { NotificationsBell } from "@/components/notifications/NotificationsBell";
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle, SheetClose } from "@/components/ui/sheet";
 import { useVisualViewport } from "@/hooks/useVisualViewport";
+import { OfflineBanner } from "@/components/system/OfflineBanner";
+import { useBackButtonClose } from "@/hooks/useBackButtonClose";
+
 
 
 function navClass({ isActive }: { isActive: boolean }) {
@@ -48,6 +51,9 @@ export default function AppLayout() {
   const { signOut, subscription, isAdmin, user } = useAuth();
   const navigate = useNavigate();
   const [levelName, setLevelName] = useState("Level 1: Getting Started");
+  const [moreOpen, setMoreOpen] = useState(false);
+  useBackButtonClose(moreOpen, () => setMoreOpen(false));
+
 
   // Onboarding gate: redirect new users (no onboarded_at) to /app/onboarding.
   const [onboardCheck, setOnboardCheck] = useState<"loading" | "needs" | "done">("loading");
@@ -142,7 +148,9 @@ export default function AppLayout() {
 
   return (
     <div className="min-h-dvh bg-background flex flex-col">
+      <OfflineBanner />
       {trialBanner}
+
       {pastDueBanner}
       <div className="flex flex-1">
         {/* Sidebar — dark green */}
@@ -231,7 +239,7 @@ export default function AppLayout() {
           <NavLink to="/app/ask" className={mobileNavClass}>
             <MessageCircleQuestion className="h-5 w-5" /> Ask
           </NavLink>
-          <Sheet>
+          <Sheet open={moreOpen} onOpenChange={setMoreOpen}>
             <SheetTrigger className={`${mobileNavClass({ isActive: false })} focus:outline-none`}>
               <MoreHorizontal className="h-5 w-5" /> More
             </SheetTrigger>

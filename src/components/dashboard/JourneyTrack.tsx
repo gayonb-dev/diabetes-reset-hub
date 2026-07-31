@@ -19,14 +19,14 @@ export function JourneyTrack({
 }: JourneyTrackProps) {
   const days = Array.from({ length: totalDays }, (_, i) => i + 1);
   return (
-    <div className={cn("bg-card border border-border rounded-xl px-4 py-3 shadow-warm", className)}>
+    <div className={cn("bg-card border border-border rounded-xl p-4 shadow-warm", className)}>
       <div className="flex items-center justify-between mb-2">
         <span className="label-caps text-tertiary-fg">{phaseName}</span>
         <span className="text-[11px] font-medium text-primary">
           Day {currentDay} of {totalDays}
         </span>
       </div>
-      <div className="flex items-center gap-1.5 flex-wrap">
+      <div className="flex items-center gap-1.5 overflow-x-auto flex-nowrap lg:flex-wrap pb-1">
         {days.map((d) => {
           const done = d < currentDay;
           const current = d === currentDay;
@@ -35,7 +35,7 @@ export function JourneyTrack({
               key={d}
               aria-label={`Day ${d}${done ? " complete" : current ? " current" : " upcoming"}`}
               className={cn(
-                "rounded-full transition-all",
+                "rounded-full transition-all shrink-0",
                 current
                   ? "w-3 h-3 bg-accent animate-ring-pulse"
                   : done

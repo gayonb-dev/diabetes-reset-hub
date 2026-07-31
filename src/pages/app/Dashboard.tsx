@@ -319,14 +319,25 @@ export default function Dashboard() {
         />
 
         {/* Row 1 — Greeting */}
-        <div className="flex items-start justify-between gap-4">
+        <div className="flex flex-col gap-2 lg:flex-row lg:items-start lg:justify-between lg:gap-4">
           <div>
             <p className="text-sm text-secondary-fg">{greeting},</p>
             <h1 className="font-heading text-3xl md:text-[32px] font-bold text-foreground leading-tight">
               {firstName}.
             </h1>
+            <div className="flex items-center gap-2 mt-1.5 lg:hidden min-h-[44px]">
+              <StreakBadge
+                streak={gam.streak_count}
+                freezeAvailable={gam.streak_freeze_available}
+                onClick={() => setShowStreakHistory(true)}
+              />
+              <span className="text-tertiary-fg" aria-hidden>
+                •
+              </span>
+              <LevelBadge level={gam.level} />
+            </div>
           </div>
-          <div className="flex flex-col items-end gap-1.5">
+          <div className="hidden lg:flex flex-col items-end gap-1.5">
             <StreakBadge
               streak={gam.streak_count}
               freezeAvailable={gam.streak_freeze_available}
@@ -351,7 +362,7 @@ export default function Dashboard() {
         />
 
         {/* Row 2 — Habit rings (hero treatment) */}
-        <div className="grid grid-cols-4 gap-3 sm:gap-4 place-items-center">
+        <div className="flex gap-[10px] lg:gap-4">
           {(
             [
               ["water", habitData.water],
@@ -360,7 +371,7 @@ export default function Dashboard() {
               ["mindset", habitData.mindset],
             ] as const
           ).map(([habit, d], i) => (
-            <div key={habit}>
+            <div key={habit} className="flex-1 flex justify-center min-w-0">
               {/* Mobile (<1024): 88 — Desktop (lg+): 112 */}
               <div className="lg:hidden">
                 <HabitRing habit={habit} {...d} size={88} delayMs={i * 100} />
@@ -375,7 +386,7 @@ export default function Dashboard() {
         {/* Row 3 — Today's action card */}
         {action ? (
           <div
-            className={`rounded-xl border-[1.5px] p-6 shadow-warm transition-colors ${
+            className={`rounded-xl border-[1.5px] p-4 lg:p-6 shadow-warm transition-colors ${
               actionDoneToday
                 ? "bg-primary-muted border-primary"
                 : "bg-accent-muted border-accent/60"
@@ -415,7 +426,7 @@ export default function Dashboard() {
             )}
           </div>
         ) : (
-          <div className="bg-card border border-border rounded-xl p-6 shadow-warm">
+          <div className="bg-card border border-border rounded-xl p-4 lg:p-6 shadow-warm">
             <p className="label-caps text-tertiary-fg mb-2">Today's Action</p>
             <p className="text-sm text-secondary-fg">
               Your next action will appear here as the program advances.
@@ -435,9 +446,16 @@ export default function Dashboard() {
         {/* Row 5 — Quick stats */}
         <QuickStats stats={stats} />
 
-        {/* Row 6 — VITA quote (in-column below lg; moves to right rail at lg) */}
-        <div className="lg:hidden">
+        {/* Row 6 — Right-rail content (in-column below lg; moves to right rail at lg) */}
+        <div className="lg:hidden space-y-4">
           <VitaQuoteCard quotes={quoteItems} />
+          <StreakMiniWidget
+            streak={gam.streak_count}
+            history={gam.streak_history}
+            freezeAvailable={gam.streak_freeze_available}
+            onOpen={() => setShowStreakHistory(true)}
+          />
+          <UpcomingActions actions={upcoming} />
         </div>
 
         {/* Daily habit logging (Section 9) */}

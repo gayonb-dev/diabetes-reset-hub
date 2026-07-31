@@ -149,21 +149,24 @@ export default function CheatMeal() {
       {/* Week calendar */}
       <Card className="p-5 border border-border">
         <p className="text-sm font-medium mb-3">This week</p>
-        <div className="grid grid-cols-7 gap-2">
+        <div className="flex gap-1.5 overflow-x-auto">
           {weekDays.map((d, i) => {
             const isUsed = i === usedOnDay;
             const isPast = i < today;
             const label = ["S", "M", "T", "W", "T", "F", "S"][i];
             return (
-              <div key={i} className="flex flex-col items-center gap-1">
+              <div
+                key={i}
+                className="flex-1 min-w-[44px] h-14 rounded-lg border border-border bg-card flex flex-col items-center justify-center gap-0.5 shrink-0"
+              >
                 <span className="text-[10px] text-tertiary-fg">{label}</span>
                 <div
-                  className={`h-10 w-10 rounded-full border-2 flex items-center justify-center text-sm ${
+                  className={`h-6 w-6 rounded-full flex items-center justify-center text-xs ${
                     isUsed
-                      ? "bg-accent border-accent text-white"
+                      ? "bg-accent text-white"
                       : isPast
-                      ? "border-muted bg-muted text-tertiary-fg"
-                      : "border-border bg-card"
+                      ? "bg-muted text-tertiary-fg"
+                      : "text-foreground"
                   }`}
                 >
                   {isUsed ? "🍽" : d.getDate()}
@@ -179,7 +182,7 @@ export default function CheatMeal() {
         <SheetTrigger asChild>
           <Button
             disabled={!eligibility.ok}
-            className="w-full h-[52px] bg-primary hover:bg-primary/90 text-primary-foreground"
+            className="w-full h-14 lg:h-[52px] bg-primary hover:bg-primary/90 text-primary-foreground"
           >
             Log my cheat meal
           </Button>

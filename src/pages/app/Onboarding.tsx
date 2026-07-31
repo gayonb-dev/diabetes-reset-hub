@@ -196,7 +196,7 @@ export default function Onboarding() {
   }
 
   return (
-    <div className="min-h-dvh bg-background py-10 px-4 font-sans">
+    <div className="min-h-dvh bg-background pt-10 px-4 pb-28 lg:pb-10 font-sans">
       <div className="max-w-xl mx-auto">
         {/* 3-dot progress */}
         <div className="flex items-center justify-center gap-2 mb-6">
@@ -322,14 +322,16 @@ export default function Onboarding() {
 
               {s2Err && <p className="text-sm text-destructive mb-3">{s2Err}</p>}
 
-              <Button
-                onClick={() => {
-                  if (validateS2()) setStep(2);
-                }}
-                className="w-full h-[52px] bg-primary hover:bg-primary/90 text-primary-foreground font-semibold"
-              >
-                Continue
-              </Button>
+              <div className="fixed bottom-0 left-0 right-0 z-40 bg-background border-t border-border p-4 pb-[calc(env(safe-area-inset-bottom)+1rem)] lg:static lg:z-auto lg:bg-transparent lg:border-0 lg:p-0">
+                <Button
+                  onClick={() => {
+                    if (validateS2()) setStep(2);
+                  }}
+                  className="w-full h-[52px] bg-primary hover:bg-primary/90 text-primary-foreground font-semibold"
+                >
+                  Continue
+                </Button>
+              </div>
             </>
           )}
 
@@ -399,7 +401,7 @@ export default function Onboarding() {
                       key={c}
                       type="button"
                       onClick={() => toggleChallenge(c)}
-                      className={`px-3 py-1.5 rounded-full text-xs border transition-all ${
+                      className={`px-3 py-1.5 rounded-full text-xs border transition-all min-h-[44px] flex items-center ${
                         challenges.includes(c)
                           ? "bg-primary text-primary-foreground border-primary"
                           : "bg-card border-border hover:border-primary/40"
@@ -423,13 +425,15 @@ export default function Onboarding() {
                 />
               </Field>
 
-              <Button
-                onClick={() => setStep(3)}
-                disabled={!goal || !commitment || !mealFreq}
-                className="w-full h-[52px] bg-primary hover:bg-primary/90 text-primary-foreground font-semibold"
-              >
-                Continue
-              </Button>
+              <div className="fixed bottom-0 left-0 right-0 z-40 bg-background border-t border-border p-4 pb-[calc(env(safe-area-inset-bottom)+1rem)] lg:static lg:z-auto lg:bg-transparent lg:border-0 lg:p-0">
+                <Button
+                  onClick={() => setStep(3)}
+                  disabled={!goal || !commitment || !mealFreq}
+                  className="w-full h-[52px] bg-primary hover:bg-primary/90 text-primary-foreground font-semibold"
+                >
+                  Continue
+                </Button>
+              </div>
             </>
           )}
 
@@ -490,14 +494,16 @@ export default function Onboarding() {
                 )}
               </Field>
 
-              <Button
-                onClick={finish}
-                disabled={saving || !monitoring || glucometer == null}
-                className="w-full h-[52px] bg-primary hover:bg-primary/90 text-primary-foreground font-semibold"
-              >
-                {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Let's go
-              </Button>
+              <div className="fixed bottom-0 left-0 right-0 z-40 bg-background border-t border-border p-4 pb-[calc(env(safe-area-inset-bottom)+1rem)] lg:static lg:z-auto lg:bg-transparent lg:border-0 lg:p-0">
+                <Button
+                  onClick={finish}
+                  disabled={saving || !monitoring || glucometer == null}
+                  className="w-full h-[52px] bg-primary hover:bg-primary/90 text-primary-foreground font-semibold"
+                >
+                  {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  Let's go
+                </Button>
+              </div>
             </>
           )}
         </Card>
@@ -541,7 +547,7 @@ function FInput({
     <Input
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      className={`bg-muted/50 border-0 rounded-xl h-12 ${className ?? ""}`}
+      className={`bg-muted/50 border-0 rounded-xl min-h-[52px] lg:h-12 ${className ?? ""}`}
       {...rest}
     />
   );
@@ -557,13 +563,13 @@ function Seg({
   onChange: (v: string) => void;
 }) {
   return (
-    <div className="inline-flex bg-muted/50 rounded-xl p-1 h-12">
+    <div className="inline-flex bg-muted/50 rounded-xl p-1 min-h-[52px] lg:h-12">
       {options.map((o) => (
         <button
           key={o.v}
           type="button"
           onClick={() => onChange(o.v)}
-          className={`px-4 rounded-lg text-sm font-medium transition-all ${
+          className={`px-4 rounded-lg text-sm font-medium transition-all min-h-[44px] ${
             value === o.v
               ? "bg-primary text-primary-foreground shadow-sm"
               : "text-muted-foreground"
@@ -592,7 +598,7 @@ function SegStack({
           key={o.v}
           type="button"
           onClick={() => onChange(o.v)}
-          className={`text-left px-4 py-3 rounded-xl border text-sm font-medium transition-all ${
+          className={`text-left px-4 py-3 rounded-xl border text-sm font-medium transition-all min-h-[44px] flex items-center ${
             value === o.v
               ? "bg-primary/5 border-primary ring-2 ring-primary/20"
               : "bg-card border-border hover:border-primary/40"
@@ -623,7 +629,7 @@ function Radios({
             key={o.v}
             type="button"
             onClick={() => onChange(o.v)}
-            className={`flex items-center gap-3 text-left px-4 py-3 rounded-xl border text-sm transition-all ${
+            className={`flex items-center gap-3 text-left px-4 py-3 rounded-xl border text-sm transition-all min-h-[44px] ${
               active
                 ? "border-primary bg-primary/5"
                 : "border-border bg-card hover:border-primary/40"

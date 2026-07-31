@@ -171,7 +171,7 @@ export default function Fasting() {
               </button>
             ))}
           </div>
-          <Button onClick={startFast} disabled={busy} className="w-full h-[52px] bg-primary hover:bg-primary/90">
+          <Button onClick={startFast} disabled={busy} className="w-full h-[60px] bg-primary hover:bg-primary/90">
             {busy && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Begin fast now
           </Button>
@@ -197,7 +197,7 @@ export default function Fasting() {
               const hrs = Math.floor((Date.now() - new Date(active!.fast_start_at).getTime()) / 3600000);
               if (confirm(`End your fast now? You've completed ${hrs} hour${hrs === 1 ? "" : "s"}.`)) endFast("broken");
             }}
-            className="text-accent text-sm mt-4 underline"
+            className="text-accent text-sm mt-4 underline min-h-11 inline-flex items-center justify-center px-2 -mx-2"
           >
             End fast early
           </button>
@@ -227,7 +227,28 @@ export default function Fasting() {
       {active && eatingStartMs > 0 && (
         <Card className="p-5 border border-border">
           <p className="text-sm font-medium mb-3">Today's eating schedule</p>
-          <div className="space-y-2 text-sm">
+          <div className="lg:hidden -mx-1 overflow-x-auto">
+            <div className="flex gap-2 px-1 min-w-max">
+              {[
+                ["Meal 1", 0],
+                ["Snack 1", 2.5],
+                ["Meal 2", 4],
+                ["Snack 2", 6.5],
+                ["Fast begins", 24 - active.planned_duration_hours],
+              ].map(([label, offset]) => (
+                <div
+                  key={label as string}
+                  className="flex flex-col items-center gap-1 rounded-lg border border-border px-3 py-2 shrink-0 min-w-[84px]"
+                >
+                  <span className="text-[11px] text-muted-foreground text-center">{label}</span>
+                  <span className="font-medium tabular-nums text-xs">
+                    {new Date(eatingStartMs + (offset as number) * 3600000).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="hidden lg:block space-y-2 text-sm">
             {[
               ["Meal 1 (break fast)", 0],
               ["Snack 1", 2.5],
