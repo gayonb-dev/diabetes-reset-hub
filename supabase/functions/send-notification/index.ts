@@ -9,12 +9,7 @@
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type, x-internal-secret",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-};
+import { corsHeaders, preflightHeaders } from "../_shared/cors.ts";
 
 type Template = {
   /** Body template; supports {first_name}, {streak}, {day}, {action_name}, {water_have}, {water_need}, {n}, {hours}, {level_name}, {level_message}, {unlock_name}, {unlock_desc}, {day_name}, {milestone} */
@@ -165,7 +160,7 @@ function render(tpl: string, vars: Record<string, unknown>): string {
 }
 
 Deno.serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
+  if (req.method === "OPTIONS") return new Response("ok", { headers: preflightHeaders(req) });
 
   try {
     const supabase = createClient(

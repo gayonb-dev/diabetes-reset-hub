@@ -26,6 +26,7 @@ import { Button } from "@/components/ui/button";
 import { Vita } from "@/components/vita/Vita";
 import { NotificationsBell } from "@/components/notifications/NotificationsBell";
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle, SheetClose } from "@/components/ui/sheet";
+import { useVisualViewport } from "@/hooks/useVisualViewport";
 
 
 function navClass({ isActive }: { isActive: boolean }) {
@@ -43,6 +44,7 @@ function mobileNavClass({ isActive }: { isActive: boolean }) {
 }
 
 export default function AppLayout() {
+  useVisualViewport();
   const { signOut, subscription, isAdmin, user } = useAuth();
   const navigate = useNavigate();
   const [levelName, setLevelName] = useState("Level 1: Getting Started");
@@ -107,7 +109,7 @@ export default function AppLayout() {
     return (
       <div className="min-h-dvh bg-background flex" aria-busy="true" aria-label="Loading">
         {/* Sidebar rail skeleton */}
-        <aside className="hidden md:flex w-[240px] flex-col bg-sidebar p-4 shrink-0 gap-3">
+        <aside className="hidden lg:flex w-[240px] flex-col bg-sidebar p-4 shrink-0 gap-3 pb-[env(safe-area-inset-bottom)]">
           <div className="h-10 rounded bg-white/10 animate-pulse" />
           <div className="h-14 rounded bg-white/10 animate-pulse" />
           <div className="space-y-2 mt-3">
@@ -117,7 +119,7 @@ export default function AppLayout() {
           </div>
         </aside>
         {/* Content skeleton */}
-        <main className="flex-1 px-4 md:px-8 py-6 md:py-8 max-w-3xl mx-auto w-full space-y-5">
+        <main className="flex-1 px-4 lg:px-8 py-6 lg:py-8 max-w-3xl lg:max-w-6xl xl:max-w-7xl mx-auto w-full space-y-5 safe-x">
           <div className="h-8 w-1/2 rounded bg-muted animate-pulse" />
           <div className="grid grid-cols-4 gap-3">
             {Array.from({ length: 4 }).map((_, i) => (
@@ -144,7 +146,7 @@ export default function AppLayout() {
       {pastDueBanner}
       <div className="flex flex-1">
         {/* Sidebar — dark green */}
-        <aside className="hidden md:flex w-[240px] flex-col bg-sidebar text-sidebar-foreground p-4 shrink-0">
+        <aside className="hidden lg:flex w-[240px] flex-col bg-sidebar text-sidebar-foreground p-4 shrink-0 pb-[calc(env(safe-area-inset-bottom)+1rem)]">
           <div className="flex items-center justify-between mb-4">
             <Link to="/app" className="flex items-center gap-3">
               <Vita size={32} className="shrink-0" />
@@ -216,7 +218,7 @@ export default function AppLayout() {
         </aside>
 
         {/* Mobile bottom nav */}
-        <div className="md:hidden fixed bottom-0 left-0 right-0 bg-card border-t border-border z-40 flex justify-around py-1.5 pb-[calc(env(safe-area-inset-bottom)+0.375rem)]">
+        <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-card border-t border-border z-40 flex justify-around py-1.5 pb-[calc(env(safe-area-inset-bottom)+0.375rem)] px-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)] keyboard-hide">
           <NavLink to="/app" end className={mobileNavClass}>
             <Home className="h-5 w-5" /> Today
           </NavLink>
@@ -278,7 +280,7 @@ export default function AppLayout() {
         </div>
 
         {/* Main */}
-        <main className="flex-1 px-4 md:px-8 py-6 md:py-8 pb-24 md:pb-10 max-w-3xl lg:max-w-6xl xl:max-w-7xl mx-auto w-full">
+        <main className="flex-1 px-4 lg:px-8 py-6 lg:py-8 pb-[calc(env(safe-area-inset-bottom)+5.5rem)] lg:pb-10 max-w-3xl lg:max-w-6xl xl:max-w-7xl mx-auto w-full safe-x">
           <Outlet />
         </main>
       </div>

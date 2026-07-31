@@ -8,11 +8,7 @@
 
 import { createClient } from "npm:@supabase/supabase-js@2";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-};
+import { corsHeaders, preflightHeaders } from "../_shared/cors.ts";
 
 const CLIENT_ID = Deno.env.get("DEXCOM_CLIENT_ID")!;
 const CLIENT_SECRET = Deno.env.get("DEXCOM_CLIENT_SECRET")!;
@@ -185,7 +181,7 @@ async function markError(memberId: string, err: string) {
 }
 
 Deno.serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
+  if (req.method === "OPTIONS") return new Response("ok", { headers: preflightHeaders(req) });
   try {
     // Three-branch auth — no fallthrough.
     const cronHeader = req.headers.get("x-cron-secret");

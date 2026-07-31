@@ -8,11 +8,7 @@
 
 import { createClient } from "npm:@supabase/supabase-js@2";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-};
+import { corsHeaders, preflightHeaders } from "../_shared/cors.ts";
 
 // Non-throwing lookups: a missing secret must surface as a logged, JSON error
 // from the handler, not kill the isolate at module evaluation (which produced
@@ -273,7 +269,7 @@ async function syncNow(userId: string): Promise<Response> {
 }
 
 Deno.serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
+  if (req.method === "OPTIONS") return new Response("ok", { headers: preflightHeaders(req) });
   let action = "";
   try {
     const gate = await requireUser(req);

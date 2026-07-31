@@ -361,11 +361,11 @@ export default function Dashboard() {
             ] as const
           ).map(([habit, d], i) => (
             <div key={habit}>
-              {/* Mobile: 88, Desktop md+: 112 */}
-              <div className="md:hidden">
+              {/* Mobile (<1024): 88 — Desktop (lg+): 112 */}
+              <div className="lg:hidden">
                 <HabitRing habit={habit} {...d} size={88} delayMs={i * 100} />
               </div>
-              <div className="hidden md:block">
+              <div className="hidden lg:block">
                 <HabitRing habit={habit} {...d} size={112} delayMs={i * 100} />
               </div>
             </div>

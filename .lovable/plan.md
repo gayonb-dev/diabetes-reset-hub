@@ -1,23 +1,30 @@
-## Diagnosis
+Verified before writing this plan: none of the 11 named functions contain `x-supabase-client-platform` in their allow-headers, 24 other functions already do, and `supabase/functions/_shared/` does not yet exist. `customer-portal` already ships an extended static list, which is why the billing portal works while cancel does not.
 
-- The deployed `OPTIONS /dexcom-auth` currently returns **HTTP 200** with the expected CORS headers, so the preflight is not failing in a direct test.
-- An unauthenticated `POST /dexcom-auth` returns the platform gateway response **HTTP 401** with `UNAUTHORIZED_NO_AUTH_HEADER`; it never reaches `dexcom-auth`'s own `requireUser` gate. This confirms `verify_jwt = true` enforces authentication ahead of the function.
-- Recent function logs show only isolate boot/shutdown events and no request handling, consistent with requests rejected before function code runs.
-- The browser failure is therefore the gateway JWT layer rejecting the request before the function runs — not a missing secret or boot failure. Removing the redundant gateway check makes CORS and auth responses come consistently from the function itself.
+## Item 1 — Drift-proof shared CORS module
 
-## Fix
+**Root cause (confirmed by the preflight diff):** the browser client sends `x-supabase-client-platform` on the real POST, so the preflight requests permission for five headers. `dexcom-auth` grants four, the browser blocks the request before any POST is sent, and the SDK surfaces it as a generic `FunctionsFetchError`. My earlier curl passed only because it requested four headers. `gamify-action` works because it already allows the fifth.
 
-1. Change only the function-specific configuration in `supabase/config.toml`:
-   - `[functions.dexcom-auth] verify_jwt = false`
-2. Keep `dexcom-auth`'s existing `requireUser()` validation unchanged — every non-`OPTIONS` action still requires and cryptographically validates a bearer token via `getClaims()` before any Dexcom or database operation.
-3. Do not weaken `dexcom-sync`, OAuth state/nonce validation, token encryption, or any Dexcom secret handling.
+**Create `supabase/functions/_shared/cors.ts` exporting two things, not one:**
 
-## Verification
+1. `corsHeaders` — static object: `Access-Control-Allow-Origin: *`, `Access-Control-Allow-Methods: POST, OPTIONS`, `Access-Control-Allow-Headers: authorization, x-client-info, apikey, content-type, x-supabase-client-platform`. Used on all non-OPTIONS responses; no call sites change shape.
+2. `preflightHeaders(req: Request)` — the same object except `Access-Control-Allow-Headers` echoes `req.headers.get('Access-Control-Request-Headers')` when present, falling back to the static list when absent, plus `Vary: Access-Control-Request-Headers` (correct behaviour behind the Cloudflare edge cache).
 
-1. Confirm browser-style `OPTIONS` returns **200** with allowed origin, methods, and all requested headers — report raw status and body.
-2. Confirm unauthenticated `POST` now reaches function code and returns its JSON **401 `{"error":"unauthorized"}`** instead of the gateway's `UNAUTHORIZED_NO_AUTH_HEADER` — report raw status and body.
-3. From an authenticated session, invoke `authorize_url` and confirm a 200 with a Dexcom sandbox URL containing valid `client_id`, `redirect_uri`, `state`, and no `undefined` segments.
-4. Exercise Settings → Connect Dexcom and verify it reaches the Dexcom authorization page without `FunctionsFetchError`.
-5. Review fresh `dexcom-auth` logs to confirm requests reach the handler; report exact HTTP results and files changed.
+**In each of the 11 functions**, import from `../_shared/cors.ts`, delete the inline `corsHeaders` copy, and change only the OPTIONS branch to `return new Response('ok', { headers: preflightHeaders(req) })`:
+`cancel-subscription`, `support-assistant`, `dexcom-auth`, `dexcom-sync`, `notifications-cron`, `notify-qa-answered`, `regenerate-due-plans`, `send-notification`, `streak-rollover`, `stripe-subscription-webhook`, `stripe-webhook`.
 
-**Security rationale:** equivalent security — the function handles `OPTIONS` before auth, and `requireUser()` rejects every unauthenticated or invalid-JWT request before dispatching any action.
+Nothing else changes — no other response path, no auth logic, no `verify_jwt`. Local imports under `supabase/functions/` deploy with the function; if any deploy rejects the shared module I will inline it per-file and say so explicitly. Then redeploy all 11.
+
+**Verification**
+- Preflight `dexcom-auth` twice: once requesting the five real headers, once requesting those five plus an invented `x-future-header`. Confirm each response echoes back exactly what was requested. Paste both raw status lines and full header sets, not a summary.
+- Then the three browser checks (Playwright, signed in): Connect Dexcom reaches Dexcom's login page; the Billing cancel flow invokes successfully; the support chat responds. Report the browser-side result for each.
+
+## Item 2 — Session A mobile foundation
+
+Built exactly as previously scoped, no changes.
+
+1. **Single breakpoint.** Sidebar and its loading skeleton → `hidden lg:flex`; bottom nav → `flex lg:hidden`; Dashboard's `md:hidden` / `hidden md:block` pair and the right-rail split → `lg`. Audit remaining `md:` usages, moving only true shell switches and leaving ordinary content grids alone; report each decision. Explicit sweep of the 768–1023px band for shell-switch gaps.
+2. **Layout and safe areas.** `viewport-fit=cover` on the viewport meta. Mobile content full width, 16px horizontal padding, no max-width until `lg`. Content bottom padding `calc(76px + env(safe-area-inset-bottom))`; bottom nav height `calc(60px + env(safe-area-inset-bottom))` with matching `padding-bottom`. Safe-area top padding where the shell renders flush to the top. Implemented as utilities in `index.css`, not repeated arbitrary values.
+3. **Typography.** In `index.css` under 1024px: Display 32→26, H1 28→22, H2 22→18, H3 18→16; body, labels, captions unchanged. `.stat-value`, `.metric-hero`, `.countdown-hero` scale to ~80% on mobile, keeping tabular numerals. Desktop untouched, no per-component overrides.
+4. **Forms (M19 items 1–5 and 8).** 52px minimum height on mobile text inputs and buttons; 44×44 checkbox/radio hit areas including label; a `visualViewport` + `focusin` hook mounted once in `AppLayout` to scroll the focused input above the keyboard; shared sticky-submit wrapper for forms taller than one viewport (Onboarding, Intake, blood-sugar log). Not doing M19 items 6–7.
+5. **Preserved decisions.** Rings stay 88/112 with values visible; content widths and the 320px rail unchanged; sidebar streak badge stays removed; Cheat Meal stays a Meals tab; HSL tokens only.
+6. **Verification.** Playwright screenshots of Today, Progress, Meals, Ask, Settings at 360/375/390px, asserting no horizontal scroll, nothing hidden behind the bottom nav, and no tap target under 44px. Report every file changed.
