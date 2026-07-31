@@ -33,7 +33,7 @@ APP MAP (use for navigation answers):
 - Support (this screen): /app/support — bug reports, billing tickets, this chat.`;
 
 Deno.serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
+  if (req.method === "OPTIONS") return new Response("ok", { headers: preflightHeaders(req) });
 
   try {
     const auth = req.headers.get("Authorization");

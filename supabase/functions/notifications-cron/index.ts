@@ -116,7 +116,7 @@ function daysSince(date: string | null): number {
 }
 
 Deno.serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
+  if (req.method === "OPTIONS") return new Response("ok", { headers: preflightHeaders(req) });
 
   if (req.headers.get("x-internal-secret") !== INTERNAL_SECRET) {
     return new Response(JSON.stringify({ error: "unauthorized" }), {

@@ -181,7 +181,7 @@ async function markError(memberId: string, err: string) {
 }
 
 Deno.serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
+  if (req.method === "OPTIONS") return new Response("ok", { headers: preflightHeaders(req) });
   try {
     // Three-branch auth — no fallthrough.
     const cronHeader = req.headers.get("x-cron-secret");

@@ -74,7 +74,7 @@ function adminNotifHtml(name: string, email: string, phone: string) {
 }
 
 serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+  if (req.method === "OPTIONS") return new Response("ok", { headers: preflightHeaders(req) });
 
   try {
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {

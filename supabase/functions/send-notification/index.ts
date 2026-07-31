@@ -160,7 +160,7 @@ function render(tpl: string, vars: Record<string, unknown>): string {
 }
 
 Deno.serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
+  if (req.method === "OPTIONS") return new Response("ok", { headers: preflightHeaders(req) });
 
   try {
     const supabase = createClient(

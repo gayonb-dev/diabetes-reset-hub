@@ -269,7 +269,7 @@ async function syncNow(userId: string): Promise<Response> {
 }
 
 Deno.serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
+  if (req.method === "OPTIONS") return new Response("ok", { headers: preflightHeaders(req) });
   let action = "";
   try {
     const gate = await requireUser(req);
