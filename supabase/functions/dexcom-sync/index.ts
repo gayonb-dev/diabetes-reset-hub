@@ -24,11 +24,6 @@ const DEXCOM_BASE =
 
 const admin = createClient(SB_URL, SRV_KEY, { auth: { persistSession: false } });
 
-function hexToBytes(hex: string): Uint8Array {
-  const out = new Uint8Array(hex.length / 2);
-  for (let i = 0; i < out.length; i++) out[i] = parseInt(hex.substr(i * 2, 2), 16);
-  return out;
-}
 function timingSafeEqual(a: string, b: string): boolean {
   const A = new TextEncoder().encode(a);
   const B = new TextEncoder().encode(b);
@@ -37,33 +32,13 @@ function timingSafeEqual(a: string, b: string): boolean {
   for (let i = 0; i < A.length; i++) d |= A[i] ^ B[i];
   return d === 0;
 }
-async function aesGcmDecrypt(ct: Uint8Array, iv: Uint8Array): Promise<string> {
-  const keyBytes = hexToBytes(TOKEN_ENC_KEY.slice(0, 64));
-  const key = await crypto.subtle.importKey("raw", keyBytes, "AES-GCM", false, ["decrypt"]);
-  const pt = await crypto.subtle.decrypt({ name: "AES-GCM", iv }, key, ct);
-  return new TextDecoder().decode(pt);
-}
-async function aesGcmEncrypt(plain: string): Promise<{ ct: Uint8Array; iv: Uint8Array }> {
-  const keyBytes = hexToBytes(TOKEN_ENC_KEY.slice(0, 64));
-  const key = await crypto.subtle.importKey("raw", keyBytes, "AES-GCM", false, ["encrypt"]);
-  const iv = crypto.getRandomValues(new Uint8Array(12));
-  const ct = new Uint8Array(
-    await crypto.subtle.encrypt({ name: "AES-GCM", iv }, key, new TextEncoder().encode(plain)),
-  );
-  return { ct, iv };
-}
 
-// bytea from PostgREST arrives as base64 or "\x…" hex; normalize to Uint8Array.
-function coerceBytea(v: unknown): Uint8Array {
-  if (v instanceof Uint8Array) return v;
-  if (typeof v === "string") {
-    if (v.startsWith("\\x")) return hexToBytes(v.slice(2));
-    const bin = atob(v);
-    const arr = new Uint8Array(bin.length);
-    for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
-    return arr;
+async function decryptToken(ct: unknown, iv: unknown): Promise<string> {
+  try {
+    return await aesGcmDecrypt(coerceBytea(ct), coerceBytea(iv));
+  } catch (e) {
+    throw new TokenDecryptError(e);
   }
-  throw new Error("unsupported bytea");
 }
 
 function json(status: number, body: unknown): Response {
