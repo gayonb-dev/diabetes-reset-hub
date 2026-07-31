@@ -239,7 +239,7 @@ export default function AppLayout() {
           <NavLink to="/app/ask" className={mobileNavClass}>
             <MessageCircleQuestion className="h-5 w-5" /> Ask
           </NavLink>
-          <Sheet>
+          <Sheet open={moreOpen} onOpenChange={setMoreOpen}>
             <SheetTrigger className={`${mobileNavClass({ isActive: false })} focus:outline-none`}>
               <MoreHorizontal className="h-5 w-5" /> More
             </SheetTrigger>
