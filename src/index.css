@@ -229,7 +229,51 @@
       linear-gradient(90deg, rgba(148, 163, 184, 0.06) 1px, transparent 1px);
     color: rgb(226 232 240);
   }
+
+  /* ---- Safe areas (viewport-fit=cover) ---- */
+  .safe-x {
+    padding-left: max(1rem, env(safe-area-inset-left));
+    padding-right: max(1rem, env(safe-area-inset-right));
+  }
+  @media (min-width: 1024px) {
+    .safe-x { padding-left: 2rem; padding-right: 2rem; }
+  }
+  .safe-top { padding-top: env(safe-area-inset-top); }
+  .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
 }
+
+/* ---- Mobile foundation: single breakpoint at 1024px ---- */
+@media (max-width: 1023px) {
+  /* Type scale */
+  .text-display { font-size: 26px; line-height: 1.15; }
+  h1, .h1 { font-size: 22px; line-height: 1.2; }
+  h2, .h2 { font-size: 19px; line-height: 1.25; }
+  h3, .h3 { font-size: 17px; line-height: 1.3; }
+  body { font-size: 16px; line-height: 1.55; }
+
+  /* Controls: comfortable touch sizing. 16px font stops iOS zoom-on-focus. */
+  input:not([type="checkbox"]):not([type="radio"]),
+  select,
+  textarea {
+    font-size: 16px;
+    min-height: 52px;
+  }
+  textarea { min-height: 96px; }
+  button,
+  [role="button"],
+  a[role="button"] {
+    min-height: 44px;
+  }
+  /* Primary/full-width actions get the taller target */
+  button[type="submit"],
+  .btn-mobile-lg {
+    min-height: 52px;
+  }
+}
+
+/* Bottom nav gets out of the way while the soft keyboard is open */
+body.keyboard-open .keyboard-hide { display: none !important; }
+
 
 html {
   scroll-behavior: smooth;
