@@ -237,22 +237,50 @@ export default function WorkoutSession() {
 
       {/* Rest or exercise card */}
       {resting ? (
-        <Card className="p-6 border-border bg-primary-muted/40 text-center space-y-4">
-          <p className="text-xs font-medium uppercase tracking-wide text-primary">Rest</p>
-          <p className="text-5xl font-semibold text-foreground tabular-nums">{restRemaining}s</p>
-          <BreathingVita />
-          <Button
-            variant="ghost"
-            size="sm"
-            className="text-muted-foreground"
-            onClick={() => {
-              setResting(false);
-              setRestRemaining(0);
-            }}
-          >
-            Skip rest
-          </Button>
-        </Card>
+        <>
+          {/* Mobile: full-screen takeover */}
+          <div className="lg:hidden fixed inset-0 z-50 bg-card flex flex-col items-center justify-center gap-6 px-6">
+            <p className="text-xs font-medium uppercase tracking-wide text-primary">Rest</p>
+            <p className="text-[64px] leading-none font-semibold text-foreground tabular-nums">{restRemaining}s</p>
+            <BreathingVita />
+            <div className="flex items-center gap-3 w-full max-w-xs">
+              <Button
+                variant="outline"
+                className="flex-1 h-[52px]"
+                onClick={() => addRestTime(15)}
+              >
+                +15s
+              </Button>
+              <Button
+                variant="ghost"
+                className="flex-1 h-[52px] text-muted-foreground"
+                onClick={() => {
+                  setResting(false);
+                  setRestRemaining(0);
+                }}
+              >
+                Skip rest
+              </Button>
+            </div>
+          </div>
+          {/* Desktop/tablet: inline card */}
+          <Card className="hidden lg:block p-6 border-border bg-primary-muted/40 text-center space-y-4">
+            <p className="text-xs font-medium uppercase tracking-wide text-primary">Rest</p>
+            <p className="text-5xl font-semibold text-foreground tabular-nums">{restRemaining}s</p>
+            <BreathingVita />
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-muted-foreground"
+              onClick={() => {
+                setResting(false);
+                setRestRemaining(0);
+              }}
+            >
+              Skip rest
+            </Button>
+          </Card>
+        </>
       ) : (
         <Card className="p-5 border-border space-y-4">
           <div>
