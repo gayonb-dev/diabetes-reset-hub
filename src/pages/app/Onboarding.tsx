@@ -399,7 +399,7 @@ export default function Onboarding() {
                       key={c}
                       type="button"
                       onClick={() => toggleChallenge(c)}
-                      className={`px-3 py-1.5 rounded-full text-xs border transition-all ${
+                      className={`px-3 py-1.5 rounded-full text-xs border transition-all min-h-[44px] flex items-center ${
                         challenges.includes(c)
                           ? "bg-primary text-primary-foreground border-primary"
                           : "bg-card border-border hover:border-primary/40"
@@ -541,7 +541,7 @@ function FInput({
     <Input
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      className={`bg-muted/50 border-0 rounded-xl h-12 ${className ?? ""}`}
+      className={`bg-muted/50 border-0 rounded-xl min-h-[52px] lg:h-12 ${className ?? ""}`}
       {...rest}
     />
   );
@@ -557,13 +557,13 @@ function Seg({
   onChange: (v: string) => void;
 }) {
   return (
-    <div className="inline-flex bg-muted/50 rounded-xl p-1 h-12">
+    <div className="inline-flex bg-muted/50 rounded-xl p-1 min-h-[52px] lg:h-12">
       {options.map((o) => (
         <button
           key={o.v}
           type="button"
           onClick={() => onChange(o.v)}
-          className={`px-4 rounded-lg text-sm font-medium transition-all ${
+          className={`px-4 rounded-lg text-sm font-medium transition-all min-h-[44px] ${
             value === o.v
               ? "bg-primary text-primary-foreground shadow-sm"
               : "text-muted-foreground"
@@ -592,7 +592,7 @@ function SegStack({
           key={o.v}
           type="button"
           onClick={() => onChange(o.v)}
-          className={`text-left px-4 py-3 rounded-xl border text-sm font-medium transition-all ${
+          className={`text-left px-4 py-3 rounded-xl border text-sm font-medium transition-all min-h-[44px] flex items-center ${
             value === o.v
               ? "bg-primary/5 border-primary ring-2 ring-primary/20"
               : "bg-card border-border hover:border-primary/40"
@@ -623,7 +623,7 @@ function Radios({
             key={o.v}
             type="button"
             onClick={() => onChange(o.v)}
-            className={`flex items-center gap-3 text-left px-4 py-3 rounded-xl border text-sm transition-all ${
+            className={`flex items-center gap-3 text-left px-4 py-3 rounded-xl border text-sm transition-all min-h-[44px] ${
               active
                 ? "border-primary bg-primary/5"
                 : "border-border bg-card hover:border-primary/40"

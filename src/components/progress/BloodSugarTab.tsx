@@ -208,9 +208,9 @@ export default function BloodSugarTab() {
       {showMedPrompt && <MedicationPrompt days={fastingBelow126Days} onDismiss={() => setMedPromptDismissed(true)} />}
 
       <Card className="p-5 border border-border">
-        <div className="flex items-center justify-between mb-3">
+        <div className="mb-3 space-y-2 lg:space-y-0 lg:flex lg:items-center lg:justify-between">
           <p className="text-sm font-medium">Log a reading</p>
-          <div className="flex gap-1.5 text-xs">
+          <div className="flex gap-1.5 text-xs justify-end lg:justify-start">
             <button
               className={`px-2.5 py-1 rounded-full border ${unit === "mgdl" ? "bg-primary text-primary-foreground border-primary" : "border-border"}`}
               onClick={() => setUnitPersist("mgdl")}
@@ -236,16 +236,16 @@ export default function BloodSugarTab() {
           inputMode="decimal"
           step={unit === "mmoll" ? "0.1" : "1"}
           placeholder={unit === "mmoll" ? "e.g. 5.4" : "e.g. 98"}
-          className="h-12 text-xl text-center"
+          className="h-14 text-2xl tabular-nums text-center lg:h-12 lg:text-xl"
         />
 
         {/* Reading type */}
-        <div className="grid grid-cols-2 gap-2 mt-3">
+        <div className="flex overflow-x-auto flex-nowrap gap-2 mt-3 pb-1 -mx-1 px-1 lg:grid lg:grid-cols-2 lg:overflow-visible">
           {READING_TYPES.map((rt) => (
             <button
               key={rt.k}
               onClick={() => setType(rt.k)}
-              className={`text-xs py-2 rounded-md border ${type === rt.k ? "bg-primary-muted border-primary text-primary" : "border-border text-secondary-fg"}`}
+              className={`shrink-0 whitespace-nowrap min-h-11 px-3 text-xs rounded-md border lg:whitespace-normal lg:min-h-0 lg:py-2 ${type === rt.k ? "bg-primary-muted border-primary text-primary" : "border-border text-secondary-fg"}`}
             >
               {rt.label}
             </button>
@@ -271,8 +271,7 @@ export default function BloodSugarTab() {
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
           placeholder="Anything notable? What did you eat? How are you feeling?"
-          rows={2}
-          className="mt-3 text-sm"
+          className="mt-3 text-sm h-20"
         />
 
         {needConfirm && (
@@ -281,14 +280,16 @@ export default function BloodSugarTab() {
           </p>
         )}
 
-        <Button
-          onClick={save}
-          disabled={saving || parsedMgdl == null}
-          className="mt-4 w-full h-[52px] bg-primary hover:bg-primary/90 text-primary-foreground"
-        >
-          {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          {needConfirm ? "Confirm and save" : "Save reading"}
-        </Button>
+        <div className="sticky bottom-0 z-10 -mx-5 px-5 pb-[env(safe-area-inset-bottom)] pt-3 mt-4 bg-card lg:static lg:mx-0 lg:px-0 lg:pb-0 lg:pt-0 lg:mt-4 lg:bg-transparent">
+          <Button
+            onClick={save}
+            disabled={saving || parsedMgdl == null}
+            className="w-full h-[52px] bg-primary hover:bg-primary/90 text-primary-foreground"
+          >
+            {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            {needConfirm ? "Confirm and save" : "Save reading"}
+          </Button>
+        </div>
       </Card>
 
       <BloodSugarHistory readings={readings} unit={unit} />

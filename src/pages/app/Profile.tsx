@@ -9,6 +9,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { Sparkles, Heart, Flame, CalendarCheck } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 function initialsOf(email?: string) {
   if (!email) return "U";
@@ -21,6 +22,7 @@ export default function Profile() {
 
   const g = useGamificationProfile(currentProgramDay);
   const [showStreak, setShowStreak] = useState(false);
+  const isMobile = useIsMobile();
 
   const [activity, setActivity] = useState({
     workouts: 0,
@@ -93,6 +95,7 @@ export default function Profile() {
   }, [g.streak_history, g.streak_count]);
 
   const hasCommunity = activity.questionsAsked > 0 || activity.answersGiven > 0;
+  const visibleCommunity = isMobile ? recentCommunity.slice(0, 3) : recentCommunity;
   const displayedName = user?.user_metadata?.full_name || user?.email?.split("@")[0] || "Member";
 
   return (
@@ -122,7 +125,7 @@ export default function Profile() {
       </Card>
 
       {/* Stats row */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <StatCard icon={<Flame className="h-4 w-4" />} value={g.streak_count} label="day streak" color="text-accent" />
         <StatCard icon={<Sparkles className="h-4 w-4" />} value={g.reset_points} label="reset pts" color="text-primary" />
         <StatCard icon={<Heart className="h-4 w-4" />} value={g.helpful_points} label="helpful pts" color="text-accent" />
@@ -148,11 +151,11 @@ export default function Profile() {
         <BadgeGallery category="community" title="Community badges" earnedSlugs={g.community_badges_earned} />
       )}
 
-      {recentCommunity.length > 0 && (
+      {visibleCommunity.length > 0 && (
         <Card className="p-5 border border-border">
           <p className="text-sm font-medium text-foreground mb-3">Your community activity</p>
           <div className="divide-y divide-border">
-            {recentCommunity.map((r) => (
+            {visibleCommunity.map((r) => (
               <div key={r.id} className="py-2.5">
                 <p className="text-[11px] uppercase tracking-wider text-tertiary-fg">
                   {r.kind === "q" ? "Question asked" : "Answer given"} · {new Date(r.at).toLocaleDateString()}
