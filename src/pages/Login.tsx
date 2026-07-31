@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2, CheckCircle2 } from "lucide-react";
-import ClockSkewBanner from "@/components/ClockSkewBanner";
 
 export default function Login() {
   const [params] = useSearchParams();
@@ -44,7 +43,6 @@ export default function Login() {
   return (
     <div className="min-h-dvh flex items-center justify-center bg-gradient-to-b from-primary/5 to-background p-4">
       <div className="w-full max-w-md bg-card border-2 border-primary/20 rounded-2xl shadow-xl p-8">
-        <ClockSkewBanner />
         <p className="text-xs font-semibold tracking-widest uppercase text-primary mb-1 text-center">
           The Diabetes Reset Method
         </p>
