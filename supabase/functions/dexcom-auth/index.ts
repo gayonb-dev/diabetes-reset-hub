@@ -10,6 +10,8 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 
 import { corsHeaders, preflightHeaders } from "../_shared/cors.ts";
 import { aesGcmEncrypt, bytesToPgHex } from "../_shared/dexcom-crypto.ts";
+import { safeExpiresInSeconds } from "../_shared/dexcom-time.ts";
+
 
 // Non-throwing lookups: a missing secret must surface as a logged, JSON error
 // from the handler, not kill the isolate at module evaluation (which produced
@@ -186,11 +188,15 @@ async function exchange(userId: string, code: string, state: string): Promise<Re
   const { access_token, refresh_token, expires_in } = tokJson as {
     access_token: string;
     refresh_token: string;
-    expires_in: number;
+    expires_in: unknown;
   };
+  console.info("[dexcom-auth] expires_in", JSON.stringify(expires_in), typeof expires_in);
   const accEnc = await aesGcmEncrypt(access_token);
   const refEnc = await aesGcmEncrypt(refresh_token);
-  const expiresAt = new Date(Date.now() + (expires_in - 30) * 1000).toISOString();
+  const expiresAt = new Date(
+    Date.now() + (safeExpiresInSeconds(expires_in, "dexcom-auth") - 30) * 1000,
+  ).toISOString();
+
 
   const { error: upErr } = await admin.from("dexcom_connections").upsert(
     {
