@@ -144,7 +144,7 @@ function buildAdminNotificationEmail(name: string, email: string, phone: string,
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
+    return new Response("ok", { headers: preflightHeaders(req) });
   }
 
   try {
