@@ -68,12 +68,9 @@ type ConnRow = {
 async function refreshIfNeeded(conn: ConnRow): Promise<string> {
   const soon = new Date(Date.now() + 120 * 1000).toISOString();
   if (conn.expires_at > soon) {
-    return await aesGcmDecrypt(coerceBytea(conn.access_token_enc), coerceBytea(conn.token_iv));
+    return await decryptToken(conn.access_token_enc, conn.token_iv);
   }
-  const refresh = await aesGcmDecrypt(
-    coerceBytea(conn.refresh_token_enc),
-    coerceBytea(conn.refresh_iv),
-  );
+  const refresh = await decryptToken(conn.refresh_token_enc, conn.refresh_iv);
   const body = new URLSearchParams({
     client_id: CLIENT_ID,
     client_secret: CLIENT_SECRET,
@@ -94,10 +91,10 @@ async function refreshIfNeeded(conn: ConnRow): Promise<string> {
   await admin
     .from("dexcom_connections")
     .update({
-      access_token_enc: accEnc.ct,
-      token_iv: accEnc.iv,
-      refresh_token_enc: refEnc.ct,
-      refresh_iv: refEnc.iv,
+      access_token_enc: bytesToPgHex(accEnc.ct),
+      token_iv: bytesToPgHex(accEnc.iv),
+      refresh_token_enc: bytesToPgHex(refEnc.ct),
+      refresh_iv: bytesToPgHex(refEnc.iv),
       expires_at: expiresAt,
     })
     .eq("member_id", conn.member_id);
