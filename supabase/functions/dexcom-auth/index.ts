@@ -9,6 +9,7 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
 
 import { corsHeaders, preflightHeaders } from "../_shared/cors.ts";
+import { aesGcmEncrypt, bytesToPgHex } from "../_shared/dexcom-crypto.ts";
 
 // Non-throwing lookups: a missing secret must surface as a logged, JSON error
 // from the handler, not kill the isolate at module evaluation (which produced
