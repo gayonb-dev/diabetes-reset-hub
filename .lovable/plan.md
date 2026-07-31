@@ -1,67 +1,80 @@
-## Part A — Step 0 as a new idempotent migration
+## Scope
 
-Direct edits to applied migration files are blocked by the platform, so Step 0 ships as a new migration instead. No checksum or migration-history mismatch occurred — the file write was refused before any mismatch could arise, and the original file and the live database are untouched.
+Sessions B and C in full, plus M21 (offline banner). **M20 swipe gestures are dropped** — post-launch.
 
-New migration, verbatim:
+### Standing corrections (override the attached spec)
+- Rings 88px mobile / 112px desktop; ring values stay visible in tabular numerals.
+- Content widths unchanged (`max-w-3xl lg:max-w-6xl xl:max-w-7xl` + 320px rail).
+- Single shell breakpoint at `lg` (1024px); no new `md:` shell switches.
+- Sidebar streak badge stays removed.
+- Cheat Meal is the 4th tab inside `/app/meals`.
+- Design tokens only — no raw hex outside `index.css`, `tailwind.config.ts`, `Vita.tsx`, badge metals.
 
-```sql
--- Step 0 idempotency fix: the original migration ran its backfill while a
--- guard trigger from a prior run could still be attached, which would silently
--- revert the backfill at pg_trigger_depth() = 1. Re-establish the correct
--- order: drop -> backfill -> re-attach. Safe to re-run.
-DROP TRIGGER IF EXISTS guard_win_post_update ON public.win_posts;
+---
 
-UPDATE public.win_posts w
-   SET reaction_counts = COALESCE((
-     SELECT jsonb_object_agg(cv.reaction_emoji, cv.c)
-     FROM (SELECT target_id, reaction_emoji, count(*) AS c
-             FROM public.community_votes
-            WHERE target_type='answer' AND vote_type='reaction'
-              AND reaction_emoji IS NOT NULL
-            GROUP BY target_id, reaction_emoji) cv
-     WHERE cv.target_id = w.id
-   ), '{}'::jsonb);
+## Session B — Core screens
 
-CREATE TRIGGER guard_win_post_update
-  BEFORE UPDATE ON public.win_posts
-  FOR EACH ROW EXECUTE FUNCTION public.guard_win_post_update();
-```
+**M4 Dashboard** — `Dashboard.tsx`, `QuickStats.tsx`, `JourneyTrack.tsx`, `GettingStartedChecklist.tsx`
+Greeting stacks (name line, then streak • level pill). Rings single row, `flex-1` equal widths, 10px gap, 9px labels, values visible. Action card + journey track full width, 16px padding; journey dots `overflow-x-auto flex-nowrap` inside the card. Quick stats 2×2 (BS+Water, Weight+A1C), 8px gap. Rail contents fall into the main column below `lg` in order: VITA quote → streak card → Coming Up. Checklist collapsed by default on mobile.
 
-No function definitions, grants, or policies change.
+**M5 Onboarding** — `Onboarding.tsx`
+Inputs ≥52px; segmented controls with >3 options become a vertical radio list; multi-select chips wrap, 8px gap, 44px min height; CTA fixed bottom, 16px padding + safe-area inset.
 
-## Part B — rollback-wrapped verification block
+**M6 Blood sugar log** — `BloodSugarTab.tsx`
+56px/24px input; unit toggle above, right-aligned; reading-type selector horizontally scrollable; full-width reference bar; 80px notes; full-width 52px save fixed above safe-area inset.
 
-One `DO` block under a real member identity (`set_config('request.jwt.claims', …)` + `set_config('role','authenticated')`), ending in `RAISE EXCEPTION` so every write is undone:
+**M7 Habit logging** — `HabitLogging.tsx`
+52px section headers; snack slot picker becomes a searchable bottom sheet; Days 15–28 walk buttons stack vertically, 52px full width, `primary` logged / `primary-muted` pending.
 
-1. Insert a `community_votes` reaction row (`target_type='answer'`, `vote_type='reaction'`, `reaction_emoji='fire'`) against win post `e5133869…`; read back `reaction_counts`, expect `fire` alongside `muscle: 1`.
-2. `UPDATE win_posts SET reaction_counts = '{"hacked":999}'` on an own post; expect the guard to revert it.
-3. `UPDATE win_posts SET milestone_label = 'edited label ok'`; expect it to persist.
-4. `INSERT member_daily_progress` for `current_program_day()` (47) → success; the same for day 48 → `SQLSTATE 42501`. Both branches captured via `EXCEPTION WHEN OTHERS`.
+**M9 Meals** — `Meals.tsx`, `SnackLibrary.tsx`
+Horizontally scrollable week selector, 44px tabs; full-width day cards, 56px meal rows, swap always visible; single-column Snack Library and Shopping List; sticky category headers; 44×44 checkboxes; full-width 52px share; print/download becomes a floating icon button bottom-right above the bottom nav opening a sheet (Download PDF / Share).
 
-## Already captured (read-only, no approval needed)
+---
 
-```text
-[1] win post e5133869-4f90-431d-b2f8-8dbf07c79c66
-    reaction_counts = {"muscle": 1}   actual grouped = {"muscle": 1}   matches = t
+## Session C — Per-section, to the numbers
 
-[5] proacl — no anon/authenticated/PUBLIC execute
- enforce_member_progress_day_unlocked | {postgres=X/postgres,service_role=X/postgres,sandbox_exec=X/postgres}
- guard_win_post_update                | {postgres=X/postgres,service_role=X/postgres,sandbox_exec=X/postgres}
- sync_win_post_reactions              | {postgres=X/postgres,service_role=X/postgres,sandbox_exec=X/postgres}
+**M8 Workouts** — `WorkoutLibrary.tsx`, `WorkoutSession.tsx`, `WorkoutComplete.tsx`
+Single-column library; 52px full-width begin button; VITA 40px in-session; sets/reps at 24px; modification note always visible; rest timer becomes a full-screen takeover with 64px centered countdown; post-workout VITA `celebrating` at 120px with 48px checklist rows.
 
-[5] pg_trigger (tgenabled = O)
- community_votes | trg_cv_counts               | AFTER INSERT OR DELETE ... sync_community_vote_counts()
- community_votes | trg_sync_win_post_reactions | AFTER INSERT OR DELETE ... sync_win_post_reactions()
- win_posts       | guard_win_post_update       | BEFORE UPDATE ... guard_win_post_update()
+**M10 Settings** — `Settings.tsx`
+Sticky section labels; 52×32 toggles; bottom-sheet time pickers; sign-out moved to the very bottom; delete-account confirmation unchanged from desktop.
 
-[ownership / FORCE RLS]
- sync_win_post_reactions | owner=postgres | prosecdef=t
- win_posts               | owner=postgres | relrowsecurity=t | relforcerowsecurity=f
- postgres                | rolbypassrls=t
-```
+**M11 Ask** — `Ask.tsx`
+Tapping the VITA bar opens a full-screen compose view with autofocus; vote and answer counts remain visible; 44×44 reaction buttons; tag chips scroll horizontally above the keyboard.
 
-All three ownership values are as expected: the trigger runs `SECURITY DEFINER` as `postgres`, which owns `win_posts`, has `rolbypassrls = t`, and `FORCE RLS` is off — the trigger's `UPDATE` never evaluates a win_posts RLS policy, so authorship cannot affect it. The single-member test is therefore equivalent to a cross-member one.
+**M12 Fasting** — `Fasting.tsx`
+56px countdown; 60px full-width begin button; 44px end-fast link; compact horizontal eating-schedule timeline; last 7 fasts.
 
-## Deliverable
+**M13 Profile** — `Profile.tsx`, `BadgeGallery.tsx` — 2×2 stats grid, 3-column badge gallery, last 3 community items.
 
-Report with the raw `DO` block output, the captured items above, and the file-edit refusal note.
+**M14 Billing** — `Billing.tsx` — last 6 history entries on mobile.
+
+**M15 Admin** — `AdminLayout.tsx` — non-blocking, dismissible "best viewed on desktop" banner on every `/admin` route below `lg`.
+
+**M16 Support** — `Support.tsx` — 52px full-width CTAs.
+
+**M17 Learn/Library** — `Learn.tsx`, `Library.tsx` — single-column cards, 44px targets per spec.
+
+**M18 Cheat Meal** — `CheatMeal.tsx` (tab inside `/app/meals`) — 7 equal day columns, 44px min width, 56px height; 56px full-width log button.
+
+**M19 item 6** — shared `ResponsiveSelect` (Select on desktop, bottom sheet on mobile); every member-facing dropdown converted and itemised in the report. Admin dropdowns untouched.
+**M19 item 7** — native `<input type="date">` / `type="time"` on mobile.
+Android back closes the More sheet / any bottom sheet instead of navigating (history-state hook).
+
+---
+
+## M21 Offline banner
+`OfflineBanner` mounted in `AppLayout`, listens to `online`/`offline`, token-based colors, shows a brief "Back online" confirmation and clears 2s after reconnect.
+
+---
+
+## Technical notes
+New files: `src/components/ui/responsive-select.tsx`, `src/components/ui/search-sheet.tsx`, `src/components/system/OfflineBanner.tsx`, `src/hooks/useBackButtonClose.ts`. Presentation-only — no schema, copy, or business-logic changes.
+
+## Verification
+- Playwright screenshots at **360px, 375px, and 390px** for every screen listed in B and C.
+- Assert `scrollWidth <= clientWidth` on every route at all three widths.
+- Assert **no interactive target under 44px** on every screen (measure all buttons/links/inputs/role=tab, report violations).
+- Explicitly assert the **VITA quote card renders exactly once** at 360/375/390/1023/1024/1280/1536 — catching both duplication and disappearance around the old `xl:hidden` fallback now that the rail is at `lg`.
+- Back-button check: More sheet and a bottom sheet each close without route change.
+- **Per-section status table** (M4–M19, M21) with done / partial / not-done, plus the full file-change list.
