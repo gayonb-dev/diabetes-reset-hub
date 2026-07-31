@@ -68,8 +68,17 @@ type ConnRow = {
 };
 
 async function refreshIfNeeded(conn: ConnRow): Promise<string> {
-  const soon = new Date(Date.now() + 120 * 1000).toISOString();
-  if (conn.expires_at > soon) {
+  const soonMs = Date.now() + 120 * 1000;
+  const expiresAt = parseDexcomTime(conn.expires_at);
+  if (expiresAt === null) {
+    // An unparseable expires_at must never reach a Date comparison — treat the
+    // token as expired and refresh instead.
+    console.warn(
+      "[dexcom-sync] invalid expires_at, forcing refresh",
+      conn.member_id,
+      JSON.stringify(conn.expires_at),
+    );
+  } else if (expiresAt.getTime() > soonMs) {
     return await decryptToken(conn.access_token_enc, conn.token_iv);
   }
   const refresh = await decryptToken(conn.refresh_token_enc, conn.refresh_iv);
@@ -87,9 +96,12 @@ async function refreshIfNeeded(conn: ConnRow): Promise<string> {
   });
   const t = await resp.json();
   if (!resp.ok) throw new Error(`refresh_failed:${resp.status}:${JSON.stringify(t)}`);
+  console.info("[dexcom-sync] expires_in", JSON.stringify(t.expires_in), typeof t.expires_in);
   const accEnc = await aesGcmEncrypt(t.access_token);
   const refEnc = await aesGcmEncrypt(t.refresh_token);
-  const expiresAt = new Date(Date.now() + (t.expires_in - 30) * 1000).toISOString();
+  const expiresAtIso = new Date(
+    Date.now() + (safeExpiresInSeconds(t.expires_in, "dexcom-sync") - 30) * 1000,
+  ).toISOString();
   await admin
     .from("dexcom_connections")
     .update({
@@ -97,11 +109,12 @@ async function refreshIfNeeded(conn: ConnRow): Promise<string> {
       token_iv: bytesToPgHex(accEnc.iv),
       refresh_token_enc: bytesToPgHex(refEnc.ct),
       refresh_iv: bytesToPgHex(refEnc.iv),
-      expires_at: expiresAt,
+      expires_at: expiresAtIso,
     })
     .eq("member_id", conn.member_id);
   return t.access_token as string;
 }
+
 
 async function syncOne(conn: ConnRow): Promise<{ inserted: number; through: string }> {
   const accessToken = await refreshIfNeeded(conn);
