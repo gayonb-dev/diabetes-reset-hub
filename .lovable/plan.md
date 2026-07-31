@@ -1,30 +1,126 @@
-Verified before writing this plan: none of the 11 named functions contain `x-supabase-client-platform` in their allow-headers, 24 other functions already do, and `supabase/functions/_shared/` does not yet exist. `customer-portal` already ships an extended static list, which is why the billing portal works while cancel does not.
+Diff vs. last approved plan: nothing dropped. Only the migration statement ordering (backfill now runs before the guard trigger exists), the corrected depth comment, and the strengthened backfill verification.
 
-## Item 1 — Drift-proof shared CORS module
+Confirmed: `Ask.tsx:65` hardcodes a four-item `REACTIONS` array and line 379 renders from it (`w.reaction_counts?.[r.key] ?? 0`), so a `{}` value never hides buttons.
 
-**Root cause (confirmed by the preflight diff):** the browser client sends `x-supabase-client-platform` on the real POST, so the preflight requests permission for five headers. `dexcom-auth` grants four, the browser blocks the request before any POST is sent, and the SDK surfaces it as a generic `FunctionsFetchError`. My earlier curl passed only because it requested four headers. `gamify-action` works because it already allows the fifth.
+Depth note, corrected: `pg_trigger_depth()` returns **1** inside a trigger fired by a direct statement, not 0. So a member's direct UPDATE fires the guard at depth 1 → reverted; the sync trigger's nested UPDATE fires it at depth 2 → passes. The backfill is therefore ordered to run before the guard trigger exists, rather than relying on `auth.role()` being NULL in a migration.
 
-**Create `supabase/functions/_shared/cors.ts` exporting two things, not one:**
+## Part 1 — Security findings (one migration, in this exact order)
 
-1. `corsHeaders` — static object: `Access-Control-Allow-Origin: *`, `Access-Control-Allow-Methods: POST, OPTIONS`, `Access-Control-Allow-Headers: authorization, x-client-info, apikey, content-type, x-supabase-client-platform`. Used on all non-OPTIONS responses; no call sites change shape.
-2. `preflightHeaders(req: Request)` — the same object except `Access-Control-Allow-Headers` echoes `req.headers.get('Access-Control-Request-Headers')` when present, falling back to the static list when absent, plus `Vary: Access-Control-Request-Headers` (correct behaviour behind the Cloudflare edge cache).
+### Step 1 — sync function + trigger
+```sql
+CREATE OR REPLACE FUNCTION public.sync_win_post_reactions()
+RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER SET search_path TO 'public'
+AS $$
+DECLARE
+  v_target uuid;
+  v_vote_type text;
+BEGIN
+  IF TG_OP = 'DELETE' THEN
+    v_target := OLD.target_id;  v_vote_type := OLD.vote_type;
+  ELSE
+    v_target := NEW.target_id;  v_vote_type := NEW.vote_type;
+  END IF;
 
-**In each of the 11 functions**, import from `../_shared/cors.ts`, delete the inline `corsHeaders` copy, and change only the OPTIONS branch to `return new Response('ok', { headers: preflightHeaders(req) })`:
-`cancel-subscription`, `support-assistant`, `dexcom-auth`, `dexcom-sync`, `notifications-cron`, `notify-qa-answered`, `regenerate-due-plans`, `send-notification`, `streak-rollover`, `stripe-subscription-webhook`, `stripe-webhook`.
+  IF v_vote_type <> 'reaction' THEN RETURN NULL; END IF;
 
-Nothing else changes — no other response path, no auth logic, no `verify_jwt`. Local imports under `supabase/functions/` deploy with the function; if any deploy rejects the shared module I will inline it per-file and say so explicitly. Then redeploy all 11.
+  UPDATE public.win_posts w
+     SET reaction_counts = COALESCE((
+       SELECT jsonb_object_agg(v.reaction_emoji, v.c)
+       FROM (SELECT reaction_emoji, count(*) AS c
+               FROM public.community_votes
+              WHERE target_id = v_target AND target_type = 'answer'
+                AND vote_type = 'reaction' AND reaction_emoji IS NOT NULL
+              GROUP BY reaction_emoji) v
+     ), '{}'::jsonb)
+   WHERE w.id = v_target;
 
-**Verification**
-- Preflight `dexcom-auth` twice: once requesting the five real headers, once requesting those five plus an invented `x-future-header`. Confirm each response echoes back exactly what was requested. Paste both raw status lines and full header sets, not a summary.
-- Then the three browser checks (Playwright, signed in): Connect Dexcom reaches Dexcom's login page; the Billing cancel flow invokes successfully; the support chat responds. Report the browser-side result for each.
+  RETURN NULL;
+END;
+$$;
+REVOKE EXECUTE ON FUNCTION public.sync_win_post_reactions() FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.sync_win_post_reactions() TO service_role;
+DROP TRIGGER IF EXISTS trg_sync_win_post_reactions ON public.community_votes;
+CREATE TRIGGER trg_sync_win_post_reactions
+  AFTER INSERT OR DELETE ON public.community_votes
+  FOR EACH ROW EXECUTE FUNCTION public.sync_win_post_reactions();
+```
 
-## Item 2 — Session A mobile foundation
+### Step 2 — one-time backfill (runs while no guard trigger exists on win_posts)
+```sql
+UPDATE public.win_posts w
+   SET reaction_counts = COALESCE((
+     SELECT jsonb_object_agg(cv.reaction_emoji, cv.c)
+     FROM (SELECT target_id, reaction_emoji, count(*) AS c
+             FROM public.community_votes
+            WHERE target_type='answer' AND vote_type='reaction'
+              AND reaction_emoji IS NOT NULL
+            GROUP BY target_id, reaction_emoji) cv
+     WHERE cv.target_id = w.id
+   ), '{}'::jsonb);
+```
 
-Built exactly as previously scoped, no changes.
+### Step 3 — guard function + trigger
+```sql
+CREATE OR REPLACE FUNCTION public.guard_win_post_update()
+RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER SET search_path TO 'public'
+AS $$
+BEGIN
+  -- pg_trigger_depth() = 1 means this UPDATE came directly from a client statement.
+  -- The sync trigger's nested UPDATE runs at depth 2 and is intentionally allowed
+  -- through, because it recomputes counts from community_votes rather than
+  -- accepting caller-supplied values.
+  IF pg_trigger_depth() = 1
+     AND auth.role() <> 'service_role'
+     AND NOT public.has_role(auth.uid(), 'admin') THEN
+    NEW.reaction_counts  := OLD.reaction_counts;
+    NEW.milestone_type   := OLD.milestone_type;
+    NEW.stat_improvement := OLD.stat_improvement;
+  END IF;
+  RETURN NEW;
+END;
+$$;
+DROP TRIGGER IF EXISTS guard_win_post_update ON public.win_posts;
+CREATE TRIGGER guard_win_post_update BEFORE UPDATE ON public.win_posts
+  FOR EACH ROW EXECUTE FUNCTION public.guard_win_post_update();
+```
 
-1. **Single breakpoint.** Sidebar and its loading skeleton → `hidden lg:flex`; bottom nav → `flex lg:hidden`; Dashboard's `md:hidden` / `hidden md:block` pair and the right-rail split → `lg`. Audit remaining `md:` usages, moving only true shell switches and leaving ordinary content grids alone; report each decision. Explicit sweep of the 768–1023px band for shell-switch gaps.
-2. **Layout and safe areas.** `viewport-fit=cover` on the viewport meta. Mobile content full width, 16px horizontal padding, no max-width until `lg`. Content bottom padding `calc(76px + env(safe-area-inset-bottom))`; bottom nav height `calc(60px + env(safe-area-inset-bottom))` with matching `padding-bottom`. Safe-area top padding where the shell renders flush to the top. Implemented as utilities in `index.css`, not repeated arbitrary values.
-3. **Typography.** In `index.css` under 1024px: Display 32→26, H1 28→22, H2 22→18, H3 18→16; body, labels, captions unchanged. `.stat-value`, `.metric-hero`, `.countdown-hero` scale to ~80% on mobile, keeping tabular numerals. Desktop untouched, no per-component overrides.
-4. **Forms (M19 items 1–5 and 8).** 52px minimum height on mobile text inputs and buttons; 44×44 checkbox/radio hit areas including label; a `visualViewport` + `focusin` hook mounted once in `AppLayout` to scroll the focused input above the keyboard; shared sticky-submit wrapper for forms taller than one viewport (Onboarding, Intake, blood-sugar log). Not doing M19 items 6–7.
-5. **Preserved decisions.** Rings stay 88/112 with values visible; content widths and the 320px rail unchanged; sidebar streak badge stays removed; Cheat Meal stays a Meals tab; HSL tokens only.
-6. **Verification.** Playwright screenshots of Today, Progress, Meals, Ask, Settings at 360/375/390px, asserting no horizontal scroll, nothing hidden behind the bottom nav, and no tap target under 44px. Report every file changed.
+### Step 4 — revokes
+```sql
+REVOKE EXECUTE ON FUNCTION public.guard_win_post_update() FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.guard_win_post_update() TO service_role;
+
+REVOKE EXECUTE ON FUNCTION public.enforce_member_progress_day_unlocked() FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.enforce_member_progress_day_unlocked() TO service_role;
+```
+
+### `dexcom_connections` — marked **ignored**
+SELECT-only for members with all writes through service-role edge functions is intentional and fail-closed. No write policy added.
+
+### Frontend — `src/pages/app/Ask.tsx`
+- Remove the direct `win_posts.update({ reaction_counts })` (line 258).
+- Guard changes from "has this emoji" to "has reacted to this post at all", matching `UNIQUE (voter_id, target_type, target_id, vote_type)`.
+- Surface the insert's error via toast instead of failing silently; apply optimistic `setMyVotes` / `setWins` only on success.
+- `REACTIONS` list and rendering untouched.
+
+### Verification (rollback-wrapped where it writes; real member identity)
+1. **Backfill correctness** — pick a specific win post that has `reaction` rows in `community_votes`, then `SELECT w.id, w.reaction_counts` alongside the grouped actual counts for that post; assert non-empty and matching. Paste the row. (Row count alone is not used, since a reverted UPDATE still reports as updated.)
+2. React to **another member's** win post → `reaction_counts` increments (proves the depth-2 pass-through).
+3. Second reaction with a **different emoji** on the same post → report exactly what happens.
+4. Direct `UPDATE win_posts SET reaction_counts` on own post → reverts; `UPDATE milestone_label` → persists.
+5. `member_daily_progress`: today's day → success; day + 1 → `42501`. Both reported; if either misbehaves, restore `GRANT EXECUTE ... TO authenticated` on that function only and say so.
+6. `proacl` for all three functions and the `pg_trigger` rows.
+
+## Part 2 — Dexcom bytea write bug
+- New `supabase/functions/_shared/dexcom-crypto.ts` exporting `hexToBytes`, `bytesToPgHex`, `coerceBytea`, `aesGcmEncrypt`, `aesGcmDecrypt`.
+  ```ts
+  export const bytesToPgHex = (b: Uint8Array) =>
+    "\\x" + [...b].map((x) => x.toString(16).padStart(2, "0")).join("");
+  ```
+- `dexcom-auth/index.ts` — drop inline crypto, import shared, wrap all four encrypted fields (`access_token_enc`, `refresh_token_enc`, `token_iv`, `refresh_iv`) with `bytesToPgHex` in the upsert.
+- `dexcom-sync/index.ts` — same import swap; wrap all four fields in the token-refresh write.
+- Grep both files for any remaining raw `Uint8Array` bytea write; paste output.
+- Graceful decrypt failure in `dexcom-sync`: set `last_sync_status='error'`, `last_sync_error='Your Dexcom connection needs to be reconnected — please disconnect and connect again in Settings.'`, skip that member instead of throwing.
+- Verification: round-trip encrypt → write → read → `coerceBytea` → decrypt → assert equal, raw output pasted; then confirm sync `ok` and CGM-tagged rows in `blood_sugar_readings` after your reconnect.
+
+## Not touched
+CORS module, `verify_jwt` settings, Dexcom auth flow logic, notification copy, freeze/streak logic, `x-internal-secret` gating.

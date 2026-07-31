@@ -9,6 +9,7 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
 
 import { corsHeaders, preflightHeaders } from "../_shared/cors.ts";
+import { aesGcmEncrypt, bytesToPgHex } from "../_shared/dexcom-crypto.ts";
 
 // Non-throwing lookups: a missing secret must surface as a logged, JSON error
 // from the handler, not kill the isolate at module evaluation (which produced
@@ -69,11 +70,6 @@ function b64urlDecode(s: string): Uint8Array {
   for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
   return arr;
 }
-function hexToBytes(hex: string): Uint8Array {
-  const out = new Uint8Array(hex.length / 2);
-  for (let i = 0; i < out.length; i++) out[i] = parseInt(hex.substr(i * 2, 2), 16);
-  return out;
-}
 function timingSafeEqual(a: Uint8Array, b: Uint8Array): boolean {
   if (a.length !== b.length) return false;
   let diff = 0;
@@ -90,15 +86,6 @@ async function hmacSign(key: string, data: string): Promise<Uint8Array> {
   );
   const sig = await crypto.subtle.sign("HMAC", k, new TextEncoder().encode(data));
   return new Uint8Array(sig);
-}
-async function aesGcmEncrypt(plain: string): Promise<{ ct: Uint8Array; iv: Uint8Array }> {
-  const keyBytes = hexToBytes(TOKEN_ENC_KEY.slice(0, 64));
-  const key = await crypto.subtle.importKey("raw", keyBytes, "AES-GCM", false, ["encrypt"]);
-  const iv = crypto.getRandomValues(new Uint8Array(12));
-  const ct = new Uint8Array(
-    await crypto.subtle.encrypt({ name: "AES-GCM", iv }, key, new TextEncoder().encode(plain)),
-  );
-  return { ct, iv };
 }
 
 function json(status: number, body: unknown): Response {
@@ -208,10 +195,10 @@ async function exchange(userId: string, code: string, state: string): Promise<Re
   const { error: upErr } = await admin.from("dexcom_connections").upsert(
     {
       member_id: userId,
-      access_token_enc: accEnc.ct,
-      token_iv: accEnc.iv,
-      refresh_token_enc: refEnc.ct,
-      refresh_iv: refEnc.iv,
+      access_token_enc: bytesToPgHex(accEnc.ct),
+      token_iv: bytesToPgHex(accEnc.iv),
+      refresh_token_enc: bytesToPgHex(refEnc.ct),
+      refresh_iv: bytesToPgHex(refEnc.iv),
       expires_at: expiresAt,
       environment: ENV,
       last_sync_status: "connected",

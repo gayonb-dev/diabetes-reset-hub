@@ -9,6 +9,13 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
 
 import { corsHeaders, preflightHeaders } from "../_shared/cors.ts";
+import {
+  aesGcmDecrypt,
+  aesGcmEncrypt,
+  bytesToPgHex,
+  coerceBytea,
+  TokenDecryptError,
+} from "../_shared/dexcom-crypto.ts";
 
 const CLIENT_ID = Deno.env.get("DEXCOM_CLIENT_ID")!;
 const CLIENT_SECRET = Deno.env.get("DEXCOM_CLIENT_SECRET")!;
@@ -24,11 +31,6 @@ const DEXCOM_BASE =
 
 const admin = createClient(SB_URL, SRV_KEY, { auth: { persistSession: false } });
 
-function hexToBytes(hex: string): Uint8Array {
-  const out = new Uint8Array(hex.length / 2);
-  for (let i = 0; i < out.length; i++) out[i] = parseInt(hex.substr(i * 2, 2), 16);
-  return out;
-}
 function timingSafeEqual(a: string, b: string): boolean {
   const A = new TextEncoder().encode(a);
   const B = new TextEncoder().encode(b);
@@ -37,33 +39,13 @@ function timingSafeEqual(a: string, b: string): boolean {
   for (let i = 0; i < A.length; i++) d |= A[i] ^ B[i];
   return d === 0;
 }
-async function aesGcmDecrypt(ct: Uint8Array, iv: Uint8Array): Promise<string> {
-  const keyBytes = hexToBytes(TOKEN_ENC_KEY.slice(0, 64));
-  const key = await crypto.subtle.importKey("raw", keyBytes, "AES-GCM", false, ["decrypt"]);
-  const pt = await crypto.subtle.decrypt({ name: "AES-GCM", iv }, key, ct);
-  return new TextDecoder().decode(pt);
-}
-async function aesGcmEncrypt(plain: string): Promise<{ ct: Uint8Array; iv: Uint8Array }> {
-  const keyBytes = hexToBytes(TOKEN_ENC_KEY.slice(0, 64));
-  const key = await crypto.subtle.importKey("raw", keyBytes, "AES-GCM", false, ["encrypt"]);
-  const iv = crypto.getRandomValues(new Uint8Array(12));
-  const ct = new Uint8Array(
-    await crypto.subtle.encrypt({ name: "AES-GCM", iv }, key, new TextEncoder().encode(plain)),
-  );
-  return { ct, iv };
-}
 
-// bytea from PostgREST arrives as base64 or "\x…" hex; normalize to Uint8Array.
-function coerceBytea(v: unknown): Uint8Array {
-  if (v instanceof Uint8Array) return v;
-  if (typeof v === "string") {
-    if (v.startsWith("\\x")) return hexToBytes(v.slice(2));
-    const bin = atob(v);
-    const arr = new Uint8Array(bin.length);
-    for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
-    return arr;
+async function decryptToken(ct: unknown, iv: unknown): Promise<string> {
+  try {
+    return await aesGcmDecrypt(coerceBytea(ct), coerceBytea(iv));
+  } catch (e) {
+    throw new TokenDecryptError(e);
   }
-  throw new Error("unsupported bytea");
 }
 
 function json(status: number, body: unknown): Response {
@@ -86,12 +68,9 @@ type ConnRow = {
 async function refreshIfNeeded(conn: ConnRow): Promise<string> {
   const soon = new Date(Date.now() + 120 * 1000).toISOString();
   if (conn.expires_at > soon) {
-    return await aesGcmDecrypt(coerceBytea(conn.access_token_enc), coerceBytea(conn.token_iv));
+    return await decryptToken(conn.access_token_enc, conn.token_iv);
   }
-  const refresh = await aesGcmDecrypt(
-    coerceBytea(conn.refresh_token_enc),
-    coerceBytea(conn.refresh_iv),
-  );
+  const refresh = await decryptToken(conn.refresh_token_enc, conn.refresh_iv);
   const body = new URLSearchParams({
     client_id: CLIENT_ID,
     client_secret: CLIENT_SECRET,
@@ -112,10 +91,10 @@ async function refreshIfNeeded(conn: ConnRow): Promise<string> {
   await admin
     .from("dexcom_connections")
     .update({
-      access_token_enc: accEnc.ct,
-      token_iv: accEnc.iv,
-      refresh_token_enc: refEnc.ct,
-      refresh_iv: refEnc.iv,
+      access_token_enc: bytesToPgHex(accEnc.ct),
+      token_iv: bytesToPgHex(accEnc.iv),
+      refresh_token_enc: bytesToPgHex(refEnc.ct),
+      refresh_iv: bytesToPgHex(refEnc.iv),
       expires_at: expiresAt,
     })
     .eq("member_id", conn.member_id);
@@ -214,6 +193,16 @@ Deno.serve(async (req) => {
         const r = await syncOne(conn);
         results.push({ member_id: conn.member_id, ok: true, inserted: r.inserted });
       } catch (e) {
+        // Legacy rows written before the bytea hex fix cannot be decrypted.
+        // Surface a member-actionable message instead of throwing.
+        if (e instanceof TokenDecryptError) {
+          const msg =
+            "Your Dexcom connection needs to be reconnected — please disconnect and connect again in Settings.";
+          console.error("sync skipped (undecryptable tokens)", conn.member_id);
+          await markError(conn.member_id, msg);
+          results.push({ member_id: conn.member_id, ok: false, error: msg });
+          continue;
+        }
         const msg = e instanceof Error ? e.message : String(e);
         console.error("sync failed", conn.member_id, msg);
         await markError(conn.member_id, msg);
