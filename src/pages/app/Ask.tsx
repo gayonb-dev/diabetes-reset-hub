@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
@@ -14,6 +14,7 @@ import { Loader2, Sparkles, ChevronUp, MessageSquare, Trophy, CheckCircle2, Flam
 import EmptyState from "@/components/ui/empty-state";
 import { Link, useNavigate } from "react-router-dom";
 import { useProgramDay } from "@/hooks/useProgramDay";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 type Tab = "hot" | "new" | "unanswered" | "wins" | "mine";
 
@@ -83,6 +84,8 @@ export default function Ask() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const myDay = useProgramDay();
+  const isMobile = useIsMobile();
+  const composeTextareaRef = useRef<HTMLTextAreaElement>(null);
 
   const [tab, setTab] = useState<Tab>("hot");
   const [questions, setQuestions] = useState<Question[]>([]);

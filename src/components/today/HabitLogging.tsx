@@ -10,6 +10,8 @@ import { Card } from "@/components/ui/card";
 import { ChevronDown, ChevronUp, Check, X, Droplet, Apple, Cookie, Footprints, Brain, Smile, Dumbbell } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { SearchSheet, SearchSheetOption } from "@/components/ui/search-sheet";
 
 
 interface Props {
@@ -57,7 +59,7 @@ function Section({
       <button
         type="button"
         onClick={onToggle}
-        className="w-full flex items-center justify-between gap-3 p-4 text-left"
+        className="w-full min-h-[52px] flex items-center justify-between gap-3 px-4 py-3 text-left"
       >
         <div className="flex items-center gap-3">
           <Icon className="h-5 w-5" style={{ color: iconColor }} />
@@ -83,6 +85,9 @@ export default function HabitLogging({ currentProgramDay }: Props) {
   const [lowersMeds, setLowersMeds] = useState(false);
   const [customOz, setCustomOz] = useState("");
   const [snackOverflow, setSnackOverflow] = useState<null | "snack_3">(null);
+  const isMobile = useIsMobile();
+  const [snackSheetSlot, setSnackSheetSlot] = useState<"snack_1" | "snack_2" | null>(null);
+  const [snackOptions, setSnackOptions] = useState<SearchSheetOption[]>([]);
 
   // Deep-link from Dashboard water tile: /app/today#water-logging
   useEffect(() => {
@@ -124,6 +129,22 @@ export default function HabitLogging({ currentProgramDay }: Props) {
       if (hl?.weight) setWeightLb(Number(hl.weight));
     })();
   }, [user]);
+
+  // Snack library options for the mobile searchable picker (M7).
+  useEffect(() => {
+    (async () => {
+      const { data } = await supabase
+        .from("snack_library" as never)
+        .select("name, description, unlock_day")
+        .order("sort_order", { ascending: true });
+      const rows = (data as { name: string; description: string; unlock_day: number }[] | null) ?? [];
+      setSnackOptions(
+        rows
+          .filter((r) => currentProgramDay >= r.unlock_day)
+          .map((r) => ({ value: r.name, label: r.name, description: r.description })),
+      );
+    })();
+  }, [currentProgramDay]);
 
   // Day 29+ workouts: count today's completed sessions, surface any paused.
   const [workoutsTodayCount, setWorkoutsTodayCount] = useState(0);
@@ -331,12 +352,22 @@ export default function HabitLogging({ currentProgramDay }: Props) {
             return (
               <div key={slot} className="rounded-xl border border-border p-3">
                 <p className="text-sm font-medium">{SNACK_LABEL[slot]}</p>
-                <Input
-                  placeholder="What did you eat?"
-                  className="mt-2 text-sm"
-                  value={s?.snack_name ?? ""}
-                  onChange={(e) => h.setSnack(slot, { snack_name: e.target.value, eaten: true, eaten_at: new Date().toISOString() })}
-                />
+                {isMobile ? (
+                  <button
+                    type="button"
+                    onClick={() => setSnackSheetSlot(slot)}
+                    className="mt-2 w-full h-11 rounded-lg border border-border px-3 text-left text-sm text-foreground"
+                  >
+                    {s?.snack_name || <span className="text-muted-foreground">What did you eat?</span>}
+                  </button>
+                ) : (
+                  <Input
+                    placeholder="What did you eat?"
+                    className="mt-2 text-sm"
+                    value={s?.snack_name ?? ""}
+                    onChange={(e) => h.setSnack(slot, { snack_name: e.target.value, eaten: true, eaten_at: new Date().toISOString() })}
+                  />
+                )}
                 <div className="flex items-center justify-between mt-2 text-xs">
                   <span className="text-tertiary-fg">
                     {s?.eaten === false ? "Skipped today" : s?.eaten ? "Logged" : "Not yet"}
@@ -366,6 +397,17 @@ export default function HabitLogging({ currentProgramDay }: Props) {
             </p>
           )}
         </div>
+        <SearchSheet
+          open={snackSheetSlot != null}
+          onOpenChange={(o) => !o && setSnackSheetSlot(null)}
+          title="Choose a snack"
+          options={snackOptions}
+          value={snackSheetSlot ? h.snacks[snackSheetSlot]?.snack_name ?? undefined : undefined}
+          onSelect={(v) => {
+            if (snackSheetSlot) h.setSnack(snackSheetSlot, { snack_name: v, eaten: true, eaten_at: new Date().toISOString() });
+          }}
+          searchPlaceholder="Search snacks…"
+        />
       </Section>
 
       {/* EXERCISE */}
@@ -393,12 +435,12 @@ export default function HabitLogging({ currentProgramDay }: Props) {
                     key={slot}
                     onClick={() => h.toggleWalk(slot)}
                     className={cn(
-                      "w-full text-left rounded-lg border p-3 flex items-center justify-between",
-                      done ? "border-primary border-2 bg-primary-muted" : "border-border",
+                      "w-full min-h-[52px] text-left rounded-lg border p-3 flex items-center justify-between",
+                      done ? "bg-primary border-primary text-primary-foreground" : "bg-primary-muted border-transparent text-foreground",
                     )}
                   >
                     <span className="text-sm">{WALK_LABEL[slot]}</span>
-                    {done && <Check className="h-4 w-4 text-primary" />}
+                    {done && <Check className="h-4 w-4" />}
                   </button>
                 );
               })}

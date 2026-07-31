@@ -196,7 +196,7 @@ export default function Onboarding() {
   }
 
   return (
-    <div className="min-h-dvh bg-background py-10 px-4 font-sans">
+    <div className="min-h-dvh bg-background pt-10 px-4 pb-28 lg:pb-10 font-sans">
       <div className="max-w-xl mx-auto">
         {/* 3-dot progress */}
         <div className="flex items-center justify-center gap-2 mb-6">
@@ -322,14 +322,16 @@ export default function Onboarding() {
 
               {s2Err && <p className="text-sm text-destructive mb-3">{s2Err}</p>}
 
-              <Button
-                onClick={() => {
-                  if (validateS2()) setStep(2);
-                }}
-                className="w-full h-[52px] bg-primary hover:bg-primary/90 text-primary-foreground font-semibold"
-              >
-                Continue
-              </Button>
+              <div className="fixed bottom-0 left-0 right-0 z-40 bg-background border-t border-border p-4 pb-[calc(env(safe-area-inset-bottom)+1rem)] lg:static lg:z-auto lg:bg-transparent lg:border-0 lg:p-0">
+                <Button
+                  onClick={() => {
+                    if (validateS2()) setStep(2);
+                  }}
+                  className="w-full h-[52px] bg-primary hover:bg-primary/90 text-primary-foreground font-semibold"
+                >
+                  Continue
+                </Button>
+              </div>
             </>
           )}
 
@@ -423,13 +425,15 @@ export default function Onboarding() {
                 />
               </Field>
 
-              <Button
-                onClick={() => setStep(3)}
-                disabled={!goal || !commitment || !mealFreq}
-                className="w-full h-[52px] bg-primary hover:bg-primary/90 text-primary-foreground font-semibold"
-              >
-                Continue
-              </Button>
+              <div className="fixed bottom-0 left-0 right-0 z-40 bg-background border-t border-border p-4 pb-[calc(env(safe-area-inset-bottom)+1rem)] lg:static lg:z-auto lg:bg-transparent lg:border-0 lg:p-0">
+                <Button
+                  onClick={() => setStep(3)}
+                  disabled={!goal || !commitment || !mealFreq}
+                  className="w-full h-[52px] bg-primary hover:bg-primary/90 text-primary-foreground font-semibold"
+                >
+                  Continue
+                </Button>
+              </div>
             </>
           )}
 
@@ -490,14 +494,16 @@ export default function Onboarding() {
                 )}
               </Field>
 
-              <Button
-                onClick={finish}
-                disabled={saving || !monitoring || glucometer == null}
-                className="w-full h-[52px] bg-primary hover:bg-primary/90 text-primary-foreground font-semibold"
-              >
-                {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Let's go
-              </Button>
+              <div className="fixed bottom-0 left-0 right-0 z-40 bg-background border-t border-border p-4 pb-[calc(env(safe-area-inset-bottom)+1rem)] lg:static lg:z-auto lg:bg-transparent lg:border-0 lg:p-0">
+                <Button
+                  onClick={finish}
+                  disabled={saving || !monitoring || glucometer == null}
+                  className="w-full h-[52px] bg-primary hover:bg-primary/90 text-primary-foreground font-semibold"
+                >
+                  {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  Let's go
+                </Button>
+              </div>
             </>
           )}
         </Card>
