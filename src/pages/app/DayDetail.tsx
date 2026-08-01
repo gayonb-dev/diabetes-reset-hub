@@ -73,13 +73,8 @@ export default function DayDetail() {
         .eq("day_number", dayN)
         .maybeSingle();
       if (cancelled) return;
-      if (prog?.status === "completed") {
-        setCompleted(true);
-        setNotes((prog.notes as string) || "");
-      } else {
-        setCompleted(false);
-        setNotes("");
-      }
+      setCompleted(prog?.status === "completed");
+      setNotes((prog?.notes as string) || "");
       setChecked(new Set(parseCompleted(prog?.sub_tasks_completed)));
       setLoading(false);
     })();
@@ -97,6 +92,7 @@ export default function DayDetail() {
       action_id: action.id,
       day_number: dayN,
       status,
+      notes,
       sub_tasks_completed: arr,
       ...(markComplete ? { completed_at: new Date().toISOString() } : {}),
     };
@@ -113,6 +109,24 @@ export default function DayDetail() {
     return true;
   };
 
+  const saveNotes = async () => {
+    if (!user || !action || isLocked) return;
+    const { error } = await supabase.from("member_daily_progress").upsert(
+      {
+        member_id: user.id,
+        action_id: action.id,
+        day_number: dayN,
+        status: completed ? "completed" : checked.size > 0 ? "in_progress" : "pending",
+        notes,
+        sub_tasks_completed: Array.from(checked),
+      } as never,
+      { onConflict: "member_id,action_id" },
+    );
+    if (error) {
+      toast({ title: "Couldn't save notes", description: error.message, variant: "destructive" });
+    }
+  };
+
   const toggleSubTask = async (key: string) => {
     if (isLocked || completed) return;
     const next = new Set(checked);
@@ -125,7 +139,6 @@ export default function DayDetail() {
         setCompleted(true);
         recordAction("daily_action").catch(() => {});
         toast({ title: `Day ${dayN} complete ✓`, description: "Nice work. See you tomorrow." });
-        setTimeout(() => navigate("/app"), 1200);
       }
     } else {
       await persistSubTasks(next, false);
@@ -162,7 +175,6 @@ export default function DayDetail() {
     }
     recordAction("daily_action").catch(() => {});
     toast({ title: `Day ${dayN} complete ✓`, description: "Nice work. See you tomorrow." });
-    setTimeout(() => navigate("/app"), 1200);
   };
 
   return (
@@ -205,7 +217,8 @@ export default function DayDetail() {
 
           {subTasks.length > 0 && (
             <Card className="p-6">
-              <h3 className="font-heading font-bold mb-3">Steps</h3>
+              <h3 className="font-heading font-bold mb-1">Steps</h3>
+              <p className="text-sm text-muted-foreground mb-3">Tick each step as you complete it.</p>
               <ul className="divide-y divide-border">
                 {subTasks.map((task) => {
                   const on = checked.has(task);
@@ -255,12 +268,18 @@ export default function DayDetail() {
                   placeholder="Optional: how did it go? Any wins or blockers?"
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
+                  onBlur={saveNotes}
                   className="mb-4"
                   rows={3}
                 />
                 {completed ? (
-                  <div className="flex items-center gap-2 text-primary font-semibold">
-                    <CheckCircle2 className="h-5 w-5" /> Day {dayN} marked complete
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2 text-primary font-semibold">
+                      <CheckCircle2 className="h-5 w-5" /> Day {dayN} marked complete
+                    </div>
+                    <Button variant="outline" className="w-full" onClick={() => navigate("/app")}>
+                      Back to Today
+                    </Button>
                   </div>
                 ) : (
                   <Button
