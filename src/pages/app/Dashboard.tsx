@@ -85,6 +85,7 @@ export default function Dashboard() {
   const [latestA1C, setLatestA1C] = useState<{ value: number; date: string } | null>(null);
   const [latestReading, setLatestReading] = useState<{ value: number; at: string } | null>(null);
   const [loading, setLoading] = useState(true);
+  const [workoutDoneToday, setWorkoutDoneToday] = useState(false);
 
   // Single source of truth for program day.
   const currentProgramDay = useProgramDay();
@@ -204,6 +205,25 @@ export default function Dashboard() {
         setLatestReading({ value: rd.value_mgdl as number, at: rd.measured_at as string });
       }
 
+      // Day 29+ exercise ring: any workout completed inside today's LOCAL day.
+      if (currentProgramDay > 28) {
+        const dayStart = new Date();
+        dayStart.setHours(0, 0, 0, 0);
+        const dayEnd = new Date(dayStart);
+        dayEnd.setDate(dayEnd.getDate() + 1);
+        const { data: ws } = await supabase
+          .from("workout_sessions")
+          .select("id")
+          .eq("user_id", user.id)
+          .eq("status", "completed")
+          .gte("completed_at", dayStart.toISOString())
+          .lt("completed_at", dayEnd.toISOString())
+          .limit(1);
+        if (!cancelled) setWorkoutDoneToday((ws?.length ?? 0) > 0);
+      } else if (!cancelled) {
+        setWorkoutDoneToday(false);
+      }
+
       if (!cancelled) setLoading(false);
     })();
 
@@ -235,7 +255,12 @@ export default function Dashboard() {
     water: { value: habits.waterOz, target: waterTargetOz, unit: "oz" },
     food: { value: mealsDone, target: 3, unit: "meals" },
     exercise: {
-      value: currentProgramDay >= 15 && currentProgramDay <= 28 ? walksDone : 0,
+      value:
+        currentProgramDay >= 15 && currentProgramDay <= 28
+          ? walksDone
+          : workoutDoneToday
+            ? 1
+            : 0,
       target: currentProgramDay >= 15 && currentProgramDay <= 28 ? 3 : 1,
       unit: currentProgramDay <= 28 ? "walks" : "session",
     },
@@ -356,6 +381,7 @@ export default function Dashboard() {
           open={showStreakHistory}
           onClose={() => setShowStreakHistory(false)}
           currentStreak={gam.streak_count}
+          longestStreak={gam.longest_streak}
           freezeAvailable={gam.streak_freeze_available}
           startDate={gam.last_ring_close_at}
           history={gam.streak_history}

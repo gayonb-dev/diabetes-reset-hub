@@ -127,10 +127,14 @@ export default function Profile() {
       {/* Stats row */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <StatCard icon={<Flame className="h-4 w-4" />} value={g.streak_count} label="day streak" color="text-accent" />
-        <StatCard icon={<Sparkles className="h-4 w-4" />} value={g.reset_points} label="reset pts" color="text-primary" />
+        <StatCard icon={<Sparkles className="h-4 w-4" />} value={g.reset_points} label="activity score" color="text-primary" />
         <StatCard icon={<Heart className="h-4 w-4" />} value={g.helpful_points} label="helpful pts" color="text-accent" />
         <StatCard icon={<CalendarCheck className="h-4 w-4" />} value={compliantDays} label="compliant days" color="text-primary" />
       </div>
+
+      <p className="text-[12px] text-tertiary-fg -mt-1">
+        Activity Score: a running total of everything you've logged.
+      </p>
 
       {/* Activity summary */}
       <Card className="p-5 border border-border">
@@ -141,7 +145,7 @@ export default function Profile() {
           <Row label="Measurements logged" value={activity.measurements} />
           <Row label="Current program phase" value={g.current_program_phase} />
           <Row label="All-time longest streak" value={
-            Math.max(g.streak_count, ...g.streak_history.map((s) => s.length || 0), 0)
+            Math.max(g.longest_streak, g.streak_count, ...g.streak_history.map((s) => s.length || 0), 0)
           } />
         </dl>
       </Card>
@@ -171,6 +175,7 @@ export default function Profile() {
         open={showStreak}
         onClose={() => setShowStreak(false)}
         currentStreak={g.streak_count}
+        longestStreak={g.longest_streak}
         freezeAvailable={g.streak_freeze_available}
         startDate={g.last_ring_close_at}
         history={g.streak_history}

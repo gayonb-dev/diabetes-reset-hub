@@ -6,8 +6,11 @@ import { useEffect } from "react";
  * - Adds `keyboard-open` to <body> while the keyboard covers >120px of the
  *   layout viewport, so fixed chrome (bottom nav) can hide itself.
  * - Publishes the keyboard height as `--kb-inset` for sticky submit bars.
- * - Scrolls the focused field into view once the viewport settles, so inputs
- *   near the bottom of long forms aren't hidden behind the keyboard.
+ * - Scrolls a newly focused field into view exactly once, on focusin — never
+ *   from the resize/scroll handler, so it cannot re-run while typing.
+ *
+ * Deliberately does nothing else: no preventDefault, no scroll locking, no
+ * history/popstate/overlay behaviour.
  */
 export function useVisualViewport() {
   useEffect(() => {
@@ -22,26 +25,31 @@ export function useVisualViewport() {
         const inset = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
         document.documentElement.style.setProperty("--kb-inset", `${Math.round(inset)}px`);
         document.body.classList.toggle("keyboard-open", inset > 120);
-
-        if (inset > 120) {
-          const el = document.activeElement as HTMLElement | null;
-          if (el && /^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName)) {
-            el.scrollIntoView({ block: "center", behavior: "smooth" });
-          }
-        }
       });
     };
 
+    // One-shot: bring the just-focused field into view after the keyboard settles.
+    let focusTimer: number | undefined;
+    const onFocusIn = (e: FocusEvent) => {
+      const el = e.target as HTMLElement | null;
+      if (!el || !/^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName)) return;
+      window.clearTimeout(focusTimer);
+      focusTimer = window.setTimeout(() => {
+        if (document.activeElement === el) {
+          el.scrollIntoView({ block: "center", behavior: "smooth" });
+        }
+      }, 300);
+    };
+
     vv.addEventListener("resize", apply);
-    vv.addEventListener("scroll", apply);
-    window.addEventListener("focusin", apply);
+    window.addEventListener("focusin", onFocusIn);
     apply();
 
     return () => {
       cancelAnimationFrame(raf);
+      window.clearTimeout(focusTimer);
       vv.removeEventListener("resize", apply);
-      vv.removeEventListener("scroll", apply);
-      window.removeEventListener("focusin", apply);
+      window.removeEventListener("focusin", onFocusIn);
       document.body.classList.remove("keyboard-open");
       document.documentElement.style.removeProperty("--kb-inset");
     };

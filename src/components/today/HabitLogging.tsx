@@ -24,6 +24,8 @@ const MEAL_LABEL: Record<"breakfast" | "lunch" | "dinner", string> = {
   dinner: "Dinner",
 };
 
+const CUSTOM_SNACK = "__custom_snack__";
+
 const SNACK_LABEL: Record<"snack_1" | "snack_2", string> = {
   snack_1: "Mid-morning snack",
   snack_2: "Afternoon snack",
@@ -88,6 +90,8 @@ export default function HabitLogging({ currentProgramDay }: Props) {
   const isMobile = useIsMobile();
   const [snackSheetSlot, setSnackSheetSlot] = useState<"snack_1" | "snack_2" | null>(null);
   const [snackOptions, setSnackOptions] = useState<SearchSheetOption[]>([]);
+  const [customSnackSlot, setCustomSnackSlot] = useState<"snack_1" | "snack_2" | null>(null);
+  const [customSnackText, setCustomSnackText] = useState("");
 
   // Deep-link from Dashboard water tile: /app/today#water-logging
   useEffect(() => {
@@ -141,7 +145,14 @@ export default function HabitLogging({ currentProgramDay }: Props) {
       setSnackOptions(
         rows
           .filter((r) => currentProgramDay >= r.unlock_day)
-          .map((r) => ({ value: r.name, label: r.name, description: r.description })),
+          .map((r) => ({ value: r.name, label: r.name, description: r.description }))
+          .concat([
+            {
+              value: CUSTOM_SNACK,
+              label: "Something else",
+              description: "Type what you actually ate",
+            },
+          ]),
       );
     })();
   }, [currentProgramDay]);
@@ -167,7 +178,7 @@ export default function HabitLogging({ currentProgramDay }: Props) {
       });
   }, [user, currentProgramDay, h.mood, h.mindsetRead]);
 
-  const waterTarget = Math.round(weightLb / 2);
+  const waterTarget = Math.max(64, Math.round(weightLb / 2));
   const toggle = (k: string) => setOpenKey((p) => (p === k ? null : k));
 
   const mealsDone = useMemo(() => {
@@ -256,7 +267,7 @@ export default function HabitLogging({ currentProgramDay }: Props) {
             </Button>
           </div>
           <p className="text-xs text-tertiary-fg mt-3">
-            Your target: {waterTarget}oz — equal to your body weight ({Math.round(weightLb)} lbs) ÷ 2.
+            Your target: {waterTarget}oz — about half your body weight in ounces, with a 64oz minimum.
           </p>
         </Section>
       </div>
@@ -306,7 +317,9 @@ export default function HabitLogging({ currentProgramDay }: Props) {
                         onClick={() => h.saveMeal(mt, { [k]: false } as Partial<typeof m>)}
                         className={cn(
                           "h-8 w-8 rounded-md border flex items-center justify-center",
-                          m[k] === false ? "bg-muted text-foreground" : "border-border",
+                          m[k] === false
+                            ? "bg-destructive/15 border-destructive/40 text-foreground"
+                            : "border-border",
                         )}
                         aria-label={`${label} no`}
                       >
@@ -337,8 +350,8 @@ export default function HabitLogging({ currentProgramDay }: Props) {
         onToggle={() => toggle("snacks")}
       >
         <p className="text-xs text-tertiary-fg mt-3">
-          Snacks are timed 2.5–3 hours after a main meal. At 2 hrs your blood sugar is still elevated; waiting
-          ensures the snack isn't stacked on top of an unfinished rise.
+          Snacks generally work best around 2.5–3 hours after a main meal. Earlier than that, your blood sugar
+          may still be settling — so give it a little time where you can.
         </p>
         {lowersMeds && (
           <p className="text-xs text-accent bg-accent-muted border border-accent/40 rounded-md p-2 mt-3">
@@ -367,6 +380,33 @@ export default function HabitLogging({ currentProgramDay }: Props) {
                     value={s?.snack_name ?? ""}
                     onChange={(e) => h.setSnack(slot, { snack_name: e.target.value, eaten: true, eaten_at: new Date().toISOString() })}
                   />
+                )}
+                {customSnackSlot === slot && (
+                  <div className="flex gap-2 mt-2">
+                    <Input
+                      autoFocus
+                      placeholder="What did you eat?"
+                      className="text-sm"
+                      value={customSnackText}
+                      onChange={(e) => setCustomSnackText(e.target.value)}
+                    />
+                    <Button
+                      size="sm"
+                      onClick={() => {
+                        const v = customSnackText.trim();
+                        if (!v) return;
+                        h.setSnack(slot, {
+                          snack_name: v,
+                          eaten: true,
+                          eaten_at: new Date().toISOString(),
+                        });
+                        setCustomSnackText("");
+                        setCustomSnackSlot(null);
+                      }}
+                    >
+                      Save
+                    </Button>
+                  </div>
                 )}
                 <div className="flex items-center justify-between mt-2 text-xs">
                   <span className="text-tertiary-fg">
@@ -404,7 +444,13 @@ export default function HabitLogging({ currentProgramDay }: Props) {
           options={snackOptions}
           value={snackSheetSlot ? h.snacks[snackSheetSlot]?.snack_name ?? undefined : undefined}
           onSelect={(v) => {
-            if (snackSheetSlot) h.setSnack(snackSheetSlot, { snack_name: v, eaten: true, eaten_at: new Date().toISOString() });
+            if (!snackSheetSlot) return;
+            if (v === CUSTOM_SNACK) {
+              setCustomSnackText(h.snacks[snackSheetSlot]?.snack_name ?? "");
+              setCustomSnackSlot(snackSheetSlot);
+              return;
+            }
+            h.setSnack(snackSheetSlot, { snack_name: v, eaten: true, eaten_at: new Date().toISOString() });
           }}
           searchPlaceholder="Search snacks…"
         />

@@ -8,10 +8,12 @@ interface StreakHistoryModalProps {
   open: boolean;
   onClose: () => void;
   currentStreak: number;
+  longestStreak?: number;
   freezeAvailable: boolean;
   startDate: string | null;
   history: StreakHistoryEntry[];
 }
+
 
 function fmt(d: string | null) {
   if (!d) return "";
@@ -26,13 +28,16 @@ export default function StreakHistoryModal({
   open,
   onClose,
   currentStreak,
+  longestStreak = 0,
   freezeAvailable,
   startDate,
   history,
 }: StreakHistoryModalProps) {
   const longestPast = history.reduce((acc, h) => Math.max(acc, h.length), 0);
-  const longest = Math.max(longestPast, currentStreak);
+  // Stored value from user_streaks is the source of truth; locals are a floor.
+  const longest = Math.max(longestStreak, longestPast, currentStreak);
   const personalBest = history
+
     .slice()
     .sort((a, b) => b.length - a.length)
     .find((h) => h.length >= currentStreak && h.length > 0);
