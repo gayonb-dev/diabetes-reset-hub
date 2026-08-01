@@ -13,6 +13,7 @@ export interface StreakHistoryEntry {
 export interface GamificationProfile {
   loading: boolean;
   streak_count: number;
+  longest_streak: number;
   streak_freeze_available: boolean;
   level: number;
   level_earned_at: string | null;
@@ -29,6 +30,7 @@ export interface GamificationProfile {
 const empty: GamificationProfile = {
   loading: true,
   streak_count: 0,
+  longest_streak: 0,
   streak_freeze_available: false,
   level: 1,
   level_earned_at: null,
@@ -57,13 +59,20 @@ export function useGamificationProfile(currentProgramDay: number) {
       )
       .eq("user_id", user.id)
       .maybeSingle();
+    const { data: streakRow } = await supabase
+      .from("user_streaks")
+      .select("longest_streak")
+      .eq("user_id", user.id)
+      .maybeSingle();
+    const storedLongest = streakRow?.longest_streak ?? 0;
     if (!data) {
-      setProfile({ ...empty, loading: false });
+      setProfile({ ...empty, loading: false, longest_streak: storedLongest });
       return;
     }
     setProfile({
       loading: false,
       streak_count: data.streak_count ?? 0,
+      longest_streak: storedLongest,
       streak_freeze_available: data.streak_freeze_available ?? false,
       level: data.level ?? 1,
       level_earned_at: data.level_earned_at ?? null,
