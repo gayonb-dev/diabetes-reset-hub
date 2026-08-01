@@ -66,7 +66,8 @@ export function SnackLibrary({ dayNumber }: { dayNumber: number }) {
   return (
     <div className="space-y-3">
       <p className="text-xs text-muted-foreground">
-        Pick any unlocked snack between meals — ideally 2.5–3 hours after eating.
+        Pick any unlocked snack between meals. Around 2.5–3 hours after eating usually feels best, but use
+        what works for your day.
       </p>
       <div className="grid lg:grid-cols-2 gap-3">
         {snacks.map((s) => {

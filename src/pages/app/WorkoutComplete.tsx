@@ -83,6 +83,9 @@ export default function WorkoutComplete() {
       // Award Reset Points (XP) via existing function
       await supabase.rpc("award_xp", { p_user_id: user.id, p_amount: 25 });
       setLogged(true);
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new CustomEvent("drm:habits-changed"));
+      }
       toast({ title: "Workout logged", description: "+25 Reset Points. Exercise ring closed." });
     } catch (e) {
       toast({ title: "Couldn't save", description: (e as Error).message, variant: "destructive" });
@@ -122,6 +125,9 @@ export default function WorkoutComplete() {
 
       <Card className="p-5 text-left space-y-3">
         <h2 className="font-medium text-foreground">Cool-down</h2>
+        <p className="text-xs text-muted-foreground">
+          Pick whichever of these feel good — you don't need to do them all.
+        </p>
         <div className="space-y-2">
           {COOL_DOWN_ITEMS.map((item) => {
             const done = !!checks[item.key];

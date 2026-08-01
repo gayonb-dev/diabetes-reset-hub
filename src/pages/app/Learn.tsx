@@ -246,13 +246,14 @@ function MindsetReader({
   const totalCards = week.cards.length + (week.assignment ? 1 : 0);
   const isLast = idx === totalCards - 1;
 
-  // Live countdown until the 30-second read gate opens.
+  // Live countdown until the 20-second read gate opens.
   useEffect(() => {
     const t = setInterval(() => setNow(Date.now()), 500);
     return () => clearInterval(t);
   }, []);
 
-  const secondsRemaining = Math.max(0, 30 - Math.floor((now - openedAt) / 1000));
+  const READ_GATE_SECONDS = 20;
+  const secondsRemaining = Math.max(0, READ_GATE_SECONDS - Math.floor((now - openedAt) / 1000));
   const canMarkRead = secondsRemaining === 0;
 
   async function markRead() {

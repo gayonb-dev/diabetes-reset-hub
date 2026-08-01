@@ -167,7 +167,7 @@ export default function HabitLogging({ currentProgramDay }: Props) {
       });
   }, [user, currentProgramDay, h.mood, h.mindsetRead]);
 
-  const waterTarget = Math.round(weightLb / 2);
+  const waterTarget = Math.max(64, Math.round(weightLb / 2));
   const toggle = (k: string) => setOpenKey((p) => (p === k ? null : k));
 
   const mealsDone = useMemo(() => {
@@ -256,7 +256,7 @@ export default function HabitLogging({ currentProgramDay }: Props) {
             </Button>
           </div>
           <p className="text-xs text-tertiary-fg mt-3">
-            Your target: {waterTarget}oz — equal to your body weight ({Math.round(weightLb)} lbs) ÷ 2.
+            Your target: {waterTarget}oz — about half your body weight in ounces, with a 64oz minimum.
           </p>
         </Section>
       </div>
@@ -306,7 +306,9 @@ export default function HabitLogging({ currentProgramDay }: Props) {
                         onClick={() => h.saveMeal(mt, { [k]: false } as Partial<typeof m>)}
                         className={cn(
                           "h-8 w-8 rounded-md border flex items-center justify-center",
-                          m[k] === false ? "bg-muted text-foreground" : "border-border",
+                          m[k] === false
+                            ? "bg-destructive/15 border-destructive/40 text-foreground"
+                            : "border-border",
                         )}
                         aria-label={`${label} no`}
                       >
@@ -337,8 +339,8 @@ export default function HabitLogging({ currentProgramDay }: Props) {
         onToggle={() => toggle("snacks")}
       >
         <p className="text-xs text-tertiary-fg mt-3">
-          Snacks are timed 2.5–3 hours after a main meal. At 2 hrs your blood sugar is still elevated; waiting
-          ensures the snack isn't stacked on top of an unfinished rise.
+          Snacks generally work best around 2.5–3 hours after a main meal. Earlier than that, your blood sugar
+          may still be settling — so give it a little time where you can.
         </p>
         {lowersMeds && (
           <p className="text-xs text-accent bg-accent-muted border border-accent/40 rounded-md p-2 mt-3">
