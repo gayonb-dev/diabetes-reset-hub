@@ -24,6 +24,8 @@ const MEAL_LABEL: Record<"breakfast" | "lunch" | "dinner", string> = {
   dinner: "Dinner",
 };
 
+const CUSTOM_SNACK = "__custom_snack__";
+
 const SNACK_LABEL: Record<"snack_1" | "snack_2", string> = {
   snack_1: "Mid-morning snack",
   snack_2: "Afternoon snack",
@@ -88,6 +90,8 @@ export default function HabitLogging({ currentProgramDay }: Props) {
   const isMobile = useIsMobile();
   const [snackSheetSlot, setSnackSheetSlot] = useState<"snack_1" | "snack_2" | null>(null);
   const [snackOptions, setSnackOptions] = useState<SearchSheetOption[]>([]);
+  const [customSnackSlot, setCustomSnackSlot] = useState<"snack_1" | "snack_2" | null>(null);
+  const [customSnackText, setCustomSnackText] = useState("");
 
   // Deep-link from Dashboard water tile: /app/today#water-logging
   useEffect(() => {
@@ -141,7 +145,14 @@ export default function HabitLogging({ currentProgramDay }: Props) {
       setSnackOptions(
         rows
           .filter((r) => currentProgramDay >= r.unlock_day)
-          .map((r) => ({ value: r.name, label: r.name, description: r.description })),
+          .map((r) => ({ value: r.name, label: r.name, description: r.description }))
+          .concat([
+            {
+              value: CUSTOM_SNACK,
+              label: "Something else",
+              description: "Type what you actually ate",
+            },
+          ]),
       );
     })();
   }, [currentProgramDay]);
@@ -370,6 +381,33 @@ export default function HabitLogging({ currentProgramDay }: Props) {
                     onChange={(e) => h.setSnack(slot, { snack_name: e.target.value, eaten: true, eaten_at: new Date().toISOString() })}
                   />
                 )}
+                {customSnackSlot === slot && (
+                  <div className="flex gap-2 mt-2">
+                    <Input
+                      autoFocus
+                      placeholder="What did you eat?"
+                      className="text-sm"
+                      value={customSnackText}
+                      onChange={(e) => setCustomSnackText(e.target.value)}
+                    />
+                    <Button
+                      size="sm"
+                      onClick={() => {
+                        const v = customSnackText.trim();
+                        if (!v) return;
+                        h.setSnack(slot, {
+                          snack_name: v,
+                          eaten: true,
+                          eaten_at: new Date().toISOString(),
+                        });
+                        setCustomSnackText("");
+                        setCustomSnackSlot(null);
+                      }}
+                    >
+                      Save
+                    </Button>
+                  </div>
+                )}
                 <div className="flex items-center justify-between mt-2 text-xs">
                   <span className="text-tertiary-fg">
                     {s?.eaten === false ? "Skipped today" : s?.eaten ? "Logged" : "Not yet"}
@@ -406,7 +444,13 @@ export default function HabitLogging({ currentProgramDay }: Props) {
           options={snackOptions}
           value={snackSheetSlot ? h.snacks[snackSheetSlot]?.snack_name ?? undefined : undefined}
           onSelect={(v) => {
-            if (snackSheetSlot) h.setSnack(snackSheetSlot, { snack_name: v, eaten: true, eaten_at: new Date().toISOString() });
+            if (!snackSheetSlot) return;
+            if (v === CUSTOM_SNACK) {
+              setCustomSnackText(h.snacks[snackSheetSlot]?.snack_name ?? "");
+              setCustomSnackSlot(snackSheetSlot);
+              return;
+            }
+            h.setSnack(snackSheetSlot, { snack_name: v, eaten: true, eaten_at: new Date().toISOString() });
           }}
           searchPlaceholder="Search snacks…"
         />
