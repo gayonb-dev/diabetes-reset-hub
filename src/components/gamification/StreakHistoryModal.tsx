@@ -8,10 +8,12 @@ interface StreakHistoryModalProps {
   open: boolean;
   onClose: () => void;
   currentStreak: number;
+  longestStreak?: number;
   freezeAvailable: boolean;
   startDate: string | null;
   history: StreakHistoryEntry[];
 }
+
 
 function fmt(d: string | null) {
   if (!d) return "";
