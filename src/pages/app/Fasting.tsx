@@ -282,49 +282,45 @@ export default function Fasting() {
         </Card>
       )}
 
-      {/* Today's eating schedule */}
-      {active && eatingStartMs > 0 && (
-        <Card className="p-5 border border-border">
-          <p className="text-sm font-medium mb-3">Today's eating schedule</p>
-          <div className="lg:hidden -mx-1 overflow-x-auto">
-            <div className="flex gap-2 px-1 min-w-max">
-              {[
-                ["Meal 1", 0],
-                ["Snack 1", 2.5],
-                ["Meal 2", 4],
-                ["Snack 2", 6.5],
-                ["Fast begins", 24 - active.planned_duration_hours],
-              ].map(([label, offset]) => (
-                <div
-                  key={label as string}
-                  className="flex flex-col items-center gap-1 rounded-lg border border-border px-3 py-2 shrink-0 min-w-[84px]"
-                >
-                  <span className="text-[11px] text-muted-foreground text-center">{label}</span>
-                  <span className="font-medium tabular-nums text-xs">
-                    {new Date(eatingStartMs + (offset as number) * 3600000).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-                  </span>
+      {/* Today's eating schedule — from the meal-timing engine */}
+      {(() => {
+        const items = scheduleForProfile(fp.profile);
+        const rows: { label: string; hour: number }[] = [
+          ...items.map((i) => ({ label: i.label, hour: i.hour })),
+        ];
+        const win = fp.window;
+        if (win) rows.push({ label: "Fast begins", hour: win.endHour % 24 });
+        return (
+          <Card className="p-5 border border-border rounded-xl shadow-warm">
+            <p className="text-sm font-medium mb-3">Today's eating schedule</p>
+            <div className="lg:hidden -mx-1 overflow-x-auto">
+              <div className="flex gap-2 px-1 min-w-max">
+                {rows.map((r) => (
+                  <div
+                    key={r.label}
+                    className="flex flex-col items-center gap-1 rounded-lg border border-border px-3 py-2 shrink-0 min-w-[84px]"
+                  >
+                    <span className="text-[11px] text-muted-foreground text-center">{r.label}</span>
+                    <span className="font-medium tabular-nums text-xs">{formatHour(r.hour)}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="hidden lg:block space-y-2 text-sm">
+              {rows.map((r) => (
+                <div key={r.label} className="flex justify-between">
+                  <span className="text-muted-foreground">{r.label}</span>
+                  <span className="font-medium tabular-nums">{formatHour(r.hour)}</span>
                 </div>
               ))}
             </div>
-          </div>
-          <div className="hidden lg:block space-y-2 text-sm">
-            {[
-              ["Meal 1 (break fast)", 0],
-              ["Snack 1", 2.5],
-              ["Meal 2", 4],
-              ["Snack 2", 6.5],
-              ["Fast begins", 24 - active.planned_duration_hours],
-            ].map(([label, offset]) => (
-              <div key={label as string} className="flex justify-between">
-                <span className="text-muted-foreground">{label}</span>
-                <span className="font-medium tabular-nums">
-                  {new Date(eatingStartMs + (offset as number) * 3600000).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-                </span>
-              </div>
-            ))}
-          </div>
-        </Card>
-      )}
+          </Card>
+        );
+      })()}
+
+      {/* Low blood sugar reference, always available here */}
+      <LowBloodSugarCard dismissible={false} />
+
 
       {/* History */}
       <Card className="p-5 border border-border">
