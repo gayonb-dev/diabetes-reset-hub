@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
+import { useWeekStart } from "@/hooks/useWeekStart";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
@@ -126,6 +127,7 @@ export default function Settings() {
 
   // Timezone (IANA)
   const [timezone, setTimezone] = useState<string>("");
+  const { weekStart, save: saveWeekStart } = useWeekStart();
   const [initialTimezone, setInitialTimezone] = useState<string>("");
   const [tzSaving, setTzSaving] = useState(false);
   const tzOptions = (() => {
