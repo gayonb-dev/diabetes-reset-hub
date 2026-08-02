@@ -531,10 +531,95 @@ export default function Onboarding() {
                 </p>
               </Field>
 
+              <Field label="What time do you usually go to bed?" required>
+                <Radios
+                  value={String(bedtimeHour)}
+                  onChange={(v) => setBedtimeHour(parseInt(v, 10))}
+                  options={[
+                    { v: "20", label: "8pm" },
+                    { v: "21", label: "9pm" },
+                    { v: "22", label: "10pm" },
+                    { v: "23", label: "11pm" },
+                  ]}
+                />
+                <p className="text-[11px] text-muted-foreground/70 mt-2">
+                  We space your last meal at least 3 hours before bed.
+                </p>
+              </Field>
+
+              <div className="mb-6">
+                <p className="text-sm text-muted-foreground mb-3">
+                  Some diabetes medications lower blood sugar on a schedule. If you're fasting while the
+                  medication is still working, blood sugar can drop too low. That's why we ask.
+                </p>
+                <Field label="Do you take any of these?" required>
+                  <Radios
+                    value={medClass}
+                    onChange={(v) => setMedClass(v)}
+                    options={[
+                      { v: "insulin", label: "Insulin" },
+                      { v: "sulfonylurea", label: "Sulfonylureas (glipizide, glyburide, glimepiride, gliclazide)" },
+                      { v: "glinide", label: "Repaglinide or nateglinide" },
+                      { v: "none", label: "None of these" },
+                      { v: "unsure", label: "I'm not sure" },
+                    ]}
+                  />
+                  {medClass === "unsure" && (
+                    <p className="text-xs text-muted-foreground mt-2 bg-muted rounded-lg p-3">
+                      Check your pill bottle or box. If you see glipizide, glyburide, glimepiride, gliclazide,
+                      repaglinide, or nateglinide — or if you take any insulin — that's the group we mean. Your
+                      pharmacist can confirm in one phone call.
+                    </p>
+                  )}
+                </Field>
+
+                <Field label="Do you have type 1 diabetes?" required>
+                  <Radios
+                    value={type1 == null ? null : type1 ? "yes" : "no"}
+                    onChange={(v) => setType1(v === "yes")}
+                    options={[{ v: "yes", label: "Yes" }, { v: "no", label: "No" }]}
+                  />
+                </Field>
+
+                <Field label="Are you pregnant or breastfeeding?" required>
+                  <Radios
+                    value={pregnant == null ? null : pregnant ? "yes" : "no"}
+                    onChange={(v) => setPregnant(v === "yes")}
+                    options={[{ v: "yes", label: "Yes" }, { v: "no", label: "No" }]}
+                  />
+                </Field>
+
+                <Field label="Do you have a history of disordered eating?" required>
+                  <Radios
+                    value={disorderedEating == null ? null : disorderedEating ? "yes" : "no"}
+                    onChange={(v) => setDisorderedEating(v === "yes")}
+                    options={[{ v: "yes", label: "Yes" }, { v: "no", label: "No" }]}
+                  />
+                </Field>
+
+                {(type1 || pregnant || disorderedEating) && (
+                  <p className="text-xs text-muted-foreground bg-muted rounded-lg p-3">
+                    Fasting isn't part of your plan, and it doesn't need to be. It's one optional tool among
+                    several — the plate method, post-meal walks, and consistent meal timing do the heavy lifting,
+                    and they're all still yours.
+                  </p>
+                )}
+                {!type1 && !pregnant && !disorderedEating &&
+                  (medClass === "insulin" || medClass === "sulfonylurea" || medClass === "glinide" || medClass === "unsure") && (
+                    <p className="text-xs text-accent bg-accent-muted rounded-lg p-3">
+                      Fasting can be safe with your medication — but only if your doctor adjusts your doses first.
+                      Low blood sugar is a real risk otherwise. Talk to them, then come back.
+                    </p>
+                  )}
+              </div>
+
               <div className="fixed bottom-0 left-0 right-0 z-40 bg-background border-t border-border p-4 pb-[calc(env(safe-area-inset-bottom)+1rem)] lg:static lg:z-auto lg:bg-transparent lg:border-0 lg:p-0">
                 <Button
                   onClick={finish}
-                  disabled={saving || !monitoring || glucometer == null}
+                  disabled={
+                    saving || !monitoring || glucometer == null || !medClass ||
+                    type1 == null || pregnant == null || disorderedEating == null
+                  }
                   className="w-full h-[52px] bg-primary hover:bg-primary/90 text-primary-foreground font-semibold"
                 >
                   {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
