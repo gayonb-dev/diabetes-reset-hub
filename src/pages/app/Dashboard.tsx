@@ -78,6 +78,7 @@ export default function Dashboard() {
   const [meta, setMeta] = useState<ProfileMeta>({});
   const [action, setAction] = useState<DailyAction | null>(null);
   const [upcoming, setUpcoming] = useState<DailyAction[]>([]);
+  const [catchUp, setCatchUp] = useState<DailyAction[]>([]);
   const [progress, setProgress] = useState<Progress | null>(null);
   const [latestBS, setLatestBS] = useState<{ value: number; date: string } | null>(null);
   const [latestWeight, setLatestWeight] = useState<{ value: number; date: string } | null>(null);
@@ -145,6 +146,28 @@ export default function Dashboard() {
       if (!cancelled) {
         setAction(today);
         setUpcoming(next2);
+      }
+
+      // Catch up — incomplete days before today (three most recent).
+      const { data: pastActions } = await supabase
+        .from("daily_actions")
+        .select("id, day_number, phase_number, action_title, action_description, sub_tasks")
+        .lt("day_number", currentProgramDay)
+        .eq("is_extension_day", false)
+        .order("day_number", { ascending: false })
+        .limit(30);
+      const pastList = (pastActions ?? []) as DailyAction[];
+      if (pastList.length) {
+        const { data: doneRows } = await supabase
+          .from("member_daily_progress")
+          .select("action_id, status")
+          .eq("member_id", user.id)
+          .eq("status", "completed")
+          .in("action_id", pastList.map((a) => a.id));
+        const doneIds = new Set((doneRows ?? []).map((r) => r.action_id as string));
+        if (!cancelled) setCatchUp(pastList.filter((a) => !doneIds.has(a.id)).slice(0, 3));
+      } else if (!cancelled) {
+        setCatchUp([]);
       }
 
       if (today) {
@@ -457,6 +480,33 @@ export default function Dashboard() {
             <p className="text-sm text-secondary-fg">
               Your next action will appear here as the program advances.
             </p>
+          </div>
+        )}
+
+        {/* Catch up — incomplete days before today */}
+        {catchUp.length > 0 && (
+          <div className="bg-card border border-border rounded-xl p-4 lg:p-6 shadow-warm">
+            <p className="label-caps text-tertiary-fg mb-1">Catch up</p>
+            <p className="text-[13px] text-muted-foreground mb-3">
+              You can pick these up anytime — nothing expires.
+            </p>
+            <div className="space-y-2">
+              {catchUp.map((a) => (
+                <Link
+                  key={a.id}
+                  to={`/app/day/${a.day_number}`}
+                  className="flex items-center justify-between gap-3 min-h-11 rounded-lg border border-border px-3 py-2 hover:bg-muted/50 transition-colors"
+                >
+                  <span className="flex items-center gap-3 min-w-0">
+                    <span className="text-[13px] font-semibold tabular-nums text-accent shrink-0">
+                      Day {a.day_number}
+                    </span>
+                    <span className="text-sm text-foreground truncate">{a.action_title}</span>
+                  </span>
+                  <ArrowRight className="h-4 w-4 text-tertiary-fg shrink-0" />
+                </Link>
+              ))}
+            </div>
           </div>
         )}
 
