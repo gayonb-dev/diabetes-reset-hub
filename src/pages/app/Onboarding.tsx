@@ -41,6 +41,7 @@ export default function Onboarding() {
   const navigate = useNavigate();
   const initialUnits = getUnits();
 
+  const [weekStartDay, setWeekStartDay] = useState<0 | 1>(0);
   const [step, setStep] = useState(0); // 0 = welcome, 1..3 = wizard
   const [saving, setSaving] = useState(false);
 
@@ -155,7 +156,12 @@ export default function Onboarding() {
     await supabase
       .from("profiles")
       .upsert(
-        { user_id: user.id, first_name: firstName.trim(), program_start_date: today },
+        {
+          user_id: user.id,
+          first_name: firstName.trim(),
+          program_start_date: today,
+          week_start_day: weekStartDay,
+        },
         { onConflict: "user_id" },
       );
 
@@ -492,6 +498,20 @@ export default function Onboarding() {
                     important tools in this program.
                   </p>
                 )}
+              </Field>
+
+              <Field label="Which day does your week start?" required>
+                <Radios
+                  value={weekStartDay === 1 ? "monday" : "sunday"}
+                  onChange={(v) => setWeekStartDay(v === "monday" ? 1 : 0)}
+                  options={[
+                    { v: "sunday", label: "Sunday" },
+                    { v: "monday", label: "Monday" },
+                  ]}
+                />
+                <p className="text-[11px] text-muted-foreground/70 mt-2">
+                  Used for your meal week, cheat meal, and habit grids. You can change this later in Settings.
+                </p>
               </Field>
 
               <div className="fixed bottom-0 left-0 right-0 z-40 bg-background border-t border-border p-4 pb-[calc(env(safe-area-inset-bottom)+1rem)] lg:static lg:z-auto lg:bg-transparent lg:border-0 lg:p-0">
