@@ -425,6 +425,8 @@ export default function HabitLogging({ currentProgramDay }: Props) {
             );
           })}
         </div>
+        )}
+        {snacksScheduled && (
         <div className="mt-3">
           <button
             className="text-xs text-accent underline"
@@ -439,6 +441,8 @@ export default function HabitLogging({ currentProgramDay }: Props) {
             </p>
           )}
         </div>
+        )}
+
         <SearchSheet
           open={snackSheetSlot != null}
           onOpenChange={(o) => !o && setSnackSheetSlot(null)}
