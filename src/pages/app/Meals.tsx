@@ -129,13 +129,14 @@ function GlyBadge({ rating }: { rating: Meal["glycemic_rating"] }) {
   return <span className={cn("text-[10px] uppercase tracking-wide px-1.5 py-0.5 rounded", tone)}>GI {rating}</span>;
 }
 
-function MealCard({ slot, meal, planId, day, weekIdx, onSwap }: {
+function MealCard({ slot, meal, planId, day, weekIdx, onSwap, onUndoSwap }: {
   slot: string;
   meal: Meal;
   planId: string;
   day: string;
   weekIdx: number;
   onSwap: (slot: string, day: string, weekIdx: number, alt: Alternative) => void;
+  onUndoSwap: (slot: string, day: string, weekIdx: number) => void;
 }) {
   const [expanded, setExpanded] = useState(false);
   const [showAlts, setShowAlts] = useState(false);
@@ -144,14 +145,20 @@ function MealCard({ slot, meal, planId, day, weekIdx, onSwap }: {
     <Card className="border-border overflow-hidden">
       <button
         type="button"
-        className="w-full min-h-[56px] text-left p-4 flex items-start justify-between gap-3"
+        className="w-full text-left p-4 flex items-start justify-between gap-3"
         onClick={() => setExpanded((e) => !e)}
       >
         <div className="flex-1 min-w-0">
           <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
             {SLOT_LABEL[slot] ?? slot}
           </p>
-          <h3 className="font-medium text-foreground mt-0.5 truncate">{meal.name}</h3>
+          <h3 className="font-medium text-foreground mt-0.5 break-words line-clamp-2">{meal.name}</h3>
+          {meal.swapped_to?.name && (
+            <p className="text-[12px] text-muted-foreground mt-0.5 break-words line-clamp-2">
+              Swapped for: {meal.swapped_to.name}
+            </p>
+          )}
+
           <div className="flex items-center gap-2 mt-1.5">
             {meal.glycemic_rating && <GlyBadge rating={meal.glycemic_rating} />}
             <span className="text-[11px] text-muted-foreground inline-flex items-center gap-1">
