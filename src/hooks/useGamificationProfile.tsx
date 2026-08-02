@@ -91,14 +91,27 @@ export function useGamificationProfile(currentProgramDay: number) {
     refresh();
   }, [refresh]);
 
-  // Level-up sync: when program day crosses a threshold, persist the new level
-  // and trigger the celebratory overlay (once per session via sessionStorage).
+  // Level-up sync: level is EARNED, derived from the number of completed days
+  // (distinct dates with a member_daily_progress row at status='completed'),
+  // not elapsed calendar days. The stored visitor_profiles.level is the only
+  // value ever rendered; the computed level can raise it but never demote it.
   useEffect(() => {
     if (!user || profile.loading) return;
-    const target = levelFromDay(currentProgramDay);
-    if (target.level <= profile.level) return;
 
     (async () => {
+      const { data: rows } = await supabase
+        .from("member_daily_progress")
+        .select("day_number, completed_at")
+        .eq("member_id", user.id)
+        .eq("status", "completed");
+
+      const completedDays = new Set(
+        (rows ?? []).map((r) => (r.completed_at ? String(r.completed_at).slice(0, 10) : `day-${r.day_number}`)),
+      ).size;
+
+      const target = levelFromDay(completedDays);
+      if (target.level <= profile.level) return;
+
       await supabase
         .from("visitor_profiles")
         .update({ level: target.level, level_earned_at: new Date().toISOString() })
@@ -112,6 +125,7 @@ export function useGamificationProfile(currentProgramDay: number) {
       refresh();
     })();
   }, [user, profile.loading, profile.level, currentProgramDay, refresh]);
+
 
   return {
     ...profile,
