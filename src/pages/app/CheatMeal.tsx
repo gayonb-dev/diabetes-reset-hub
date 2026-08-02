@@ -17,6 +17,8 @@ import {
 import { Loader2, Utensils } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import EmptyState from "@/components/ui/empty-state";
+import { useWeekStart } from "@/hooks/useWeekStart";
+import { startOfWeek, dayIndexInWeek, orderedDayLabels } from "@/lib/weekStart";
 
 interface CheatMeal {
   id: string;
@@ -44,6 +46,7 @@ export default function CheatMeal() {
   const [open, setOpen] = useState(false);
 
   const currentProgramDay = useProgramDay();
+  const { weekStart } = useWeekStart();
 
 
   const refresh = async () => {
@@ -61,7 +64,7 @@ export default function CheatMeal() {
 
   useEffect(() => { refresh(); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [user]);
 
-  const thisWeekStart = startOfWeek(new Date());
+  const thisWeekStart = startOfWeek(new Date(), weekStart);
   const thisWeekKey = thisWeekStart.toISOString().slice(0, 10);
   const usedThisWeek = meals.find((m) => m.week_start_date === thisWeekKey);
   const isEvening = new Date().getHours() >= 17;
@@ -119,8 +122,9 @@ export default function CheatMeal() {
     d.setDate(thisWeekStart.getDate() + i);
     return d;
   });
-  const usedOnDay = usedThisWeek ? new Date(usedThisWeek.logged_at).getDay() : -1;
-  const today = new Date().getDay();
+  const usedOnDay = usedThisWeek ? dayIndexInWeek(new Date(usedThisWeek.logged_at).getDay(), weekStart) : -1;
+  const today = dayIndexInWeek(new Date().getDay(), weekStart);
+  const dayLabels = orderedDayLabels(weekStart).map((l) => l[0]);
 
   return (
     <div className="space-y-5">
@@ -148,7 +152,7 @@ export default function CheatMeal() {
           {weekDays.map((d, i) => {
             const isUsed = i === usedOnDay;
             const isPast = i < today;
-            const label = ["S", "M", "T", "W", "T", "F", "S"][i];
+            const label = dayLabels[i];
             return (
               <div
                 key={i}
