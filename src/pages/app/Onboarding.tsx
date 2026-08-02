@@ -161,6 +161,11 @@ export default function Onboarding() {
 
     // Ensure profiles.program_start_date is set on onboarding completion.
     const today = new Date().toISOString().slice(0, 10);
+    const exclusions = {
+      type1: !!type1,
+      pregnant_or_nursing: !!pregnant,
+      disordered_eating: !!disorderedEating,
+    };
     await supabase
       .from("profiles")
       .upsert(
@@ -169,7 +174,11 @@ export default function Onboarding() {
           first_name: firstName.trim(),
           program_start_date: today,
           week_start_day: weekStartDay,
-        },
+          medication_class: medClass,
+          fasting_exclusions: exclusions,
+          fasting_eligibility: deriveEligibility(medClass, exclusions),
+          bedtime_hour: bedtimeHour,
+        } as never,
         { onConflict: "user_id" },
       );
 
