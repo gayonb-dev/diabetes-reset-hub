@@ -431,6 +431,15 @@ export default function Meals() {
   }
   const current = resolveWeek(weekIdx);
 
+  function applyPlanUpdate(plan: PlanRow, data: PlanData) {
+    if (plan.id === plan1?.id) setPlan1({ ...plan, plan_data: data });
+    else if (plan.id === plan2?.id) setPlan2({ ...plan, plan_data: data });
+    else if (plan.id === plan3?.id) setPlan3({ ...plan, plan_data: data });
+    else if (plan.id === plan4?.id) setPlan4({ ...plan, plan_data: data });
+  }
+
+  // Swapping records the substitute alongside the meal. The original meal name
+  // is never overwritten, so the plan keeps the record of what was planned.
   async function handleSwap(slot: string, day: string, wIdx: number, alt: Alternative) {
     if (!user) return;
     const { plan, key } = resolveWeek(wIdx as 1 | 2 | 3 | 4);
@@ -438,7 +447,10 @@ export default function Meals() {
     const data: PlanData = JSON.parse(JSON.stringify(plan.plan_data));
     const original = data[key]?.[day]?.[slot];
     if (!original) return;
-    data[key]![day][slot] = { ...original, name: altName(alt), description: altDescription(alt) || original.description };
+    data[key]![day][slot] = {
+      ...original,
+      swapped_to: { name: altName(alt), description: altDescription(alt) },
+    };
     await supabase.from("meal_plans").update({ plan_data: data as never }).eq("id", plan.id);
     await supabase.from("meal_swaps").insert({
       plan_id: plan.id,
@@ -447,51 +459,99 @@ export default function Meals() {
       meal_type: slot,
       swapped_to: { name: altName(alt), description: altDescription(alt) } as never,
     } as never);
-    if (plan.id === plan1?.id) setPlan1({ ...plan, plan_data: data });
-    else if (plan.id === plan2?.id) setPlan2({ ...plan, plan_data: data });
+    applyPlanUpdate(plan, data);
     toast({ title: "Swapped", description: altName(alt) });
+  }
+
+  async function handleUndoSwap(slot: string, day: string, wIdx: number) {
+    if (!user) return;
+    const { plan, key } = resolveWeek(wIdx as 1 | 2 | 3 | 4);
+    if (!plan) return;
+    const data: PlanData = JSON.parse(JSON.stringify(plan.plan_data));
+    const original = data[key]?.[day]?.[slot];
+    if (!original) return;
+    data[key]![day][slot] = { ...original, swapped_to: null };
+    await supabase.from("meal_plans").update({ plan_data: data as never }).eq("id", plan.id);
+    await supabase
+      .from("meal_swaps")
+      .delete()
+      .eq("plan_id", plan.id)
+      .eq("member_id", user.id)
+      .eq("day", day)
+      .eq("meal_type", slot);
+    applyPlanUpdate(plan, data);
+    toast({ title: "Swap removed", description: original.name });
   }
 
   // ----- Shopping list (client-side) — current week only -----
   const shopping = useMemo(() => {
     const { plan, key } = current;
     const wk = plan?.plan_data?.[key];
-    const items: { item: string; quantity?: string; unit?: string }[] = [];
-    let mealCount = 0;
-    const walk = (node: unknown) => {
+    const meals: { key: string; name: string; items: string[] }[] = [];
+    const walk = (node: unknown, path: string) => {
       if (!node || typeof node !== "object") return;
       const rec = node as Record<string, unknown>;
       if (Array.isArray(rec.ingredients) && typeof rec.name === "string") {
-        mealCount++;
-        for (const ing of rec.ingredients as Ingredient[]) {
-          items.push({ item: ingredientItemName(ing) });
-        }
+        meals.push({
+          key: path,
+          name: (rec.swapped_to as { name?: string } | undefined)?.name || (rec.name as string),
+          items: (rec.ingredients as Ingredient[]).map(ingredientItemName),
+        });
+        return;
       }
-      for (const v of Object.values(rec)) walk(v);
+      for (const [k, v] of Object.entries(rec)) walk(v, path ? `${path}.${k}` : k);
     };
-    walk(wk);
+    walk(wk, "");
+
     const byCat = new Map<string, string[]>();
     const seen = new Set<string>();
-    for (const it of items) {
-      const k = it.item.toLowerCase().trim();
-      if (seen.has(k)) continue;
-      seen.add(k);
-      const cat = categorize(it.item);
-      if (!byCat.has(cat)) byCat.set(cat, []);
-      byCat.get(cat)!.push(it.item);
+    for (const m of meals) {
+      for (const item of m.items) {
+        const k = item.toLowerCase().trim();
+        if (!k || seen.has(k)) continue;
+        seen.add(k);
+        const cat = categorize(item);
+        if (!byCat.has(cat)) byCat.set(cat, []);
+        byCat.get(cat)!.push(item);
+      }
     }
-    return { byCat, uniqueCount: seen.size, mealCount };
+    return { byCat, uniqueCount: seen.size, mealCount: meals.length, meals };
   }, [current]);
+
+  // By-meal view: only included meals contribute ingredients.
+  const byMeal = useMemo(() => {
+    const included = shopping.meals.filter((m) => !excludedMeals[m.key]);
+    const unique = new Set<string>();
+    const groups = included.map((m) => {
+      const items: string[] = [];
+      for (const item of m.items) {
+        const k = item.toLowerCase().trim();
+        if (!k || unique.has(k)) continue;
+        unique.add(k);
+        items.push(item);
+      }
+      return { ...m, items };
+    });
+    return { groups, ingredientCount: unique.size, mealCount: included.length };
+  }, [shopping.meals, excludedMeals]);
 
   // Shopping list print/share (M9) — same underlying data, presentational entry points only.
   const shoppingText = useMemo(() => {
     const lines: string[] = [`Shopping list — Week ${weekIdx}`];
-    for (const [cat, items] of shopping.byCat.entries()) {
-      lines.push(`\n${cat}`);
-      for (const item of items) lines.push(`- ${item}`);
+    if (shoppingView === "meal") {
+      for (const g of byMeal.groups) {
+        lines.push(`\n${g.name}`);
+        for (const item of g.items) lines.push(`- ${item}`);
+      }
+    } else {
+      for (const [cat, items] of shopping.byCat.entries()) {
+        lines.push(`\n${cat}`);
+        for (const item of items) lines.push(`- ${item}`);
+      }
     }
     return lines.join("\n");
-  }, [shopping, weekIdx]);
+  }, [shopping, byMeal, shoppingView, weekIdx]);
+
 
   function handlePrintList() {
     window.print();
