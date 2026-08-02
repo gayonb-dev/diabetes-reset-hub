@@ -45,6 +45,13 @@ export default function Onboarding() {
   const [step, setStep] = useState(0); // 0 = welcome, 1..3 = wizard
   const [saving, setSaving] = useState(false);
 
+  // Fasting safety screening (step 3)
+  const [medClass, setMedClass] = useState<string | null>(null);
+  const [type1, setType1] = useState<boolean | null>(null);
+  const [pregnant, setPregnant] = useState<boolean | null>(null);
+  const [disorderedEating, setDisorderedEating] = useState<boolean | null>(null);
+  const [bedtimeHour, setBedtimeHour] = useState(22);
+
   // Screen 2
   const [firstName, setFirstName] = useState("");
   const [weight, setWeight] = useState("");
