@@ -215,6 +215,20 @@ function MealCard({ slot, meal, planId, day, weekIdx, onSwap, onUndoSwap }: {
           </div>
 
           <div className="border-t border-border pt-3">
+            {meal.swapped_to?.name && (
+              <div className="mb-2 flex items-start justify-between gap-2">
+                <p className="text-xs text-muted-foreground break-words">
+                  Swapped for: {meal.swapped_to.name}
+                </p>
+                <button
+                  type="button"
+                  onClick={() => onUndoSwap(slot, day, weekIdx)}
+                  className="text-xs text-accent font-medium shrink-0"
+                >
+                  Undo swap
+                </button>
+              </div>
+            )}
             <button
               type="button"
               onClick={() => setShowAlts((s) => !s)}
@@ -231,13 +245,14 @@ function MealCard({ slot, meal, planId, day, weekIdx, onSwap, onUndoSwap }: {
                     onClick={() => onSwap(slot, day, weekIdx, alt)}
                     className="w-full text-left rounded-md border border-border p-2 hover:border-accent transition-colors"
                   >
-                    <p className="text-sm font-medium text-foreground">{altName(alt)}</p>
-                    {altDescription(alt) && <p className="text-xs text-muted-foreground">{altDescription(alt)}</p>}
+                    <p className="text-sm font-medium text-foreground break-words">{altName(alt)}</p>
+                    {altDescription(alt) && <p className="text-xs text-muted-foreground break-words">{altDescription(alt)}</p>}
                   </button>
                 ))}
               </div>
             )}
           </div>
+
         </div>
       )}
     </Card>
