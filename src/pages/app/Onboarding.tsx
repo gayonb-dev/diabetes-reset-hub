@@ -20,6 +20,7 @@ import {
   GLUCOSE_RANGE_MGDL,
   WEIGHT_RANGE_LB,
 } from "@/lib/units";
+import { deriveEligibility } from "@/components/safety/FastingScreening";
 
 type Diabetes = "type_2" | "prediabetes" | "concerned";
 type Medication = "oral" | "insulin" | "both" | "none";
