@@ -137,7 +137,7 @@ export default function Profile() {
       </p>
 
       {/* Activity summary */}
-      <Card className="p-5 border border-border">
+      <Card className="p-5 border border-border rounded-xl shadow-warm">
         <p className="text-sm font-medium text-foreground mb-3">Activity summary</p>
         <dl className="space-y-2 text-sm">
           <Row label="Workouts completed" value={activity.workouts} />
@@ -156,7 +156,7 @@ export default function Profile() {
       )}
 
       {visibleCommunity.length > 0 && (
-        <Card className="p-5 border border-border">
+        <Card className="p-5 border border-border rounded-xl shadow-warm">
           <p className="text-sm font-medium text-foreground mb-3">Your community activity</p>
           <div className="divide-y divide-border">
             {visibleCommunity.map((r) => (

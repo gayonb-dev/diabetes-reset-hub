@@ -156,7 +156,7 @@ export default function Support() {
           <Bot className="h-4 w-4 text-primary" />
           <p className="text-[11px] uppercase tracking-wider text-muted-foreground">Support assistant</p>
         </div>
-        <h2 className="text-base font-semibold">Ask a question about the app</h2>
+        <h2 className="font-heading text-base font-semibold">Ask a question about the app</h2>
         <p className="text-sm text-muted-foreground">
           Where's my meal plan? How do I log water? The assistant answers app navigation and how-to questions.
           For medical questions, ask your doctor.
@@ -211,7 +211,7 @@ export default function Support() {
 
       <Card className="p-5 space-y-2">
         <p className="text-[11px] uppercase tracking-wider text-muted-foreground">App Issues</p>
-        <h2 className="text-base font-semibold">Something not working right?</h2>
+        <h2 className="font-heading text-base font-semibold">Something not working right?</h2>
         <p className="text-sm text-muted-foreground">
           Report bugs, crashes, billing questions, or anything behaving unexpectedly.
         </p>
@@ -229,7 +229,7 @@ export default function Support() {
 
       <Card className="p-5 space-y-2">
         <p className="text-[11px] uppercase tracking-wider text-muted-foreground">Program Questions</p>
-        <h2 className="text-base font-semibold">Have a question about how the program works?</h2>
+        <h2 className="font-heading text-base font-semibold">Have a question about how the program works?</h2>
         <p className="text-sm text-muted-foreground">
           Questions about meals, workouts, blood sugar, IF, supplements — ask the community and VITA
           for the fastest answer.

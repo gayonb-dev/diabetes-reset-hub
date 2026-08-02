@@ -60,13 +60,24 @@ Deno.serve(async (req) => {
       .update({ streak_count: currentStreak })
       .eq("user_id", uid);
 
-    // Level is derived from program day (single source of truth), NOT from XP.
-    const { data: dayRow } = await supabase.rpc("current_program_day", { p_user_id: uid });
-    const programDay = Number(dayRow ?? 1);
+    // Level is EARNED: derived from the number of completed days
+    // (distinct dates with a member_daily_progress row at status='completed'),
+    // NOT from elapsed calendar days and NOT from XP.
+    const { data: completedRows } = await supabase
+      .from("member_daily_progress")
+      .select("day_number, completed_at")
+      .eq("member_id", uid)
+      .eq("status", "completed");
+    const completedDays = new Set(
+      (completedRows ?? []).map((r: { day_number: number; completed_at: string | null }) =>
+        r.completed_at ? String(r.completed_at).slice(0, 10) : `day-${r.day_number}`,
+      ),
+    ).size;
+
     const LEVEL_DAY_THRESHOLDS = [0, 14, 45, 90, 135, 180, 270, 365, 450, 540];
-    let dayLevel = 1;
+    let earnedLevel = 1;
     for (let i = 0; i < LEVEL_DAY_THRESHOLDS.length; i++) {
-      if (programDay >= LEVEL_DAY_THRESHOLDS[i]) dayLevel = i + 1;
+      if (completedDays >= LEVEL_DAY_THRESHOLDS[i]) earnedLevel = i + 1;
     }
 
     // Capture prior level from visitor_profiles (the display source of truth).
@@ -76,7 +87,9 @@ Deno.serve(async (req) => {
       .eq("user_id", uid)
       .maybeSingle();
     const priorLevel = vp?.level ?? 1;
-    const newLevel = dayLevel;
+    // Never demote: the stored level is a permanent floor.
+    const newLevel = Math.max(earnedLevel, priorLevel);
+
 
     // Award XP (Reset Points accumulate) — its returned level is ignored.
     const { data: xpRes } = await supabase.rpc("award_xp", { p_user_id: uid, p_amount: xp });

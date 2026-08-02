@@ -17,6 +17,9 @@ import { SnackLibrary } from "@/components/meals/SnackLibrary";
 import CheatMeal from "@/pages/app/CheatMeal";
 import { useSearchParams, Link } from "react-router-dom";
 import { useProgramDay } from "@/hooks/useProgramDay";
+import { useWeekStart } from "@/hooks/useWeekStart";
+import { orderedDayKeys } from "@/lib/weekStart";
+
 
 
 // ----- types -----
@@ -33,7 +36,10 @@ interface Meal {
   plate_breakdown: string | { vegetables: string; protein: string; carbs: string };
   glycemic_rating?: "low" | "medium" | "high";
   alternatives: Alternative[];
+  /** Substitute chosen by the member. The original `name` is never overwritten. */
+  swapped_to?: { name: string; description?: string } | null;
 }
+
 
 function ingredientText(ing: Ingredient): string {
   if (typeof ing === "string") return ing;
@@ -69,7 +75,7 @@ function altDescription(alt: Alternative): string {
   return typeof alt === "string" ? "" : alt.description ?? "";
 }
 
-const DAY_KEYS = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"] as const;
+// Day ordering now comes from the member's week-start preference (see useWeekStart).
 const STANDARD_SLOTS = ["breakfast", "lunch", "dinner", "snack_1", "snack_2"] as const;
 const IF_SLOTS = ["meal_1", "snack_1", "meal_2", "snack_2"] as const;
 
@@ -126,13 +132,14 @@ function GlyBadge({ rating }: { rating: Meal["glycemic_rating"] }) {
   return <span className={cn("text-[10px] uppercase tracking-wide px-1.5 py-0.5 rounded", tone)}>GI {rating}</span>;
 }
 
-function MealCard({ slot, meal, planId, day, weekIdx, onSwap }: {
+function MealCard({ slot, meal, planId, day, weekIdx, onSwap, onUndoSwap }: {
   slot: string;
   meal: Meal;
   planId: string;
   day: string;
   weekIdx: number;
   onSwap: (slot: string, day: string, weekIdx: number, alt: Alternative) => void;
+  onUndoSwap: (slot: string, day: string, weekIdx: number) => void;
 }) {
   const [expanded, setExpanded] = useState(false);
   const [showAlts, setShowAlts] = useState(false);
@@ -141,14 +148,20 @@ function MealCard({ slot, meal, planId, day, weekIdx, onSwap }: {
     <Card className="border-border overflow-hidden">
       <button
         type="button"
-        className="w-full min-h-[56px] text-left p-4 flex items-start justify-between gap-3"
+        className="w-full text-left p-4 flex items-start justify-between gap-3"
         onClick={() => setExpanded((e) => !e)}
       >
         <div className="flex-1 min-w-0">
           <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
             {SLOT_LABEL[slot] ?? slot}
           </p>
-          <h3 className="font-medium text-foreground mt-0.5 truncate">{meal.name}</h3>
+          <h3 className="font-heading font-medium text-foreground mt-0.5 break-words line-clamp-2">{meal.name}</h3>
+          {meal.swapped_to?.name && (
+            <p className="text-[12px] text-muted-foreground mt-0.5 break-words line-clamp-2">
+              Swapped for: {meal.swapped_to.name}
+            </p>
+          )}
+
           <div className="flex items-center gap-2 mt-1.5">
             {meal.glycemic_rating && <GlyBadge rating={meal.glycemic_rating} />}
             <span className="text-[11px] text-muted-foreground inline-flex items-center gap-1">
@@ -205,6 +218,20 @@ function MealCard({ slot, meal, planId, day, weekIdx, onSwap }: {
           </div>
 
           <div className="border-t border-border pt-3">
+            {meal.swapped_to?.name && (
+              <div className="mb-2 flex items-start justify-between gap-2">
+                <p className="text-xs text-muted-foreground break-words">
+                  Swapped for: {meal.swapped_to.name}
+                </p>
+                <button
+                  type="button"
+                  onClick={() => onUndoSwap(slot, day, weekIdx)}
+                  className="text-xs text-accent font-medium shrink-0"
+                >
+                  Undo swap
+                </button>
+              </div>
+            )}
             <button
               type="button"
               onClick={() => setShowAlts((s) => !s)}
@@ -221,13 +248,14 @@ function MealCard({ slot, meal, planId, day, weekIdx, onSwap }: {
                     onClick={() => onSwap(slot, day, weekIdx, alt)}
                     className="w-full text-left rounded-md border border-border p-2 hover:border-accent transition-colors"
                   >
-                    <p className="text-sm font-medium text-foreground">{altName(alt)}</p>
-                    {altDescription(alt) && <p className="text-xs text-muted-foreground">{altDescription(alt)}</p>}
+                    <p className="text-sm font-medium text-foreground break-words">{altName(alt)}</p>
+                    {altDescription(alt) && <p className="text-xs text-muted-foreground break-words">{altDescription(alt)}</p>}
                   </button>
                 ))}
               </div>
             )}
           </div>
+
         </div>
       )}
     </Card>
@@ -245,12 +273,17 @@ export default function Meals() {
   const [weekIdx, setWeekIdx] = useState<1 | 2 | 3 | 4>(1);
   const [cuisines, setCuisines] = useState<string[]>([]);
   const [shoppingChecked, setShoppingChecked] = useState<Record<string, boolean>>({});
+  const [shoppingView, setShoppingView] = useState<"category" | "meal">("category");
+  const [excludedMeals, setExcludedMeals] = useState<Record<string, boolean>>({});
   const [toolsSheetOpen, setToolsSheetOpen] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
   const tabParam = searchParams.get("tab");
   const activeTab = ["plan", "snacks", "shopping", "cheat-meal"].includes(tabParam || "") ? (tabParam as string) : "plan";
 
   const programDay = useProgramDay();
+  const { weekStart } = useWeekStart();
+  const dayKeys = useMemo(() => orderedDayKeys(weekStart), [weekStart]);
+
 
   // Load the two most-recent active plans. Plan 1 = earlier valid_from, Plan 2 = later.
   useEffect(() => {
@@ -406,6 +439,15 @@ export default function Meals() {
   }
   const current = resolveWeek(weekIdx);
 
+  function applyPlanUpdate(plan: PlanRow, data: PlanData) {
+    if (plan.id === plan1?.id) setPlan1({ ...plan, plan_data: data });
+    else if (plan.id === plan2?.id) setPlan2({ ...plan, plan_data: data });
+    else if (plan.id === plan3?.id) setPlan3({ ...plan, plan_data: data });
+    else if (plan.id === plan4?.id) setPlan4({ ...plan, plan_data: data });
+  }
+
+  // Swapping records the substitute alongside the meal. The original meal name
+  // is never overwritten, so the plan keeps the record of what was planned.
   async function handleSwap(slot: string, day: string, wIdx: number, alt: Alternative) {
     if (!user) return;
     const { plan, key } = resolveWeek(wIdx as 1 | 2 | 3 | 4);
@@ -413,7 +455,10 @@ export default function Meals() {
     const data: PlanData = JSON.parse(JSON.stringify(plan.plan_data));
     const original = data[key]?.[day]?.[slot];
     if (!original) return;
-    data[key]![day][slot] = { ...original, name: altName(alt), description: altDescription(alt) || original.description };
+    data[key]![day][slot] = {
+      ...original,
+      swapped_to: { name: altName(alt), description: altDescription(alt) },
+    };
     await supabase.from("meal_plans").update({ plan_data: data as never }).eq("id", plan.id);
     await supabase.from("meal_swaps").insert({
       plan_id: plan.id,
@@ -422,51 +467,99 @@ export default function Meals() {
       meal_type: slot,
       swapped_to: { name: altName(alt), description: altDescription(alt) } as never,
     } as never);
-    if (plan.id === plan1?.id) setPlan1({ ...plan, plan_data: data });
-    else if (plan.id === plan2?.id) setPlan2({ ...plan, plan_data: data });
+    applyPlanUpdate(plan, data);
     toast({ title: "Swapped", description: altName(alt) });
+  }
+
+  async function handleUndoSwap(slot: string, day: string, wIdx: number) {
+    if (!user) return;
+    const { plan, key } = resolveWeek(wIdx as 1 | 2 | 3 | 4);
+    if (!plan) return;
+    const data: PlanData = JSON.parse(JSON.stringify(plan.plan_data));
+    const original = data[key]?.[day]?.[slot];
+    if (!original) return;
+    data[key]![day][slot] = { ...original, swapped_to: null };
+    await supabase.from("meal_plans").update({ plan_data: data as never }).eq("id", plan.id);
+    await supabase
+      .from("meal_swaps")
+      .delete()
+      .eq("plan_id", plan.id)
+      .eq("member_id", user.id)
+      .eq("day", day)
+      .eq("meal_type", slot);
+    applyPlanUpdate(plan, data);
+    toast({ title: "Swap removed", description: original.name });
   }
 
   // ----- Shopping list (client-side) — current week only -----
   const shopping = useMemo(() => {
     const { plan, key } = current;
     const wk = plan?.plan_data?.[key];
-    const items: { item: string; quantity?: string; unit?: string }[] = [];
-    let mealCount = 0;
-    const walk = (node: unknown) => {
+    const meals: { key: string; name: string; items: string[] }[] = [];
+    const walk = (node: unknown, path: string) => {
       if (!node || typeof node !== "object") return;
       const rec = node as Record<string, unknown>;
       if (Array.isArray(rec.ingredients) && typeof rec.name === "string") {
-        mealCount++;
-        for (const ing of rec.ingredients as Ingredient[]) {
-          items.push({ item: ingredientItemName(ing) });
-        }
+        meals.push({
+          key: path,
+          name: (rec.swapped_to as { name?: string } | undefined)?.name || (rec.name as string),
+          items: (rec.ingredients as Ingredient[]).map(ingredientItemName),
+        });
+        return;
       }
-      for (const v of Object.values(rec)) walk(v);
+      for (const [k, v] of Object.entries(rec)) walk(v, path ? `${path}.${k}` : k);
     };
-    walk(wk);
+    walk(wk, "");
+
     const byCat = new Map<string, string[]>();
     const seen = new Set<string>();
-    for (const it of items) {
-      const k = it.item.toLowerCase().trim();
-      if (seen.has(k)) continue;
-      seen.add(k);
-      const cat = categorize(it.item);
-      if (!byCat.has(cat)) byCat.set(cat, []);
-      byCat.get(cat)!.push(it.item);
+    for (const m of meals) {
+      for (const item of m.items) {
+        const k = item.toLowerCase().trim();
+        if (!k || seen.has(k)) continue;
+        seen.add(k);
+        const cat = categorize(item);
+        if (!byCat.has(cat)) byCat.set(cat, []);
+        byCat.get(cat)!.push(item);
+      }
     }
-    return { byCat, uniqueCount: seen.size, mealCount };
+    return { byCat, uniqueCount: seen.size, mealCount: meals.length, meals };
   }, [current]);
+
+  // By-meal view: only included meals contribute ingredients.
+  const byMeal = useMemo(() => {
+    const included = shopping.meals.filter((m) => !excludedMeals[m.key]);
+    const unique = new Set<string>();
+    const groups = included.map((m) => {
+      const items: string[] = [];
+      for (const item of m.items) {
+        const k = item.toLowerCase().trim();
+        if (!k || unique.has(k)) continue;
+        unique.add(k);
+        items.push(item);
+      }
+      return { ...m, items };
+    });
+    return { groups, ingredientCount: unique.size, mealCount: included.length };
+  }, [shopping.meals, excludedMeals]);
 
   // Shopping list print/share (M9) — same underlying data, presentational entry points only.
   const shoppingText = useMemo(() => {
     const lines: string[] = [`Shopping list — Week ${weekIdx}`];
-    for (const [cat, items] of shopping.byCat.entries()) {
-      lines.push(`\n${cat}`);
-      for (const item of items) lines.push(`- ${item}`);
+    if (shoppingView === "meal") {
+      for (const g of byMeal.groups) {
+        lines.push(`\n${g.name}`);
+        for (const item of g.items) lines.push(`- ${item}`);
+      }
+    } else {
+      for (const [cat, items] of shopping.byCat.entries()) {
+        lines.push(`\n${cat}`);
+        for (const item of items) lines.push(`- ${item}`);
+      }
     }
     return lines.join("\n");
-  }, [shopping, weekIdx]);
+  }, [shopping, byMeal, shoppingView, weekIdx]);
+
 
   function handlePrintList() {
     window.print();
@@ -636,12 +729,12 @@ export default function Meals() {
 
           {week ? (
             <div className="space-y-5">
-              {DAY_KEYS.map((dayKey) => {
+              {dayKeys.map((dayKey) => {
                 const day = week[dayKey];
                 if (!day) return null;
                 return (
                   <div key={dayKey}>
-                    <h2 className="font-medium text-foreground capitalize mb-2">{dayKey}</h2>
+                    <h2 className="font-heading font-medium text-foreground capitalize mb-2">{dayKey}</h2>
                     <div className="space-y-2">
                       {slots.map((slot) => {
                         const meal = day[slot];
@@ -655,6 +748,7 @@ export default function Meals() {
                             day={dayKey}
                             weekIdx={weekIdx}
                             onSwap={handleSwap}
+                            onUndoSwap={handleUndoSwap}
                           />
                         );
                       })}
@@ -672,11 +766,36 @@ export default function Meals() {
           <p className="text-xs text-muted-foreground">
             Generated from Week {weekIdx}'s meals. Checked items move to the bottom.
           </p>
-          {shopping.mealCount > 0 && shopping.uniqueCount > 0 && (
-            <p className="text-sm font-medium text-foreground">
-              {shopping.uniqueCount} ingredients cover all {shopping.mealCount} meals this week.
-            </p>
-          )}
+
+          <div className="inline-flex rounded-lg border border-border p-1 bg-muted/40">
+            {(["category", "meal"] as const).map((v) => (
+              <button
+                key={v}
+                type="button"
+                onClick={() => setShoppingView(v)}
+                className={cn(
+                  "px-3 min-h-9 rounded-md text-xs font-medium transition-colors",
+                  shoppingView === v
+                    ? "bg-card text-foreground shadow-warm"
+                    : "text-muted-foreground",
+                )}
+              >
+                {v === "category" ? "By category" : "By meal"}
+              </button>
+            ))}
+          </div>
+
+          {shoppingView === "category"
+            ? shopping.mealCount > 0 && shopping.uniqueCount > 0 && (
+                <p className="text-sm font-medium text-foreground">
+                  {shopping.uniqueCount} ingredients cover all {shopping.mealCount} meals this week.
+                </p>
+              )
+            : (
+                <p className="text-sm font-medium text-foreground">
+                  {byMeal.ingredientCount} ingredients for {byMeal.mealCount} meals selected.
+                </p>
+              )}
 
           <div className="flex flex-col lg:flex-row lg:items-center gap-2">
             <Button
@@ -694,13 +813,75 @@ export default function Meals() {
             </Button>
           </div>
 
-          <div className="grid lg:grid-cols-1 gap-4">
+          {shoppingView === "meal" && (
+            <div className="space-y-3">
+              {shopping.meals.map((m) => {
+                const included = !excludedMeals[m.key];
+                const group = byMeal.groups.find((g) => g.key === m.key);
+                return (
+                  <Card key={m.key} className="border-border overflow-hidden rounded-xl shadow-warm">
+                    <label className="flex items-start gap-2 px-4 py-3 border-b border-border cursor-pointer">
+                      <span className="flex items-center justify-center h-6 w-6 shrink-0">
+                        <Checkbox
+                          checked={included}
+                          onCheckedChange={(v) =>
+                            setExcludedMeals((p) => ({ ...p, [m.key]: !v }))
+                          }
+                        />
+                      </span>
+                      <span className="font-medium text-foreground break-words">{m.name}</span>
+                    </label>
+                    {included && (
+                      <ul className="p-4 pt-3 space-y-1">
+                        {group && group.items.length > 0 ? (
+                          [...group.items]
+                            .sort((a, b) => Number(!!shoppingChecked[a]) - Number(!!shoppingChecked[b]))
+                            .map((item) => {
+                              const checked = !!shoppingChecked[item];
+                              return (
+                                <li
+                                  key={item}
+                                  className={cn(
+                                    "flex items-center gap-2 text-sm min-h-11",
+                                    checked && "text-muted-foreground line-through opacity-60",
+                                  )}
+                                >
+                                  <span className="flex items-center justify-center h-11 w-11 -m-3 shrink-0">
+                                    <Checkbox
+                                      checked={checked}
+                                      onCheckedChange={(v) =>
+                                        setShoppingChecked((p) => ({ ...p, [item]: Boolean(v) }))
+                                      }
+                                    />
+                                  </span>
+                                  <span className="break-words">{item}</span>
+                                </li>
+                              );
+                            })
+                        ) : (
+                          <li className="text-xs text-muted-foreground">
+                            All ingredients already covered by another meal.
+                          </li>
+                        )}
+                      </ul>
+                    )}
+                  </Card>
+                );
+              })}
+              {shopping.meals.length === 0 && (
+                <p className="text-sm text-muted-foreground">No meals found in this week.</p>
+              )}
+            </div>
+          )}
+
+          <div className={cn("grid lg:grid-cols-1 gap-4", shoppingView !== "category" && "hidden")}>
+
             {[...shopping.byCat.entries()].map(([cat, items]) => {
               const tip = CATEGORY_RULES.find((c) => c.category === cat)?.tip;
               const sorted = [...items].sort((a, b) => Number(!!shoppingChecked[a]) - Number(!!shoppingChecked[b]));
               return (
                 <Card key={cat} className="border-border overflow-hidden">
-                  <h3 className="sticky top-0 z-10 bg-background font-medium text-foreground px-4 py-3 border-b border-border">
+                  <h3 className="font-heading sticky top-0 z-10 bg-background font-medium text-foreground px-4 py-3 border-b border-border">
                     {cat}
                   </h3>
                   <div className="p-4 pt-3">
@@ -734,7 +915,7 @@ export default function Meals() {
               );
             })}
           </div>
-          {shopping.byCat.size === 0 && (
+          {shoppingView === "category" && shopping.byCat.size === 0 && (
             <p className="text-sm text-muted-foreground">No ingredients found in this week.</p>
           )}
 
