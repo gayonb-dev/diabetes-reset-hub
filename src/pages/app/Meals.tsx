@@ -75,7 +75,7 @@ function altDescription(alt: Alternative): string {
   return typeof alt === "string" ? "" : alt.description ?? "";
 }
 
-const DAY_KEYS = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"] as const;
+// Day ordering now comes from the member's week-start preference (see useWeekStart).
 const STANDARD_SLOTS = ["breakfast", "lunch", "dinner", "snack_1", "snack_2"] as const;
 const IF_SLOTS = ["meal_1", "snack_1", "meal_2", "snack_2"] as const;
 
