@@ -915,7 +915,7 @@ export default function Meals() {
               );
             })}
           </div>
-          {shopping.byCat.size === 0 && (
+          {shoppingView === "category" && shopping.byCat.size === 0 && (
             <p className="text-sm text-muted-foreground">No ingredients found in this week.</p>
           )}
 
