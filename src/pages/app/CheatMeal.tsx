@@ -26,13 +26,8 @@ interface CheatMeal {
   week_start_date: string;
 }
 
-function startOfWeek(d: Date) {
-  const out = new Date(d);
-  const day = out.getDay(); // 0 Sun
-  out.setDate(out.getDate() - day);
-  out.setHours(0, 0, 0, 0);
-  return out;
-}
+// Week boundaries follow the member's week-start preference (see useWeekStart).
+
 
 function startOfDay(d: Date) {
   return new Date(d.getFullYear(), d.getMonth(), d.getDate());
