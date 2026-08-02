@@ -6,6 +6,11 @@ import { Button } from "@/components/ui/button";
 import { Loader2, Timer, AlertCircle } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import EmptyState from "@/components/ui/empty-state";
+import { useFastingProfile } from "@/hooks/useFastingProfile";
+import FastingScreening from "@/components/safety/FastingScreening";
+import FastingTargetCard from "@/components/fasting/FastingTargetCard";
+import LowBloodSugarCard from "@/components/fasting/LowBloodSugarCard";
+import { formatHour, scheduleForProfile } from "@/lib/mealTiming";
 
 type WindowType = "14_10" | "16_8" | "12_12";
 type Status = "active" | "completed" | "broken";
