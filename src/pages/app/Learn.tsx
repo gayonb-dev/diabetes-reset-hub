@@ -184,7 +184,7 @@ export default function Learn() {
                 const meta = (p.metadata || {}) as Record<string, string>;
                 return (
                   <Card key={p.id} className="p-4 border border-border">
-                    <h3 className="text-base font-semibold text-foreground">
+                    <h3 className="font-heading text-base font-semibold text-foreground">
                       {p.title}
                     </h3>
                     {meta.source && (

@@ -155,7 +155,7 @@ function MealCard({ slot, meal, planId, day, weekIdx, onSwap, onUndoSwap }: {
           <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
             {SLOT_LABEL[slot] ?? slot}
           </p>
-          <h3 className="font-medium text-foreground mt-0.5 break-words line-clamp-2">{meal.name}</h3>
+          <h3 className="font-heading font-medium text-foreground mt-0.5 break-words line-clamp-2">{meal.name}</h3>
           {meal.swapped_to?.name && (
             <p className="text-[12px] text-muted-foreground mt-0.5 break-words line-clamp-2">
               Swapped for: {meal.swapped_to.name}
@@ -881,7 +881,7 @@ export default function Meals() {
               const sorted = [...items].sort((a, b) => Number(!!shoppingChecked[a]) - Number(!!shoppingChecked[b]));
               return (
                 <Card key={cat} className="border-border overflow-hidden">
-                  <h3 className="sticky top-0 z-10 bg-background font-medium text-foreground px-4 py-3 border-b border-border">
+                  <h3 className="font-heading sticky top-0 z-10 bg-background font-medium text-foreground px-4 py-3 border-b border-border">
                     {cat}
                   </h3>
                   <div className="p-4 pt-3">

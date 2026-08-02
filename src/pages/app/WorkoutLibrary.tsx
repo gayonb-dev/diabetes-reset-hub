@@ -32,7 +32,7 @@ function WorkoutCard({ workout }: { workout: Workout }) {
     <Card className="p-4 border-border hover:border-primary/40 transition-colors flex flex-col gap-3">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <h3 className="font-medium text-foreground text-base">{workout.name}</h3>
+          <h3 className="font-heading font-medium text-foreground text-base">{workout.name}</h3>
           <p className="text-xs text-muted-foreground mt-0.5">{workout.focus}</p>
         </div>
         <DifficultyDots level={workout.difficulty} />
