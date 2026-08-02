@@ -729,12 +729,12 @@ export default function Meals() {
 
           {week ? (
             <div className="space-y-5">
-              {DAY_KEYS.map((dayKey) => {
+              {dayKeys.map((dayKey) => {
                 const day = week[dayKey];
                 if (!day) return null;
                 return (
                   <div key={dayKey}>
-                    <h2 className="font-medium text-foreground capitalize mb-2">{dayKey}</h2>
+                    <h2 className="font-heading font-medium text-foreground capitalize mb-2">{dayKey}</h2>
                     <div className="space-y-2">
                       {slots.map((slot) => {
                         const meal = day[slot];
@@ -748,6 +748,7 @@ export default function Meals() {
                             day={dayKey}
                             weekIdx={weekIdx}
                             onSwap={handleSwap}
+                            onUndoSwap={handleUndoSwap}
                           />
                         );
                       })}
@@ -765,11 +766,36 @@ export default function Meals() {
           <p className="text-xs text-muted-foreground">
             Generated from Week {weekIdx}'s meals. Checked items move to the bottom.
           </p>
-          {shopping.mealCount > 0 && shopping.uniqueCount > 0 && (
-            <p className="text-sm font-medium text-foreground">
-              {shopping.uniqueCount} ingredients cover all {shopping.mealCount} meals this week.
-            </p>
-          )}
+
+          <div className="inline-flex rounded-lg border border-border p-1 bg-muted/40">
+            {(["category", "meal"] as const).map((v) => (
+              <button
+                key={v}
+                type="button"
+                onClick={() => setShoppingView(v)}
+                className={cn(
+                  "px-3 min-h-9 rounded-md text-xs font-medium transition-colors",
+                  shoppingView === v
+                    ? "bg-card text-foreground shadow-warm"
+                    : "text-muted-foreground",
+                )}
+              >
+                {v === "category" ? "By category" : "By meal"}
+              </button>
+            ))}
+          </div>
+
+          {shoppingView === "category"
+            ? shopping.mealCount > 0 && shopping.uniqueCount > 0 && (
+                <p className="text-sm font-medium text-foreground">
+                  {shopping.uniqueCount} ingredients cover all {shopping.mealCount} meals this week.
+                </p>
+              )
+            : (
+                <p className="text-sm font-medium text-foreground">
+                  {byMeal.ingredientCount} ingredients for {byMeal.mealCount} meals selected.
+                </p>
+              )}
 
           <div className="flex flex-col lg:flex-row lg:items-center gap-2">
             <Button
@@ -787,7 +813,69 @@ export default function Meals() {
             </Button>
           </div>
 
-          <div className="grid lg:grid-cols-1 gap-4">
+          {shoppingView === "meal" && (
+            <div className="space-y-3">
+              {shopping.meals.map((m) => {
+                const included = !excludedMeals[m.key];
+                const group = byMeal.groups.find((g) => g.key === m.key);
+                return (
+                  <Card key={m.key} className="border-border overflow-hidden rounded-xl shadow-warm">
+                    <label className="flex items-start gap-2 px-4 py-3 border-b border-border cursor-pointer">
+                      <span className="flex items-center justify-center h-6 w-6 shrink-0">
+                        <Checkbox
+                          checked={included}
+                          onCheckedChange={(v) =>
+                            setExcludedMeals((p) => ({ ...p, [m.key]: !v }))
+                          }
+                        />
+                      </span>
+                      <span className="font-medium text-foreground break-words">{m.name}</span>
+                    </label>
+                    {included && (
+                      <ul className="p-4 pt-3 space-y-1">
+                        {group && group.items.length > 0 ? (
+                          [...group.items]
+                            .sort((a, b) => Number(!!shoppingChecked[a]) - Number(!!shoppingChecked[b]))
+                            .map((item) => {
+                              const checked = !!shoppingChecked[item];
+                              return (
+                                <li
+                                  key={item}
+                                  className={cn(
+                                    "flex items-center gap-2 text-sm min-h-11",
+                                    checked && "text-muted-foreground line-through opacity-60",
+                                  )}
+                                >
+                                  <span className="flex items-center justify-center h-11 w-11 -m-3 shrink-0">
+                                    <Checkbox
+                                      checked={checked}
+                                      onCheckedChange={(v) =>
+                                        setShoppingChecked((p) => ({ ...p, [item]: Boolean(v) }))
+                                      }
+                                    />
+                                  </span>
+                                  <span className="break-words">{item}</span>
+                                </li>
+                              );
+                            })
+                        ) : (
+                          <li className="text-xs text-muted-foreground">
+                            All ingredients already covered by another meal.
+                          </li>
+                        )}
+                      </ul>
+                    )}
+                  </Card>
+                );
+              })}
+              {shopping.meals.length === 0 && (
+                <p className="text-sm text-muted-foreground">No meals found in this week.</p>
+              )}
+            </div>
+          )}
+
+          <div className={cn("grid lg:grid-cols-1 gap-4", shoppingView !== "category" && "hidden")}>
+
             {[...shopping.byCat.entries()].map(([cat, items]) => {
               const tip = CATEGORY_RULES.find((c) => c.category === cat)?.tip;
               const sorted = [...items].sort((a, b) => Number(!!shoppingChecked[a]) - Number(!!shoppingChecked[b]));
