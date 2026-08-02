@@ -1592,6 +1592,7 @@ export type Database = {
           timezone: string | null
           updated_at: string
           user_id: string
+          week_start_day: number
         }
         Insert: {
           community_display_name?: string | null
@@ -1607,6 +1608,7 @@ export type Database = {
           timezone?: string | null
           updated_at?: string
           user_id: string
+          week_start_day?: number
         }
         Update: {
           community_display_name?: string | null
@@ -1622,6 +1624,7 @@ export type Database = {
           timezone?: string | null
           updated_at?: string
           user_id?: string
+          week_start_day?: number
         }
         Relationships: []
       }
