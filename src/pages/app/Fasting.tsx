@@ -135,7 +135,18 @@ export default function Fasting() {
     [now],
   );
 
-  if (loading) {
+  // One-time low-blood-sugar card, the first time a fasting window activates.
+  useEffect(() => {
+    if (fp.loading || !fp.profile) return;
+    const activated = !!active || !!fp.window;
+    if (activated && !fp.profile.low_bs_card_seen_at) {
+      setShowLowBs(true);
+      fp.save({ low_bs_card_seen_at: new Date().toISOString() });
+    }
+    /* eslint-disable-next-line react-hooks/exhaustive-deps */
+  }, [fp.loading, fp.profile?.low_bs_card_seen_at, fp.window, active]);
+
+  if (loading || fp.loading) {
     return (
       <div className="flex justify-center py-12">
         <Loader2 className="h-6 w-6 animate-spin text-primary" />
@@ -153,14 +164,55 @@ export default function Fasting() {
   const isFasting = !!active && fastingRemaining > 0;
   const isEatingWindow = !!active && fastingRemaining <= 0;
 
+  const header = (
+    <div>
+      <h1 className="font-heading font-semibold text-2xl text-primary flex items-center gap-2">
+        <Timer className="h-6 w-6" /> Intermittent Fasting
+      </h1>
+      <p className="text-sm text-muted-foreground">Window timer and history.</p>
+    </div>
+  );
+
+  // Unscreened members see the screening itself here — never a dead end.
+  if (fp.needsScreening) {
+    return (
+      <div className="space-y-5">
+        {header}
+        <p className="text-sm text-muted-foreground">
+          Before fasting unlocks, we need a few answers about your medication and health. It takes a minute.
+        </p>
+        <FastingScreening onComplete={fp.reload} />
+      </div>
+    );
+  }
+
+  if (!fp.canFast) {
+    return (
+      <div className="space-y-5">
+        {header}
+        {fp.eligibility === "not_eligible" ? (
+          <Card className="p-5 border-border rounded-xl shadow-warm">
+            <p className="text-sm">
+              Fasting isn't part of your plan, and it doesn't need to be. It's one optional tool among several —
+              the plate method, post-meal walks, and consistent meal timing do the heavy lifting, and they're all
+              still yours.
+            </p>
+          </Card>
+        ) : (
+          <FastingScreening onComplete={fp.reload} />
+        )}
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-5">
-      <div>
-        <h1 className="font-heading font-semibold text-2xl text-primary flex items-center gap-2">
-          <Timer className="h-6 w-6" /> Intermittent Fasting
-        </h1>
-        <p className="text-sm text-muted-foreground">Window timer and history.</p>
-      </div>
+      {header}
+
+      {showLowBs && <LowBloodSugarCard onDismiss={() => setShowLowBs(false)} />}
+
+      <FastingTargetCard />
+
 
       {/* Status card */}
       {!active && (
