@@ -679,6 +679,22 @@ export default function Settings() {
         </Button>
       </Card>
 
+      {/* Week start */}
+      <Card className="p-5 border-border rounded-xl shadow-warm">
+        <h2 className="font-heading font-semibold text-base mb-1 max-lg:sticky max-lg:top-0 max-lg:z-10 max-lg:bg-card max-lg:py-1">
+          Week starts on
+        </h2>
+        <p className="text-xs text-muted-foreground mb-3">
+          Used for your meal week, cheat meal, and habit grids.
+        </p>
+        <div className="grid grid-cols-2 gap-2">
+          <Chip active={weekStart === 0} onClick={() => saveWeekStart(0)}>Sunday</Chip>
+          <Chip active={weekStart === 1} onClick={() => saveWeekStart(1)}>Monday</Chip>
+        </div>
+      </Card>
+
+
+
 
       {/* WhatsApp */}
       <Card className="p-5 border-border">
