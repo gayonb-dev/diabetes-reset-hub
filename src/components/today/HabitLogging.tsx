@@ -12,6 +12,8 @@ import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { SearchSheet, SearchSheetOption } from "@/components/ui/search-sheet";
+import { useFastingProfile } from "@/hooks/useFastingProfile";
+import { scheduleForProfile, hasSnacks, SNACK_TIMING_COPY, NO_SNACK_COPY } from "@/lib/mealTiming";
 
 
 interface Props {
