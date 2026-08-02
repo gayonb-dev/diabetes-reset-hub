@@ -59,6 +59,8 @@ export default function Fasting() {
   const [now, setNow] = useState(Date.now());
   const [windowChoice, setWindowChoice] = useState<WindowType>("14_10");
   const [showRules, setShowRules] = useState(false);
+  const fp = useFastingProfile();
+  const [showLowBs, setShowLowBs] = useState(false);
 
   const refresh = async () => {
     if (!user) return;
