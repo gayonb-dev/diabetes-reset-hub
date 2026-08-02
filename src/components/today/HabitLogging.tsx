@@ -94,6 +94,12 @@ export default function HabitLogging({ currentProgramDay }: Props) {
   const [snackOptions, setSnackOptions] = useState<SearchSheetOption[]>([]);
   const [customSnackSlot, setCustomSnackSlot] = useState<"snack_1" | "snack_2" | null>(null);
   const [customSnackText, setCustomSnackText] = useState("");
+  const { profile: fastingProfile } = useFastingProfile();
+  const snacksScheduled = useMemo(
+    () => hasSnacks(scheduleForProfile(fastingProfile)),
+    [fastingProfile],
+  );
+
 
   // Deep-link from Dashboard water tile: /app/today#water-logging
   useEffect(() => {
