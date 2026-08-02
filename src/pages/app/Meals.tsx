@@ -33,7 +33,10 @@ interface Meal {
   plate_breakdown: string | { vegetables: string; protein: string; carbs: string };
   glycemic_rating?: "low" | "medium" | "high";
   alternatives: Alternative[];
+  /** Substitute chosen by the member. The original `name` is never overwritten. */
+  swapped_to?: { name: string; description?: string } | null;
 }
+
 
 function ingredientText(ing: Ingredient): string {
   if (typeof ing === "string") return ing;
