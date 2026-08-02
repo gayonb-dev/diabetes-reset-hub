@@ -4,6 +4,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from "recharts";
 import EmptyState from "@/components/ui/empty-state";
+import { useWeekStart } from "@/hooks/useWeekStart";
+import { dayIndexInWeek, orderedDayLabels } from "@/lib/weekStart";
 
 interface DayRings {
   water: boolean;
@@ -13,7 +15,7 @@ interface DayRings {
 }
 
 function dateKey(d: Date) {
-  return d.toISOString().slice(0, 10);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
 
 function ringColor(count: number) {
@@ -25,6 +27,7 @@ function ringColor(count: number) {
 
 export default function HabitsTab() {
   const { user } = useAuth();
+  const { weekStart } = useWeekStart();
   const [days, setDays] = useState<Map<string, DayRings>>(new Map());
   const [selected, setSelected] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -83,6 +86,7 @@ export default function HabitsTab() {
     return arr;
   }, [days]);
 
+  const leadingBlanks = cells.length ? dayIndexInWeek(cells[0].date.getDay(), weekStart) : 0;
   const compliantDays = cells.filter((c) => c.count >= 3).length;
   const totalDays = cells.length;
   const selectedRings = selected ? days.get(selected) : null;
@@ -151,7 +155,15 @@ export default function HabitsTab() {
 
       <Card className="p-5 border border-border">
         <p className="text-sm font-medium mb-3">Last 90 days heatmap</p>
-        <div className="grid grid-cols-[repeat(15,minmax(0,1fr))] gap-1.5">
+        <div className="grid grid-cols-7 gap-1.5 mb-1.5">
+          {orderedDayLabels(weekStart).map((l, i) => (
+            <span key={i} className="text-[10px] text-tertiary-fg text-center">{l[0]}</span>
+          ))}
+        </div>
+        <div className="grid grid-cols-7 gap-1.5">
+          {Array.from({ length: leadingBlanks }).map((_, i) => (
+            <span key={`blank-${i}`} aria-hidden className="aspect-square" />
+          ))}
           {cells.map((c) => (
             <button
               key={c.key}
