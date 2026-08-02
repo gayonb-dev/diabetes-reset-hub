@@ -66,8 +66,7 @@ export function SnackLibrary({ dayNumber }: { dayNumber: number }) {
   return (
     <div className="space-y-3">
       <p className="text-xs text-muted-foreground">
-        Pick any unlocked snack between meals. Around 2.5–3 hours after eating usually feels best, but use
-        what works for your day.
+        Snacks work best 3–4 hours after a main meal, and are mainly for bridging gaps longer than 5 hours.
       </p>
       <div className="grid lg:grid-cols-2 gap-3">
         {snacks.map((s) => {
