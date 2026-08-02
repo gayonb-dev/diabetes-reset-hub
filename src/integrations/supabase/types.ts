@@ -1579,12 +1579,20 @@ export type Database = {
       }
       profiles: {
         Row: {
+          bedtime_hour: number
           community_display_name: string | null
           created_at: string
           date_of_birth: string | null
+          doctor_confirmed_at: string | null
+          fasting_eligibility: string
+          fasting_exclusions: Json
+          fasting_started_on: string | null
+          fasting_target: number
           first_name: string | null
           last_name: string | null
+          low_bs_card_seen_at: string | null
           meal_preferences: Json
+          medication_class: string | null
           notification_prefs: Json
           program_start_date: string | null
           regen_month: string | null
@@ -1593,14 +1601,23 @@ export type Database = {
           updated_at: string
           user_id: string
           week_start_day: number
+          window_start_hour: number
         }
         Insert: {
+          bedtime_hour?: number
           community_display_name?: string | null
           created_at?: string
           date_of_birth?: string | null
+          doctor_confirmed_at?: string | null
+          fasting_eligibility?: string
+          fasting_exclusions?: Json
+          fasting_started_on?: string | null
+          fasting_target?: number
           first_name?: string | null
           last_name?: string | null
+          low_bs_card_seen_at?: string | null
           meal_preferences?: Json
+          medication_class?: string | null
           notification_prefs?: Json
           program_start_date?: string | null
           regen_month?: string | null
@@ -1609,14 +1626,23 @@ export type Database = {
           updated_at?: string
           user_id: string
           week_start_day?: number
+          window_start_hour?: number
         }
         Update: {
+          bedtime_hour?: number
           community_display_name?: string | null
           created_at?: string
           date_of_birth?: string | null
+          doctor_confirmed_at?: string | null
+          fasting_eligibility?: string
+          fasting_exclusions?: Json
+          fasting_started_on?: string | null
+          fasting_target?: number
           first_name?: string | null
           last_name?: string | null
+          low_bs_card_seen_at?: string | null
           meal_preferences?: Json
+          medication_class?: string | null
           notification_prefs?: Json
           program_start_date?: string | null
           regen_month?: string | null
@@ -1625,6 +1651,7 @@ export type Database = {
           updated_at?: string
           user_id?: string
           week_start_day?: number
+          window_start_hour?: number
         }
         Relationships: []
       }
