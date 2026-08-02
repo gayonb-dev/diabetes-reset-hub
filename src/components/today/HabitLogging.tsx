@@ -12,6 +12,8 @@ import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { SearchSheet, SearchSheetOption } from "@/components/ui/search-sheet";
+import { useFastingProfile } from "@/hooks/useFastingProfile";
+import { scheduleForProfile, hasSnacks, SNACK_TIMING_COPY, NO_SNACK_COPY } from "@/lib/mealTiming";
 
 
 interface Props {
@@ -92,6 +94,12 @@ export default function HabitLogging({ currentProgramDay }: Props) {
   const [snackOptions, setSnackOptions] = useState<SearchSheetOption[]>([]);
   const [customSnackSlot, setCustomSnackSlot] = useState<"snack_1" | "snack_2" | null>(null);
   const [customSnackText, setCustomSnackText] = useState("");
+  const { profile: fastingProfile } = useFastingProfile();
+  const snacksScheduled = useMemo(
+    () => hasSnacks(scheduleForProfile(fastingProfile)),
+    [fastingProfile],
+  );
+
 
   // Deep-link from Dashboard water tile: /app/today#water-logging
   useEffect(() => {
@@ -345,21 +353,23 @@ export default function HabitLogging({ currentProgramDay }: Props) {
         icon={Cookie}
         title="Snacks"
         iconColor="hsl(var(--accent))"
-        status="Eat 2.5–3 hrs after a meal and at least 1.5 hrs before the next"
+        status={snacksScheduled ? SNACK_TIMING_COPY : "No snack needed today"}
         open={openKey === "snacks"}
         onToggle={() => toggle("snacks")}
       >
-        <p className="text-xs text-tertiary-fg mt-3">
-          Snacks generally work best around 2.5–3 hours after a main meal. Earlier than that, your blood sugar
-          may still be settling — so give it a little time where you can.
-        </p>
+        <p className="text-xs text-tertiary-fg mt-3">{SNACK_TIMING_COPY}</p>
         {lowersMeds && (
           <p className="text-xs text-accent bg-accent-muted border border-accent/40 rounded-md p-2 mt-3">
             Note: skipping snacks while on medication that lowers blood sugar can cause levels to drop. Check
             with your doctor about what spacing is right for you.
           </p>
         )}
+        {!snacksScheduled && (
+          <p className="text-xs text-muted-foreground mt-3">{NO_SNACK_COPY}</p>
+        )}
+        {snacksScheduled && (
         <div className="grid sm:grid-cols-2 gap-3 mt-4">
+
           {(["snack_1", "snack_2"] as const).map((slot) => {
             const s = h.snacks[slot];
             return (
@@ -423,6 +433,8 @@ export default function HabitLogging({ currentProgramDay }: Props) {
             );
           })}
         </div>
+        )}
+        {snacksScheduled && (
         <div className="mt-3">
           <button
             className="text-xs text-accent underline"
@@ -437,6 +449,8 @@ export default function HabitLogging({ currentProgramDay }: Props) {
             </p>
           )}
         </div>
+        )}
+
         <SearchSheet
           open={snackSheetSlot != null}
           onOpenChange={(o) => !o && setSnackSheetSlot(null)}

@@ -6,6 +6,11 @@ import { Button } from "@/components/ui/button";
 import { Loader2, Timer, AlertCircle } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import EmptyState from "@/components/ui/empty-state";
+import { useFastingProfile } from "@/hooks/useFastingProfile";
+import FastingScreening from "@/components/safety/FastingScreening";
+import FastingTargetCard from "@/components/fasting/FastingTargetCard";
+import LowBloodSugarCard from "@/components/fasting/LowBloodSugarCard";
+import { formatHour, scheduleForProfile } from "@/lib/mealTiming";
 
 type WindowType = "14_10" | "16_8" | "12_12";
 type Status = "active" | "completed" | "broken";
@@ -54,6 +59,8 @@ export default function Fasting() {
   const [now, setNow] = useState(Date.now());
   const [windowChoice, setWindowChoice] = useState<WindowType>("14_10");
   const [showRules, setShowRules] = useState(false);
+  const fp = useFastingProfile();
+  const [showLowBs, setShowLowBs] = useState(false);
 
   const refresh = async () => {
     if (!user) return;
@@ -128,7 +135,18 @@ export default function Fasting() {
     [now],
   );
 
-  if (loading) {
+  // One-time low-blood-sugar card, the first time a fasting window activates.
+  useEffect(() => {
+    if (fp.loading || !fp.profile) return;
+    const activated = !!active || !!fp.window;
+    if (activated && !fp.profile.low_bs_card_seen_at) {
+      setShowLowBs(true);
+      fp.save({ low_bs_card_seen_at: new Date().toISOString() });
+    }
+    /* eslint-disable-next-line react-hooks/exhaustive-deps */
+  }, [fp.loading, fp.profile?.low_bs_card_seen_at, fp.window, active]);
+
+  if (loading || fp.loading) {
     return (
       <div className="flex justify-center py-12">
         <Loader2 className="h-6 w-6 animate-spin text-primary" />
@@ -146,14 +164,55 @@ export default function Fasting() {
   const isFasting = !!active && fastingRemaining > 0;
   const isEatingWindow = !!active && fastingRemaining <= 0;
 
+  const header = (
+    <div>
+      <h1 className="font-heading font-semibold text-2xl text-primary flex items-center gap-2">
+        <Timer className="h-6 w-6" /> Intermittent Fasting
+      </h1>
+      <p className="text-sm text-muted-foreground">Window timer and history.</p>
+    </div>
+  );
+
+  // Unscreened members see the screening itself here — never a dead end.
+  if (fp.needsScreening) {
+    return (
+      <div className="space-y-5">
+        {header}
+        <p className="text-sm text-muted-foreground">
+          Before fasting unlocks, we need a few answers about your medication and health. It takes a minute.
+        </p>
+        <FastingScreening onComplete={fp.reload} />
+      </div>
+    );
+  }
+
+  if (!fp.canFast) {
+    return (
+      <div className="space-y-5">
+        {header}
+        {fp.eligibility === "not_eligible" ? (
+          <Card className="p-5 border-border rounded-xl shadow-warm">
+            <p className="text-sm">
+              Fasting isn't part of your plan, and it doesn't need to be. It's one optional tool among several —
+              the plate method, post-meal walks, and consistent meal timing do the heavy lifting, and they're all
+              still yours.
+            </p>
+          </Card>
+        ) : (
+          <FastingScreening onComplete={fp.reload} />
+        )}
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-5">
-      <div>
-        <h1 className="font-heading font-semibold text-2xl text-primary flex items-center gap-2">
-          <Timer className="h-6 w-6" /> Intermittent Fasting
-        </h1>
-        <p className="text-sm text-muted-foreground">Window timer and history.</p>
-      </div>
+      {header}
+
+      {showLowBs && <LowBloodSugarCard onDismiss={() => setShowLowBs(false)} />}
+
+      <FastingTargetCard />
+
 
       {/* Status card */}
       {!active && (
@@ -223,49 +282,45 @@ export default function Fasting() {
         </Card>
       )}
 
-      {/* Today's eating schedule */}
-      {active && eatingStartMs > 0 && (
-        <Card className="p-5 border border-border">
-          <p className="text-sm font-medium mb-3">Today's eating schedule</p>
-          <div className="lg:hidden -mx-1 overflow-x-auto">
-            <div className="flex gap-2 px-1 min-w-max">
-              {[
-                ["Meal 1", 0],
-                ["Snack 1", 2.5],
-                ["Meal 2", 4],
-                ["Snack 2", 6.5],
-                ["Fast begins", 24 - active.planned_duration_hours],
-              ].map(([label, offset]) => (
-                <div
-                  key={label as string}
-                  className="flex flex-col items-center gap-1 rounded-lg border border-border px-3 py-2 shrink-0 min-w-[84px]"
-                >
-                  <span className="text-[11px] text-muted-foreground text-center">{label}</span>
-                  <span className="font-medium tabular-nums text-xs">
-                    {new Date(eatingStartMs + (offset as number) * 3600000).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-                  </span>
+      {/* Today's eating schedule — from the meal-timing engine */}
+      {(() => {
+        const items = scheduleForProfile(fp.profile);
+        const rows: { label: string; hour: number }[] = [
+          ...items.map((i) => ({ label: i.label, hour: i.hour })),
+        ];
+        const win = fp.window;
+        if (win) rows.push({ label: "Fast begins", hour: win.endHour % 24 });
+        return (
+          <Card className="p-5 border border-border rounded-xl shadow-warm">
+            <p className="text-sm font-medium mb-3">Today's eating schedule</p>
+            <div className="lg:hidden -mx-1 overflow-x-auto">
+              <div className="flex gap-2 px-1 min-w-max">
+                {rows.map((r) => (
+                  <div
+                    key={r.label}
+                    className="flex flex-col items-center gap-1 rounded-lg border border-border px-3 py-2 shrink-0 min-w-[84px]"
+                  >
+                    <span className="text-[11px] text-muted-foreground text-center">{r.label}</span>
+                    <span className="font-medium tabular-nums text-xs">{formatHour(r.hour)}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="hidden lg:block space-y-2 text-sm">
+              {rows.map((r) => (
+                <div key={r.label} className="flex justify-between">
+                  <span className="text-muted-foreground">{r.label}</span>
+                  <span className="font-medium tabular-nums">{formatHour(r.hour)}</span>
                 </div>
               ))}
             </div>
-          </div>
-          <div className="hidden lg:block space-y-2 text-sm">
-            {[
-              ["Meal 1 (break fast)", 0],
-              ["Snack 1", 2.5],
-              ["Meal 2", 4],
-              ["Snack 2", 6.5],
-              ["Fast begins", 24 - active.planned_duration_hours],
-            ].map(([label, offset]) => (
-              <div key={label as string} className="flex justify-between">
-                <span className="text-muted-foreground">{label}</span>
-                <span className="font-medium tabular-nums">
-                  {new Date(eatingStartMs + (offset as number) * 3600000).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-                </span>
-              </div>
-            ))}
-          </div>
-        </Card>
-      )}
+          </Card>
+        );
+      })()}
+
+      {/* Low blood sugar reference, always available here */}
+      <LowBloodSugarCard dismissible={false} />
+
 
       {/* History */}
       <Card className="p-5 border border-border">

@@ -31,7 +31,7 @@ export const DEFAULT_LEARN_GUIDES: LearnGuide[] = [
   {
     slug: "snack-strategy",
     title: "Snack Strategy Guide",
-    body: "Snacks bridge the gap between meals so your blood sugar never crashes into cravings. Pair protein with fiber: a boiled egg and cucumber, Greek yogurt and berries, almonds and an apple. Time snacks 2.5–3 hours after a meal, never within 90 minutes of one.",
+    body: "Snacks bridge the gap between meals so your blood sugar never crashes into cravings. Pair protein with fiber: a boiled egg and cucumber, Greek yogurt and berries, almonds and an apple. Snacks work best 3–4 hours after a main meal, and are mainly for bridging gaps longer than 5 hours.",
   },
   {
     slug: "cheat-meal",

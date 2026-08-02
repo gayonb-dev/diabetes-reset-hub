@@ -32,6 +32,7 @@ import { getUnits, setUnits, WeightUnit, GlucoseUnit } from "@/lib/units";
 // dexcom-sync-every-30-min cron job.
 // import ConnectedDevicesCard from "@/components/settings/ConnectedDevicesCard";
 import AIAssistantCard from "@/components/settings/AIAssistantCard";
+import FastingSettingsSection from "@/components/settings/FastingSettingsSection";
 
 
 const CUISINE_OPTIONS = [
@@ -694,6 +695,11 @@ export default function Settings() {
           <Chip active={weekStart === 1} onClick={() => saveWeekStart(1)}>Monday</Chip>
         </div>
       </Card>
+
+      {/* Fasting safety & window */}
+      <FastingSettingsSection />
+
+
 
 
 
