@@ -17,6 +17,9 @@ import { SnackLibrary } from "@/components/meals/SnackLibrary";
 import CheatMeal from "@/pages/app/CheatMeal";
 import { useSearchParams, Link } from "react-router-dom";
 import { useProgramDay } from "@/hooks/useProgramDay";
+import { useWeekStart } from "@/hooks/useWeekStart";
+import { orderedDayKeys } from "@/lib/weekStart";
+
 
 
 // ----- types -----
