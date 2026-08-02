@@ -695,6 +695,11 @@ export default function Settings() {
         </div>
       </Card>
 
+      {/* Fasting safety & window */}
+      <FastingSettingsSection />
+
+
+
 
 
 
