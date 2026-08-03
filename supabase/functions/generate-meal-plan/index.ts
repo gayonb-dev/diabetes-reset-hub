@@ -13,6 +13,14 @@ import { generateObject } from "npm:ai@4.3.16";
 import { createOpenAICompatible } from "npm:@ai-sdk/openai-compatible@0.2.14";
 import { z } from "npm:zod@3.23.8";
 import { createClient } from "npm:@supabase/supabase-js@2.45.4";
+import {
+  effectiveTarget,
+  formatHour,
+  getFastingWindow,
+  MEAL_TIMING_VERSION,
+  scheduleForProfile,
+  type FastingProfileLike,
+} from "../_shared/fastingTarget.ts";
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-cron-secret, x-supabase-client-platform",
@@ -504,12 +512,16 @@ Deno.serve(async (req) => {
   const planIndexHint = planIdx && bias
     ? `\n\n---\n\nPARALLEL PLAN GENERATION CONTEXT — WEEK ${planIdx} OF 4\nYou are generating Week ${planIdx} of 4 for the same member in parallel. The other 3 weeks are being generated at the same moment and CANNOT see your output, so you MUST follow the deterministic per-week bias below so the member experiences clear week-over-week novelty across the full 28 days.\n\nWEEK ${planIdx} THEME: ${bias.theme}\n- Primary protein focus for this week: ${bias.primaryProtein}.\n- Primary complex-carbohydrate base for this week: ${bias.carbBase}.\n- Monday breakfast for THIS week MUST be: ${bias.mondayBreakfast}\n\nReturn this week as week_1 only. Do not repeat the names or core compositions of the meals in served_meals above.`
     : "";
+  const base = STANDARD_SYSTEM_PROMPT
+    .replace("{{SERVED_MEALS}}", servedMeals.join(", ") || "none")
+    .replace("{{SCHEDULE}}", scheduleText);
   const systemPrompt = isIfMode
-    ? STANDARD_SYSTEM_PROMPT.replace("{{SERVED_MEALS}}", servedMeals.join(", ") || "none") +
+    ? base +
       IF_SYSTEM_PROMPT_ADDITION
         .replace("{{WINDOW_HOURS}}", String(windowHours))
-        .replace("{{FAST_HOURS}}", String(fastHours)) + planIndexHint
-    : STANDARD_SYSTEM_PROMPT.replace("{{SERVED_MEALS}}", servedMeals.join(", ") || "none") + planIndexHint;
+        .replace("{{FAST_HOURS}}", String(fastHours))
+        .replace("{{SCHEDULE}}", scheduleText) + planIndexHint
+    : base + planIndexHint;
 
   // Mark in_progress immediately so the client sees movement.
   await admin
