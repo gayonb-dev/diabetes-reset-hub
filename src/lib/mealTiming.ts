@@ -55,13 +55,6 @@ export type {
 
 
 
-/** Copy used everywhere snack timing is explained. */
-export const SNACK_TIMING_COPY =
-  "Snacks work best 3–4 hours after a main meal, and are mainly for bridging gaps longer than 5 hours.";
-
-export const NO_SNACK_COPY =
-  "Your meals are spaced closely enough today that a snack isn't needed — snacks mainly bridge gaps longer than five hours. If you're genuinely hungry, the Snack Library is there.";
-
 export interface RampStatus {
   /** Target in force today */
   current: FastingTarget;
