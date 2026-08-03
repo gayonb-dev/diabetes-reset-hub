@@ -1,82 +1,54 @@
+## Session 2 — Fasting tab, Learn guide, copy audit
 
-# Session 1 — Safety screening, timing engine, conditional snacks (revised)
+### 6. Fasting tab rebuild (`src/pages/app/Fasting.tsx`)
 
-## 1. Database migration
+Replace the free-form "choose a window and press Begin fast" entry (the `windowChoice` buttons and manual window picker) with a schedule-driven view derived entirely from `mealTiming.ts` and the member's profile.
 
-Add to `profiles`:
-- `medication_class` text — `insulin` | `sulfonylurea` | `glinide` | `none` | `unsure`
-- `fasting_eligibility` text default `'unscreened'` — `eligible` | `needs_doctor` | `not_eligible` | `unscreened`
-- `doctor_confirmed_at` timestamptz (set only when the member ticks the doctor checkbox)
-- `fasting_exclusions` jsonb default `'{}'` — `{type1, pregnant_or_nursing, disordered_eating}`
-- `bedtime_hour` int default 22
-- `fasting_target` int default 0 (0 none, 1 = 12:12, 2 = 14:10, 3 = 16:8)
-- `fasting_started_on` date
-- `window_start_hour` int default 8
-- `low_bs_card_seen_at` timestamptz
+New structure, top to bottom:
+1. **Current window + ramp status** — "You're on 12:12 today. Your 14:10 target starts in 4 days." Derived from `effectiveTarget` vs `storedTarget` and `fasting_started_on` (standard 1-week ramp; 2+2-week gradual ramp for confirmed `needs_doctor`).
+2. **Horizontal timeline** — new `src/components/fasting/FastingTimeline.tsx`: a single bar showing the eating window filled and the fast muted, with meal and snack markers positioned from `scheduleForProfile()`, plus a "now" indicator. Scales down on mobile with labels below markers.
+3. **Countdown** — new `src/components/fasting/WindowCountdown.tsx`: counts down to the next window open or close, labelled "Eating window opens in" / "Fasting begins in", at the existing `countdown-hero` scale. Non-fasting members (target 0) see no countdown.
+4. **Target card** — existing `FastingTargetCard`, with the "what changes and when" line made explicit.
+5. **Low-blood-sugar card** — permanently accessible here (already `dismissible={false}`), plus the one-time dismissible activation card.
+6. **Recent fasts history + IF rules** — kept as-is; `if_fasting_log` writes remain available from the history card but no longer drive the tab.
 
-No new tables, so no new grants; existing `profiles` self read/write policies cover these columns.
+`not_eligible` members keep the respectful explanation and see no timeline, countdown, or target card. `unscreened` members keep the inline screening.
 
-Data update (separate insert-tool call): rewrite snack-window copy in seeded `daily_actions`. Verified affected rows: **days 12, 23, 53, 67** (day 23 is the one named in the brief; the others carry the same 2.5–3 hr rule and would fail the grep check). New rule text: "Snacks work best 3–4 hours after a main meal, and are mainly for bridging gaps longer than 5 hours."
+### 7. New Learn guide (`src/data/learnGuides.ts`)
 
-## 2. Safety screening (built first — everything gates on it)
+Add `fasting-and-meal-timing` — "Fasting and meal timing", six short sections at 6th–8th grade level: why *when* you eat matters; why earlier windows suit type 2 diabetes; why we start at twelve hours; when a snack helps and when it doesn't (wording from the `mealTiming.ts` copy constants); the medication warning and the doctor's role; and what the research shows — including the required verbatim ADA Standards of Care paragraph. Sources cited by name only, no titles, DOIs, or URLs. The existing `intermittent-fasting` entry points at the new guide rather than duplicating it.
 
-New shared component `src/components/safety/FastingScreening.tsx`, rendered as an onboarding step (`src/pages/app/Onboarding.tsx`), as a Settings section (`src/pages/app/Settings.tsx`), **and inline on the Fasting tab for any member whose eligibility is `unscreened`** — existing members all default to unscreened, so the Fasting tab shows them the screening itself rather than a dead-end lock.
+### 8. Copy audit
 
-- Medication question with the five options and the educational paragraph above it, plus the "I'm not sure" explainer beneath.
-- Separate yes/no questions: type 1 diabetes, pregnancy or breastfeeding, history of disordered eating.
-- Derivation: any exclusion → `not_eligible` (no override, respectful explanation copy). Otherwise insulin / sulfonylurea / glinide / unsure → `needs_doctor` with the doctor-conversation copy and an "I've discussed fasting with my doctor" checkbox that sets `doctor_confirmed_at`. Otherwise `eligible`.
-- All screening copy written into the screens verbatim as specified.
-- Hard rule: no screen, string, or computation anywhere mentions or derives a medication dose change.
+| Location | Now | After |
+|---|---|---|
+| `generate-meal-plan/index.ts` L137–141 | "Snack 1 is eaten 2.5–3 hours after breakfast" etc. | 3–4 hours after a main meal; snacks only where a gap exceeds 5 hours |
+| `generate-meal-plan/index.ts` L283–291 (IF block + fixed "10:00am → 12:30pm → …" example) | hardcoded clock times | times injected from the member's computed schedule; fixed example removed |
+| `HabitLogging.tsx` snack slot labels | hardcoded "Mid-morning" / "Afternoon" | derived from the schedule's snack items |
+| `Fasting.tsx` "Today's eating schedule" | engine-driven | folded into the new timeline |
+| `SnackLibrary.tsx`, `learnGuides.ts` | updated in session 1 | re-verified |
+| Seeded `daily_actions`, `snack_library` | updated in session 1 | re-verified by query; any stragglers fixed in a migration |
 
-New hook `src/hooks/useFastingProfile.ts` exposes eligibility, target, window, bedtime, and derived `canFast`. **`canFast` is false for `unscreened`, `not_eligible`, and `needs_doctor` without `doctor_confirmed_at`** — only `eligible`, or `needs_doctor` with the confirmation, returns true. Eligibility is evaluated before target in every consumer.
+Final greps for `2.5`, `3 hrs`, `3 hours`, `snack`, and fixed clock times across `src/`, `supabase/functions/`, and seeded content, each hit reported as engine-derived or intentionally static.
 
-## 3. Meal-timing engine
+### 9. Addition — stale-plan notice on Meals
 
-New `src/lib/mealTiming.ts` — pure, unit-testable, single source of truth:
+Stored `meal_plans.plan_data` from before this change still carries the old 2.5–3 hour snack text, so a member's current plan would contradict the new guidance until they regenerate.
 
-```
-buildSchedule({ windowStartHour, windowHours, bedtimeHour }) -> ScheduleItem[]
-effectiveTarget(profile, today) -> 0 | 1 | 2 | 3
-```
-Rules: meals spaced 4–5 h apart inside the eating window; meal count derived so spacing stays in range; a snack inserted only when a gap between consecutive meals exceeds 5 h, at that gap's midpoint; the last meal pulled earlier so it ends ≥3 h before bedtime; non-fasting members default to a 12-hour window with three meals.
+- Stamp newly generated plans with a timing version (`plan_data.timing_version = 2`, written by `generate-meal-plan`).
+- On the Meals tab, when the active plan lacks that marker — or its snack description text matches the old-timing pattern — render one muted line above the plan: *"Your plan was built with our previous snack timing. Regenerate in Settings to match your current schedule."*
+- No auto-regeneration, no background write. The member's monthly regeneration allowance is untouched unless they act.
 
-`effectiveTarget` returns 0 whenever eligibility disallows fasting, regardless of the stored `fasting_target` — eligibility overrides target, never the reverse.
+### 10. Addition — effective-target semantics server-side
 
-Consumers read from the engine instead of local constants: `src/pages/app/Fasting.tsx` (replacing the hardcoded 0 / 2.5 / 4 / 6.5 offsets), `src/components/today/HabitLogging.tsx`, and the Meals schedule display.
+`generate-meal-plan` must not read `fasting_target` directly: a `not_eligible` or `unscreened` member with a stale stored target would otherwise get a fasting plan.
 
-## 4. Target selection with ramp
+- Extract the pure gate + ramp logic (`canFast`, `effectiveTarget`, `eatingHoursForTarget`) into a **single shared source file**, `supabase/functions/_shared/fastingTarget.ts`, written as dependency-free TypeScript.
+- `src/lib/mealTiming.ts` re-exports those three functions from that shared file (Vite resolves the relative path fine), so there is exactly one implementation compiled into both the client bundle and the Deno function — no port, no copy to drift.
+- `generate-meal-plan` fetches the profile's `fasting_eligibility`, `doctor_confirmed_at`, `fasting_target`, `fasting_started_on`, `window_start_hour`, `bedtime_hour`, computes `effectiveTarget`, and only then chooses the fasting vs. three-meal prompt and fills `{{WINDOW_HOURS}}` / `{{FAST_HOURS}}`.
+- **Consistency guarantee, stated in the report:** identical module, not a copy. Backed by the existing `mealTiming.test.ts` suite (which will now be exercising the shared file) plus new cases asserting `not_eligible`, `unscreened`, and unconfirmed `needs_doctor` all resolve to target 0 / a 12-hour three-meal window regardless of stored `fasting_target`.
+- Fallback if the shared-path import proves awkward for the Deno bundler: keep the shared file and have the client import it, and add a test that fails if the two files ever diverge. The report will state which arrangement shipped.
 
-New `src/components/fasting/FastingTargetCard.tsx`, surfaced at Day 21 on the Dashboard and always available in Settings for members who pass eligibility.
-
-- Three options with plain descriptions, preceded by the "a longer fast isn't automatically better" copy.
-- Ramp in `mealTiming.ts`: standard — week one always 12:12, chosen target from day 8. `needs_doctor` + confirmed — 12:12 for 2 weeks → 14:10 for 2 weeks → target.
-- Selection screen carries the "we start everyone at twelve hours" explanation verbatim.
-- Change target or stop at any time, no penalty; stopping sets `fasting_target = 0`.
-- `window_start_hour` adjustable 6am–11am, duration fixed by target; later than 9am shows the "eating earlier tends to work better" line.
-
-## 5. Conditional snacks + one-time low-blood-sugar card
-
-- `src/components/today/HabitLogging.tsx`: snack rows render only when today's schedule contains snacks; otherwise the single muted "meals are spaced closely enough" line. Snack Library stays fully accessible.
-- Snack copy replaced with the 3–4 hr / >5 hr gap wording in `HabitLogging.tsx` and `src/components/meals/SnackLibrary.tsx`.
-- New `src/components/fasting/LowBloodSugarCard.tsx` with the verbatim warning text — shown once on first window activation (guarded by `low_bs_card_seen_at`), dismissible, thereafter reachable from the Fasting tab.
-
-## Verification
-
-Vitest (`src/lib/mealTiming.test.ts`):
-- 16:8 → three meals at 4-hour spacing, zero snacks.
-- Non-fasting 12 h → three meals, snack only where a gap exceeds 5 h.
-- Bedtime buffer respected.
-- **A `not_eligible` profile produces no fasting window for every `fasting_target` value 0–3, including the case where a target was set before an exclusion was later reported.**
-- An `unscreened` profile yields `canFast === false`.
-
-Playwright at 390px: insulin answer blocks Fasting until the doctor checkbox; type 1 answer blocks it permanently with no checkbox; an unscreened member landing on Fasting sees the screening; low-blood-sugar card appears exactly once. Final `rg` over `src/` and the database confirms no remaining 2.5–3 hour snack copy.
-
-## Files to change
-
-- migration + data update (seeded `daily_actions` days 12, 23, 53, 67)
-- `src/lib/mealTiming.ts`, `src/lib/mealTiming.test.ts` (new)
-- `src/hooks/useFastingProfile.ts` (new)
-- `src/components/safety/FastingScreening.tsx` (new)
-- `src/components/fasting/FastingTargetCard.tsx`, `src/components/fasting/LowBloodSugarCard.tsx` (new)
-- `src/pages/app/Onboarding.tsx`, `src/pages/app/Settings.tsx`, `src/pages/app/Fasting.tsx`, `src/pages/app/Dashboard.tsx`, `src/pages/app/AppLayout.tsx`
-- `src/components/today/HabitLogging.tsx`, `src/components/meals/SnackLibrary.tsx`
+### Technical notes
+- No schema changes; session 1's profile columns are sufficient.
+- The schedule math in `mealTiming.ts` is unchanged, so the existing 9 tests stay green; new tests cover the ramp description and the eligibility-gate cases above.

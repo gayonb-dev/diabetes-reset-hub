@@ -13,6 +13,14 @@ import { generateObject } from "npm:ai@4.3.16";
 import { createOpenAICompatible } from "npm:@ai-sdk/openai-compatible@0.2.14";
 import { z } from "npm:zod@3.23.8";
 import { createClient } from "npm:@supabase/supabase-js@2.45.4";
+import {
+  effectiveTarget,
+  formatHour,
+  getFastingWindow,
+  MEAL_TIMING_VERSION,
+  scheduleForProfile,
+  type FastingProfileLike,
+} from "../_shared/fastingTarget.ts";
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-cron-secret, x-supabase-client-platform",
@@ -135,10 +143,13 @@ Snacks (snack_1, snack_2):
 ---
 
 SNACK TIMING — INCLUDE IN INSTRUCTIONS
-Snack 1 is eaten 2.5–3 hours after breakfast.
-Snack 2 is eaten 2.5–3 hours after lunch.
+Snacks work best 3–4 hours after a main meal, and are mainly for bridging gaps longer than 5 hours.
 Each snack must be eaten at least 1.5 hours before the next main meal.
-Include timing guidance in the snack description field.
+This member's computed schedule for the day is:
+{{SCHEDULE}}
+Use ONLY those times when you mention timing. Do not invent clock times of your own.
+Include timing guidance in the snack description field, phrased as hours after the
+preceding main meal (never as a fixed clock time).
 
 ---
 
@@ -281,14 +292,15 @@ Meal 2 (final meal before the fast):
 ---
 
 IF SNACK TIMING
-Snack 1: 2.5–3 hours after Meal 1.
-Meal 2: at least 1.5 hours after Snack 1.
-Snack 2: 2.5–3 hours after Meal 2.
+Snacks work best 3–4 hours after a main meal, and are mainly for bridging gaps longer than 5 hours.
+Meal 2: at least 1.5 hours after any snack that precedes it.
 Snack 2 must end at least 2 hours before the fasting window begins.
 Never schedule Snack 2 within 2 hours of the end of the eating window.
 
-Example 14:10 window (10am–8pm):
-10:00am Meal 1 → 12:30pm Snack 1 → 2:30pm Meal 2 → 5:30pm Snack 2 → 8:00pm fast begins.
+This member's computed schedule for the day is:
+{{SCHEDULE}}
+Use ONLY those times. Do not invent clock times of your own, and do not describe a
+schedule other than the one above.
 
 ---
 
@@ -429,7 +441,9 @@ Deno.serve(async (req) => {
   const [{ data: memberProfile }, { data: profile }] = await Promise.all([
     admin
       .from("profiles")
-      .select("meal_preferences")
+      .select(
+        "meal_preferences, fasting_eligibility, fasting_target, fasting_ramp_start, window_start_hour, bedtime_hour, medication_class",
+      )
       .eq("user_id", memberId)
       .maybeSingle(),
     admin
@@ -448,14 +462,23 @@ Deno.serve(async (req) => {
   };
   const servedMeals = ((profile?.served_meals as string[]) || []).slice(-250);
 
-  // Determine if IF mode
-  // For simplicity: IF mode requires both if_enabled and plan_type === 'intermittent_fasting'.
-  const isIfMode =
-    !!profile?.if_enabled && (planRow.plan_type === "intermittent_fasting");
+  // Determine IF mode from EFFECTIVE target semantics, never from the stored
+  // fasting_target alone. A not_eligible or unscreened member with a stale
+  // stored target must generate a plain three-meal plan.
+  const fastingProfile = (memberProfile ?? null) as FastingProfileLike | null;
+  const target = effectiveTarget(fastingProfile);
+  const fastingWindow = getFastingWindow(fastingProfile);
+  const schedule = scheduleForProfile(fastingProfile);
+  const scheduleText = schedule
+    .map((i) => `${formatHour(i.hour)} — ${i.label}${i.kind === "snack" ? " (snack)" : ""}`)
+    .join("\n");
+
+  const isIfMode = target > 0 && planRow.plan_type === "intermittent_fasting";
   const schema = isIfMode ? IFSingleWeekSchema : SingleWeekSchema;
 
-  const windowHours = profile?.if_window_hours ?? 10;
+  const windowHours = fastingWindow?.eatingHours ?? profile?.if_window_hours ?? 10;
   const fastHours = 24 - windowHours;
+
   const planIdx = [1, 2, 3, 4].includes(body.plan_index ?? 0) ? body.plan_index : null;
   // Per-week deterministic bias. The 4 weeks are generated in parallel and cannot
   // see each other's served_meals, so we force novelty via distinct themes here.
@@ -489,12 +512,16 @@ Deno.serve(async (req) => {
   const planIndexHint = planIdx && bias
     ? `\n\n---\n\nPARALLEL PLAN GENERATION CONTEXT — WEEK ${planIdx} OF 4\nYou are generating Week ${planIdx} of 4 for the same member in parallel. The other 3 weeks are being generated at the same moment and CANNOT see your output, so you MUST follow the deterministic per-week bias below so the member experiences clear week-over-week novelty across the full 28 days.\n\nWEEK ${planIdx} THEME: ${bias.theme}\n- Primary protein focus for this week: ${bias.primaryProtein}.\n- Primary complex-carbohydrate base for this week: ${bias.carbBase}.\n- Monday breakfast for THIS week MUST be: ${bias.mondayBreakfast}\n\nReturn this week as week_1 only. Do not repeat the names or core compositions of the meals in served_meals above.`
     : "";
+  const base = STANDARD_SYSTEM_PROMPT
+    .replace("{{SERVED_MEALS}}", servedMeals.join(", ") || "none")
+    .replace("{{SCHEDULE}}", scheduleText);
   const systemPrompt = isIfMode
-    ? STANDARD_SYSTEM_PROMPT.replace("{{SERVED_MEALS}}", servedMeals.join(", ") || "none") +
+    ? base +
       IF_SYSTEM_PROMPT_ADDITION
         .replace("{{WINDOW_HOURS}}", String(windowHours))
-        .replace("{{FAST_HOURS}}", String(fastHours)) + planIndexHint
-    : STANDARD_SYSTEM_PROMPT.replace("{{SERVED_MEALS}}", servedMeals.join(", ") || "none") + planIndexHint;
+        .replace("{{FAST_HOURS}}", String(fastHours))
+        .replace("{{SCHEDULE}}", scheduleText) + planIndexHint
+    : base + planIndexHint;
 
   // Mark in_progress immediately so the client sees movement.
   await admin
@@ -538,14 +565,22 @@ Deno.serve(async (req) => {
       const newNames = collectMealNames(object);
       const merged = [...servedMeals, ...newNames].slice(-250);
 
+      // Stamp the timing version so the Meals tab can tell a member their plan
+      // predates the current snack-timing guidance.
+      const stamped = {
+        ...(object as Record<string, unknown>),
+        meal_timing_version: MEAL_TIMING_VERSION,
+      };
+
       await admin
         .from("meal_plans")
         .update({
-          plan_data: object,
+          plan_data: stamped,
           generation_status: "complete",
           generated_at: new Date().toISOString(),
         })
         .eq("id", planRow.id);
+
 
       await admin
         .from("visitor_profiles")

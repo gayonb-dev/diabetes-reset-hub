@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { useFastingProfile } from "@/hooks/useFastingProfile";
-import { clampWindowStart, formatHour, TARGET_LABEL, type FastingTarget } from "@/lib/mealTiming";
+import { clampWindowStart, formatHour, rampStatus, TARGET_LABEL, type FastingTarget } from "@/lib/mealTiming";
 
 const OPTIONS: { value: FastingTarget; title: string; desc: string }[] = [
   { value: 1, title: "12:12", desc: "Twelve hours fasting, twelve hours eating. The gentlest option — for most people it means finishing dinner and eating breakfast at the usual time." },
@@ -16,6 +16,7 @@ export default function FastingTargetCard() {
   const { profile, storedTarget, target, save, canFast } = useFastingProfile();
   const [saving, setSaving] = useState(false);
   const startHour = clampWindowStart(profile?.window_start_hour ?? 8);
+  const ramp = rampStatus(profile);
 
   if (!canFast) return null;
 
@@ -69,6 +70,14 @@ export default function FastingTargetCard() {
         We start everyone at twelve hours for the first week. It's a safety buffer, not a test — if a medication
         got missed on the screening, a gentle first week catches it before a longer fast would.
       </p>
+
+      {storedTarget > 0 && (
+        <p className="text-xs text-foreground">
+          <span className="font-medium">What changes and when: </span>
+          {ramp.description}
+        </p>
+      )}
+
 
       {storedTarget > 0 && (
         <div className="space-y-2">

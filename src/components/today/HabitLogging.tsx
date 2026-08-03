@@ -13,7 +13,7 @@ import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { SearchSheet, SearchSheetOption } from "@/components/ui/search-sheet";
 import { useFastingProfile } from "@/hooks/useFastingProfile";
-import { scheduleForProfile, hasSnacks, SNACK_TIMING_COPY, NO_SNACK_COPY } from "@/lib/mealTiming";
+import { scheduleForProfile, hasSnacks, formatHour, SNACK_TIMING_COPY, NO_SNACK_COPY } from "@/lib/mealTiming";
 
 
 interface Props {
@@ -28,10 +28,13 @@ const MEAL_LABEL: Record<"breakfast" | "lunch" | "dinner", string> = {
 
 const CUSTOM_SNACK = "__custom_snack__";
 
-const SNACK_LABEL: Record<"snack_1" | "snack_2", string> = {
-  snack_1: "Mid-morning snack",
-  snack_2: "Afternoon snack",
+// Snack slot labels are derived from the timing engine's computed schedule,
+// never hardcoded clock language. Fallback only when the engine yields none.
+const SNACK_LABEL_FALLBACK: Record<"snack_1" | "snack_2", string> = {
+  snack_1: "First snack",
+  snack_2: "Second snack",
 };
+
 
 const WALK_LABEL: Record<"after_breakfast" | "after_lunch" | "after_dinner", string> = {
   after_breakfast: "After breakfast",
@@ -95,10 +98,15 @@ export default function HabitLogging({ currentProgramDay }: Props) {
   const [customSnackSlot, setCustomSnackSlot] = useState<"snack_1" | "snack_2" | null>(null);
   const [customSnackText, setCustomSnackText] = useState("");
   const { profile: fastingProfile } = useFastingProfile();
-  const snacksScheduled = useMemo(
-    () => hasSnacks(scheduleForProfile(fastingProfile)),
-    [fastingProfile],
-  );
+  const todaySchedule = useMemo(() => scheduleForProfile(fastingProfile), [fastingProfile]);
+  const snacksScheduled = useMemo(() => hasSnacks(todaySchedule), [todaySchedule]);
+  // Slot labels come from the computed schedule, with the engine's own time.
+  const snackLabel = (slot: "snack_1" | "snack_2") => {
+    const snacks = todaySchedule.filter((i) => i.kind === "snack");
+    const idx = slot === "snack_1" ? 0 : 1;
+    const item = snacks[idx];
+    return item ? `${item.label} · ${formatHour(item.hour)}` : SNACK_LABEL_FALLBACK[slot];
+  };
 
 
   // Deep-link from Dashboard water tile: /app/today#water-logging
@@ -374,7 +382,7 @@ export default function HabitLogging({ currentProgramDay }: Props) {
             const s = h.snacks[slot];
             return (
               <div key={slot} className="rounded-xl border border-border p-3">
-                <p className="text-sm font-medium">{SNACK_LABEL[slot]}</p>
+                <p className="text-sm font-medium">{snackLabel(slot)}</p>
                 {isMobile ? (
                   <button
                     type="button"

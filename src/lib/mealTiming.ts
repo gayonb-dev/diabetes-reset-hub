@@ -1,202 +1,129 @@
 // Single source of truth for every meal and snack time in the app.
 // Pure functions only — no React, no Supabase, fully unit-testable.
+//
+// The implementation lives in supabase/functions/_shared/fastingTarget.ts so
+// that the browser bundle and the generate-meal-plan edge function compile the
+// SAME module rather than two copies that can drift. This file is the client
+// entry point: it re-exports that module and adds the ramp-description helper,
+// which is UI copy and has no server counterpart.
 
-export type FastingEligibility =
-  | "unscreened"
-  | "eligible"
-  | "needs_doctor"
-  | "not_eligible";
+import {
+  buildSchedule,
+  canFast,
+  clampWindowStart,
+  eatingHoursForTarget,
+  effectiveTarget,
+  formatHour,
+  getFastingWindow,
+  hasSnacks,
+  MEAL_TIMING_VERSION,
+  NO_SNACK_COPY,
+  scheduleForProfile,
+  SNACK_TIMING_COPY,
+  TARGET_LABEL,
+  type BuildScheduleArgs,
+  type FastingEligibility,
+  type FastingProfileLike,
+  type FastingTarget,
+  type FastingWindow,
+  type ScheduleItem,
+} from "../../supabase/functions/_shared/fastingTarget.ts";
 
-export type FastingTarget = 0 | 1 | 2 | 3;
-
-export interface FastingProfileLike {
-  fasting_eligibility?: string | null;
-  doctor_confirmed_at?: string | null;
-  fasting_target?: number | null;
-  fasting_started_on?: string | null;
-  window_start_hour?: number | null;
-  bedtime_hour?: number | null;
-}
-
-export interface ScheduleItem {
-  kind: "meal" | "snack";
-  label: string;
-  /** Hour of day as a float, e.g. 12.5 = 12:30pm */
-  hour: number;
-}
-
-export interface FastingWindow {
-  /** Eating window length in hours */
-  eatingHours: number;
-  /** Fasting length in hours */
-  fastingHours: number;
-  startHour: number;
-  endHour: number;
-  label: string;
-}
-
-export const TARGET_LABEL: Record<FastingTarget, string> = {
-  0: "Not fasting",
-  1: "12:12",
-  2: "14:10",
-  3: "16:8",
+export {
+  buildSchedule,
+  canFast,
+  clampWindowStart,
+  eatingHoursForTarget,
+  effectiveTarget,
+  formatHour,
+  getFastingWindow,
+  hasSnacks,
+  MEAL_TIMING_VERSION,
+  NO_SNACK_COPY,
+  scheduleForProfile,
+  SNACK_TIMING_COPY,
+  TARGET_LABEL,
+};
+export type {
+  BuildScheduleArgs,
+  FastingEligibility,
+  FastingProfileLike,
+  FastingTarget,
+  FastingWindow,
+  ScheduleItem,
 };
 
-/** Eating-window hours for a target. Target 0 (not fasting) defaults to 12. */
-export function eatingHoursForTarget(target: FastingTarget): number {
-  if (target === 3) return 8;
-  if (target === 2) return 10;
-  return 12;
+
+
+export interface RampStatus {
+  /** Target in force today */
+  current: FastingTarget;
+  /** Target the member chose */
+  chosen: FastingTarget;
+  /** True while the ramp is still holding the member below their chosen target */
+  ramping: boolean;
+  /** Days until the next step of the ramp, 0 when not ramping */
+  daysUntilNext: number;
+  /** Plain sentence describing where they are and what changes when */
+  description: string;
 }
 
 /**
- * Eligibility gate. This is evaluated BEFORE any target value anywhere in the
- * app — eligibility always overrides target, never the other way around.
- * `unscreened` members have not answered the safety questions yet, so they
- * cannot fast until they do.
+ * Where the member is in the ramp, and what changes when. Uses the same day
+ * arithmetic as effectiveTarget so the two can never disagree.
  */
-export function canFast(p: FastingProfileLike | null | undefined): boolean {
-  const e = (p?.fasting_eligibility ?? "unscreened") as FastingEligibility;
-  if (e === "eligible") return true;
-  if (e === "needs_doctor") return !!p?.doctor_confirmed_at;
-  return false; // unscreened, not_eligible, or anything unknown
-}
-
-function daysSince(startISO: string | null | undefined, today: Date): number {
-  if (!startISO) return 0;
-  const start = new Date(`${startISO.slice(0, 10)}T00:00:00`);
-  if (Number.isNaN(start.getTime())) return 0;
-  const t = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-  return Math.max(0, Math.floor((t.getTime() - start.getTime()) / 86400000));
-}
-
-/**
- * The target actually in force today, after the eligibility gate and the ramp.
- * Standard ramp: week one is always 12:12, chosen target from day 8.
- * needs_doctor (confirmed): 12:12 for two weeks, 14:10 for two weeks, then target.
- */
-export function effectiveTarget(
+export function rampStatus(
   p: FastingProfileLike | null | undefined,
   today: Date = new Date(),
-): FastingTarget {
-  if (!canFast(p)) return 0;
-  const stored = Math.min(3, Math.max(0, Math.round(p?.fasting_target ?? 0))) as FastingTarget;
-  if (stored === 0) return 0;
+): RampStatus {
+  const chosen = Math.min(3, Math.max(0, Math.round(p?.fasting_target ?? 0))) as FastingTarget;
+  const current = effectiveTarget(p, today);
 
-  const day = daysSince(p?.fasting_started_on, today); // 0-indexed
+  if (current === 0 || chosen === 0) {
+    return {
+      current: 0,
+      chosen,
+      ramping: false,
+      daysUntilNext: 0,
+      description: "You're not fasting right now. Three meals across a twelve-hour day.",
+    };
+  }
+
+  const start = p?.fasting_started_on ? new Date(`${p.fasting_started_on.slice(0, 10)}T00:00:00`) : null;
+  const t = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  const day = start && !Number.isNaN(start.getTime())
+    ? Math.max(0, Math.floor((t.getTime() - start.getTime()) / 86400000))
+    : 0;
   const gradual = (p?.fasting_eligibility ?? "") === "needs_doctor";
 
+  // Next boundary in the ramp, if any.
+  let boundary = 0;
   if (gradual) {
-    if (day < 14) return 1;
-    if (day < 28) return Math.min(2, stored) as FastingTarget;
-    return stored;
+    if (day < 14) boundary = 14;
+    else if (day < 28 && chosen > 2) boundary = 28;
+  } else if (day < 7) {
+    boundary = 7;
   }
-  if (day < 7) return 1;
-  return stored;
-}
 
-/** The fasting window in force today, or null when the member isn't fasting. */
-export function getFastingWindow(
-  p: FastingProfileLike | null | undefined,
-  today: Date = new Date(),
-): FastingWindow | null {
-  const target = effectiveTarget(p, today);
-  if (target === 0) return null;
-  const eatingHours = eatingHoursForTarget(target);
-  const startHour = clampWindowStart(p?.window_start_hour ?? 8);
+  if (current === chosen || boundary === 0) {
+    return {
+      current,
+      chosen,
+      ramping: false,
+      daysUntilNext: 0,
+      description: `You're on ${TARGET_LABEL[current]} — your chosen target. Nothing changes unless you change it.`,
+    };
+  }
+
+  const daysUntilNext = boundary - day;
+  const next = gradual && boundary === 14 ? (Math.min(2, chosen) as FastingTarget) : chosen;
   return {
-    eatingHours,
-    fastingHours: 24 - eatingHours,
-    startHour,
-    endHour: startHour + eatingHours,
-    label: TARGET_LABEL[target],
+    current,
+    chosen,
+    ramping: true,
+    daysUntilNext,
+    description: `You're on ${TARGET_LABEL[current]} today. Your ${TARGET_LABEL[next]} ${
+      next === chosen ? "target" : "step"
+    } starts in ${daysUntilNext} day${daysUntilNext === 1 ? "" : "s"}.`,
   };
 }
-
-export function clampWindowStart(h: number): number {
-  return Math.min(11, Math.max(6, Math.round(h)));
-}
-
-const MEAL_LABELS = ["Meal 1", "Meal 2", "Meal 3", "Meal 4", "Meal 5"];
-
-export interface BuildScheduleArgs {
-  windowStartHour: number;
-  /** Eating-window length in hours */
-  windowHours: number;
-  bedtimeHour: number;
-}
-
-/**
- * Meals spaced 4–5 hours apart inside the eating window; a snack is inserted
- * only when a gap between two meals exceeds 5 hours, at the midpoint of that
- * gap; the last meal lands at least 3 hours before bedtime.
- */
-export function buildSchedule({
-  windowStartHour,
-  windowHours,
-  bedtimeHour,
-}: BuildScheduleArgs): ScheduleItem[] {
-  const start = clampWindowStart(windowStartHour);
-  const latestMeal = bedtimeHour - 3;
-  const lastMeal = Math.max(start, Math.min(start + windowHours, latestMeal));
-  const span = lastMeal - start;
-
-  const gaps = span <= 0 ? 0 : Math.max(1, Math.round(span / 4.5));
-  const spacing = gaps === 0 ? 0 : span / gaps;
-
-  const meals: ScheduleItem[] = [];
-  for (let i = 0; i <= gaps; i++) {
-    meals.push({
-      kind: "meal",
-      label: MEAL_LABELS[i] ?? `Meal ${i + 1}`,
-      hour: Math.round((start + spacing * i) * 100) / 100,
-    });
-  }
-
-  const out: ScheduleItem[] = [];
-  let snackIndex = 1;
-  meals.forEach((m, i) => {
-    out.push(m);
-    const next = meals[i + 1];
-    if (next && next.hour - m.hour > 5) {
-      out.push({
-        kind: "snack",
-        label: `Snack ${snackIndex++}`,
-        hour: Math.round(((m.hour + next.hour) / 2) * 100) / 100,
-      });
-    }
-  });
-  return out;
-}
-
-/** Today's schedule for a member, fasting or not. */
-export function scheduleForProfile(
-  p: FastingProfileLike | null | undefined,
-  today: Date = new Date(),
-): ScheduleItem[] {
-  const win = getFastingWindow(p, today);
-  return buildSchedule({
-    windowStartHour: win?.startHour ?? clampWindowStart(p?.window_start_hour ?? 8),
-    windowHours: win?.eatingHours ?? 12,
-    bedtimeHour: p?.bedtime_hour ?? 22,
-  });
-}
-
-export function hasSnacks(items: ScheduleItem[]): boolean {
-  return items.some((i) => i.kind === "snack");
-}
-
-export function formatHour(hour: number): string {
-  const h24 = Math.floor(hour);
-  const mins = Math.round((hour - h24) * 60);
-  const d = new Date();
-  d.setHours(h24, mins, 0, 0);
-  return d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
-}
-
-/** Copy used everywhere snack timing is explained. */
-export const SNACK_TIMING_COPY =
-  "Snacks work best 3–4 hours after a main meal, and are mainly for bridging gaps longer than 5 hours.";
-
-export const NO_SNACK_COPY =
-  "Your meals are spaced closely enough today that a snack isn't needed — snacks mainly bridge gaps longer than five hours. If you're genuinely hungry, the Snack Library is there.";

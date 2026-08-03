@@ -19,6 +19,7 @@ import { useSearchParams, Link } from "react-router-dom";
 import { useProgramDay } from "@/hooks/useProgramDay";
 import { useWeekStart } from "@/hooks/useWeekStart";
 import { orderedDayKeys } from "@/lib/weekStart";
+import { MEAL_TIMING_VERSION } from "@/lib/mealTiming";
 
 
 
@@ -55,6 +56,8 @@ type Day = Record<string, Meal>; // breakfast/lunch/dinner/snack_1/snack_2 OR me
 type Week = Record<string, Day>; // monday..sunday
 interface PlanData {
   generated_at?: string;
+  /** Stamped by generate-meal-plan; absent or lower means pre-change timing. */
+  meal_timing_version?: number;
   week_1?: Week;
   week_2?: Week;
 }
@@ -671,6 +674,12 @@ export default function Meals() {
   const slots = (current.plan?.plan_type ?? "standard") === "intermittent_fasting" ? IF_SLOTS : STANDARD_SLOTS;
   const weekOptions: (1 | 2 | 3 | 4)[] = [1, 2, 3, 4].filter((idx) => Boolean(resolveWeek(idx as 1 | 2 | 3 | 4).plan)) as (1 | 2 | 3 | 4)[];
 
+  // A plan generated before the snack-timing change carries no version stamp.
+  const staleTiming =
+    !!plan1 &&
+    plan1.status === "complete" &&
+    (plan1.plan_data?.meal_timing_version ?? 0) < MEAL_TIMING_VERSION;
+
   return (
     <div className="max-w-3xl mx-auto space-y-5">
       <div>
@@ -683,6 +692,18 @@ export default function Meals() {
           </Link>.
         </p>
       </div>
+
+      {staleTiming && (
+        <p className="text-xs text-muted-foreground">
+          Your plan was built with our previous snack timing. Regenerate in{" "}
+          <Link to="/app/settings" className="underline">
+            Settings
+          </Link>{" "}
+          to match your current schedule.
+        </p>
+      )}
+
+
 
 
       <Tabs
