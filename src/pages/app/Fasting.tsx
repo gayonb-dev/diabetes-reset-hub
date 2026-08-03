@@ -205,121 +205,74 @@ export default function Fasting() {
     );
   }
 
+  const ramp = rampStatus(fp.profile);
+
   return (
     <div className="space-y-5">
       {header}
 
       {showLowBs && <LowBloodSugarCard onDismiss={() => setShowLowBs(false)} />}
 
-      <FastingTargetCard />
-
-
-      {/* Status card */}
-      {!active && (
-        <Card className="p-6 border border-border">
-          <p className="text-xs uppercase tracking-wider text-muted-foreground mb-2">No fast in progress</p>
-          <p className="text-sm text-muted-foreground mb-4">Choose your window and begin a fast when ready.</p>
-          <div className="grid grid-cols-3 gap-2 mb-4">
-            {(["14_10", "16_8", "12_12"] as WindowType[]).map((w) => (
-              <button
-                key={w}
-                onClick={() => setWindowChoice(w)}
-                className={`py-2 rounded-md border text-sm font-medium ${windowChoice === w ? "bg-primary text-primary-foreground border-primary" : "border-border"}`}
-              >
-                {w.replace("_", ":")}
-              </button>
-            ))}
+      {/* Current window + where they are in the ramp */}
+      <Card className="p-5 border border-border rounded-xl shadow-warm space-y-3">
+        <div className="flex items-baseline justify-between gap-3">
+          <div>
+            <p className="label-caps text-muted-foreground">Your window today</p>
+            <p className="stat-value tabular-nums text-primary">
+              {fp.window ? fp.window.label : "Not fasting"}
+            </p>
           </div>
-          <Button onClick={startFast} disabled={busy} className="w-full h-[60px] bg-primary hover:bg-primary/90">
-            {busy && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Begin fast now
-          </Button>
-        </Card>
-      )}
+          {fp.window && (
+            <p className="text-xs text-muted-foreground tabular-nums text-right">
+              {formatHour(fp.window.startHour)} – {formatHour(fp.window.endHour % 24)}
+            </p>
+          )}
+        </div>
+        <p className="text-sm text-muted-foreground">{ramp.description}</p>
+        <FastingTimeline profile={fp.profile} window={fp.window} />
+      </Card>
 
-      {isFasting && (
+      {/* Countdown to the next window open or close */}
+      {fp.window && (
         <Card className="p-6 border border-border rounded-xl shadow-warm">
-          <p className="label-caps text-accent mb-1">Fasting</p>
-          <p className="countdown-hero text-foreground">
-            {fmt(fastingRemaining)}
-          </p>
-          <p className="text-xs text-secondary-fg mt-2">Time remaining until eating window opens</p>
-          <div className="mt-4 space-y-1 text-xs">
-            <p className="text-tertiary-fg">Fast started: {new Date(active!.fast_start_at).toLocaleString()}</p>
-            <p className="text-status-normal">Eating window opens: {new Date(eatingStartMs).toLocaleTimeString()}</p>
-          </div>
+          <WindowCountdown window={fp.window} />
           <div className="mt-4 rounded-lg bg-accent-muted px-3 py-2">
             <p className="text-[13px] text-accent">VITA says: {vitaMsg}</p>
           </div>
-          <button
-            onClick={() => {
-              const hrs = Math.floor((Date.now() - new Date(active!.fast_start_at).getTime()) / 3600000);
-              if (confirm(`End your fast now? You've completed ${hrs} hour${hrs === 1 ? "" : "s"}.`)) endFast("broken");
-            }}
-            className="text-accent text-sm mt-4 underline min-h-11 inline-flex items-center justify-center px-2 -mx-2"
-          >
-            End fast early
-          </button>
         </Card>
       )}
 
-      {isEatingWindow && (
-        <Card className="p-6 border border-border rounded-xl shadow-warm">
-          <p className="label-caps text-status-normal mb-1">Eating window</p>
-          <p className="countdown-hero text-status-normal">
-            {fmt(-fastingRemaining)}
+      <FastingTargetCard />
+
+      {/* Optional manual fast log — kept for members who like to time a fast */}
+      {active && (
+        <Card className="p-5 border border-border rounded-xl shadow-warm">
+          <p className="label-caps text-accent mb-1">Logged fast in progress</p>
+          <p className="countdown-hero text-foreground tabular-nums">{fmt(fastingRemaining)}</p>
+          <p className="text-xs text-secondary-fg mt-2">
+            {fastingRemaining > 0 ? "Time remaining on this logged fast" : "Planned duration reached"}
           </p>
-          <p className="text-xs text-secondary-fg mt-2">Since your eating window opened</p>
-          <p className="text-xs text-tertiary-fg mt-2">{windowLabel(active!.window_type)}</p>
-          <Button
-            onClick={() => endFast("completed")}
-            disabled={busy}
-            className="mt-4 w-full h-[52px] bg-primary hover:bg-primary/90"
-          >
-            {busy && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Mark fast complete
-          </Button>
+          <p className="text-xs text-tertiary-fg mt-2">{windowLabel(active.window_type)}</p>
+          <div className="mt-4 flex gap-2">
+            <Button
+              onClick={() => endFast("completed")}
+              disabled={busy}
+              className="flex-1 h-11 bg-primary hover:bg-primary/90"
+            >
+              {busy && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Mark complete
+            </Button>
+            <Button variant="outline" className="h-11" disabled={busy} onClick={() => endFast("broken")}>
+              End early
+            </Button>
+          </div>
         </Card>
       )}
-
-      {/* Today's eating schedule — from the meal-timing engine */}
-      {(() => {
-        const items = scheduleForProfile(fp.profile);
-        const rows: { label: string; hour: number }[] = [
-          ...items.map((i) => ({ label: i.label, hour: i.hour })),
-        ];
-        const win = fp.window;
-        if (win) rows.push({ label: "Fast begins", hour: win.endHour % 24 });
-        return (
-          <Card className="p-5 border border-border rounded-xl shadow-warm">
-            <p className="text-sm font-medium mb-3">Today's eating schedule</p>
-            <div className="lg:hidden -mx-1 overflow-x-auto">
-              <div className="flex gap-2 px-1 min-w-max">
-                {rows.map((r) => (
-                  <div
-                    key={r.label}
-                    className="flex flex-col items-center gap-1 rounded-lg border border-border px-3 py-2 shrink-0 min-w-[84px]"
-                  >
-                    <span className="text-[11px] text-muted-foreground text-center">{r.label}</span>
-                    <span className="font-medium tabular-nums text-xs">{formatHour(r.hour)}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div className="hidden lg:block space-y-2 text-sm">
-              {rows.map((r) => (
-                <div key={r.label} className="flex justify-between">
-                  <span className="text-muted-foreground">{r.label}</span>
-                  <span className="font-medium tabular-nums">{formatHour(r.hour)}</span>
-                </div>
-              ))}
-            </div>
-          </Card>
-        );
-      })()}
 
       {/* Low blood sugar reference, always available here */}
       <LowBloodSugarCard dismissible={false} />
+
+
 
 
       {/* History */}
