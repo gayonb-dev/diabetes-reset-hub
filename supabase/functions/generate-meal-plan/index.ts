@@ -135,10 +135,13 @@ Snacks (snack_1, snack_2):
 ---
 
 SNACK TIMING — INCLUDE IN INSTRUCTIONS
-Snack 1 is eaten 2.5–3 hours after breakfast.
-Snack 2 is eaten 2.5–3 hours after lunch.
+Snacks work best 3–4 hours after a main meal, and are mainly for bridging gaps longer than 5 hours.
 Each snack must be eaten at least 1.5 hours before the next main meal.
-Include timing guidance in the snack description field.
+This member's computed schedule for the day is:
+{{SCHEDULE}}
+Use ONLY those times when you mention timing. Do not invent clock times of your own.
+Include timing guidance in the snack description field, phrased as hours after the
+preceding main meal (never as a fixed clock time).
 
 ---
 
