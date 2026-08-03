@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { useFastingProfile } from "@/hooks/useFastingProfile";
-import { clampWindowStart, formatHour, TARGET_LABEL, type FastingTarget } from "@/lib/mealTiming";
+import { clampWindowStart, formatHour, rampStatus, TARGET_LABEL, type FastingTarget } from "@/lib/mealTiming";
 
 const OPTIONS: { value: FastingTarget; title: string; desc: string }[] = [
   { value: 1, title: "12:12", desc: "Twelve hours fasting, twelve hours eating. The gentlest option — for most people it means finishing dinner and eating breakfast at the usual time." },
