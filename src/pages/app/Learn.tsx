@@ -182,13 +182,15 @@ export default function Learn() {
           <div className="space-y-3">
               {blogPosts.map((p) => {
                 const meta = (p.metadata || {}) as Record<string, string>;
+                const url = meta.url ?? meta.external_url;
+                const source = meta.source ?? meta.source_name;
                 return (
                   <Card key={p.id} className="p-4 border border-border">
                     <h3 className="font-heading text-base font-semibold text-foreground">
                       {p.title}
                     </h3>
-                    {meta.source && (
-                      <p className="text-xs text-accent mt-0.5">{meta.source}</p>
+                    {source && (
+                      <p className="text-xs text-accent mt-0.5">{source}</p>
                     )}
                     {p.summary && (
                       <p className="text-[13px] text-secondary-fg mt-2">
@@ -199,9 +201,9 @@ export default function Learn() {
                       <p className="text-[11px] text-tertiary-fg">
                         Curated {new Date(p.created_at).toLocaleDateString()}
                       </p>
-                      {meta.url && (
+                      {url && (
                         <a
-                          href={meta.url}
+                          href={url}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="text-sm text-primary font-medium hover:underline inline-flex items-center gap-1"
@@ -213,6 +215,7 @@ export default function Learn() {
                   </Card>
                 );
               })}
+
             </div>
         </TabsContent>
         )}
