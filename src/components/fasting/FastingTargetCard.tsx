@@ -71,6 +71,14 @@ export default function FastingTargetCard() {
       </p>
 
       {storedTarget > 0 && (
+        <p className="text-xs text-foreground">
+          <span className="font-medium">What changes and when: </span>
+          {ramp.description}
+        </p>
+      )}
+
+
+      {storedTarget > 0 && (
         <div className="space-y-2">
           <p className="text-sm font-medium">Eating window starts at</p>
           <div className="flex flex-wrap gap-2">
