@@ -684,6 +684,18 @@ export default function Meals() {
         </p>
       </div>
 
+      {staleTiming && (
+        <p className="text-xs text-muted-foreground">
+          Your plan was built with our previous snack timing. Regenerate in{" "}
+          <Link to="/app/settings" className="underline">
+            Settings
+          </Link>{" "}
+          to match your current schedule.
+        </p>
+      )}
+
+
+
 
       <Tabs
         value={activeTab}
