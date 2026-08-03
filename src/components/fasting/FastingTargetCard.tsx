@@ -16,6 +16,7 @@ export default function FastingTargetCard() {
   const { profile, storedTarget, target, save, canFast } = useFastingProfile();
   const [saving, setSaving] = useState(false);
   const startHour = clampWindowStart(profile?.window_start_hour ?? 8);
+  const ramp = rampStatus(profile);
 
   if (!canFast) return null;
 
