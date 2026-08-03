@@ -98,10 +98,15 @@ export default function HabitLogging({ currentProgramDay }: Props) {
   const [customSnackSlot, setCustomSnackSlot] = useState<"snack_1" | "snack_2" | null>(null);
   const [customSnackText, setCustomSnackText] = useState("");
   const { profile: fastingProfile } = useFastingProfile();
-  const snacksScheduled = useMemo(
-    () => hasSnacks(scheduleForProfile(fastingProfile)),
-    [fastingProfile],
-  );
+  const todaySchedule = useMemo(() => scheduleForProfile(fastingProfile), [fastingProfile]);
+  const snacksScheduled = useMemo(() => hasSnacks(todaySchedule), [todaySchedule]);
+  // Slot labels come from the computed schedule, with the engine's own time.
+  const snackLabel = (slot: "snack_1" | "snack_2") => {
+    const snacks = todaySchedule.filter((i) => i.kind === "snack");
+    const idx = slot === "snack_1" ? 0 : 1;
+    const item = snacks[idx];
+    return item ? `${item.label} · ${formatHour(item.hour)}` : SNACK_LABEL_FALLBACK[slot];
+  };
 
 
   // Deep-link from Dashboard water tile: /app/today#water-logging
