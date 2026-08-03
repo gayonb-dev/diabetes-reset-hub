@@ -276,16 +276,28 @@ export default function Fasting() {
 
 
       {/* History */}
-      <Card className="p-5 border border-border">
-        <p className="text-sm font-medium mb-3">Recent fasts</p>
+      <Card className="p-5 border border-border rounded-xl shadow-warm">
+        <div className="flex items-center justify-between mb-3">
+          <p className="text-sm font-medium">Recent fasts</p>
+          {!active && (
+            <button
+              onClick={startFast}
+              disabled={busy}
+              className="text-primary text-xs underline min-h-11 inline-flex items-center px-2 -mx-2"
+            >
+              Log a fast now
+            </button>
+          )}
+        </div>
         {history.length === 0 ? (
           <EmptyState
             title="No fasts logged yet"
-            description="Start your first fast above. Your history will build here as you go."
+            description="Logging is optional — your window above runs whether you log or not."
             posture="encouraging"
             vitaSize={56}
           />
         ) : (
+
           <div className="divide-y divide-border">
             {history.slice(0, 7).map((f) => (
               <div key={f.id} className="py-2 flex items-center justify-between text-sm">
