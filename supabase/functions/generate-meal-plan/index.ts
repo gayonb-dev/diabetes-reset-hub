@@ -284,14 +284,15 @@ Meal 2 (final meal before the fast):
 ---
 
 IF SNACK TIMING
-Snack 1: 2.5–3 hours after Meal 1.
-Meal 2: at least 1.5 hours after Snack 1.
-Snack 2: 2.5–3 hours after Meal 2.
+Snacks work best 3–4 hours after a main meal, and are mainly for bridging gaps longer than 5 hours.
+Meal 2: at least 1.5 hours after any snack that precedes it.
 Snack 2 must end at least 2 hours before the fasting window begins.
 Never schedule Snack 2 within 2 hours of the end of the eating window.
 
-Example 14:10 window (10am–8pm):
-10:00am Meal 1 → 12:30pm Snack 1 → 2:30pm Meal 2 → 5:30pm Snack 2 → 8:00pm fast begins.
+This member's computed schedule for the day is:
+{{SCHEDULE}}
+Use ONLY those times. Do not invent clock times of your own, and do not describe a
+schedule other than the one above.
 
 ---
 
