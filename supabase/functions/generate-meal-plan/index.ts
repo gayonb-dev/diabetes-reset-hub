@@ -565,14 +565,22 @@ Deno.serve(async (req) => {
       const newNames = collectMealNames(object);
       const merged = [...servedMeals, ...newNames].slice(-250);
 
+      // Stamp the timing version so the Meals tab can tell a member their plan
+      // predates the current snack-timing guidance.
+      const stamped = {
+        ...(object as Record<string, unknown>),
+        meal_timing_version: MEAL_TIMING_VERSION,
+      };
+
       await admin
         .from("meal_plans")
         .update({
-          plan_data: object,
+          plan_data: stamped,
           generation_status: "complete",
           generated_at: new Date().toISOString(),
         })
         .eq("id", planRow.id);
+
 
       await admin
         .from("visitor_profiles")
