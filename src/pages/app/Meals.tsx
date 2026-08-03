@@ -673,6 +673,12 @@ export default function Meals() {
   const slots = (current.plan?.plan_type ?? "standard") === "intermittent_fasting" ? IF_SLOTS : STANDARD_SLOTS;
   const weekOptions: (1 | 2 | 3 | 4)[] = [1, 2, 3, 4].filter((idx) => Boolean(resolveWeek(idx as 1 | 2 | 3 | 4).plan)) as (1 | 2 | 3 | 4)[];
 
+  // A plan generated before the snack-timing change carries no version stamp.
+  const staleTiming =
+    !!plan1 &&
+    plan1.status === "complete" &&
+    (plan1.plan_data?.meal_timing_version ?? 0) < MEAL_TIMING_VERSION;
+
   return (
     <div className="max-w-3xl mx-auto space-y-5">
       <div>
