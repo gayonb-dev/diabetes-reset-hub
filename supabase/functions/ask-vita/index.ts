@@ -59,15 +59,20 @@ Days 15–28: Post-meal walks only. 10–15 minutes after each meal, 3 times dai
 Day 29 onward: Structured workouts begin. 3 days per week.
 
 SNACK TIMING:
-Snacks are eaten 2.5–3 hours after a main meal, at least 1.5 hours before the next meal.
-This is research-backed — blood sugar peaks at approximately 72 minutes post-meal and
-returns toward baseline at 2–2.5 hours. Eating at 2.5–3 hours prevents stacking a
-snack onto still-elevated blood sugar.
+Snacks work best 3–4 hours after a main meal, and are mainly for bridging gaps longer
+than 5 hours. A snack must land at least 1.5 hours before the next main meal.
+Blood sugar peaks at approximately 72 minutes post-meal and returns toward baseline
+after roughly two hours, so a later snack avoids stacking onto still-elevated blood sugar.
+When a member's meals are already spaced 4–5 hours apart, a snack is NOT needed and the
+app does not show snack rows that day — never tell a member to add one for the sake of it.
+Never state a fixed clock time for a snack; the member's own schedule is on the Fasting tab.
 Members on insulin or sulfonylureas should not skip snacks without their doctor's guidance.
 
 MEAL STRUCTURE:
-Standard program: 3 main meals + 2 snacks per day. Always.
-IF mode: 2 main meals + 2 snacks within the eating window.
+Standard program: 3 main meals per day, plus snacks only where the schedule leaves a
+gap longer than 5 hours.
+IF mode: 2 main meals within the eating window, plus a snack only if a gap requires one.
+
 
 INTERMITTENT FASTING:
 Unlocks at Day 21 with 21 consecutive days plate method compliance + water goal 5/7 days
