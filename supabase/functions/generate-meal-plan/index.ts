@@ -433,7 +433,9 @@ Deno.serve(async (req) => {
   const [{ data: memberProfile }, { data: profile }] = await Promise.all([
     admin
       .from("profiles")
-      .select("meal_preferences")
+      .select(
+        "meal_preferences, fasting_eligibility, fasting_target, fasting_ramp_start, window_start_hour, bedtime_hour, medication_class",
+      )
       .eq("user_id", memberId)
       .maybeSingle(),
     admin
@@ -452,14 +454,23 @@ Deno.serve(async (req) => {
   };
   const servedMeals = ((profile?.served_meals as string[]) || []).slice(-250);
 
-  // Determine if IF mode
-  // For simplicity: IF mode requires both if_enabled and plan_type === 'intermittent_fasting'.
-  const isIfMode =
-    !!profile?.if_enabled && (planRow.plan_type === "intermittent_fasting");
+  // Determine IF mode from EFFECTIVE target semantics, never from the stored
+  // fasting_target alone. A not_eligible or unscreened member with a stale
+  // stored target must generate a plain three-meal plan.
+  const fastingProfile = (memberProfile ?? null) as FastingProfileLike | null;
+  const target = effectiveTarget(fastingProfile);
+  const fastingWindow = getFastingWindow(fastingProfile);
+  const schedule = scheduleForProfile(fastingProfile);
+  const scheduleText = schedule
+    .map((i) => `${formatHour(i.hour)} — ${i.label}${i.kind === "snack" ? " (snack)" : ""}`)
+    .join("\n");
+
+  const isIfMode = target > 0 && planRow.plan_type === "intermittent_fasting";
   const schema = isIfMode ? IFSingleWeekSchema : SingleWeekSchema;
 
-  const windowHours = profile?.if_window_hours ?? 10;
+  const windowHours = fastingWindow?.eatingHours ?? profile?.if_window_hours ?? 10;
   const fastHours = 24 - windowHours;
+
   const planIdx = [1, 2, 3, 4].includes(body.plan_index ?? 0) ? body.plan_index : null;
   // Per-week deterministic bias. The 4 weeks are generated in parallel and cannot
   // see each other's served_meals, so we force novelty via distinct themes here.
