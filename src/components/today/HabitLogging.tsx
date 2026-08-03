@@ -28,10 +28,13 @@ const MEAL_LABEL: Record<"breakfast" | "lunch" | "dinner", string> = {
 
 const CUSTOM_SNACK = "__custom_snack__";
 
-const SNACK_LABEL: Record<"snack_1" | "snack_2", string> = {
-  snack_1: "Mid-morning snack",
-  snack_2: "Afternoon snack",
+// Snack slot labels are derived from the timing engine's computed schedule,
+// never hardcoded clock language. Fallback only when the engine yields none.
+const SNACK_LABEL_FALLBACK: Record<"snack_1" | "snack_2", string> = {
+  snack_1: "First snack",
+  snack_2: "Second snack",
 };
+
 
 const WALK_LABEL: Record<"after_breakfast" | "after_lunch" | "after_dinner", string> = {
   after_breakfast: "After breakfast",
