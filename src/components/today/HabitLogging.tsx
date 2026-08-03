@@ -13,7 +13,7 @@ import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { SearchSheet, SearchSheetOption } from "@/components/ui/search-sheet";
 import { useFastingProfile } from "@/hooks/useFastingProfile";
-import { scheduleForProfile, hasSnacks, SNACK_TIMING_COPY, NO_SNACK_COPY } from "@/lib/mealTiming";
+import { scheduleForProfile, hasSnacks, formatHour, SNACK_TIMING_COPY, NO_SNACK_COPY } from "@/lib/mealTiming";
 
 
 interface Props {
@@ -382,7 +382,7 @@ export default function HabitLogging({ currentProgramDay }: Props) {
             const s = h.snacks[slot];
             return (
               <div key={slot} className="rounded-xl border border-border p-3">
-                <p className="text-sm font-medium">{SNACK_LABEL[slot]}</p>
+                <p className="text-sm font-medium">{snackLabel(slot)}</p>
                 {isMobile ? (
                   <button
                     type="button"
