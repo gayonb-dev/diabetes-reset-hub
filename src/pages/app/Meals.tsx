@@ -19,6 +19,7 @@ import { useSearchParams, Link } from "react-router-dom";
 import { useProgramDay } from "@/hooks/useProgramDay";
 import { useWeekStart } from "@/hooks/useWeekStart";
 import { orderedDayKeys } from "@/lib/weekStart";
+import { MEAL_TIMING_VERSION } from "@/lib/mealTiming";
 
 
 
