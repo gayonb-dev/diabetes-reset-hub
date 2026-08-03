@@ -55,6 +55,8 @@ type Day = Record<string, Meal>; // breakfast/lunch/dinner/snack_1/snack_2 OR me
 type Week = Record<string, Day>; // monday..sunday
 interface PlanData {
   generated_at?: string;
+  /** Stamped by generate-meal-plan; absent or lower means pre-change timing. */
+  meal_timing_version?: number;
   week_1?: Week;
   week_2?: Week;
 }
