@@ -92,6 +92,14 @@ export function glucoseToneColor(status: GlucoseStatus): string {
     : "hsl(var(--status-danger))";
 }
 
+/**
+ * Tone for a raw mg/dL reading — used by dashboard-style summaries.
+ * Lives here so no consumer re-implements thresholds locally.
+ */
+export function bloodSugarTone(mgdl: number, readingType: GlucoseReadingType = "other"): GlucoseTone {
+  return glucoseTone(classifyGlucose(mgdl, readingType));
+}
+
 export function isLowStatus(status: GlucoseStatus): boolean {
   return status === "low" || status === "urgent_low";
 }

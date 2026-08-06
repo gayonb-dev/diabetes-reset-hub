@@ -435,9 +435,9 @@ function BloodSugarHistory({ readings, unit }: { readings: Reading[]; unit: Gluc
               strokeWidth={2}
               isAnimationActive={true}
               animationDuration={800}
-              dot={(props: any) => {
+              dot={(props: { cx?: number; cy?: number; index?: number; payload?: { id?: string; status?: GlucoseStatus } }) => {
                 const { cx, cy, payload, index } = props;
-                return <Dot key={payload?.id ?? index} cx={cx} cy={cy} r={3} fill={glucoseToneColor(payload.status)} />;
+                return <Dot key={payload?.id ?? index} cx={cx} cy={cy} r={3} fill={glucoseToneColor(payload?.status ?? "in_range")} />;
               }}
               activeDot={{ r: 5 }}
             />

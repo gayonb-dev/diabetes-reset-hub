@@ -21,7 +21,7 @@ import { useDailyHabits } from "@/hooks/useDailyHabits";
 import { useVitaQuotes } from "@/hooks/useVitaQuotes";
 import { useProgramDay } from "@/hooks/useProgramDay";
 import { getUnits, displayGlucose, displayWeight } from "@/lib/units";
-import { classifyGlucose, glucoseTone, GLUCOSE_STATUS_LABEL, GlucoseReadingType } from "@/lib/glucose";
+import { bloodSugarTone, classifyGlucose, GLUCOSE_STATUS_LABEL, GlucoseReadingType } from "@/lib/glucose";
 import { phaseFor, dayInPhase, PHASE_TOTAL } from "@/lib/phase";
 
 type DailyAction = {
@@ -45,12 +45,6 @@ type ProfileMeta = {
 
 // startOfDay removed — program day now comes from useProgramDay.
 
-
-// Delegates to the shared classifier (src/lib/glucose.ts) so low readings are
-// never shown as "normal".
-export function bloodSugarTone(mgdl: number, readingType: GlucoseReadingType = "other"): "normal" | "warning" | "danger" {
-  return glucoseTone(classifyGlucose(mgdl, readingType));
-}
 
 function DashboardSkeleton() {
   return (
