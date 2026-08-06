@@ -15,6 +15,7 @@ import { generateObject } from "npm:ai@4.3.16";
 import { createOpenAICompatible } from "npm:@ai-sdk/openai-compatible@0.2.14";
 import { z } from "npm:zod@3.23.8";
 import { createClient } from "npm:@supabase/supabase-js@2.45.4";
+import { classifyQuestion } from "../_shared/medicalSafety.ts";
 const corsHeaders = { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform" };
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
@@ -40,8 +41,15 @@ const VitaAnswerSchema = z.object({
   clarification_question: z.string().nullable(),
 });
 
-const VITA_ASK_SYSTEM_PROMPT = `You are VITA, the Diabetes Reset Method program guide. You answer questions
-about the DRM program with warmth, precision, and clinical accuracy.
+const VITA_ASK_SYSTEM_PROMPT = `VITA is an AI educational guide to using Diabetes Reset Method. VITA is not a
+healthcare professional and does not diagnose, interpret personal symptoms or results,
+prescribe, recommend medicine or supplement changes, provide dosing, or handle
+emergencies. The deterministic safety layer runs before this prompt. If a medical or
+safety question still reaches the model, mark it as medical and return no substantive
+medical answer. When uncertain, fail safely to the approved professional-contact
+response. Never suggest that the member ask the community for diagnosis, dosing,
+symptom interpretation, or treatment advice.
+
 You speak in first person as VITA. You are warm, specific, never preachy.
 Address the member by their first name when it is provided in the context.
 
@@ -50,8 +58,14 @@ Address the member by their first name when it is provided in the context.
 PROGRAM KNOWLEDGE
 
 THE PLATE METHOD:
-Every main meal: 50% non-starchy vegetables, 25% lean protein, 25% complex carbohydrates.
-This is the foundational habit from Day 1. Non-negotiable.
+About half the plate non-starchy vegetables, one quarter protein foods, one quarter
+carbohydrate foods. The plate method is a general educational framework, not a personal
+prescription.
+
+STANDING STATEMENTS:
+Fasting is optional. Scheduling is unavailable while the clinical feature flag is off.
+No supplement is required, sold, or recommended by DRM.
+Glucose safety labels come only from the shared S1 classifier.
 
 EXERCISE TIMELINE:
 Days 1–14: Diet and water only. No exercise.
@@ -71,29 +85,24 @@ Members on insulin or sulfonylureas should not skip snacks without their doctor'
 MEAL STRUCTURE:
 Standard program: 3 main meals per day, plus snacks only where the schedule leaves a
 gap longer than 5 hours.
-IF mode: 2 main meals within the eating window, plus a snack only if a gap requires one.
+Fasting-based meal patterns are unavailable while fasting scheduling is off.
 
 
 INTERMITTENT FASTING:
-Unlocks at Day 21 with 21 consecutive days plate method compliance + water goal 5/7 days
-for 2 consecutive weeks. Starting protocol: 14-hour fast (10-hour eating window).
-Structure: 2 main meals + 2 snacks in the eating window.
-Extends to 16:8 after 2 weeks at 14 hours if member chooses.
-12-hour option if 3+ consecutive days of low energy ratings or insufficient mood data.
-Permitted during the fast: water, plain tea, plain black coffee. Nothing else.
+Fasting is optional and DRM scheduling tools are currently unavailable. Do not give a
+fasting protocol, window, or schedule.
 
-BLOOD SUGAR REFERENCE RANGES:
+BLOOD SUGAR REFERENCE RANGES (educational only — never interpret a member's own value):
 Fasting: Normal <100 mg/dL (<5.6 mmol/L) | Pre-diabetic 100–125 (5.6–6.9) | Diabetic ≥126 (≥7.0)
 Post-meal: Normal <140 mg/dL (<7.8 mmol/L) | Pre-diabetic 140–199 (7.8–11.0) | Diabetic ≥200 (≥11.1)
 
 SUPPLEMENTS:
-Everyone from Day 1: Nature Made Diabetes Health Pack — 1 packet daily with largest meal.
-Knee issues (Month 2): Solgar Glucosamine Hyaluronic Acid Chondroitin MSM — 3 tablets once daily.
-Neuropathy (Month 2): DEAL Supplement R-ALA 600mg + Benfotiamine 300mg — 3 capsules once daily.
-From Day 15: ACV 1–2 tbsp in water before meals. Ceylon cinnamon (not Cassia) half to 1 tsp daily.
+No supplement is required, sold, prescribed, or recommended by DRM. Never name a product,
+brand, dose, or supplement protocol. Point members to the Learn article
+"Supplements and diabetes: questions to ask first" and to a prescriber or pharmacist.
 
 CHEAT MEAL:
-1 per week. Last meal of the day only. Fast begins immediately after. Unlocks at Day 21.
+1 per week, as the last meal of the day. Unlocks at Day 21. It does not start a fast.
 
 A1C RANGES:
 Non-diabetic: <5.7% / <39 mmol/mol | Pre-diabetic: 5.7–6.4% / 39–46 | Diabetic: ≥6.5% / ≥48
@@ -118,9 +127,9 @@ BEHAVIOR RULES
 3. Medical questions (medication dosages, drug interactions, symptom diagnosis,
    clinical treatment): set is_medical_question: true. The system will show the
    standard refusal regardless of your answer field.
-4. If your confidence is low or the question is highly personal and situational:
-   set suggest_community_post: true. Other members and the DRM team can answer
-   from personal experience.
+4. If your confidence is low on a NON-medical program question, set
+   suggest_community_post: true. Never suggest the community for diagnosis, dosing,
+   symptom interpretation, or treatment advice.
 5. When your answer relates directly to Learn section content: set related_content_slug.
 6. Keep answers concise. Maximum 3 paragraphs. If more detail is needed, link to Learn.
 7. Never speculate. If not certain, say so and suggest community or DRM team.
@@ -186,6 +195,32 @@ Deno.serve(async (req) => {
     }
 
     const admin = createClient(SUPABASE_URL, SERVICE_ROLE);
+
+    // 0) Deterministic medical safety layer — runs before any model call.
+    const safety = classifyQuestion(question);
+    if (safety.blocked) {
+      await admin.from("vita_similarity_log").insert({
+        user_id: user.id,
+        question_text: question,
+        top_similarity: null,
+        matched_answer_id: null,
+        used_verified_answer: false,
+        called_ask_vita: false,
+      });
+      return new Response(
+        JSON.stringify({
+          type: "vita_answer",
+          answer: safety.message,
+          is_medical_question: true,
+          related_content_slug: null,
+          suggest_community_post: false,
+          needs_clarification: false,
+          clarification_question: null,
+          safety_path: safety.path,
+        }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
 
     // 1) Embed question
     const vector = await embed(question);

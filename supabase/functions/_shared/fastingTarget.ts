@@ -5,6 +5,8 @@
 //
 // Dependency-free TypeScript only — no Deno APIs, no npm imports, no DOM.
 
+import { FASTING_SCHEDULING_ENABLED } from "./featureFlags.ts";
+
 export type FastingEligibility =
   | "unscreened"
   | "eligible"
@@ -43,6 +45,9 @@ export function eatingHoursForTarget(target: FastingTarget): number {
  * cannot fast until they do.
  */
 export function canFast(p: FastingProfileLike | null | undefined): boolean {
+  // Clinical gate: while fasting scheduling is disabled, no member can be
+  // scheduled to fast regardless of any stored eligibility or target value.
+  if (!FASTING_SCHEDULING_ENABLED) return false;
   const e = (p?.fasting_eligibility ?? "unscreened") as FastingEligibility;
   if (e === "eligible") return true;
   if (e === "needs_doctor") return !!p?.doctor_confirmed_at;

@@ -1,348 +1,121 @@
-import { useEffect, useMemo, useState } from "react";
-import { useAuth } from "@/hooks/useAuth";
-import { supabase } from "@/integrations/supabase/client";
+import { Link } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Loader2, Timer, AlertCircle } from "lucide-react";
-import { toast } from "@/hooks/use-toast";
-import EmptyState from "@/components/ui/empty-state";
-import { useFastingProfile } from "@/hooks/useFastingProfile";
-import FastingScreening from "@/components/safety/FastingScreening";
-import FastingTargetCard from "@/components/fasting/FastingTargetCard";
-import LowBloodSugarCard from "@/components/fasting/LowBloodSugarCard";
-import FastingTimeline from "@/components/fasting/FastingTimeline";
-import WindowCountdown from "@/components/fasting/WindowCountdown";
-import { formatHour, rampStatus } from "@/lib/mealTiming";
+import { ExternalLink } from "lucide-react";
+import { FASTING_SCHEDULING_ENABLED } from "@/lib/featureFlags";
 
-type WindowType = "14_10" | "16_8" | "12_12";
-type Status = "active" | "completed" | "broken";
-
-interface Fast {
-  id: string;
-  fast_start_at: string;
-  fast_end_at: string | null;
-  planned_duration_hours: number;
-  actual_duration_hours: number | null;
-  window_type: WindowType;
-  status: Status;
-  notes: string | null;
-}
-
-const VITA_MESSAGES = [
-  "You're not hungry, you're healing.",
-  "Each hour you fast, your insulin levels drop further.",
-  "Drink water. The thirst signal often masks as hunger.",
-  "Past hour 12, your body shifts into fat-burning mode.",
-  "You're rewriting your metabolic story right now.",
-  "Trust the process — your cells are doing the work.",
-];
-
-function fmt(seconds: number) {
-  const sign = seconds < 0 ? "-" : "";
-  const s = Math.abs(Math.floor(seconds));
-  const h = Math.floor(s / 3600);
-  const m = Math.floor((s % 3600) / 60);
-  const sec = s % 60;
-  return `${sign}${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}:${String(sec).padStart(2, "0")}`;
-}
-
-function windowLabel(w: WindowType) {
-  if (w === "14_10") return "14:10 (14-hour fast, 10-hour eating window)";
-  if (w === "16_8") return "16:8 (16-hour fast, 8-hour eating window)";
-  return "12:12 (12-hour fast, 12-hour eating window)";
-}
-
+/**
+ * Education-only fasting page.
+ *
+ * Fasting scheduling is gated behind FASTING_SCHEDULING_ENABLED (currently false,
+ * with no clinical approval recorded). While the flag is false, this route renders
+ * approved educational copy only — no timers, windows, screening questionnaire,
+ * logging controls, or writes of fasting-specific health data.
+ *
+ * All copy below is the approved S2 content-appendix wording.
+ */
 export default function Fasting() {
-  const { user } = useAuth();
-  const [active, setActive] = useState<Fast | null>(null);
-  const [history, setHistory] = useState<Fast[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [busy, setBusy] = useState(false);
-  const [now, setNow] = useState(Date.now());
-  const [windowChoice, setWindowChoice] = useState<WindowType>("14_10");
-  const [showRules, setShowRules] = useState(false);
-  const fp = useFastingProfile();
-  const [showLowBs, setShowLowBs] = useState(false);
-
-  const refresh = async () => {
-    if (!user) return;
-    const sb: any = supabase;
-    const { data } = await sb
-      .from("if_fasting_log")
-      .select("*")
-      .eq("member_id", user.id)
-      .order("fast_start_at", { ascending: false })
-      .limit(15);
-    const arr = (data || []) as Fast[];
-    const a = arr.find((f) => f.status === "active") || null;
-    setActive(a);
-    if (a) setWindowChoice(a.window_type);
-    setHistory(arr.filter((f) => f.status !== "active"));
-    setLoading(false);
-  };
-
-  useEffect(() => { refresh(); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [user]);
-
-  useEffect(() => {
-    const t = setInterval(() => setNow(Date.now()), 1000);
-    return () => clearInterval(t);
-  }, []);
-
-  const startFast = async () => {
-    if (!user) return;
-    setBusy(true);
-    const hours = windowChoice === "16_8" ? 16 : windowChoice === "12_12" ? 12 : 14;
-    const sb: any = supabase;
-    const { error } = await sb.from("if_fasting_log").insert({
-      member_id: user.id,
-      fast_start_at: new Date().toISOString(),
-      planned_duration_hours: hours,
-      window_type: windowChoice,
-      status: "active",
-    });
-    setBusy(false);
-    if (error) {
-      toast({ title: "Couldn't start fast", description: error.message, variant: "destructive" });
-      return;
-    }
-    toast({ title: "Fast started" });
-    refresh();
-  };
-
-  const endFast = async (status: Status) => {
-    if (!user || !active) return;
-    setBusy(true);
-    const startedMs = new Date(active.fast_start_at).getTime();
-    const hours = (Date.now() - startedMs) / 3600000;
-    const sb: any = supabase;
-    const { error } = await sb
-      .from("if_fasting_log")
-      .update({
-        fast_end_at: new Date().toISOString(),
-        actual_duration_hours: Math.round(hours * 10) / 10,
-        status,
-      })
-      .eq("id", active.id);
-    setBusy(false);
-    if (error) {
-      toast({ title: "Couldn't end fast", description: error.message, variant: "destructive" });
-      return;
-    }
-    toast({ title: status === "completed" ? "Fast completed" : "Fast ended early" });
-    refresh();
-  };
-
-  const vitaMsg = useMemo(
-    () => VITA_MESSAGES[Math.floor(now / 60000) % VITA_MESSAGES.length],
-    [now],
-  );
-
-  // One-time low-blood-sugar card, the first time a fasting window activates.
-  useEffect(() => {
-    if (fp.loading || !fp.profile) return;
-    const activated = !!active || !!fp.window;
-    if (activated && !fp.profile.low_bs_card_seen_at) {
-      setShowLowBs(true);
-      fp.save({ low_bs_card_seen_at: new Date().toISOString() });
-    }
-    /* eslint-disable-next-line react-hooks/exhaustive-deps */
-  }, [fp.loading, fp.profile?.low_bs_card_seen_at, fp.window, active]);
-
-  if (loading || fp.loading) {
-    return (
-      <div className="flex justify-center py-12">
-        <Loader2 className="h-6 w-6 animate-spin text-primary" />
-      </div>
-    );
-  }
-
-  let fastingRemaining = 0;
-  let eatingStartMs = 0;
-  if (active) {
-    const startMs = new Date(active.fast_start_at).getTime();
-    eatingStartMs = startMs + active.planned_duration_hours * 3600000;
-    fastingRemaining = Math.floor((eatingStartMs - now) / 1000);
-  }
-  const isFasting = !!active && fastingRemaining > 0;
-  const isEatingWindow = !!active && fastingRemaining <= 0;
-
-  const header = (
-    <div>
-      <h1 className="font-heading font-semibold text-2xl text-primary flex items-center gap-2">
-        <Timer className="h-6 w-6" /> Intermittent Fasting
-      </h1>
-      <p className="text-sm text-muted-foreground">Window timer and history.</p>
-    </div>
-  );
-
-  // Unscreened members see the screening itself here — never a dead end.
-  if (fp.needsScreening) {
-    return (
-      <div className="space-y-5">
-        {header}
-        <p className="text-sm text-muted-foreground">
-          Before fasting unlocks, we need a few answers about your medication and health. It takes a minute.
-        </p>
-        <FastingScreening onComplete={fp.reload} />
-      </div>
-    );
-  }
-
-  if (!fp.canFast) {
-    return (
-      <div className="space-y-5">
-        {header}
-        {fp.eligibility === "not_eligible" ? (
-          <Card className="p-5 border-border rounded-xl shadow-warm">
-            <p className="text-sm">
-              Fasting isn't part of your plan, and it doesn't need to be. It's one optional tool among several —
-              the plate method, post-meal walks, and consistent meal timing do the heavy lifting, and they're all
-              still yours.
-            </p>
-          </Card>
-        ) : (
-          <FastingScreening onComplete={fp.reload} />
-        )}
-      </div>
-    );
-  }
-
-  const ramp = rampStatus(fp.profile);
-
   return (
-    <div className="space-y-5">
-      {header}
+    <div className="space-y-5 animate-fade-in">
+      <div>
+        <span className="inline-block text-[11px] font-medium text-accent border border-accent/40 rounded px-2 py-0.5">
+          Optional
+        </span>
+        <h1 className="font-heading font-semibold text-2xl text-foreground mt-2">
+          Fasting and diabetes
+        </h1>
+        <p className="text-sm text-secondary-fg mt-2 leading-relaxed">
+          Fasting is not required to use DRM. You can build useful routines with meals,
+          movement, tracking, and visit preparation without fasting.
+        </p>
+      </div>
 
-      {showLowBs && <LowBloodSugarCard onDismiss={() => setShowLowBs(false)} />}
-
-      {/* Current window + where they are in the ramp */}
-      <Card className="p-5 border border-border rounded-xl shadow-warm space-y-3">
-        <div className="flex items-baseline justify-between gap-3">
-          <div>
-            <p className="label-caps text-muted-foreground">Your window today</p>
-            <p className="stat-value tabular-nums text-primary">
-              {fp.window ? fp.window.label : "Not fasting"}
-            </p>
-          </div>
-          {fp.window && (
-            <p className="text-xs text-muted-foreground tabular-nums text-right">
-              {formatHour(fp.window.startHour)} – {formatHour(fp.window.endHour % 24)}
-            </p>
-          )}
-        </div>
-        <p className="text-sm text-muted-foreground">{ramp.description}</p>
-        <FastingTimeline profile={fp.profile} window={fp.window} />
-      </Card>
-
-      {/* Countdown to the next window open or close */}
-      {fp.window && (
-        <Card className="p-6 border border-border rounded-xl shadow-warm">
-          <WindowCountdown window={fp.window} />
-          <div className="mt-4 rounded-lg bg-accent-muted px-3 py-2">
-            <p className="text-[13px] text-accent">VITA says: {vitaMsg}</p>
-          </div>
-        </Card>
-      )}
-
-      <FastingTargetCard />
-
-      {/* Optional manual fast log — kept for members who like to time a fast */}
-      {active && (
-        <Card className="p-5 border border-border rounded-xl shadow-warm">
-          <p className="label-caps text-accent mb-1">Logged fast in progress</p>
-          <p className="countdown-hero text-foreground tabular-nums">{fmt(fastingRemaining)}</p>
-          <p className="text-xs text-secondary-fg mt-2">
-            {fastingRemaining > 0 ? "Time remaining on this logged fast" : "Planned duration reached"}
-          </p>
-          <p className="text-xs text-tertiary-fg mt-2">{windowLabel(active.window_type)}</p>
-          <div className="mt-4 flex gap-2">
-            <Button
-              onClick={() => endFast("completed")}
-              disabled={busy}
-              className="flex-1 h-11 bg-primary hover:bg-primary/90"
-            >
-              {busy && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Mark complete
-            </Button>
-            <Button variant="outline" className="h-11" disabled={busy} onClick={() => endFast("broken")}>
-              End early
-            </Button>
-          </div>
-        </Card>
-      )}
-
-      {/* Low blood sugar reference, always available here */}
-      <LowBloodSugarCard dismissible={false} />
-
-
-
-
-      {/* History */}
       <Card className="p-5 border border-border rounded-xl shadow-warm">
-        <div className="flex items-center justify-between mb-3">
-          <p className="text-sm font-medium">Recent fasts</p>
-          {!active && (
-            <button
-              onClick={startFast}
-              disabled={busy}
-              className="text-primary text-xs underline min-h-11 inline-flex items-center px-2 -mx-2"
-            >
-              Log a fast now
-            </button>
-          )}
-        </div>
-        {history.length === 0 ? (
-          <EmptyState
-            title="No fasts logged yet"
-            description="Logging is optional — your window above runs whether you log or not."
-            posture="encouraging"
-            vitaSize={56}
-          />
-        ) : (
-
-          <div className="divide-y divide-border">
-            {history.slice(0, 7).map((f) => (
-              <div key={f.id} className="py-2 flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">
-                  {new Date(f.fast_start_at).toLocaleDateString(undefined, { month: "short", day: "numeric" })}
-                </span>
-                <span className="flex-1 text-center text-xs text-muted-foreground">
-                  {f.planned_duration_hours}h planned · {f.actual_duration_hours ?? "—"}h actual
-                </span>
-                <span
-                  className={`text-xs font-medium ${f.status === "completed" ? "text-status-normal" : "text-status-warning"}`}
-                >
-                  {f.status === "completed" ? "Completed" : "Broken"}
-                </span>
-              </div>
-            ))}
-          </div>
-        )}
+        <h2 className="font-heading font-semibold text-base text-foreground">
+          Fasting schedules are not available right now
+        </h2>
+        <p className="text-sm text-secondary-fg mt-2 leading-relaxed">
+          We are keeping the fasting timer and scheduling tools off while the safety
+          screening and instructions are reviewed. The app cannot decide whether fasting
+          is safe for you.
+        </p>
       </Card>
 
-      {/* Rules */}
-      <Card className="p-4 border border-border">
-        <button
-          onClick={() => setShowRules((s) => !s)}
-          className="text-sm font-medium text-foreground w-full text-left flex items-center justify-between"
+      <Card className="p-5 border border-border rounded-xl">
+        <h2 className="font-heading font-semibold text-base text-foreground">
+          Why a personal safety plan matters
+        </h2>
+        <p className="text-sm text-secondary-fg mt-2 leading-relaxed">
+          Fasting can raise the risk of low blood sugar, high blood sugar, or dehydration
+          for some people with diabetes. Your risk depends on your medicines, diabetes
+          type, health history, and the kind of fast you are considering. If you want to
+          fast, ask a prescriber or pharmacist who knows your medicines and health history.
+          Never skip or change medicine because of this app.
+        </p>
+      </Card>
+
+      <Card className="p-5 border border-border rounded-xl">
+        <h2 className="font-heading font-semibold text-base text-foreground">
+          If your glucose is low
+        </h2>
+        <p className="text-sm text-secondary-fg mt-2 leading-relaxed">
+          End the fast and follow your healthcare professional's low-blood-sugar plan. Use
+          the glucose safety message shown with your reading. Never change medication based
+          on this app alone.
+        </p>
+      </Card>
+
+      <Card className="p-5 border border-border rounded-xl">
+        <h2 className="font-heading font-semibold text-base text-foreground">
+          Tools you can use now
+        </h2>
+        <ul className="mt-2 space-y-1.5 text-sm text-secondary-fg list-disc pl-5">
+          <li>Build meals with the plate method</li>
+          <li>Choose meal times that fit your day</li>
+          <li>Use the movement options that are appropriate for you</li>
+          <li>Track patterns and prepare questions for a healthcare visit</li>
+        </ul>
+      </Card>
+
+      <div className="flex flex-wrap gap-3">
+        <Button asChild className="min-h-11 rounded-lg bg-primary text-primary-foreground">
+          <Link to="/app/meals">Explore meal tools</Link>
+        </Button>
+        <Button asChild variant="outline" className="min-h-11 rounded-lg">
+          <Link to="/app/learn">Back to Learn</Link>
+        </Button>
+      </div>
+
+      <p className="text-xs text-tertiary-fg leading-relaxed">
+        General education based on the{" "}
+        <a
+          href="https://diabetesjournals.org/care/article/49/Supplement_1/S89/163932/5-Facilitating-Positive-Health-Behaviors-and-Well"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-primary hover:underline inline-flex items-center gap-1"
         >
-          IF rules & medical note
-          <span className="text-tertiary-fg text-xs">{showRules ? "Hide" : "Show"}</span>
-        </button>
-        {showRules && (
-          <div className="mt-3 space-y-2 text-xs text-muted-foreground">
-            <p>• Permitted during fast: water, plain tea, plain black coffee (nothing else).</p>
-            <p>• Cheat meal rule: fast begins immediately after a cheat meal.</p>
-            <div className="rounded-md bg-accent-muted px-3 py-2 flex gap-2">
-              <AlertCircle className="h-4 w-4 text-accent shrink-0 mt-0.5" />
-              <p className="text-accent text-[12px]">
-                If you are on insulin or medications that lower blood sugar, fasting requires your doctor's guidance.
-                Do not fast without their approval.
-              </p>
-            </div>
-          </div>
-        )}
-      </Card>
+          ADA Standards
+          <ExternalLink className="h-3 w-3" />
+        </a>{" "}
+        of Care in Diabetes—2026 and{" "}
+        <a
+          href="https://www.niddk.nih.gov/health-information/professionals/diabetes-discoveries-practice/fasting-safely-with-diabetes"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-primary hover:underline inline-flex items-center gap-1"
+        >
+          NIDDK fasting guidance
+          <ExternalLink className="h-3 w-3" />
+        </a>
+        . This page is educational and is not medical clearance.
+      </p>
+
+      {FASTING_SCHEDULING_ENABLED && (
+        <p className="text-xs text-tertiary-fg">
+          Fasting scheduling requires a clinician-approved eligibility model before any
+          tool is reintroduced.
+        </p>
+      )}
     </div>
   );
 }

@@ -68,7 +68,7 @@ export default function StreakHistoryModal({
             </span>
           </div>
           <p className="text-[15px] text-secondary-fg">
-            {currentStreak === 1 ? "1-day Reversal Streak" : `${currentStreak}-day Reversal Streak`}
+            {currentStreak === 1 ? "1-day Daily Action Streak" : `${currentStreak}-day Daily Action Streak`}
           </p>
           {startDate && (
             <p className="text-[13px] text-tertiary-fg">Started {fmt(startDate)}</p>

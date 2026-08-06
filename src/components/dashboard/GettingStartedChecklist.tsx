@@ -16,9 +16,6 @@ type ChecklistItem = {
 const ITEMS: ChecklistItem[] = [
   { slug: "measuring_tape", label: "Measuring tape", hint: "For body measurements on Day 30.", unlockDay: 1, unlockLabel: "Day 1", searchUrl: "https://www.google.com/search?q=cloth+body+measuring+tape" },
   { slug: "water_bottle", label: "Large water bottle", hint: "Sized to your daily target — makes tracking effortless.", unlockDay: 1, unlockLabel: "Day 1", searchUrl: "https://www.google.com/search?q=large+water+bottle+32oz" },
-  { slug: "supplement_pack", label: "Nature Made Diabetes Health Pack", unlockDay: 1, unlockLabel: "Day 1", searchUrl: "https://www.google.com/search?q=Nature+Made+Diabetes+Health+Pack" },
-  { slug: "apple_cider_vinegar", label: "Apple Cider Vinegar (organic, with the mother)", hint: "Any grocery or health food shop.", unlockDay: 8, unlockLabel: "Day 8", searchUrl: "https://www.google.com/search?q=organic+apple+cider+vinegar+with+mother" },
-  { slug: "ceylon_cinnamon", label: "Ceylon Cinnamon (not Cassia)", hint: "Check the label — must say Ceylon.", unlockDay: 8, unlockLabel: "Day 8", searchUrl: "https://www.google.com/search?q=ceylon+cinnamon" },
   { slug: "walking_shoes", label: "Comfortable walking shoes", hint: "You'll use these three times a day.", unlockDay: 15, unlockLabel: "Day 15", searchUrl: "https://www.google.com/search?q=comfortable+walking+shoes" },
   { slug: "water_bottle_weights", label: "Two filled water bottles", hint: "Used as light weights when structured workouts begin.", unlockDay: 15, unlockLabel: "Day 15" },
   { slug: "yoga_mat", label: "Yoga mat (optional)", hint: "For floor exercises.", unlockDay: 15, unlockLabel: "Day 15", searchUrl: "https://www.google.com/search?q=yoga+mat" },

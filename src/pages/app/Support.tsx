@@ -231,7 +231,7 @@ export default function Support() {
         <p className="text-[11px] uppercase tracking-wider text-muted-foreground">Program Questions</p>
         <h2 className="font-heading text-base font-semibold">Have a question about how the program works?</h2>
         <p className="text-sm text-muted-foreground">
-          Questions about meals, workouts, blood sugar, IF, supplements — ask the community and VITA
+          Questions about meals, workouts, tracking, or how a daily action works — ask the community and VITA
           for the fastest answer.
         </p>
         <Button

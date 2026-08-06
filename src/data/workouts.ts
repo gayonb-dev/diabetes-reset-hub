@@ -169,5 +169,4 @@ export const COOL_DOWN_ITEMS: { key: string; label: string }[] = [
   { key: "quad_stretch", label: "Standing quad stretch, both sides" },
   { key: "hamstring_stretch", label: "Standing hamstring stretch, both sides" },
   { key: "shoulder_neck", label: "Shoulder rolls and neck tilts" },
-  { key: "epsom_soak", label: "Epsom salt foot soak tonight" },
 ];

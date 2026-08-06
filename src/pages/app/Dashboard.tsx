@@ -15,7 +15,6 @@ import StreakHistoryModal from "@/components/gamification/StreakHistoryModal";
 import LevelUpOverlay from "@/components/gamification/LevelUpOverlay";
 import Phase1ExtensionPrompt from "@/components/gamification/Phase1ExtensionPrompt";
 import { useGamificationProfile } from "@/hooks/useGamificationProfile";
-import SupplementPrompt from "@/components/onboarding/SupplementPrompt";
 import HabitLogging from "@/components/today/HabitLogging";
 import { useDailyHabits } from "@/hooks/useDailyHabits";
 import { useVitaQuotes } from "@/hooks/useVitaQuotes";
@@ -357,7 +356,6 @@ export default function Dashboard() {
   return (
     <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_320px] lg:gap-6 animate-fade-in">
       <div className="max-w-[880px] mx-auto space-y-5 min-w-0">
-        <SupplementPrompt />
         <LevelUpOverlay level={gam.leveledUpTo} onDismiss={gam.dismissLevelUp} />
         <Phase1ExtensionPrompt
           currentProgramDay={currentProgramDay}
@@ -391,8 +389,8 @@ export default function Dashboard() {
             />
             <span className="text-[11px] text-secondary-fg">
               {gam.streak_count === 1
-                ? "1-day Reversal Streak"
-                : `${gam.streak_count}-day Reversal Streak`}
+                ? "1-day Daily Action Streak"
+                : `${gam.streak_count}-day Daily Action Streak`}
             </span>
             <LevelBadge level={gam.level} />
           </div>

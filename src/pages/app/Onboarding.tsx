@@ -20,7 +20,6 @@ import {
   GLUCOSE_RANGE_MGDL,
   WEIGHT_RANGE_LB,
 } from "@/lib/units";
-import { deriveEligibility } from "@/components/safety/FastingScreening";
 
 type Diabetes = "type_2" | "prediabetes" | "concerned";
 type Medication = "oral" | "insulin" | "both" | "none";
@@ -46,11 +45,6 @@ export default function Onboarding() {
   const [step, setStep] = useState(0); // 0 = welcome, 1..3 = wizard
   const [saving, setSaving] = useState(false);
 
-  // Fasting safety screening (step 3)
-  const [medClass, setMedClass] = useState<string | null>(null);
-  const [type1, setType1] = useState<boolean | null>(null);
-  const [pregnant, setPregnant] = useState<boolean | null>(null);
-  const [disorderedEating, setDisorderedEating] = useState<boolean | null>(null);
   const [bedtimeHour, setBedtimeHour] = useState(22);
 
   // Screen 2
@@ -161,11 +155,6 @@ export default function Onboarding() {
 
     // Ensure profiles.program_start_date is set on onboarding completion.
     const today = new Date().toISOString().slice(0, 10);
-    const exclusions = {
-      type1: !!type1,
-      pregnant_or_nursing: !!pregnant,
-      disordered_eating: !!disorderedEating,
-    };
     await supabase
       .from("profiles")
       .upsert(
@@ -174,9 +163,6 @@ export default function Onboarding() {
           first_name: firstName.trim(),
           program_start_date: today,
           week_start_day: weekStartDay,
-          medication_class: medClass,
-          fasting_exclusions: exclusions,
-          fasting_eligibility: deriveEligibility(medClass, exclusions),
           bedtime_hour: bedtimeHour,
         } as never,
         { onConflict: "user_id" },
@@ -195,7 +181,7 @@ export default function Onboarding() {
         <p className="text-[22px] font-semibold mb-6 tracking-tight">Diabetes Reset Method</p>
         <Vita posture="celebrating" size={160} />
         <h1 className="font-heading text-[28px] font-bold mt-6 text-center leading-tight">
-          Your reversal starts today.
+          Your reset starts today.
         </h1>
         <p className="text-base mt-3 text-center text-primary-foreground/70 max-w-sm">
           A program built to end diabetes — not manage it.
@@ -547,79 +533,11 @@ export default function Onboarding() {
                 </p>
               </Field>
 
-              <div className="mb-6">
-                <p className="text-sm text-muted-foreground mb-3">
-                  Some diabetes medications lower blood sugar on a schedule. If you're fasting while the
-                  medication is still working, blood sugar can drop too low. That's why we ask.
-                </p>
-                <Field label="Do you take any of these?" required>
-                  <Radios
-                    value={medClass}
-                    onChange={(v) => setMedClass(v)}
-                    options={[
-                      { v: "insulin", label: "Insulin" },
-                      { v: "sulfonylurea", label: "Sulfonylureas (glipizide, glyburide, glimepiride, gliclazide)" },
-                      { v: "glinide", label: "Repaglinide or nateglinide" },
-                      { v: "none", label: "None of these" },
-                      { v: "unsure", label: "I'm not sure" },
-                    ]}
-                  />
-                  {medClass === "unsure" && (
-                    <p className="text-xs text-muted-foreground mt-2 bg-muted rounded-lg p-3">
-                      Check your pill bottle or box. If you see glipizide, glyburide, glimepiride, gliclazide,
-                      repaglinide, or nateglinide — or if you take any insulin — that's the group we mean. Your
-                      pharmacist can confirm in one phone call.
-                    </p>
-                  )}
-                </Field>
-
-                <Field label="Do you have type 1 diabetes?" required>
-                  <Radios
-                    value={type1 == null ? null : type1 ? "yes" : "no"}
-                    onChange={(v) => setType1(v === "yes")}
-                    options={[{ v: "yes", label: "Yes" }, { v: "no", label: "No" }]}
-                  />
-                </Field>
-
-                <Field label="Are you pregnant or breastfeeding?" required>
-                  <Radios
-                    value={pregnant == null ? null : pregnant ? "yes" : "no"}
-                    onChange={(v) => setPregnant(v === "yes")}
-                    options={[{ v: "yes", label: "Yes" }, { v: "no", label: "No" }]}
-                  />
-                </Field>
-
-                <Field label="Do you have a history of disordered eating?" required>
-                  <Radios
-                    value={disorderedEating == null ? null : disorderedEating ? "yes" : "no"}
-                    onChange={(v) => setDisorderedEating(v === "yes")}
-                    options={[{ v: "yes", label: "Yes" }, { v: "no", label: "No" }]}
-                  />
-                </Field>
-
-                {(type1 || pregnant || disorderedEating) && (
-                  <p className="text-xs text-muted-foreground bg-muted rounded-lg p-3">
-                    Fasting isn't part of your plan, and it doesn't need to be. It's one optional tool among
-                    several — the plate method, post-meal walks, and consistent meal timing do the heavy lifting,
-                    and they're all still yours.
-                  </p>
-                )}
-                {!type1 && !pregnant && !disorderedEating &&
-                  (medClass === "insulin" || medClass === "sulfonylurea" || medClass === "glinide" || medClass === "unsure") && (
-                    <p className="text-xs text-accent bg-accent-muted rounded-lg p-3">
-                      Fasting can be safe with your medication — but only if your doctor adjusts your doses first.
-                      Low blood sugar is a real risk otherwise. Talk to them, then come back.
-                    </p>
-                  )}
-              </div>
-
               <div className="fixed bottom-0 left-0 right-0 z-40 bg-background border-t border-border p-4 pb-[calc(env(safe-area-inset-bottom)+1rem)] lg:static lg:z-auto lg:bg-transparent lg:border-0 lg:p-0">
                 <Button
                   onClick={finish}
                   disabled={
-                    saving || !monitoring || glucometer == null || !medClass ||
-                    type1 == null || pregnant == null || disorderedEating == null
-                  }
+saving || !monitoring || glucometer == null}
                   className="w-full h-[52px] bg-primary hover:bg-primary/90 text-primary-foreground font-semibold"
                 >
                   {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}

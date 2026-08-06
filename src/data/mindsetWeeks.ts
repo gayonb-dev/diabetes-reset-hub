@@ -1,4 +1,7 @@
-// Section 15 — Mindset and Psychology Module. Full verbatim copy.
+// Section 15 — Mindset and Psychology Module.
+// Full verbatim copy from the approved S3 content appendix (person-centered,
+// non-stigmatizing, no predicted outcomes). Week numbers, titles, unlock days,
+// card counts, and postures are preserved; Week 6 intentionally has no assignment.
 export type MindsetCard = {
   body: string;
   posture: "encouraging" | "celebrating" | "neutral";
@@ -20,19 +23,19 @@ export const MINDSET_WEEKS: MindsetWeek[] = [
     cards: [
       {
         posture: "encouraging",
-        body: "You are not here because diabetes is your destiny. You are here because you made a decision that most people never make. That decision alone separates you from where you were.",
+        body: "Starting does not require certainty. You only need one useful next step. Today, choose the action that feels most realistic and begin there.",
       },
       {
         posture: "encouraging",
-        body: "Type 2 diabetes is not a life sentence. It is a metabolic condition — and metabolic conditions respond to metabolic interventions. Diet, movement, and time. That is the entire equation.",
+        body: "A diagnosis is part of your health story; it is not your identity. You are a person learning what supports your daily life.",
       },
       {
         posture: "celebrating",
-        body: "People have reversed this in 6 months. Not managed it — reversed it. Their A1C went from the diabetic range to the normal range. Their doctors reduced their medication. Some stopped entirely. You are on the same path.",
+        body: "You opened the program and began. That counts. Small actions become useful when you repeat, review, and adjust them.",
       },
     ],
     assignment:
-      "Write one sentence describing what your life looks like when you have reversed this. Not if. When. Keep it somewhere you see it every day.",
+      "Write one reason you want daily diabetes care to feel easier. Keep the sentence somewhere you can return to on a hard day.",
   },
   {
     weekNumber: 2,
@@ -41,19 +44,19 @@ export const MINDSET_WEEKS: MindsetWeek[] = [
     cards: [
       {
         posture: "neutral",
-        body: "The habits that contributed to your diagnosis were not character flaws. They were responses — to stress, to your environment, to what was available and what felt possible. Understanding that is not an excuse. It is the starting point.",
+        body: "Past habits were shaped by stress, time, cost, culture, and what felt possible. You can understand those influences without blaming yourself.",
       },
       {
         posture: "encouraging",
-        body: "You are not broken. You are not weak. You are someone who is now making better decisions with better information. That is all this is.",
+        body: "You are not weak or broken. You are building skills with the information and support available to you now.",
       },
       {
         posture: "encouraging",
-        body: "Blood sugar responds to food and movement within hours. Not weeks. Not months. Hours. Every compliant meal and every walk after eating is already working, even when you cannot feel it yet.",
+        body: "Treat each action as a small experiment. Notice what fits your life, record what happened, and bring health questions to your care team.",
       },
     ],
     assignment:
-      "Identify the one habit that most contributed to where your health is today. Name it without judgment. Understanding it is where change starts. Judging it is where change stops.",
+      "Choose one routine you want to make easier. Write the smallest version you could still do on a busy day.",
   },
   {
     weekNumber: 3,
@@ -62,19 +65,19 @@ export const MINDSET_WEEKS: MindsetWeek[] = [
     cards: [
       {
         posture: "encouraging",
-        body: "Your body is responding right now. The changes inside you — insulin sensitivity improving, inflammation reducing, blood sugar stabilizing — are ahead of any number on a screen. The numbers will catch up to your effort.",
+        body: "Your records can help you notice patterns over time. One reading, one meal, or one missed day does not tell the whole story.",
       },
       {
         posture: "celebrating",
-        body: "Small wins are not small. Every consecutive day of drinking your water is a metabolic win. Every compliant plate is a hormone response. Every post-meal walk is a glucose management event. These things compound.",
+        body: "Small actions count: logging a reading, building one balanced plate, taking an appropriate walk, or preparing a question for a visit.",
       },
       {
         posture: "neutral",
-        body: "This week, pay attention to something other than the scale. Energy levels. Sleep quality. How you feel two hours after eating. Cravings getting quieter. These are your first signals.",
+        body: "Look beyond a single number. Notice which routines felt practical, what got in the way, and what you want to discuss with your healthcare professional.",
       },
     ],
     assignment:
-      "Write down one thing that has changed — physically or mentally — since Day 1. It does not have to be dramatic. It just has to be real.",
+      "Write down one pattern you noticed this week. It can be about your schedule, meals, movement, mood, or what helped you follow through.",
   },
   {
     weekNumber: 4,
@@ -83,19 +86,19 @@ export const MINDSET_WEEKS: MindsetWeek[] = [
     cards: [
       {
         posture: "encouraging",
-        body: "There is a version of you that does not have diabetes anymore. That version is not a fantasy. It is the person this program is building. You are not becoming something foreign — you are becoming who you were supposed to be before the condition took hold.",
+        body: "You are more than a diagnosis or a set of readings. You are a person learning how to care for yourself in a way that fits your life.",
       },
       {
         posture: "neutral",
-        body: "Language matters. Start saying: 'I am reversing my diabetes.' Not 'I am trying.' Not 'I hope to.' Present tense. Active voice. Your brain does not know the difference between something you are doing and something you tell it you are doing — so tell it the true story.",
+        body: "Use language that leaves room for real life: “I am building routines that support my diabetes care.” Progress does not require perfection.",
       },
       {
         posture: "encouraging",
-        body: "Identity follows behavior. Every day you complete your habits, you cast a vote for the person you are becoming. Not one massive transformation — one daily vote.",
+        body: "Identity follows repeated choices. Every time you return to a useful action, you practice being someone who keeps showing up for their health.",
       },
     ],
     assignment:
-      "Say this out loud today, once: 'I am someone who is reversing diabetes.' Notice how it feels. Uncomfortable is fine. Uncomfortable means it's new.",
+      "Say or write: “I can return to one useful action today.” Choose the action before you close this card.",
   },
   {
     weekNumber: 5,
@@ -104,19 +107,19 @@ export const MINDSET_WEEKS: MindsetWeek[] = [
     cards: [
       {
         posture: "neutral",
-        body: "You are going to have a hard week. Maybe you already have. A family event, a stressful month, a week where compliance slipped. That is not failure. That is life.",
+        body: "Hard days and missed routines happen. A change in your week is information, not a verdict on your effort or character.",
       },
       {
         posture: "encouraging",
-        body: "The only way to fail this program is to quit after a setback. And that is entirely your choice. One bad week does not undo six good ones. Biology does not work that way.",
+        body: "Restarting is a skill. You do not need to catch up on everything; choose the next useful action and begin again.",
       },
       {
         posture: "encouraging",
-        body: "What separates people who reverse diabetes from people who don't is not willpower. It is what they do the day after a hard week. That next day is the most important day in the program.",
+        body: "Make the plan smaller when life gets crowded. A version you can do is more useful than a perfect version you avoid.",
       },
     ],
     assignment:
-      "Think about the last time you quit something. What triggered it? What would have needed to happen differently for you to keep going? That answer is your resilience strategy.",
+      "Think of one situation that usually interrupts your routine. Write a simple backup action for that situation.",
   },
   {
     weekNumber: 6,
@@ -125,19 +128,19 @@ export const MINDSET_WEEKS: MindsetWeek[] = [
     cards: [
       {
         posture: "celebrating",
-        body: "You have been at this for 6 weeks. Most people who start a health program are gone by now. You are not most people.",
+        body: "You have spent six weeks practicing. Pause and notice which tools you actually used—not which ones you think you should have used.",
       },
       {
         posture: "encouraging",
-        body: "At this point the question is not whether you can do this. You have already proven you can. The question is whether you will keep choosing it — even on the days it doesn't feel like a choice.",
+        body: "Keep what helps. Change what does not fit. A useful routine is allowed to grow with your needs.",
       },
       {
         posture: "encouraging",
-        body: "Momentum is real. The longer you build it, the harder it becomes to stop — in the best possible way. You are past the hardest part.",
+        body: "Momentum comes from returning, not from being perfect. The next small action still matters after an easy week or a hard one.",
       },
       {
         posture: "celebrating",
-        body: "What gets you through the remaining months is not inspiration. It is the identity you have built. You are someone who does this. Keep being that person.",
+        body: "You now have real experience with the program. Use it to choose what you want to continue and what questions to take to your healthcare team.",
       },
     ],
   },

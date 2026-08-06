@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { Link, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
@@ -31,6 +32,7 @@ import { DEFAULT_LEARN_GUIDES, type LearnGuide } from "@/data/learnGuides";
 import { useProgramDay } from "@/hooks/useProgramDay";
 import { useGamification } from "@/hooks/useGamification";
 
+
 type BlogPost = {
   id: string;
   title: string;
@@ -42,11 +44,18 @@ type BlogPost = {
 export default function Learn() {
   const { user } = useAuth();
   const currentProgramDay = useProgramDay();
-
+  const [searchParams] = useSearchParams();
+  const requestedGuide = searchParams.get("guide");
 
   const [activeWeek, setActiveWeek] = useState<MindsetWeek | null>(null);
   const [guides, setGuides] = useState<LearnGuide[]>(DEFAULT_LEARN_GUIDES);
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
+  const [tab, setTab] = useState(requestedGuide ? "learn" : "mindset");
+  const [openGuide, setOpenGuide] = useState<string>(requestedGuide ?? "");
+  const headingRefs = useRef<Record<string, HTMLSpanElement | null>>({});
+  // Focus/scroll only when the requested guide actually changes (a real
+  // navigation or redirect) — never on background data refreshes.
+  const lastFocusedGuide = useRef<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -79,6 +88,23 @@ export default function Learn() {
     };
   }, []);
 
+  // Deep link: /app/learn?guide=<slug> opens the matching article.
+  useEffect(() => {
+    if (!requestedGuide) return;
+    const exists = guides.some((g) => g.slug === requestedGuide);
+    if (!exists) return; // unknown slug — fall back to the normal Guides list
+    setTab("learn");
+    setOpenGuide(requestedGuide);
+    if (lastFocusedGuide.current === requestedGuide) return;
+    lastFocusedGuide.current = requestedGuide;
+    const t = window.setTimeout(() => {
+      const el = headingRefs.current[requestedGuide];
+      el?.scrollIntoView({ block: "center", behavior: "smooth" });
+      el?.focus({ preventScroll: true });
+    }, 120);
+    return () => window.clearTimeout(t);
+  }, [requestedGuide, guides]);
+
   return (
     <div className="space-y-6 animate-fade-in">
       <div>
@@ -90,11 +116,12 @@ export default function Learn() {
         </p>
       </div>
 
-      <Tabs defaultValue="mindset">
+      <Tabs value={tab} onValueChange={setTab}>
         <TabsList className="bg-muted">
           <TabsTrigger value="mindset" className="min-h-11">Mindset</TabsTrigger>
           <TabsTrigger value="learn" className="min-h-11">Guides</TabsTrigger>
           {blogPosts.length > 0 && <TabsTrigger value="blog" className="min-h-11">Blog</TabsTrigger>}
+
         </TabsList>
 
         {/* MINDSET TAB */}
@@ -138,7 +165,13 @@ export default function Learn() {
 
         {/* LEARN TAB — accordion */}
         <TabsContent value="learn" className="mt-5">
-          <Accordion type="single" collapsible className="w-full">
+          <Accordion
+            type="single"
+            collapsible
+            className="w-full"
+            value={openGuide}
+            onValueChange={setOpenGuide}
+          >
             {guides.map((g) => {
               const locked = g.unlockDay && currentProgramDay < g.unlockDay;
               return (
@@ -146,9 +179,20 @@ export default function Learn() {
                   <AccordionTrigger className="text-left">
                     <span className="flex items-center gap-2">
                       {locked && <Lock className="h-3.5 w-3.5 text-tertiary-fg" />}
-                      <span className="font-medium text-foreground">
+                      <span
+                        className="font-medium text-foreground"
+                        tabIndex={-1}
+                        ref={(el) => {
+                          headingRefs.current[g.slug] = el;
+                        }}
+                      >
                         {g.title}
                       </span>
+                      {g.category && (
+                        <span className="text-[11px] text-accent border border-accent/40 rounded px-1.5 py-0.5">
+                          {g.category}
+                        </span>
+                      )}
                       {locked && (
                         <span className="text-[11px] text-tertiary-fg">
                           (Day {g.unlockDay})
@@ -162,15 +206,48 @@ export default function Learn() {
                         Unlocks on Day {g.unlockDay}.
                       </p>
                     ) : (
-                      <p className="text-sm text-secondary-fg leading-relaxed whitespace-pre-wrap">
-                        {g.body}
-                      </p>
+                      <div className="space-y-4">
+                        <p className="text-sm text-secondary-fg leading-relaxed whitespace-pre-wrap">
+                          {g.body}
+                        </p>
+                        {g.sourceCard && (
+                          <Card className="p-4 border border-border rounded-xl bg-muted/50">
+                            <p className="font-heading font-semibold text-sm text-foreground">
+                              {g.sourceCard.title}
+                            </p>
+                            <p className="text-[13px] text-secondary-fg mt-1 leading-relaxed">
+                              {g.sourceCard.body}
+                            </p>
+                            <ul className="mt-2 space-y-1">
+                              {g.sourceCard.links.map((l) => (
+                                <li key={l.url}>
+                                  <a
+                                    href={l.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-sm text-primary font-medium hover:underline inline-flex items-center gap-1"
+                                  >
+                                    {l.label}
+                                    <ExternalLink className="h-3.5 w-3.5" />
+                                  </a>
+                                </li>
+                              ))}
+                            </ul>
+                          </Card>
+                        )}
+                        {g.cta && (
+                          <Button asChild variant="outline" className="min-h-11 rounded-lg">
+                            <Link to={g.cta.to}>{g.cta.label}</Link>
+                          </Button>
+                        )}
+                      </div>
                     )}
                   </AccordionContent>
                 </AccordionItem>
               );
             })}
           </Accordion>
+
         </TabsContent>
 
         {/* BLOG TAB — only when posts exist */}

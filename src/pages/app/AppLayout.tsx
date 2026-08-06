@@ -15,9 +15,7 @@ import {
   LogOut,
   Shield,
   LifeBuoy,
-  Pill,
   User,
-  Timer,
   
   MoreHorizontal,
   Settings as SettingsIcon,
@@ -178,18 +176,13 @@ export default function AppLayout() {
             <NavLink to="/app/learn" className={navClass}>
               <BookOpen className="h-4 w-4" /> Learn
             </NavLink>
-            <NavLink to="/app/supplements" className={navClass}>
-              <Pill className="h-4 w-4" /> Supplements
-            </NavLink>
             <NavLink to="/app/workouts" className={navClass}>
               <Activity className="h-4 w-4" /> Workouts
             </NavLink>
             <NavLink to="/app/meals" className={navClass}>
               <UtensilsCrossed className="h-4 w-4" /> Meals
             </NavLink>
-            <NavLink to="/app/fasting" className={navClass}>
-              <Timer className="h-4 w-4" /> Fasting
-            </NavLink>
+
             <NavLink to="/app/ask" className={navClass}>
               <MessageCircleQuestion className="h-4 w-4" /> Ask
             </NavLink>
@@ -251,9 +244,6 @@ export default function AppLayout() {
                 {[
                   { to: "/app/learn", icon: BookOpen, label: "Learn" },
                   { to: "/app/workouts", icon: Activity, label: "Workouts" },
-                  { to: "/app/supplements", icon: Pill, label: "Supplements" },
-                  { to: "/app/fasting", icon: Timer, label: "Fasting" },
-                  
                   { to: "/app/profile", icon: User, label: "Profile" },
                   { to: "/app/settings", icon: SettingsIcon, label: "Settings" },
                   { to: "/app/support", icon: LifeBuoy, label: "Support" },
