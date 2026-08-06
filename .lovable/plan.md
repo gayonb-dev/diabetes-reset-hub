@@ -32,7 +32,7 @@ While scheduling is off, DRM asks for and stores no fasting-specific medication,
 
 ## Learn article routing
 
-`Learn.tsx` reads the `guide` query parameter, opens the requested article, moves focus and scrolls its heading into view accessibly, renders real source links and CTAs, and falls back safely on an unknown slug. The plain-string guide model is extended to carry links, source cards, and CTA targets without changing any approved wording.
+`Learn.tsx` reads the `guide` query parameter, opens the requested article and scrolls its heading into view, renders real source links and CTAs, and falls back safely on an unknown slug. Focus moves to the article heading only following an expected user-initiated navigation or redirect; background query or state updates must not unexpectedly steal focus. The plain-string guide model is extended to carry links, source cards, and CTA targets without changing any approved wording.
 
 ## S4 — AI boundaries
 
@@ -41,7 +41,7 @@ While scheduling is off, DRM asks for and stores no fasting-specific medication,
 - **Report ownership — metadata-only reports over reviewable protected sources.** A report is always metadata: content type, referenced source record id, generation timestamp, reason, reporter id, audit timestamps. Never raw questions, answers, meal plans, or health text in the report table.
   - Meal plans reference the existing protected, member-owned `meal_plans` row. No metadata-only duplicate record is created.
   - Generated Ask answers are persisted server-side into a protected, member-owned generation record that stores the generated answer itself (and the question only when no authorized source record already holds it), so a DRM reviewer can inspect exactly what was reported. Records are immutable after write.
-  - The protected source records get RLS scoped to their owner, the project's existing retention and deletion handling (including data-deletion requests), and audited administrator access — admin review goes through the protected access path and writes a `phi_access_log` row.
+  - The protected source records get RLS scoped to their owner and audited administrator access — admin review goes through the protected access path and writes a `phi_access_log` row. AI-answer generation records are added explicitly to the upcoming P3 deletion, export, retention, and reconciliation inventory. The storage/reporting capability remains unpublished until that release gate passes: this phase may implement and test the protected records, ownership controls, reporting references, and audited access, but must not claim complete deletion coverage or activate the capability in production.
   - Tests: Member A can report their own content; Member A cannot reference Member B's record; anonymous and invalid references are rejected; a reported answer is retrievable by an admin through the audited path; admin review writes an audit row.
 - Report dialog uses the appendix title, intro, five reasons, privacy note, buttons, and success/error messages verbatim.
 - Meal plan: `AI-generated meal plan` label and safety note below `My Meals`, short label on exports, `Report this meal plan`, and the replacement generation-state line.
@@ -58,7 +58,7 @@ Stored notification and Learn content changes ship as an idempotent, reversible 
 - Reference scan for `/app/supplements`, Nature Made, Solgar, R-ALA, benfotiamine, apple cider vinegar/ACV, Ceylon cinnamon, supplement pack, supplement foundation — across member UI, onboarding, checklist, Learn, notifications, Ask/VITA knowledge, admin content, and database-managed content. Each hit reported with its disposition.
 - Content-regression scan across member content, AI prompts, admin templates, notification defaults, and seed data.
 - `tsc --noEmit`, vitest regression tests, lint on touched files, production build.
-- Deferred to the later claims phase and reported, not edited: onboarding reversal goals, remaining reversal/proof/compliance labels, the existing blood-sugar / snack / cheat-meal Learn articles, landing page, legacy intake, six-week page, public chat prompt, lead magnet, `llms.txt`, testimonials. The fasting Learn guides are handled now, not deferred.
+- Deferred to the later claims phase and reported, not edited: onboarding reversal goals, remaining reversal/proof/compliance labels, the existing blood-sugar and snack Learn articles, landing page, legacy intake, six-week page, public chat prompt, lead magnet, `llms.txt`, and testimonials. The fasting and cheat-meal Learn guides are handled now, not deferred.
 
 ## Report
 
