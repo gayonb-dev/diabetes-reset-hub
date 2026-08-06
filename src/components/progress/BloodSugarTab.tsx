@@ -270,8 +270,20 @@ export default function BloodSugarTab() {
 
         <div className="mt-4 grid sm:grid-cols-2 gap-3">
           <div>
-            <Label className="text-xs text-muted-foreground">Timestamp</Label>
-            <Input type="datetime-local" value={when} onChange={(e) => setWhen(e.target.value)} />
+            <Label className="text-xs text-muted-foreground" htmlFor="bs-when">
+              Timestamp
+            </Label>
+            <Input
+              id="bs-when"
+              type="datetime-local"
+              value={when}
+              max={localDateTimeValue()}
+              aria-invalid={futureTimestamp || undefined}
+              onChange={(e) => setWhen(e.target.value)}
+            />
+            {futureTimestamp && (
+              <p className="text-xs text-destructive mt-1">{GLUCOSE_FUTURE_TIMESTAMP_MESSAGE}</p>
+            )}
           </div>
         </div>
 
@@ -282,22 +294,24 @@ export default function BloodSugarTab() {
           className="mt-3 text-sm h-20"
         />
 
-        {needConfirm && (
-          <p className="text-xs text-destructive mt-2">
-            That value is outside the usual range. Double-check your glucometer, then tap Save again to confirm.
-          </p>
+        {implausible && <p className="text-xs text-destructive mt-2">{GLUCOSE_IMPLAUSIBLE_MESSAGE}</p>}
+
+        {/* Newly entered low reading — announced assertively, focus not moved. */}
+        {entryStatus && isLowStatus(entryStatus) && (
+          <GlucoseSafetyCard status={entryStatus} announce className="mt-3" />
         )}
 
         <div className="sticky bottom-0 z-10 -mx-5 px-5 pb-[env(safe-area-inset-bottom)] pt-3 mt-4 bg-card lg:static lg:mx-0 lg:px-0 lg:pb-0 lg:pt-0 lg:mt-4 lg:bg-transparent">
           <Button
             onClick={save}
-            disabled={saving || parsedMgdl == null}
+            disabled={saving || !canSave}
             className="w-full h-[52px] bg-primary hover:bg-primary/90 text-primary-foreground"
           >
             {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {needConfirm ? "Confirm and save" : "Save reading"}
+            Save reading
           </Button>
         </div>
+
       </Card>
 
       <BloodSugarHistory readings={readings} unit={unit} />
