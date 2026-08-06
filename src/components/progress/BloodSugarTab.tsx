@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Loader2 } from "lucide-react";
+import { Loader2, AlertTriangle } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import EmptyState from "@/components/ui/empty-state";
 import {
@@ -73,11 +73,10 @@ export default function BloodSugarTab() {
   const [unit, setUnit] = useState<GlucoseUnit>(initial.glucose);
   const [value, setValue] = useState("");
   const [type, setType] = useState<ReadingType>("fasting");
-  const [when, setWhen] = useState<string>(() => new Date().toISOString().slice(0, 16));
+  const [when, setWhen] = useState<string>(() => localDateTimeValue());
   const [notes, setNotes] = useState("");
   const [readings, setReadings] = useState<Reading[]>([]);
   const [saving, setSaving] = useState(false);
-  const [needConfirm, setNeedConfirm] = useState(false);
   const [medPromptDismissed, setMedPromptDismissed] = useState(false);
 
   const refresh = async () => {
