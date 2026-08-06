@@ -4,9 +4,10 @@
 
 Clinical-review status stays internal — members never see "pending clinician review". CLINICIAN GATE items are tracked in the completion report only. Nothing is published.
 
-## Correction that supersedes the earlier plan
+## Fasting data rule
 
-The previous plan kept a fasting screening questionnaire with a doctor-attestation checkbox. That is removed. While scheduling is off, DRM asks for and stores no fasting-specific medication, pregnancy/breastfeeding, Type 1, eating-history, exclusion, or clinician-confirmation data. Any work already built that conflicts with this is revised before verification and listed in the report.
+While scheduling is off, DRM asks for and stores no fasting-specific medication, pregnancy/breastfeeding, Type 1, eating-history, exclusion, or clinician-confirmation data. Any existing code that conflicts with this is revised before verification and listed in the report.
+
 
 ## S2 — Fasting release state
 
