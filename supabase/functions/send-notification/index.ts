@@ -17,139 +17,125 @@ type Template = {
   title: string;
   /** Maps to notification_prefs key; null = always send (urgent / event) */
   prefKey: string | null;
-  urgent?: boolean;
+  /** Internal: bypasses quiet-hours/preference gating. Never surfaced to members as "urgent". */
+  bypassPrefs?: boolean;
 };
 
 const TEMPLATES: Record<string, Template> = {
   daily_action: {
     title: "VITA",
     prefKey: "daily_action",
-    body: "VITA says: {first_name}, Day {day} is waiting. Today is {action_name}. It takes less time than you think.",
+    body: "VITA says: {first_name}, Day {day} is ready. Today's action is {action_name}. Start when it fits your day.",
   },
   water: {
     title: "VITA",
     prefKey: "water",
-    body: "VITA says: {first_name}, you've had {water_have}oz of water today. You need {water_need}oz more. Your cells are filing a complaint.",
+    body: "VITA says: {first_name}, you've logged {water_have} oz today. Your current app goal shows {water_need} oz remaining.",
   },
   streak_at_risk: {
     title: "VITA",
     prefKey: "streak_at_risk",
-    urgent: true,
-    body: "VITA says: Your {streak}-day streak needs one more thing today, {first_name}. Four rings. You've done this before.",
+    bypassPrefs: true,
+    body: "VITA says: {first_name}, one more completed action will keep your {streak}-day streak going. If today got away from you, you can return tomorrow.",
   },
 
   streak_7: {
     title: "VITA",
     prefKey: null,
-    body: "VITA says: Seven days, {first_name}. Research shows you are now 3.6 times more likely to stay with this. You're in the zone.",
+    body: "VITA says: Seven days, {first_name}. You kept returning to your daily actions. Take a moment to notice what helped.",
   },
   streak_14: {
     title: "VITA",
     prefKey: null,
-    body: "VITA says: 14 days, {first_name}. You've earned your first Streak Freeze. It's saved — one missed day won't break what you've built.",
+    body: "VITA says: 14 days, {first_name}. You earned a Streak Freeze. It can protect your streak after one missed day.",
   },
   streak_30: {
     title: "VITA",
     prefKey: null,
-    body: "VITA says: 30 days. {first_name}, that's a habit. Not a trial run. A habit.",
+    body: "VITA says: 30 days, {first_name}. You have a month of practice to learn from.",
   },
   streak_broken: {
     title: "VITA",
     prefKey: null,
-    body: "VITA says: Your {streak}-day streak reset, {first_name}. That's okay. Every expert has a Day 1 in their past. New one starts now.",
+    body: "VITA says: Your {streak}-day streak reset, {first_name}. Your past work still counts. Choose one useful action when you're ready.",
   },
   streak_freeze_used: {
     title: "VITA",
     prefKey: null,
-    body: "VITA says: Your streak freeze saved your {streak}-day streak. You're back — let's keep it going.",
+    body: "VITA says: Your Streak Freeze protected your {streak}-day streak. Welcome back.",
   },
 
   blood_sugar_missing: {
     title: "VITA",
     prefKey: "vita_morning",
-    body: "VITA says: {first_name}, your blood sugar hasn't been logged yet today. Even a bad number is useful information.",
+    body: "VITA says: {first_name}, no blood-sugar reading is logged today. Log one only if it is part of your usual care plan.",
   },
   measurement_7d: {
     title: "VITA",
     prefKey: "measurement",
-    body: "VITA says: {first_name}, your Month {n} check-in is in 7 days. Keep going — the numbers are going to say something good.",
+    body: "VITA says: {first_name}, your Month {n} check-in is in seven days. Use it to review what you recorded—without judging a single number.",
   },
   measurement_1d: {
     title: "VITA",
     prefKey: "measurement",
-    urgent: true,
-    body: "VITA says: Tomorrow is measurement day, {first_name}. Get the tape measure ready. This is the moment you prove your effort.",
+    bypassPrefs: true,
+    body: "VITA says: Your measurement check-in is tomorrow, {first_name}. Measure under similar conditions if you choose to log it.",
   },
   a1c_prompt: {
     title: "VITA",
     prefKey: "a1c",
-    body: "VITA says: {first_name}, you're at {day} days. Book an A1C test this week. You've earned that conversation with your doctor.",
+    body: "VITA says: {first_name}, if an A1C test is already part of your care plan, this may be a good time to check the date with your healthcare team.",
   },
   wrong_direction: {
     title: "VITA",
     prefKey: null,
-    urgent: true,
-    body: "VITA says: {first_name}, we noticed your numbers moved unexpectedly this month. I want to understand what happened. Can we talk about it?",
-  },
-  cheat_meal_window: {
-    title: "VITA",
-    prefKey: "cheat_meal",
-    body: "VITA says: It's {day_name}, {first_name}. Your cheat meal is available tonight — last meal of the day, then the fast begins. Make it worth it.",
-  },
-  if_fast_start: {
-    title: "VITA",
-    prefKey: null,
-    body: "VITA says: {first_name}, your {hours}-hour fasting window starts now. Water, plain tea, and the knowledge that this is working.",
-  },
-  if_fast_complete: {
-    title: "VITA",
-    prefKey: null,
-    body: "VITA says: Fast complete, {first_name}. {hours} hours. That's another metabolic win.",
+    bypassPrefs: true,
+    body: "VITA says: {first_name}, one or more recent entries changed from last month. Review the log and bring any concerns to your healthcare professional.",
   },
   good_morning: {
     title: "VITA",
     prefKey: "vita_morning",
-    body: "VITA says: Morning, {first_name}. Your {streak}-day streak is intact. {action_name} is ready for you.",
+    body: "VITA says: Good morning, {first_name}. {action_name} is ready when you are.",
   },
   nothing_logged: {
     title: "VITA",
     prefKey: "vita_morning",
-    body: "VITA says: {first_name}, we noticed you haven't logged anything today. Your blood sugar doesn't take days off either. Just saying.",
+    body: "VITA says: {first_name}, nothing is logged today. If you want a fresh start, choose one small action.",
   },
   workout_day: {
     title: "VITA",
     prefKey: "workout",
-    body: "VITA says: {first_name}, {action_name} is scheduled for today. Your muscles are ready. The Epsom salt for tonight is optional but recommended.",
+    body: "VITA says: {first_name}, {action_name} is scheduled for today. Choose the listed modification if you need a gentler option.",
   },
   content_unlocked: {
     title: "VITA",
     prefKey: null,
-    body: "VITA says: {first_name}, you've unlocked {unlock_name}. {unlock_desc}. It's waiting for you.",
+    body: "VITA says: {first_name}, {unlock_name} is now available. {unlock_desc}",
   },
   level_up: {
     title: "VITA",
     prefKey: "level_up",
-    body: "VITA says: {first_name}, you just reached {level_name}. {level_message}. This is permanent.",
+    body: "VITA says: {first_name}, you reached {level_name}. {level_message}",
   },
   birthday: {
     title: "VITA",
     prefKey: "birthday",
-    body: "VITA says: Happy birthday, {first_name}. Today there's no tracking. Just celebrating.",
+    body: "VITA says: Happy birthday, {first_name}. We hope you make room for something that feels good today.",
   },
   community_mission: {
     title: "VITA",
     prefKey: "community_mission",
-    body: "VITA says: {first_name}, {n} questions in the community need your experience. Day {day} in the program — you've been through this.",
+    body: "VITA says: {first_name}, {n} community questions are open. Share only what you are comfortable sharing.",
   },
   community_win_celebrated: {
     title: "VITA",
     prefKey: null,
-    body: "VITA says: {first_name}, {n} members just celebrated your {milestone}. That's real.",
+    body: "VITA says: {first_name}, {n} members reacted to your update.",
   },
   qa_answered: {
     title: "Diabetes Reset Method",
     prefKey: null,
-    body: "The Diabetes Reset Method team answered your question in the community. Tap to see their response.",
+    body: "The DRM team answered your community question. Tap to read the response.",
   },
 };
 
