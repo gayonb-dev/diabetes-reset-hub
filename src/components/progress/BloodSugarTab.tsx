@@ -28,7 +28,9 @@ import {
   isFutureTimestamp,
   isLowStatus,
   localDateTimeValue,
+  GLUCOSE_LOW_THRESHOLDS,
   GlucoseStatus,
+
 } from "@/lib/glucose";
 import GlucoseSafetyCard from "@/components/progress/GlucoseSafetyCard";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine, ReferenceArea, Dot } from "recharts";
