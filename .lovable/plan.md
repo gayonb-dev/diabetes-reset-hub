@@ -74,6 +74,36 @@ Full report of every Resend caller, split into **non-health transactional** (aut
 - **Post-deployment match (required for P4 to pass):** after you separately approve deploying those migrations to production, production read-only enumeration runs again and the installed production policy definitions are diffed against the exact staging-tested definitions. **P4 does not pass until that final comparison is attached and clean.** Output: `docs/rls-verification-<date>.md`.
 
 
+## Final implementation addendum (no architecture change)
+
+**A. Retire every legacy authorization and consent path.**
+- Delete and clear the legacy visitor UUID (`drm_visitor_id`) and the local health-consent flag (`drm_landing_chat_consent`) from `ChatWidget.tsx`, `Privacy.tsx`, and every other reader/writer; the widget actively removes both from browser storage on load.
+- `request-data-deletion` is retired: it returns **410 Gone** and never accepts `anonymous_id` again.
+- `grant-phi-consent` is rewritten to require the verified opaque session (or JWT), an explicit purpose key, and the current notice version; requests missing any of these are rejected.
+- Codebase-wide sweep for legacy identifiers and consent flags across `src/`, built output, all Edge functions, database functions, checkout/Stripe metadata, and tests. Every hit is listed in the report with its disposition.
+
+**B. Legacy `phi_consent` rows are not valid consent.** The old UI and server paths were disconnected, so existing rows cannot authorize AI processing. New writes to that table stop. The rows are included in export and deletion as a clearly **labelled legacy record**, with raw IP and full user-agent excluded from member exports. A read-only production count and disposition report is produced; no migration, purge, or conversion of old rows into active consent happens without your later approval.
+
+**C. Gate-closed chat copy (exact).** While the AI contract gate is closed, the normal consent body is never shown with a missing button. A separate unavailable state is displayed verbatim:
+- Title: `Health questions are not available in this chat yet`
+- Body: `I can still help with the membership, price, login, and where to find things. For questions about your health, medications, symptoms, or results, contact a qualified healthcare professional. If you think this may be an emergency, contact emergency services now.`
+- Button: `Continue with membership questions`
+
+The server AI-health flag **defaults to false** and lives in server-controlled configuration that members and browser code cannot modify.
+
+**D. Active anonymous-session deletion.** The chat Privacy options include **Delete this chat**. It requires a valid active visitor session, deletes and reconciles that session's conversation, messages, consent, and derived records, revokes the session token, and never accepts a visitor or conversation ID as authorization. Processor deletion is never claimed unless that processor step is verified.
+
+**E. Explicit anonymous-to-member merge.** A merge is allowed **once**, inside a single transaction, only when: the anonymous session is valid and active; the visitor profile is unbound; the authenticated JWT is valid; both are presented in the same request; and no record is already bound to another user. The session is rotated afterward. An existing `user_id` is never overwritten and two established identities are never silently merged.
+
+**F. Lifecycle lock covers all personal access, not only writes.** When `account_lifecycle` is not `active`, member-facing SELECT, INSERT, UPDATE, DELETE, RPC, Storage, and Realtime access to personal records is denied; missing lifecycle state fails closed. Public reference content stays readable. The lock persists until Auth deletion completes, so an old JWT cannot read data.
+
+**G. Server-verifiable recent reauthentication.** Export and account deletion require either a freshly issued authenticated session or a single-use **server action ticket** bound to the verified user, the specific action (`export` or `delete`), with a maximum ten-minute lifetime, consumed once. Client timestamps, booleans, local-storage values, and a typed `DELETE` alone are never trusted.
+
+**H. Deterministic emergency line (exact).** For a possible emergency before consent, the server returns exactly: `I can't assess symptoms or emergencies. If you think this may be an emergency, contact emergency services now. Otherwise, contact a healthcare professional promptly.` The triggering message is not stored and is not sent to AI, analytics, email, embeddings, or any other processor.
+
+All of the above are added to the authorization, consent, export, and deletion test suites and to the completion report. No production mutation. No publish.
+
+
 ### 9. Verification
 Authorization tests (§4.5), consent tests including a network assertion that no free text reaches an external domain pre-consent (§5.7), export/deletion/retention tests on a seeded synthetic staging user (§6.8), then **`tsc --noEmit`** (tsgo is not installed or configured in this project), `eslint` on touched files, Vitest, and `vite build`. No publish.
 
