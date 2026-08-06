@@ -21,7 +21,7 @@ import { useDailyHabits } from "@/hooks/useDailyHabits";
 import { useVitaQuotes } from "@/hooks/useVitaQuotes";
 import { useProgramDay } from "@/hooks/useProgramDay";
 import { getUnits, displayGlucose, displayWeight } from "@/lib/units";
-import { classifyGlucose, glucoseTone, GlucoseReadingType } from "@/lib/glucose";
+import { classifyGlucose, glucoseTone, GLUCOSE_STATUS_LABEL, GlucoseReadingType } from "@/lib/glucose";
 import { phaseFor, dayInPhase, PHASE_TOTAL } from "@/lib/phase";
 
 type DailyAction = {
@@ -320,6 +320,7 @@ export default function Dashboard() {
       sub: bsSource ? `Logged ${daysSince(bsSource.date)}d ago` : undefined,
       emptyHint: "Tap to log",
       tone: bsSource ? bloodSugarTone(bsSource.value, bsSource.type) : ("warning" as const),
+      statusLabel: bsSource ? GLUCOSE_STATUS_LABEL[classifyGlucose(bsSource.value, bsSource.type)] : undefined,
       href: "/app/progress",
     },
     {
