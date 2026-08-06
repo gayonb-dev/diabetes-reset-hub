@@ -4,6 +4,18 @@ Scope is limited to fasting safety, supplements/foot care/mindset/notifications,
 
 Clinical-review status stays internal. Members never see "pending clinician review" notices; review flags live in code comments and the completion report only.
 
+## Safeguards (added before implementation)
+
+- **Fasting scheduling feature flag.** A single exported constant (`FASTING_SCHEDULING_ENABLED`, default `false`) in a dedicated `src/lib/featureFlags.ts`, mirrored server-side in `supabase/functions/_shared/featureFlags.ts`. Default is `false` in every environment; enabling requires editing the constant and the accompanying `CLINICAL_APPROVAL` record (approver, date, document reference), not deleting a comment. A test asserts the flag is `false` and that scheduling UI/handlers are unreachable while it is false.
+- **No broken supplements route.** `/app/supplements` becomes a redirect to the new Learn/Safety supplement education article. Every internal link is updated or removed: `src/App.tsx`, `src/pages/app/AppLayout.tsx`, `src/pages/app/Dashboard.tsx`, `src/components/dashboard/GettingStartedChecklist.tsx`, `src/components/onboarding/SupplementPrompt.tsx` (deleted), `src/pages/app/Support.tsx`, `src/pages/LLMInfo.tsx`.
+- **Full reference scan** for `/app/supplements`, "Nature Made", "Solgar", "R-ALA", "benfotiamine", "apple cider vinegar"/"ACV", "Ceylon cinnamon", "supplement pack", "supplement foundation" — across member UI, onboarding, Getting Started checklist, Learn content (`src/data/learnGuides.ts`), notifications, Ask/VITA knowledge (`supabase/functions/ask-vita/index.ts`), admin content, and database-managed content (`content_items`, `daily_actions`, `vita_quotes`). Commercial recommendations are removed; the approved educational article replaces them only where appropriate. Each hit is reported with its disposition.
+- **Duplicate notification templates.** The unsafe defaults exist in both `supabase/functions/send-notification/index.ts` and `src/pages/admin/AdminContent.tsx` (e.g. the "3.6 times more likely" line at AdminContent.tsx:727). Both are corrected, plus any stored/editable copies in the database, so existing rows stop emitting removed claims after the source defaults change.
+- **Fasting safety summary reuses S1.** Low-glucose wording and professional-contact boundaries come from `src/lib/glucose.ts` / `GlucoseSafetyCard`. No new treatment, carbohydrate, medication, or emergency instructions are authored in this phase.
+- **Report this content.** Requires an authenticated member; the edge function verifies the referenced record belongs to the reporter before accepting. The stored row holds only content type, owned record id, generation timestamp, selected reason, reporter id, and created/updated timestamps. No raw health or AI text is copied into the general support record.
+- **Escaping at the render boundary.** AI text is escaped where it is interpolated into HTML, not at generation. Meal-plan email, daily digest, and every other AI-to-HTML template discovered by the scan are covered and tested.
+- **Content regression scan** covers member content, AI prompts, admin templates, notification defaults, and seed data. The public landing-page rewrite stays out of this phase; any unsafe landing copy found (e.g. in `src/pages/Index.tsx`, `src/components/landing/FAQSection.tsx`) is reported for the later claims phase, not edited.
+
+
 ## S2 — Fasting safety
 
 Fasting becomes an optional advanced tool, entered deliberately, and stays out of the default first-14-day experience.
