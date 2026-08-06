@@ -2,11 +2,16 @@
 
 Authority: `DRM_P1_P4_Privacy_Security_Implementation_Authority.md`, plus the mandatory corrections in this revision. Where the earlier draft conflicted, both the authority and these corrections win — the signed HMAC capability, `sessionStorage`, the legacy-UUID one-time claim, and the local-prescreen-then-classifier design are withdrawn. No redesign: brand, VITA, typography, navigation, and cards are untouched; visible change is limited to consent, privacy, export, deletion, and status surfaces. Nothing is published.
 
+## Step 0 — staging must exist and be proven before any implementation
+
+Implementation does not begin until a staging clone is provisioned and I have recorded its **project/environment fingerprint** (project ref, database host, environment label, UTC timestamp) in `docs/staging-fingerprint-<date>.md`, together with written confirmation that Lovable's connected backend, all migrations, Edge functions, cron jobs, test accounts, and processor test-mode calls target that staging clone — not production. Creating a preview must not apply migrations to the production project. **If the connected target is production, or the target cannot be proven, I stop and report instead of editing.**
+
 ## Environment split (corrected)
 
-- **Production: read-only only.** Live work is limited to read-only RLS/grant/policy enumeration. No auto-confirm signup, no test member creation, no mutation probes, no deletion runs, no email OTP sends, no Stripe calls, no Dexcom sync in production.
-- **Staging clone: everything else.** Member A / Member B / admin-JWT mutation probes, deletion state-machine runs, export runs, email OTP reauth tests, Stripe test-mode behavior, retention dry runs, and cleanup verification all execute against a staging clone with synthetic accounts and a unique run ID.
-- If a staging clone is not yet provisioned, P4 behavioral probes are reported **BLOCKED — staging clone required**; the read-only production enumeration still ships. P4 is never marked passed on enumeration alone.
+- **Production: read-only only.** Live work is limited to read-only RLS/grant/policy enumeration. No migrations applied, no auto-confirm signup, no test member creation, no mutation probes, no deletion runs, no email OTP sends, no Stripe calls, no Dexcom sync. Production changes wait for separate deployment approval.
+- **Staging clone: everything else.** Migrations, Edge functions, cron, Member A / Member B / admin-JWT mutation probes, deletion state-machine runs, export runs, email OTP reauth tests, Stripe test-mode behavior, retention dry runs, and cleanup verification all run there with synthetic accounts and a unique run ID.
+- Without a proven staging clone, P4 behavioral probes are **BLOCKED — staging clone required**; only read-only production enumeration ships. P4 never passes on enumeration alone.
+
 
 ## Platform limitations to decide
 
