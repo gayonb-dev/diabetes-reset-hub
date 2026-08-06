@@ -11,6 +11,7 @@ import {
   ReferenceArea,
   ResponsiveContainer,
 } from "recharts";
+import { classifyGlucose, GLUCOSE_STATUS_LABEL, GlucoseReadingType } from "@/lib/glucose";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -210,7 +211,7 @@ export default function ProgressReport() {
                   <XAxis dataKey="date" tick={{ fontSize: 10 }} />
                   <YAxis domain={[40, 300]} tick={{ fontSize: 10 }} />
                   <Tooltip />
-                  {/* Normal fasting band 70–130 */}
+                  {/* In-range fasting band 70–130 */}
                   <ReferenceArea y1={70} y2={130} strokeOpacity={0} fill="#10b981" fillOpacity={0.08} />
                   {/* Post-meal target <180 */}
                   <ReferenceArea y1={130} y2={180} strokeOpacity={0} fill="#f59e0b" fillOpacity={0.06} />
@@ -222,7 +223,7 @@ export default function ProgressReport() {
             <p className="text-sm text-slate-500">No blood sugar readings in this range.</p>
           )}
           <p className="text-[11px] text-slate-500 mt-2">
-            Reference bands: fasting 70–130 mg/dL (green), post-meal &lt; 180 mg/dL (amber).
+            Reference bands: fasting 70–130 mg/dL (green), post-meal &lt; 180 mg/dL (amber). Readings below 70 mg/dL are marked Low, below 54 mg/dL Urgent low.
           </p>
 
           {bs.length > 0 && (
@@ -232,6 +233,7 @@ export default function ProgressReport() {
                   <th className="text-left px-2 py-1 border-b border-slate-200">Date</th>
                   <th className="text-left px-2 py-1 border-b border-slate-200">Type</th>
                   <th className="text-right px-2 py-1 border-b border-slate-200">mg/dL</th>
+                  <th className="text-left px-2 py-1 border-b border-slate-200">Status</th>
                 </tr>
               </thead>
               <tbody>
@@ -240,6 +242,9 @@ export default function ProgressReport() {
                     <td className="px-2 py-1 border-b border-slate-100">{r.measured_at.slice(0, 10)}</td>
                     <td className="px-2 py-1 border-b border-slate-100">{r.reading_type}</td>
                     <td className="px-2 py-1 border-b border-slate-100 text-right">{r.value_mgdl}</td>
+                    <td className="px-2 py-1 border-b border-slate-100">
+                      {GLUCOSE_STATUS_LABEL[classifyGlucose(r.value_mgdl, (r.reading_type as GlucoseReadingType) ?? "other")]}
+                    </td>
                   </tr>
                 ))}
               </tbody>

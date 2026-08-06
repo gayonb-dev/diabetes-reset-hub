@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Loader2 } from "lucide-react";
+import { Loader2, AlertTriangle } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import EmptyState from "@/components/ui/empty-state";
 import {
@@ -17,7 +17,24 @@ import {
   mmollToMgdl,
 } from "@/lib/units";
 import { useGamification } from "@/hooks/useGamification";
+import {
+  classifyGlucose,
+  glucoseToneClass,
+  glucoseToneColor,
+  GLUCOSE_STATUS_LABEL,
+  GLUCOSE_IMPLAUSIBLE_MESSAGE,
+  GLUCOSE_FUTURE_TIMESTAMP_MESSAGE,
+  isPlausible,
+  isFutureTimestamp,
+  isLowStatus,
+  localDateTimeValue,
+  GLUCOSE_LOW_THRESHOLDS,
+  GlucoseStatus,
+
+} from "@/lib/glucose";
+import GlucoseSafetyCard from "@/components/progress/GlucoseSafetyCard";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine, ReferenceArea, Dot } from "recharts";
+
 
 type ReadingType = "fasting" | "post_meal" | "bedtime" | "other" | "cgm";
 
@@ -38,7 +55,8 @@ const READING_TYPES: { k: ReadingType; label: string }[] = [
   { k: "other", label: "Other" },
 ];
 
-// Reference ranges in mg/dL
+// Reference bar geometry in mg/dL. Status classification itself comes from
+// src/lib/glucose.ts — the shared source of truth.
 const RANGES = {
   fasting: { normal: 100, diabetic: 126, max: 200 },
   post_meal: { normal: 140, diabetic: 200, max: 300 },
@@ -48,21 +66,6 @@ const RANGES = {
 };
 
 
-function toneFor(v: number, type: ReadingType): "normal" | "warning" | "danger" {
-  const r = RANGES[type];
-  if (v < r.normal) return "normal";
-  if (v < r.diabetic) return "warning";
-  return "danger";
-}
-
-function toneColor(t: "normal" | "warning" | "danger") {
-  return t === "normal"
-    ? "hsl(var(--status-normal))"
-    : t === "warning"
-    ? "hsl(var(--status-warning))"
-    : "hsl(var(--status-danger))";
-}
-
 export default function BloodSugarTab() {
   const { user } = useAuth();
   const { recordAction } = useGamification();
@@ -70,11 +73,10 @@ export default function BloodSugarTab() {
   const [unit, setUnit] = useState<GlucoseUnit>(initial.glucose);
   const [value, setValue] = useState("");
   const [type, setType] = useState<ReadingType>("fasting");
-  const [when, setWhen] = useState<string>(() => new Date().toISOString().slice(0, 16));
+  const [when, setWhen] = useState<string>(() => localDateTimeValue());
   const [notes, setNotes] = useState("");
   const [readings, setReadings] = useState<Reading[]>([]);
   const [saving, setSaving] = useState(false);
-  const [needConfirm, setNeedConfirm] = useState(false);
   const [medPromptDismissed, setMedPromptDismissed] = useState(false);
 
   const refresh = async () => {
@@ -99,13 +101,15 @@ export default function BloodSugarTab() {
     return unit === "mmoll" ? mmollToMgdl(v) : v;
   }, [value, unit]);
 
+  // Entry-time validation — nothing is written until the entry is valid.
+  const entryStatus: GlucoseStatus | null =
+    parsedMgdl != null && isPlausible(parsedMgdl) ? classifyGlucose(parsedMgdl, type) : null;
+  const implausible = parsedMgdl != null && !isPlausible(parsedMgdl);
+  const futureTimestamp = isFutureTimestamp(when);
+  const canSave = parsedMgdl != null && !implausible && !futureTimestamp;
+
   const save = async () => {
-    if (!user || parsedMgdl == null) return;
-    // sanity: <30 or >600 mg/dL requires second confirm
-    if ((parsedMgdl < 30 || parsedMgdl > 600) && !needConfirm) {
-      setNeedConfirm(true);
-      return;
-    }
+    if (!user || parsedMgdl == null || !canSave) return;
     setSaving(true);
     const { error } = await supabase.from("blood_sugar_readings").insert({
       member_id: user.id,
@@ -122,10 +126,10 @@ export default function BloodSugarTab() {
     toast({ title: "Reading saved" });
     setValue("");
     setNotes("");
-    setNeedConfirm(false);
     await recordAction("log_glucose");
     refresh();
   };
+
 
   function setUnitPersist(u: GlucoseUnit) {
     setUnit(u);
@@ -162,40 +166,43 @@ export default function BloodSugarTab() {
       ? mgdlToMmoll(latestReading.value_mgdl).toFixed(1)
       : String(Math.round(latestReading.value_mgdl))
     : null;
-  const latestTone = latestReading ? toneFor(latestReading.value_mgdl, latestReading.reading_type) : null;
-  const latestToneCls =
-    latestTone === "normal"
-      ? "text-status-normal"
-      : latestTone === "warning"
-      ? "text-status-warning"
-      : latestTone === "danger"
-      ? "text-status-danger"
-      : "text-foreground";
+  const latestStatus: GlucoseStatus | null = latestReading
+    ? classifyGlucose(latestReading.value_mgdl, latestReading.reading_type)
+    : null;
+  const latestToneCls = latestStatus ? glucoseToneClass(latestStatus) : "text-foreground";
 
   return (
     <div className="space-y-5">
-      {latestReading && (
-        <Card className="p-5 border border-border rounded-xl shadow-warm">
-          <p className="stat-label mb-2">Latest reading</p>
-          <p className={`metric-hero ${latestToneCls} flex items-baseline flex-wrap`}>
-            <span>{latestDisplay}</span>
-            <span className="stat-unit">{unit === "mmoll" ? "mmol/L" : "mg/dL"}</span>
-          </p>
-          <p className="text-[12px] text-tertiary-fg mt-2 flex items-center gap-2 flex-wrap">
-            <span>
-              {READING_TYPES.find((r) => r.k === latestReading.reading_type)?.label ??
-                (latestReading.reading_type === "cgm" ? "CGM" : latestReading.reading_type)}{" "}
-              · {new Date(latestReading.measured_at).toLocaleDateString()}
-            </span>
-            {latestReading.source === "dexcom" && (
-              <span className="text-[10px] uppercase tracking-wide px-1.5 py-0.5 rounded-full bg-accent-muted text-accent-foreground border border-accent/40">
-                CGM
+      {latestReading && latestStatus && (
+        <>
+          <Card className="p-5 border border-border rounded-xl shadow-warm">
+            <p className="stat-label mb-2">Latest reading</p>
+            <p className={`metric-hero ${latestToneCls} flex items-baseline flex-wrap`}>
+              <span>{latestDisplay}</span>
+              <span className="stat-unit">{unit === "mmoll" ? "mmol/L" : "mg/dL"}</span>
+            </p>
+            <p className={`text-[12px] font-medium mt-1 ${latestToneCls} flex items-center gap-1.5`}>
+              {isLowStatus(latestStatus) && <AlertTriangle className="h-3.5 w-3.5" aria-hidden="true" />}
+              <span>{GLUCOSE_STATUS_LABEL[latestStatus]}</span>
+            </p>
+            <p className="text-[12px] text-tertiary-fg mt-2 flex items-center gap-2 flex-wrap">
+              <span>
+                {READING_TYPES.find((r) => r.k === latestReading.reading_type)?.label ??
+                  (latestReading.reading_type === "cgm" ? "CGM" : latestReading.reading_type)}{" "}
+                · {new Date(latestReading.measured_at).toLocaleDateString()}
               </span>
-            )}
-          </p>
-
-        </Card>
+              {latestReading.source === "dexcom" && (
+                <span className="text-[10px] uppercase tracking-wide px-1.5 py-0.5 rounded-full bg-accent-muted text-accent-foreground border border-accent/40">
+                  CGM
+                </span>
+              )}
+            </p>
+          </Card>
+          {/* Saved reading — accessible text + icon, no assertive announcement on load. */}
+          {isLowStatus(latestStatus) && <GlucoseSafetyCard status={latestStatus} />}
+        </>
       )}
+
 
       {/* Top info bar */}
       <div className="rounded-lg bg-primary-muted px-4 py-3">
@@ -230,7 +237,6 @@ export default function BloodSugarTab() {
           value={value}
           onChange={(e) => {
             setValue(e.target.value);
-            setNeedConfirm(false);
           }}
           type="number"
           inputMode="decimal"
@@ -262,8 +268,20 @@ export default function BloodSugarTab() {
 
         <div className="mt-4 grid sm:grid-cols-2 gap-3">
           <div>
-            <Label className="text-xs text-muted-foreground">Timestamp</Label>
-            <Input type="datetime-local" value={when} onChange={(e) => setWhen(e.target.value)} />
+            <Label className="text-xs text-muted-foreground" htmlFor="bs-when">
+              Timestamp
+            </Label>
+            <Input
+              id="bs-when"
+              type="datetime-local"
+              value={when}
+              max={localDateTimeValue()}
+              aria-invalid={futureTimestamp || undefined}
+              onChange={(e) => setWhen(e.target.value)}
+            />
+            {futureTimestamp && (
+              <p className="text-xs text-destructive mt-1">{GLUCOSE_FUTURE_TIMESTAMP_MESSAGE}</p>
+            )}
           </div>
         </div>
 
@@ -274,22 +292,24 @@ export default function BloodSugarTab() {
           className="mt-3 text-sm h-20"
         />
 
-        {needConfirm && (
-          <p className="text-xs text-destructive mt-2">
-            That value is outside the usual range. Double-check your glucometer, then tap Save again to confirm.
-          </p>
+        {implausible && <p className="text-xs text-destructive mt-2">{GLUCOSE_IMPLAUSIBLE_MESSAGE}</p>}
+
+        {/* Newly entered low reading — announced assertively, focus not moved. */}
+        {entryStatus && isLowStatus(entryStatus) && (
+          <GlucoseSafetyCard status={entryStatus} announce className="mt-3" />
         )}
 
         <div className="sticky bottom-0 z-10 -mx-5 px-5 pb-[env(safe-area-inset-bottom)] pt-3 mt-4 bg-card lg:static lg:mx-0 lg:px-0 lg:pb-0 lg:pt-0 lg:mt-4 lg:bg-transparent">
           <Button
             onClick={save}
-            disabled={saving || parsedMgdl == null}
+            disabled={saving || !canSave}
             className="w-full h-[52px] bg-primary hover:bg-primary/90 text-primary-foreground"
           >
             {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {needConfirm ? "Confirm and save" : "Save reading"}
+            Save reading
           </Button>
         </div>
+
       </Card>
 
       <BloodSugarHistory readings={readings} unit={unit} />
@@ -310,14 +330,19 @@ function ReferenceBar({
   const fmt = (v: number) => (unit === "mmoll" ? mgdlToMmoll(v).toFixed(1) : String(v));
   const max = r.max;
   const pct = valueMgdl != null ? Math.min(Math.max(valueMgdl / max, 0), 1) * 100 : null;
+  const lowPct = (GLUCOSE_LOW_THRESHOLDS.low / max) * 100;
   const normalPct = (r.normal / max) * 100;
   const diabeticPct = (r.diabetic / max) * 100;
-  const tone = valueMgdl != null ? toneFor(valueMgdl, type) : null;
+  const status = valueMgdl != null ? classifyGlucose(valueMgdl, type) : null;
 
   return (
     <div className="mt-4">
       <div className="relative h-3 rounded-full overflow-hidden bg-muted">
-        <div className="absolute inset-y-0 left-0 bg-status-normal" style={{ width: `${normalPct}%` }} />
+        <div className="absolute inset-y-0 left-0 bg-status-danger" style={{ width: `${lowPct}%` }} />
+        <div
+          className="absolute inset-y-0 bg-status-normal"
+          style={{ left: `${lowPct}%`, width: `${normalPct - lowPct}%` }}
+        />
         <div
           className="absolute inset-y-0 bg-status-warning"
           style={{ left: `${normalPct}%`, width: `${diabeticPct - normalPct}%` }}
@@ -329,18 +354,19 @@ function ReferenceBar({
         {pct != null && (
           <div
             className="absolute top-1/2 -translate-y-1/2 h-5 w-5 rounded-full border-2 border-white shadow"
-            style={{ left: `calc(${pct}% - 10px)`, background: toneColor(tone!) }}
+            style={{ left: `calc(${pct}% - 10px)`, background: glucoseToneColor(status!) }}
           />
         )}
       </div>
       <div className="flex justify-between text-[10px] text-tertiary-fg mt-1">
-        <span>0</span>
-        <span>Normal &lt; {fmt(r.normal)}</span>
+        <span>Low &lt; {fmt(GLUCOSE_LOW_THRESHOLDS.low)}</span>
+        <span>In range &lt; {fmt(r.normal)}</span>
         <span>Diabetic ≥ {fmt(r.diabetic)}</span>
         <span>{fmt(max)}</span>
       </div>
     </div>
   );
+
 }
 
 function BloodSugarHistory({ readings, unit }: { readings: Reading[]; unit: GlucoseUnit }) {
@@ -361,7 +387,7 @@ function BloodSugarHistory({ readings, unit }: { readings: Reading[]; unit: Gluc
     label: new Date(r.measured_at).toLocaleDateString(undefined, { month: "short", day: "numeric" }),
     value: unit === "mmoll" ? Number(mgdlToMmoll(r.value_mgdl).toFixed(1)) : Math.round(r.value_mgdl),
     mgdl: r.value_mgdl,
-    tone: toneFor(r.value_mgdl, r.reading_type),
+    status: classifyGlucose(r.value_mgdl, r.reading_type),
   }));
 
   const avg = (arr: number[]) => Math.round(arr.reduce((a, b) => a + b, 0) / arr.length);
@@ -409,9 +435,9 @@ function BloodSugarHistory({ readings, unit }: { readings: Reading[]; unit: Gluc
               strokeWidth={2}
               isAnimationActive={true}
               animationDuration={800}
-              dot={(props: any) => {
+              dot={(props: { cx?: number; cy?: number; index?: number; payload?: { id?: string; status?: GlucoseStatus } }) => {
                 const { cx, cy, payload, index } = props;
-                return <Dot key={payload?.id ?? index} cx={cx} cy={cy} r={3} fill={toneColor(payload.tone)} />;
+                return <Dot key={payload?.id ?? index} cx={cx} cy={cy} r={3} fill={glucoseToneColor(payload?.status ?? "in_range")} />;
               }}
               activeDot={{ r: 5 }}
             />

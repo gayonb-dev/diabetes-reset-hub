@@ -7,6 +7,8 @@ interface Stat {
   unit?: string;
   sub?: string;
   tone?: "normal" | "warning" | "danger" | "neutral" | "water";
+  /** Accessible status word (e.g. "In range", "Low") shown beside the value. */
+  statusLabel?: string;
   emptyHint?: string;
   href?: string;
 }
@@ -44,6 +46,9 @@ export function QuickStats({ stats, className }: QuickStatsProps) {
                   <span>{s.value}</span>
                   {s.unit && <span className="stat-unit">{s.unit}</span>}
                 </p>
+                {s.statusLabel && (
+                  <p className={cn("text-[10px] font-medium mt-0.5", colorCls)}>{s.statusLabel}</p>
+                )}
                 {s.sub && <p className="text-[10px] text-tertiary-fg mt-1">{s.sub}</p>}
               </>
             )}
