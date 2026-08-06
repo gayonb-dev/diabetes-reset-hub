@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { Link, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
@@ -30,6 +31,7 @@ import { MINDSET_WEEKS, type MindsetWeek } from "@/data/mindsetWeeks";
 import { DEFAULT_LEARN_GUIDES, type LearnGuide } from "@/data/learnGuides";
 import { useProgramDay } from "@/hooks/useProgramDay";
 import { useGamification } from "@/hooks/useGamification";
+
 
 type BlogPost = {
   id: string;
