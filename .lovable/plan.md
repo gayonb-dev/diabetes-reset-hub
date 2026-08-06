@@ -33,7 +33,11 @@ Low (54-69 mg/dL):
 
 Both states also display: "Never change medication based on this app alone."
 
-Presentation: an alert card in the existing card style (rounded-xl, shadow-warm, existing borders and tokens), with `role="alert"` so a newly entered low value is announced without moving the member's focus. Icon plus text label, never colour alone. No forced focus unless accessibility testing shows it is needed.
+Presentation: an alert card in the existing card style (rounded-xl, shadow-warm, existing borders and tokens). `role="alert"` is used **only** on the safety card shown for a newly entered low reading, so it is announced without moving the member's focus. Previously saved low readings (latest-reading card, history, charts, report) carry an icon plus accessible text label but no `role="alert"` — no assertive announcement on page load. Icon plus text label always, never colour alone. No forced focus unless accessibility testing shows it is needed.
+
+## Label wording
+
+The visible term "Normal" is replaced with "In range" everywhere a glucose reading is labelled (badges, legends, reference bar, tooltips, report). Only glucose labels change; other metrics keep their existing wording.
 
 ## Where it applies
 
@@ -45,6 +49,7 @@ Every surface that labels or colours a glucose reading is updated to use the sha
 - `src/pages/app/ProgressReport.tsx` — printable report readings table and averages get the low state rather than an unmarked value.
 
 Any further glucose-labelling site found during a full grep is updated the same way and listed in the report.
+
 
 ## Validation
 
@@ -61,7 +66,11 @@ New `src/lib/glucose.ts`:
 
 Tests (vitest + Testing Library, existing setup; Supabase client mocked so no production writes):
 - `src/lib/glucose.test.ts` — boundaries at 53/54/69/70 for every reading type, plus each type's elevated/high boundaries, and mmol/L equivalents (2.9/3.0/3.8/3.9) verifying conversion happens before rounding.
-- `src/components/progress/BloodSugarTab.test.tsx` — entering a low value renders the alert with `role="alert"`, both copy variants, the medication line, and never the word "Normal"; a previously saved low reading renders as low in the latest-reading card and the history chart; future timestamp and out-of-range values block Save with no insert call.
+- `src/components/progress/BloodSugarTab.test.tsx` — entering a low value renders the safety card with `role="alert"`, both copy variants and the medication line; a previously saved low reading renders as low in the latest-reading card and history/chart **without** any `role="alert"` element on load; the word "Normal" never appears; future timestamp and out-of-range values block Save with no insert call.
+- `src/pages/app/Dashboard.test.tsx` — a saved 55 mg/dL renders the low tone and label (not normal/green), and 95 fasting renders "In range".
+- `src/components/dashboard/QuickStats.test.tsx` — urgent-low, low, in-range, elevated and high values map to the classifier's tones and labels.
+- `src/pages/app/ProgressReport.test.tsx` — a low reading in the printable table is marked low with accessible text, and no assertive announcement is rendered.
+
 
 Verification commands: `vitest run`, `tsc --noEmit` (the project's existing TypeScript check), eslint on touched files, and a production build.
 
