@@ -68,9 +68,11 @@ Full report of every Resend caller, split into **non-health transactional** (aut
 ### 7. Retention — report-only
 `purge-inactive-visitors` becomes a manifest-driven retention worker in **report-only** mode with the §6.7 per-category schedule and the "meaningful activity" definition. Counts only; no deletion activated. `/privacy` copy limited to authority-supplied wording.
 
-### 8. P4 — production enumeration (read-only) then staging probes
+### 8. P4 — read-only enumeration, staging probes, then post-deployment production match
 - `scripts/rls/enumerate.sql` + `scripts/rls/report.ts`: read-only, dated, environment-fingerprinted inventory of RLS state, forced state, grants, every `USING`/`WITH CHECK`, views and `security_invoker`, security-definer functions and execute grants, Storage buckets/policies, Realtime publications, secret-using edge functions, and the admin-role source; flags RLS off, no policy, public grants, `USING (true)`, missing `WITH CHECK`, unsafe views, user-editable role sources; migration-intent diff; no row contents or real identifiers.
-- Policy fixes land as forward migrations, then `scripts/rls/probe.ts` runs anonymous / Member A / Member B / admin JWT **in staging** (service role tested separately, never as an admin pass), verifying the target row after each request, run-ID scoped, with proven cleanup. Output: `docs/rls-verification-<date>.md`.
+- Policy fixes land as forward migrations **applied to staging only**, then `scripts/rls/probe.ts` runs anonymous / Member A / Member B / admin JWT in staging (service role tested separately, never as an admin pass), verifying the target row after each request, run-ID scoped, with proven cleanup.
+- **Post-deployment match (required for P4 to pass):** after you separately approve deploying those migrations to production, production read-only enumeration runs again and the installed production policy definitions are diffed against the exact staging-tested definitions. **P4 does not pass until that final comparison is attached and clean.** Output: `docs/rls-verification-<date>.md`.
+
 
 ### 9. Verification
 Authorization tests (§4.5), consent tests including a network assertion that no free text reaches an external domain pre-consent (§5.7), export/deletion/retention tests on a seeded synthetic staging user (§6.8), then **`tsc --noEmit`** (tsgo is not installed or configured in this project), `eslint` on touched files, Vitest, and `vite build`. No publish.
