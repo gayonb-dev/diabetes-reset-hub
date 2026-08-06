@@ -16,7 +16,10 @@ While scheduling is off, DRM asks for and stores no fasting-specific medication,
 - Make timers, schedules, logging controls, fasting meal-plan modes, prompts, notifications, handlers, and background actions unreachable: `WindowCountdown`, `FastingTimeline`, `FastingTargetCard`, fasting writes in `useFastingProfile`, and the `if_fast_start` / `if_fast_complete` notification templates.
 - Remove Fasting from primary desktop nav, mobile More grid, onboarding, Getting Ready checklist, Today prompts, habit rings, and the default meal-plan journey.
 - `/app/fasting` stays as an authenticated education-only page carrying the appendix copy verbatim (Optional badge, "Fasting and diabetes", unavailable card, safety section, low-reading section reusing the S1 classifier text, tools list, both CTAs, ADA/NIDDK source line). Deliberate entry is one Learn → Guides link, "Fasting and diabetes: read this first".
+- Deactivate the existing intermittent-fasting and fasting-and-meal-timing Learn guides now — both default entries in `src/data/learnGuides.ts` and any active database overrides in `content_items`. Their scheduling, medication-adjustment, mechanism, and predicted-result language conflicts with the education-only state.
+- Remove every automatic fasting side effect from the Cheat Meal flow (`src/pages/app/CheatMeal.tsx` and its handlers): no `if_fasting_log` writes, no "fast begins" wording, no timer activation, no fasting notifications. A meal choice never starts a disabled health feature.
 - No database columns are dropped and no stored records are erased in this phase.
+
 
 ## S3 — Supplements, foot care, mindset, notifications
 
