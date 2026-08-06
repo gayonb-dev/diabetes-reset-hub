@@ -246,9 +246,6 @@ export default function AppLayout() {
                 {[
                   { to: "/app/learn", icon: BookOpen, label: "Learn" },
                   { to: "/app/workouts", icon: Activity, label: "Workouts" },
-                  { to: "/app/supplements", icon: Pill, label: "Supplements" },
-                  { to: "/app/fasting", icon: Timer, label: "Fasting" },
-                  
                   { to: "/app/profile", icon: User, label: "Profile" },
                   { to: "/app/settings", icon: SettingsIcon, label: "Settings" },
                   { to: "/app/support", icon: LifeBuoy, label: "Support" },
