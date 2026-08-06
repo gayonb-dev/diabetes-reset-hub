@@ -97,16 +97,16 @@ Deno.serve(async (req) => {
     // Level names/messages MUST stay in sync with src/lib/levels.ts and
     // src/components/gamification/LevelUpOverlay.tsx.
     const LEVEL_NAMES: Record<number, { name: string; msg: string }> = {
-      1:  { name: "The Beginner",        msg: "You started. Most people don't." },
-      2:  { name: "The Builder",         msg: "Foundation set." },
-      3:  { name: "The Momentum Maker",  msg: "Your body is responding." },
-      4:  { name: "The Shifter",         msg: "Numbers are changing." },
-      5:  { name: "The Reverser",        msg: "You are in it now." },
-      6:  { name: "The Reclaimer",       msg: "You did this." },
-      7:  { name: "The Sustainer",       msg: "Maintaining what you built." },
-      8:  { name: "The Champion",        msg: "One full year." },
-      9:  { name: "The Guide",           msg: "Others follow your path." },
-      10: { name: "The Transformer",     msg: "This is who you are now." },
+      1:  { name: "The Starter",             msg: "You began." },
+      2:  { name: "The Builder",             msg: "Your routine is taking shape." },
+      3:  { name: "The Momentum Maker",      msg: "You keep returning." },
+      4:  { name: "The Pattern Finder",      msg: "You are learning from your routine." },
+      5:  { name: "The Steady Navigator",    msg: "You are choosing what helps." },
+      6:  { name: "The Consistency Keeper",  msg: "You built six months of practice." },
+      7:  { name: "The Sustainer",           msg: "You are carrying useful routines forward." },
+      8:  { name: "The Champion",            msg: "One full year of showing up." },
+      9:  { name: "The Guide",               msg: "Your experience can help you ask better questions." },
+      10: { name: "The Long-Game Leader",    msg: "You have practiced for the long term." },
     };
 
     const sendNotif = async (template: string, vars: Record<string, unknown>) => {

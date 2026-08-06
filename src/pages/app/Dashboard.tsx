@@ -389,8 +389,8 @@ export default function Dashboard() {
             />
             <span className="text-[11px] text-secondary-fg">
               {gam.streak_count === 1
-                ? "1-day Reversal Streak"
-                : `${gam.streak_count}-day Reversal Streak`}
+                ? "1-day Daily Action Streak"
+                : `${gam.streak_count}-day Daily Action Streak`}
             </span>
             <LevelBadge level={gam.level} />
           </div>
