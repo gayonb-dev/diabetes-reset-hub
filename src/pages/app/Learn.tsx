@@ -165,7 +165,13 @@ export default function Learn() {
 
         {/* LEARN TAB — accordion */}
         <TabsContent value="learn" className="mt-5">
-          <Accordion type="single" collapsible className="w-full">
+          <Accordion
+            type="single"
+            collapsible
+            className="w-full"
+            value={openGuide}
+            onValueChange={setOpenGuide}
+          >
             {guides.map((g) => {
               const locked = g.unlockDay && currentProgramDay < g.unlockDay;
               return (
@@ -173,9 +179,20 @@ export default function Learn() {
                   <AccordionTrigger className="text-left">
                     <span className="flex items-center gap-2">
                       {locked && <Lock className="h-3.5 w-3.5 text-tertiary-fg" />}
-                      <span className="font-medium text-foreground">
+                      <span
+                        className="font-medium text-foreground"
+                        tabIndex={-1}
+                        ref={(el) => {
+                          headingRefs.current[g.slug] = el;
+                        }}
+                      >
                         {g.title}
                       </span>
+                      {g.category && (
+                        <span className="text-[11px] text-accent border border-accent/40 rounded px-1.5 py-0.5">
+                          {g.category}
+                        </span>
+                      )}
                       {locked && (
                         <span className="text-[11px] text-tertiary-fg">
                           (Day {g.unlockDay})
@@ -189,15 +206,48 @@ export default function Learn() {
                         Unlocks on Day {g.unlockDay}.
                       </p>
                     ) : (
-                      <p className="text-sm text-secondary-fg leading-relaxed whitespace-pre-wrap">
-                        {g.body}
-                      </p>
+                      <div className="space-y-4">
+                        <p className="text-sm text-secondary-fg leading-relaxed whitespace-pre-wrap">
+                          {g.body}
+                        </p>
+                        {g.sourceCard && (
+                          <Card className="p-4 border border-border rounded-xl bg-muted/50">
+                            <p className="font-heading font-semibold text-sm text-foreground">
+                              {g.sourceCard.title}
+                            </p>
+                            <p className="text-[13px] text-secondary-fg mt-1 leading-relaxed">
+                              {g.sourceCard.body}
+                            </p>
+                            <ul className="mt-2 space-y-1">
+                              {g.sourceCard.links.map((l) => (
+                                <li key={l.url}>
+                                  <a
+                                    href={l.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-sm text-primary font-medium hover:underline inline-flex items-center gap-1"
+                                  >
+                                    {l.label}
+                                    <ExternalLink className="h-3.5 w-3.5" />
+                                  </a>
+                                </li>
+                              ))}
+                            </ul>
+                          </Card>
+                        )}
+                        {g.cta && (
+                          <Button asChild variant="outline" className="min-h-11 rounded-lg">
+                            <Link to={g.cta.to}>{g.cta.label}</Link>
+                          </Button>
+                        )}
+                      </div>
                     )}
                   </AccordionContent>
                 </AccordionItem>
               );
             })}
           </Accordion>
+
         </TabsContent>
 
         {/* BLOG TAB — only when posts exist */}
