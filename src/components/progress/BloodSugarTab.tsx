@@ -38,7 +38,8 @@ const READING_TYPES: { k: ReadingType; label: string }[] = [
   { k: "other", label: "Other" },
 ];
 
-// Reference ranges in mg/dL
+// Reference bar geometry in mg/dL. Status classification itself comes from
+// src/lib/glucose.ts — the shared source of truth.
 const RANGES = {
   fasting: { normal: 100, diabetic: 126, max: 200 },
   post_meal: { normal: 140, diabetic: 200, max: 300 },
@@ -47,21 +48,6 @@ const RANGES = {
   cgm: { normal: 140, diabetic: 200, max: 300 },
 };
 
-
-function toneFor(v: number, type: ReadingType): "normal" | "warning" | "danger" {
-  const r = RANGES[type];
-  if (v < r.normal) return "normal";
-  if (v < r.diabetic) return "warning";
-  return "danger";
-}
-
-function toneColor(t: "normal" | "warning" | "danger") {
-  return t === "normal"
-    ? "hsl(var(--status-normal))"
-    : t === "warning"
-    ? "hsl(var(--status-warning))"
-    : "hsl(var(--status-danger))";
-}
 
 export default function BloodSugarTab() {
   const { user } = useAuth();
