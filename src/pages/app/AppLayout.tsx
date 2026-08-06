@@ -15,9 +15,7 @@ import {
   LogOut,
   Shield,
   LifeBuoy,
-  Pill,
   User,
-  Timer,
   
   MoreHorizontal,
   Settings as SettingsIcon,
