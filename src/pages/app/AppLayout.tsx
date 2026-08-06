@@ -178,18 +178,13 @@ export default function AppLayout() {
             <NavLink to="/app/learn" className={navClass}>
               <BookOpen className="h-4 w-4" /> Learn
             </NavLink>
-            <NavLink to="/app/supplements" className={navClass}>
-              <Pill className="h-4 w-4" /> Supplements
-            </NavLink>
             <NavLink to="/app/workouts" className={navClass}>
               <Activity className="h-4 w-4" /> Workouts
             </NavLink>
             <NavLink to="/app/meals" className={navClass}>
               <UtensilsCrossed className="h-4 w-4" /> Meals
             </NavLink>
-            <NavLink to="/app/fasting" className={navClass}>
-              <Timer className="h-4 w-4" /> Fasting
-            </NavLink>
+
             <NavLink to="/app/ask" className={navClass}>
               <MessageCircleQuestion className="h-4 w-4" /> Ask
             </NavLink>
