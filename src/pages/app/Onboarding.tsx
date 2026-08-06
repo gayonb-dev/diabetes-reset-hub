@@ -20,7 +20,6 @@ import {
   GLUCOSE_RANGE_MGDL,
   WEIGHT_RANGE_LB,
 } from "@/lib/units";
-import { deriveEligibility } from "@/components/safety/FastingScreening";
 
 type Diabetes = "type_2" | "prediabetes" | "concerned";
 type Medication = "oral" | "insulin" | "both" | "none";
@@ -46,11 +45,6 @@ export default function Onboarding() {
   const [step, setStep] = useState(0); // 0 = welcome, 1..3 = wizard
   const [saving, setSaving] = useState(false);
 
-  // Fasting safety screening (step 3)
-  const [medClass, setMedClass] = useState<string | null>(null);
-  const [type1, setType1] = useState<boolean | null>(null);
-  const [pregnant, setPregnant] = useState<boolean | null>(null);
-  const [disorderedEating, setDisorderedEating] = useState<boolean | null>(null);
   const [bedtimeHour, setBedtimeHour] = useState(22);
 
   // Screen 2
@@ -161,11 +155,6 @@ export default function Onboarding() {
 
     // Ensure profiles.program_start_date is set on onboarding completion.
     const today = new Date().toISOString().slice(0, 10);
-    const exclusions = {
-      type1: !!type1,
-      pregnant_or_nursing: !!pregnant,
-      disordered_eating: !!disorderedEating,
-    };
     await supabase
       .from("profiles")
       .upsert(
@@ -174,9 +163,6 @@ export default function Onboarding() {
           first_name: firstName.trim(),
           program_start_date: today,
           week_start_day: weekStartDay,
-          medication_class: medClass,
-          fasting_exclusions: exclusions,
-          fasting_eligibility: deriveEligibility(medClass, exclusions),
           bedtime_hour: bedtimeHour,
         } as never,
         { onConflict: "user_id" },
@@ -195,7 +181,7 @@ export default function Onboarding() {
         <p className="text-[22px] font-semibold mb-6 tracking-tight">Diabetes Reset Method</p>
         <Vita posture="celebrating" size={160} />
         <h1 className="font-heading text-[28px] font-bold mt-6 text-center leading-tight">
-          Your reversal starts today.
+          Your reset starts today.
         </h1>
         <p className="text-base mt-3 text-center text-primary-foreground/70 max-w-sm">
           A program built to end diabetes — not manage it.
@@ -547,6 +533,208 @@ export default function Onboarding() {
                 </p>
               </Field>
 
+              <div className="fixed bottom-0 left-0 right-0 z-40 bg-background border-t border-border p-4 pb-[calc(env(safe-area-inset-bottom)+1rem)] lg:static lg:z-auto lg:bg-transparent lg:border-0 lg:p-0">
+                <Button
+                  onClick={() => {
+                    if (validateS2()) setStep(2);
+                  }}
+                  className="w-full h-[52px] bg-primary hover:bg-primary/90 text-primary-foreground font-semibold"
+                >
+                  Continue
+                </Button>
+              </div>
+            </>
+          )}
+
+          {step === 2 && (
+            <>
+              <h1 className="font-heading text-[22px] font-semibold mb-2 tracking-tight">
+                What would a win look like for you?
+              </h1>
+              <p className="text-sm text-muted-foreground mb-6">
+                In your own words. There's no wrong answer.
+              </p>
+
+              <Field label="Primary goal" required>
+                <Radios
+                  value={goal}
+                  onChange={(v) => setGoal(v as Goal)}
+                  options={[
+                    { v: "reverse", label: "Reverse my diabetes" },
+                    { v: "lose_weight", label: "Lose weight" },
+                    { v: "off_meds", label: "Get off medication" },
+                    { v: "energy", label: "Feel better and have more energy" },
+                    { v: "all", label: "All of the above" },
+                  ]}
+                />
+              </Field>
+
+              <Field label="What would feel like a win after 6 months?">
+                <Textarea
+                  value={sixMonth}
+                  onChange={(e) => setSixMonth(e.target.value.slice(0, 200))}
+                  placeholder="In 6 months I want to..."
+                  className="bg-muted/50 border-0 rounded-xl min-h-[88px]"
+                  maxLength={200}
+                />
+                <p className="text-[11px] text-muted-foreground/70 text-right mt-1">
+                  {sixMonth.length}/200
+                </p>
+              </Field>
+
+              <Field label="Commitment level" required>
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] text-muted-foreground/70">Still figuring it out.</span>
+                  <div className="flex gap-1">
+                    {[1, 2, 3, 4, 5].map((n) => (
+                      <button
+                        key={n}
+                        type="button"
+                        onClick={() => setCommitment(n)}
+                        className="p-1"
+                      >
+                        <Star
+                          className={`h-7 w-7 ${
+                            n <= commitment ? "fill-accent text-accent" : "text-muted-foreground"
+                          }`}
+                        />
+                      </button>
+                    ))}
+                  </div>
+                  <span className="text-[11px] text-muted-foreground/70">Fully committed.</span>
+                </div>
+              </Field>
+
+              <Field label="Biggest challenges (pick any)">
+                <div className="flex flex-wrap gap-2">
+                  {CHALLENGES.map((c) => (
+                    <button
+                      key={c}
+                      type="button"
+                      onClick={() => toggleChallenge(c)}
+                      className={`px-3 py-1.5 rounded-full text-xs border transition-all min-h-[44px] flex items-center ${
+                        challenges.includes(c)
+                          ? "bg-primary text-primary-foreground border-primary"
+                          : "bg-card border-border hover:border-primary/40"
+                      }`}
+                    >
+                      {c}
+                    </button>
+                  ))}
+                </div>
+              </Field>
+
+              <Field label="Current eating pattern" required>
+                <Radios
+                  value={mealFreq}
+                  onChange={(v) => setMealFreq(v as MealFreq)}
+                  options={[
+                    { v: "two", label: "2 meals per day" },
+                    { v: "three", label: "3 meals per day" },
+                    { v: "more", label: "More than 3 meals" },
+                  ]}
+                />
+              </Field>
+
+              <div className="fixed bottom-0 left-0 right-0 z-40 bg-background border-t border-border p-4 pb-[calc(env(safe-area-inset-bottom)+1rem)] lg:static lg:z-auto lg:bg-transparent lg:border-0 lg:p-0">
+                <Button
+                  onClick={() => setStep(3)}
+                  disabled={!goal || !commitment || !mealFreq}
+                  className="w-full h-[52px] bg-primary hover:bg-primary/90 text-primary-foreground font-semibold"
+                >
+                  Continue
+                </Button>
+              </div>
+            </>
+          )}
+
+          {step === 3 && (
+            <>
+              <h1 className="font-heading text-[22px] font-semibold mb-2 tracking-tight">
+                How do you currently track your blood sugar?
+              </h1>
+              <p className="text-sm text-muted-foreground mb-6">
+                We'll set your daily check-in reminders based on your answer.
+              </p>
+
+              <Field label="Monitoring frequency" required>
+                <Radios
+                  value={monitoring}
+                  onChange={(v) => setMonitoring(v as Monitoring)}
+                  options={[
+                    { v: "multi_daily", label: "Yes, multiple times daily" },
+                    { v: "once_daily", label: "Yes, once daily" },
+                    { v: "few_weekly", label: "Yes, a few times per week" },
+                    { v: "when_off", label: "I check when I feel off" },
+                    { v: "none", label: "I don't currently track" },
+                  ]}
+                />
+              </Field>
+
+              <Field label="Blood sugar unit" required>
+                <Radios
+                  value={glucoseUnit}
+                  onChange={(v) => setGlucoseUnit(v as GlucoseUnit)}
+                  options={[
+                    { v: "mgdl", label: "mg/dL (most common in the US)" },
+                    {
+                      v: "mmoll",
+                      label: "mmol/L (UK, Canada, Australia, Caribbean and many others)",
+                    },
+                  ]}
+                />
+                <p className="text-[11px] text-muted-foreground/70 mt-2">
+                  This is your global unit — applied everywhere in the app.
+                </p>
+              </Field>
+
+              <Field label="Glucometer at home" required>
+                <Radios
+                  value={glucometer == null ? null : glucometer ? "yes" : "no"}
+                  onChange={(v) => setGlucometer(v === "yes")}
+                  options={[
+                    { v: "yes", label: "Yes" },
+                    { v: "no", label: "No" },
+                  ]}
+                />
+                {glucometer === false && (
+                  <p className="text-xs text-muted-foreground mt-2 bg-accent/10 border border-accent/30 rounded-lg p-3">
+                    You can get one at most pharmacies for under $20. It's one of the most
+                    important tools in this program.
+                  </p>
+                )}
+              </Field>
+
+              <Field label="Which day does your week start?" required>
+                <Radios
+                  value={weekStartDay === 1 ? "monday" : "sunday"}
+                  onChange={(v) => setWeekStartDay(v === "monday" ? 1 : 0)}
+                  options={[
+                    { v: "sunday", label: "Sunday" },
+                    { v: "monday", label: "Monday" },
+                  ]}
+                />
+                <p className="text-[11px] text-muted-foreground/70 mt-2">
+                  Used for your meal week, cheat meal, and habit grids. You can change this later in Settings.
+                </p>
+              </Field>
+
+              <Field label="What time do you usually go to bed?" required>
+                <Radios
+                  value={String(bedtimeHour)}
+                  onChange={(v) => setBedtimeHour(parseInt(v, 10))}
+                  options={[
+                    { v: "20", label: "8pm" },
+                    { v: "21", label: "9pm" },
+                    { v: "22", label: "10pm" },
+                    { v: "23", label: "11pm" },
+                  ]}
+                />
+                <p className="text-[11px] text-muted-foreground/70 mt-2">
+                  We space your last meal at least 3 hours before bed.
+                </p>
+              </Field>
+
               <div className="mb-6">
                 <p className="text-sm text-muted-foreground mb-3">
                   Some diabetes medications lower blood sugar on a schedule. If you're fasting while the
@@ -617,9 +805,7 @@ export default function Onboarding() {
                 <Button
                   onClick={finish}
                   disabled={
-                    saving || !monitoring || glucometer == null || !medClass ||
-                    type1 == null || pregnant == null || disorderedEating == null
-                  }
+saving || !monitoring || glucometer == null}
                   className="w-full h-[52px] bg-primary hover:bg-primary/90 text-primary-foreground font-semibold"
                 >
                   {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
