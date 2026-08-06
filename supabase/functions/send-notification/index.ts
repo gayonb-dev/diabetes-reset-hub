@@ -1,7 +1,7 @@
 // Edge function: send-notification
 // Renders a VITA notification template (Section 16 of spec) and persists it
 // to public.notifications for the in-app feed. Honors per-user prefs unless
-// the template is marked urgent.
+// the template sets bypassPrefs.
 //
 // Auth: requires either a logged-in user (acting on themselves), an admin
 // user, or the INTERNAL_FUNCTION_SECRET in x-internal-secret header (used by
@@ -15,7 +15,7 @@ type Template = {
   /** Body template; supports {first_name}, {streak}, {day}, {action_name}, {water_have}, {water_need}, {n}, {hours}, {level_name}, {level_message}, {unlock_name}, {unlock_desc}, {day_name}, {milestone} */
   body: string;
   title: string;
-  /** Maps to notification_prefs key; null = always send (urgent / event) */
+  /** Maps to notification_prefs key; null = always send (event-driven) */
   prefKey: string | null;
   /** Internal: bypasses quiet-hours/preference gating. Never surfaced to members as "urgent". */
   bypassPrefs?: boolean;
@@ -219,7 +219,7 @@ Deno.serve(async (req) => {
       .eq("user_id", userId)
       .maybeSingle();
 
-    if (tpl.prefKey && !tpl.urgent) {
+    if (tpl.prefKey && !tpl.bypassPrefs) {
       const enabled = profile?.notification_prefs?.[tpl.prefKey];
       if (enabled === false) {
         return new Response(JSON.stringify({ ok: true, skipped: "pref_disabled" }), {
