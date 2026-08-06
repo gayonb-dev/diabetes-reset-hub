@@ -17,7 +17,22 @@ import {
   mmollToMgdl,
 } from "@/lib/units";
 import { useGamification } from "@/hooks/useGamification";
+import {
+  classifyGlucose,
+  glucoseToneClass,
+  glucoseToneColor,
+  GLUCOSE_STATUS_LABEL,
+  GLUCOSE_IMPLAUSIBLE_MESSAGE,
+  GLUCOSE_FUTURE_TIMESTAMP_MESSAGE,
+  isPlausible,
+  isFutureTimestamp,
+  isLowStatus,
+  localDateTimeValue,
+  GlucoseStatus,
+} from "@/lib/glucose";
+import GlucoseSafetyCard from "@/components/progress/GlucoseSafetyCard";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine, ReferenceArea, Dot } from "recharts";
+
 
 type ReadingType = "fasting" | "post_meal" | "bedtime" | "other" | "cgm";
 
