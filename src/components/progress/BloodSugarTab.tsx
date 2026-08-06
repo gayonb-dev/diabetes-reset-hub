@@ -237,7 +237,6 @@ export default function BloodSugarTab() {
           value={value}
           onChange={(e) => {
             setValue(e.target.value);
-            setNeedConfirm(false);
           }}
           type="number"
           inputMode="decimal"
