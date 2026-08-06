@@ -33,7 +33,11 @@ Low (54-69 mg/dL):
 
 Both states also display: "Never change medication based on this app alone."
 
-Presentation: an alert card in the existing card style (rounded-xl, shadow-warm, existing borders and tokens), with `role="alert"` so a newly entered low value is announced without moving the member's focus. Icon plus text label, never colour alone. No forced focus unless accessibility testing shows it is needed.
+Presentation: an alert card in the existing card style (rounded-xl, shadow-warm, existing borders and tokens). `role="alert"` is used **only** on the safety card shown for a newly entered low reading, so it is announced without moving the member's focus. Previously saved low readings (latest-reading card, history, charts, report) carry an icon plus accessible text label but no `role="alert"` — no assertive announcement on page load. Icon plus text label always, never colour alone. No forced focus unless accessibility testing shows it is needed.
+
+## Label wording
+
+The visible term "Normal" is replaced with "In range" everywhere a glucose reading is labelled (badges, legends, reference bar, tooltips, report). Only glucose labels change; other metrics keep their existing wording.
 
 ## Where it applies
 
@@ -45,6 +49,7 @@ Every surface that labels or colours a glucose reading is updated to use the sha
 - `src/pages/app/ProgressReport.tsx` — printable report readings table and averages get the low state rather than an unmarked value.
 
 Any further glucose-labelling site found during a full grep is updated the same way and listed in the report.
+
 
 ## Validation
 
