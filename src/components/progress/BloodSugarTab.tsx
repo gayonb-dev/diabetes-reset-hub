@@ -102,13 +102,15 @@ export default function BloodSugarTab() {
     return unit === "mmoll" ? mmollToMgdl(v) : v;
   }, [value, unit]);
 
+  // Entry-time validation — nothing is written until the entry is valid.
+  const entryStatus: GlucoseStatus | null =
+    parsedMgdl != null && isPlausible(parsedMgdl) ? classifyGlucose(parsedMgdl, type) : null;
+  const implausible = parsedMgdl != null && !isPlausible(parsedMgdl);
+  const futureTimestamp = isFutureTimestamp(when);
+  const canSave = parsedMgdl != null && !implausible && !futureTimestamp;
+
   const save = async () => {
-    if (!user || parsedMgdl == null) return;
-    // sanity: <30 or >600 mg/dL requires second confirm
-    if ((parsedMgdl < 30 || parsedMgdl > 600) && !needConfirm) {
-      setNeedConfirm(true);
-      return;
-    }
+    if (!user || parsedMgdl == null || !canSave) return;
     setSaving(true);
     const { error } = await supabase.from("blood_sugar_readings").insert({
       member_id: user.id,
@@ -125,10 +127,10 @@ export default function BloodSugarTab() {
     toast({ title: "Reading saved" });
     setValue("");
     setNotes("");
-    setNeedConfirm(false);
     await recordAction("log_glucose");
     refresh();
   };
+
 
   function setUnitPersist(u: GlucoseUnit) {
     setUnit(u);
