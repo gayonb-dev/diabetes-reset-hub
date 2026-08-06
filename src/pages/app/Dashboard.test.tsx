@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { bloodSugarTone } from "@/pages/app/Dashboard";
+import { readFileSync } from "node:fs";
+import { bloodSugarTone } from "@/lib/glucose";
 import { classifyGlucose, glucoseTone, GLUCOSE_STATUS_LABEL, GlucoseReadingType } from "@/lib/glucose";
 
 /**
@@ -21,6 +22,13 @@ describe("Dashboard blood sugar tone delegates to the shared classifier", () => 
   it('95 fasting is in range', () => {
     expect(bloodSugarTone(95, "fasting")).toBe("normal");
     expect(GLUCOSE_STATUS_LABEL[classifyGlucose(95, "fasting")]).toBe("In range");
+  });
+
+  it("Dashboard.tsx imports the shared helpers rather than defining thresholds locally", () => {
+    const src = readFileSync("src/pages/app/Dashboard.tsx", "utf8");
+    expect(src).toContain('from "@/lib/glucose"');
+    expect(src).toContain("bloodSugarTone(bsSource.value, bsSource.type)");
+    expect(src).not.toMatch(/if \(mgdl < 100\) return "normal"/);
   });
 
   it("matches the classifier across every reading type and boundary", () => {
