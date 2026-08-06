@@ -311,14 +311,19 @@ function ReferenceBar({
   const fmt = (v: number) => (unit === "mmoll" ? mgdlToMmoll(v).toFixed(1) : String(v));
   const max = r.max;
   const pct = valueMgdl != null ? Math.min(Math.max(valueMgdl / max, 0), 1) * 100 : null;
+  const lowPct = (GLUCOSE_LOW_THRESHOLDS.low / max) * 100;
   const normalPct = (r.normal / max) * 100;
   const diabeticPct = (r.diabetic / max) * 100;
-  const tone = valueMgdl != null ? toneFor(valueMgdl, type) : null;
+  const status = valueMgdl != null ? classifyGlucose(valueMgdl, type) : null;
 
   return (
     <div className="mt-4">
       <div className="relative h-3 rounded-full overflow-hidden bg-muted">
-        <div className="absolute inset-y-0 left-0 bg-status-normal" style={{ width: `${normalPct}%` }} />
+        <div className="absolute inset-y-0 left-0 bg-status-danger" style={{ width: `${lowPct}%` }} />
+        <div
+          className="absolute inset-y-0 bg-status-normal"
+          style={{ left: `${lowPct}%`, width: `${normalPct - lowPct}%` }}
+        />
         <div
           className="absolute inset-y-0 bg-status-warning"
           style={{ left: `${normalPct}%`, width: `${diabeticPct - normalPct}%` }}
@@ -330,16 +335,18 @@ function ReferenceBar({
         {pct != null && (
           <div
             className="absolute top-1/2 -translate-y-1/2 h-5 w-5 rounded-full border-2 border-white shadow"
-            style={{ left: `calc(${pct}% - 10px)`, background: toneColor(tone!) }}
+            style={{ left: `calc(${pct}% - 10px)`, background: glucoseToneColor(status!) }}
           />
         )}
       </div>
       <div className="flex justify-between text-[10px] text-tertiary-fg mt-1">
-        <span>0</span>
-        <span>Normal &lt; {fmt(r.normal)}</span>
+        <span>Low &lt; {fmt(GLUCOSE_LOW_THRESHOLDS.low)}</span>
+        <span>In range &lt; {fmt(r.normal)}</span>
         <span>Diabetic ≥ {fmt(r.diabetic)}</span>
         <span>{fmt(max)}</span>
       </div>
+    </div>
+
     </div>
   );
 }
