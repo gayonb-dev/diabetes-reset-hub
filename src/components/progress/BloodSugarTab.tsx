@@ -346,9 +346,8 @@ function ReferenceBar({
         <span>{fmt(max)}</span>
       </div>
     </div>
-
-    </div>
   );
+
 }
 
 function BloodSugarHistory({ readings, unit }: { readings: Reading[]; unit: GlucoseUnit }) {
