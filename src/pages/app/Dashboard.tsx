@@ -21,6 +21,7 @@ import { useDailyHabits } from "@/hooks/useDailyHabits";
 import { useVitaQuotes } from "@/hooks/useVitaQuotes";
 import { useProgramDay } from "@/hooks/useProgramDay";
 import { getUnits, displayGlucose, displayWeight } from "@/lib/units";
+import { classifyGlucose, glucoseTone, GlucoseReadingType } from "@/lib/glucose";
 import { phaseFor, dayInPhase, PHASE_TOTAL } from "@/lib/phase";
 
 type DailyAction = {
@@ -45,10 +46,10 @@ type ProfileMeta = {
 // startOfDay removed — program day now comes from useProgramDay.
 
 
-function bloodSugarTone(mgdl: number): "normal" | "warning" | "danger" {
-  if (mgdl < 100) return "normal";
-  if (mgdl < 126) return "warning";
-  return "danger";
+// Delegates to the shared classifier (src/lib/glucose.ts) so low readings are
+// never shown as "normal".
+function bloodSugarTone(mgdl: number, readingType: GlucoseReadingType = "other"): "normal" | "warning" | "danger" {
+  return glucoseTone(classifyGlucose(mgdl, readingType));
 }
 
 function DashboardSkeleton() {
@@ -84,7 +85,7 @@ export default function Dashboard() {
   const [latestWeight, setLatestWeight] = useState<{ value: number; date: string } | null>(null);
   const [waterTargetLb, setWaterTargetLb] = useState<number>(180);
   const [latestA1C, setLatestA1C] = useState<{ value: number; date: string } | null>(null);
-  const [latestReading, setLatestReading] = useState<{ value: number; at: string } | null>(null);
+  const [latestReading, setLatestReading] = useState<{ value: number; at: string; type: GlucoseReadingType } | null>(null);
   const [loading, setLoading] = useState(true);
   const [workoutDoneToday, setWorkoutDoneToday] = useState(false);
 
@@ -219,13 +220,13 @@ export default function Dashboard() {
 
       const { data: rd } = await supabase
         .from("blood_sugar_readings")
-        .select("value_mgdl, measured_at")
+        .select("value_mgdl, measured_at, reading_type")
         .eq("member_id", user.id)
         .order("measured_at", { ascending: false })
         .limit(1)
         .maybeSingle();
       if (!cancelled && rd?.value_mgdl != null) {
-        setLatestReading({ value: rd.value_mgdl as number, at: rd.measured_at as string });
+        setLatestReading({ value: rd.value_mgdl as number, at: rd.measured_at as string, type: ((rd as { reading_type?: string }).reading_type as GlucoseReadingType) ?? "other" });
       }
 
       // Day 29+ exercise ring: any workout completed inside today's LOCAL day.
@@ -305,8 +306,10 @@ export default function Dashboard() {
     Math.floor((Date.now() - new Date(iso).getTime()) / 86400000);
 
   const bsSource = latestReading
-    ? { value: latestReading.value, date: latestReading.at }
-    : latestBS;
+    ? { value: latestReading.value, date: latestReading.at, type: latestReading.type }
+    : latestBS
+    ? { value: latestBS.value, date: latestBS.date, type: "other" as GlucoseReadingType }
+    : null;
   const stats = [
     {
       label: "Blood Sugar",
@@ -316,7 +319,7 @@ export default function Dashboard() {
       unit: bsSource ? (bsUnit === "mmoll" ? "mmol/L" : "mg/dL") : undefined,
       sub: bsSource ? `Logged ${daysSince(bsSource.date)}d ago` : undefined,
       emptyHint: "Tap to log",
-      tone: bsSource ? bloodSugarTone(bsSource.value) : ("warning" as const),
+      tone: bsSource ? bloodSugarTone(bsSource.value, bsSource.type) : ("warning" as const),
       href: "/app/progress",
     },
     {
