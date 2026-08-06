@@ -5,7 +5,6 @@ import { useProgramDay } from "@/hooks/useProgramDay";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import {
   Sheet,
@@ -41,7 +40,6 @@ export default function CheatMeal() {
   const [meals, setMeals] = useState<CheatMeal[]>([]);
   const [loading, setLoading] = useState(true);
   const [description, setDescription] = useState("");
-  const [startFast, setStartFast] = useState(true);
   const [busy, setBusy] = useState(false);
   const [open, setOpen] = useState(false);
 
