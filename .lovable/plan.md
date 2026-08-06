@@ -29,7 +29,7 @@ AI processor contract/DPA gate, email processor gate, financial-record retention
 
 ### 1. Manifest and tests first (no data touched)
 - `supabase/functions/_shared/dataInventory.ts` — single manifest (category, tables/vendor, subject keys, export fields, delete action, retention rule, processor action, dependency order, reconciliation query) covering every category in §6.2.
-- Completeness tests against live `information_schema` (tables, views, functions, Storage, Realtime) so a new table cannot escape export/deletion.
+- Completeness checks do **not** rely on `information_schema` alone. They combine `information_schema`, `pg_catalog` (including `pg_class`/`pg_attribute`/`pg_proc`), the policy and grant catalogs (`pg_policies`, `pg_policy`, table/column/routine privileges), Storage metadata and object policies, Realtime publications, function/RPC execute grants, and the Edge-function inventory — so no table, view, function, bucket, publication, or function-held data path can escape export/deletion.
 
 ### 2. P1 — opaque sessions, ownership, CORS, atomic rate limits
 - Migration: `visitor_sessions` (id, `token_hash`, visitor_profile_id, user_id, timestamps, idle/absolute expiry, revoked_at/reason, consent link), `rate_limit_events` (atomic increment, 24h purge), and an **unused** `visitor_profiles.quarantined_at` column. Service-role only; no anon/authenticated grants.
