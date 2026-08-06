@@ -48,7 +48,7 @@ type ProfileMeta = {
 
 // Delegates to the shared classifier (src/lib/glucose.ts) so low readings are
 // never shown as "normal".
-function bloodSugarTone(mgdl: number, readingType: GlucoseReadingType = "other"): "normal" | "warning" | "danger" {
+export function bloodSugarTone(mgdl: number, readingType: GlucoseReadingType = "other"): "normal" | "warning" | "danger" {
   return glucoseTone(classifyGlucose(mgdl, readingType));
 }
 
