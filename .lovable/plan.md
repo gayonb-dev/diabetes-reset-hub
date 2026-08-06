@@ -1,87 +1,62 @@
-# P1–P4: Chat authorization, consent, deletion/export, and RLS verification
+# P1–P4: chat authorization, health-data consent, export/deletion/retention, live RLS
 
-Security- and privacy-sensitive remediation. No publishing. No real member data touched — all runtime tests use freshly created, clearly labelled test accounts and are cleaned up afterwards.
+Authority: `DRM_P1_P4_Privacy_Security_Implementation_Authority.md`. Where the earlier draft plan conflicted, the authority wins — the signed HMAC capability, `sessionStorage`, the legacy-UUID one-time claim, and the local-prescreen-then-classifier design are all withdrawn. No redesign: brand, VITA, typography, navigation, and cards are untouched; visible change is limited to consent, privacy, export, deletion, and status surfaces. Nothing is published.
 
-## Threats being corrected
+## Platform limitations to decide before/while building
 
-| # | Threat (today) | Correction |
-|---|---|---|
-| T1 | A browser-generated UUID in `localStorage` (`drm_visitor_id`) is accepted by a service-role function as identity. Anyone can send another person's ID and read/extend their visitor profile. | Server-minted, signed, expiring visitor capability. The raw browser UUID stops being authorization. |
-| T2 | `conversation_id` from the client is used without checking it belongs to the visitor — cross-visitor message injection and history read. | Ownership check on every conversation reference; reject non-owned IDs with 403. |
-| T3 | Chat silently relinks an existing visitor profile to whatever account is signed in (`user_id` overwrite). | Never relink a profile already bound to a different user; start a new profile instead. |
-| T4 | Public chat endpoint has no rate limiting. | Per-capability and per-IP rate limits with a fail-closed cap. |
-| T5 | Consent is a `localStorage` flag; the server consent endpoint is never called from the widget; the raw message is sent to an external AI classifier *before* any consent exists; classifier failure returns `contains_phi: false` (fail-open). | Versioned server-side consent tied to the capability; deterministic local pre-screen runs before any external call; classifier failure and low confidence both fail closed. |
-| T6 | Signed-in deletion passes `user.id` as `anonymous_id`, matches nothing, and still reports success; it only removes visitor/chat rows, leaving health, community, device, and consent data. | Authenticated deletion orchestrator with an explicit category inventory, per-category reconciliation, and no success response on unresolved target or partial failure. |
-| T7 | Exports are partial and inconsistent between the CSV zip and the "developer JSON". | One human-readable export and one complete machine-readable export, both driven by the same inventory. |
-| T8 | The 730-day purge covers only visitor profiles while the privacy notice implies all personal health data. | Retention job and notice both expressed against the real category list; 730 days stated as a maximum. |
-| T9 | RLS intent has never been checked against what is actually installed. | Enumerated live policy inventory plus runtime probes as anonymous / member A / member B / admin. |
+1. **Same-site cookie / BFF.** Edge functions run on a different origin than the app, so a `SameSite=Strict` HttpOnly session cookie cannot be demonstrated. Per §4.1 this means the **in-memory launch mode** (opaque token held only in page JavaScript memory, no cross-session anonymous memory). No `sessionStorage` fallback. Owner decision needed only if a same-site API domain becomes available.
+2. **Test member creation for P4 probes.** Creating Member A/B needs either the service-role admin API (not reachable from this environment on Lovable Cloud) or a signup that sends a real confirmation email (prohibited in testing). Read-only enumeration will run regardless; the four-principal probe stays **BLOCKED** until you choose one: (a) temporarily enable auto-confirm signup so two labelled test accounts can be created without email, (b) supply two pre-created test-account credentials, or (c) run probes against a staging clone. I will not mark P4 passed without them.
+3. **Reauthentication for export/deletion** uses email OTP; in tests it is mocked, so the live reauth path is verified only in preview by you.
+4. **Stripe redaction / Dexcom revocation / Resend erasure** are processor actions that cannot be proven from code; they are implemented as tracked states, never as claimed completions.
 
-## P1 — Chat ownership and server-side authorization
+## Gates left visibly open (reported as BLOCKED — OWNER/PROFESSIONAL DECISION REQUIRED)
 
-New edge function `visitor-session` mints a capability:
+AI processor contract/DPA gate, email processor gate, financial-record retention gate, privacy-notice/counsel gate, HBNR incident-response gate, production identity gate. Per §5.3, if the AI processor gate is unproven, the consent panel ships **without** `Agree and continue` and offers only deterministic non-health mode; that switch is a single server-read flag so you can flip it once the DPA is confirmed.
 
-- Payload `{ vid: <visitor_profile_id>, uid: <user_id|null>, iat, exp }`, HMAC-SHA256 signed with a new secret `VISITOR_CAPABILITY_KEY`, 24h expiry, returned to the browser and stored in `sessionStorage`.
-- The legacy `drm_visitor_id` value may be presented once to *claim* an existing anonymous profile, only when that profile has `user_id IS NULL`. A profile bound to a user can only be resumed by that same authenticated user.
-- Signing in issues a new capability; it does not mutate an existing anonymous profile's `user_id` when that profile is already claimed by someone else.
+## Order of work (authority §8)
 
-`chat-agent`, `grant-phi-consent`, and `request-data-deletion` change to:
+### 1. Manifest and tests first (no data touched)
+- `supabase/functions/_shared/dataInventory.ts` — the single manifest (category, tables/vendor, subject keys, export fields, delete action, retention rule, processor action, dependency order, reconciliation query) covering every category in §6.2.
+- `src/lib/dataInventory.spec.ts` + Deno tests: manifest completeness against live `information_schema` table/view/function/Storage/Realtime enumeration, so a new table cannot silently escape export/deletion.
 
-- require a valid capability (and, where the profile is member-bound, a matching bearer token);
-- resolve `visitor_profile_id` from the verified capability only — never from the request body;
-- verify `conversation_id` belongs to the resolved profile before reading history or inserting messages;
-- return 401 on invalid/expired capability, 403 on ownership mismatch.
+### 2. P1 — opaque sessions, ownership, CORS, atomic rate limits
+- Migration: `visitor_sessions` (id, `token_hash`, visitor_profile_id, user_id, created_at, last_seen_at, idle_expires_at, absolute_expires_at, revoked_at, revoked_reason, consent link), `rate_limit_events` (atomic upsert-increment, 24h purge), legacy `visitor_profiles.quarantined_at`. RLS: no anon/authenticated grants; service-role only.
+- New `supabase/functions/visitor-session/index.ts`: CSPRNG opaque token, only its hash stored, 30-min idle / 24-h absolute, rotation on sign-in, sign-out, consent change, merge.
+- `supabase/functions/_shared/session.ts`, `_shared/rateLimit.ts` (atomic SQL), `_shared/cors.ts` (exact origin allowlist, replacing `*`), `_shared/ip.ts` (HMAC-keyed hash from the trusted ingress header only; new secret for the key).
+- `chat-agent`, `grant-phi-consent`, `request-data-deletion`: resolve subject only from the verified session/JWT; verify `conversation.visitor_profile_id` ownership; 401 vs 403 without existence disclosure; body/length/method/content-type limits; no message content, tokens, or headers in logs.
+- `ChatWidget.tsx`: delete `drm_visitor_id` from storage on start, hold the token in a ref only. `useAuth.tsx`, `Onboarding.tsx`, `IntakeForm.tsx`, `SixWeekReset.tsx`, `PaymentModal.tsx`, `Settings.tsx`, `Privacy.tsx`, `stripe-webhook` stop reading/writing it. Quarantine migration for unlinked legacy profiles with before/after counts, 30-day purge.
 
-Rate limiting: new table `rate_limit_events` (key, window_start, count) checked in `chat-agent` — 20 messages / 10 min per capability and 60 / 10 min per IP hash; over-limit returns 429 without calling any AI.
+### 3. P2 — pre-consent boundary, consent registry, AI minimization
+- `supabase/functions/_shared/chatFaq.ts`: deterministic local answers for membership, price, cancellation, login, membership status, navigation, plus the verbatim pre-consent fallback and the deterministic emergency handoff. No free text leaves the server before consent — the external classifier call is removed from the pre-consent path entirely.
+- Migration: `consent_records` (subject = user or visitor session, `purpose_key` `public_chat_ai_health`, notice version, hash of displayed text, processor list/version, granted_at, revoked_at, source surface; no IP, no full UA).
+- `grant-phi-consent` rewritten to write purpose-based consent from the verified session and return the recorded version. Consent-write failure returns the verbatim error copy.
+- `ChatWidget.tsx`: consent panel with the verbatim §5.3 title/body/buttons, no preselection, equal visual weight, existing card/typography tokens. Pending message stays in volatile memory, sent at most once after a successful consent write, never stored beforehand.
+- Withdrawal (verbatim §5.6) in Settings and in the chat's Privacy options; `/privacy` stops accepting a browser UUID as authorization.
+- Minimization: name/email removed from the public-chat prompt; `summarize-conversation` public raw-transcript path disabled; `daily-digest` rebuilt from local structured counts with no raw conversation leaving Supabase. Classifier/model failure and uncertainty fail closed.
 
-## P2 — Health-data consent before external AI processing
+### 4. P3 — export
+- New `supabase/functions/export-my-data`: authenticated, recent-reauth required, subject from the verified JWT and verified account emails only, one snapshot feeding both a readable ZIP (`README.txt`, named CSVs, UTC, units) and one machine-readable JSON (schema version, category, source table). Exclusion list per §6.3 enforced by test. `no-store`/`nosniff`/attachment headers, five-minute one-time link, rate limited.
+- `Settings.tsx`: replaces both current client-side exporters with `Download my data` and `Machine-readable JSON` plus the verbatim status line.
 
-- Deterministic local pre-screen (`_shared/phiPrescreen.ts`, no network) flags likely health disclosure by pattern: lab values, A1C, glucose numbers, medication name list, diagnosis/symptom vocabulary.
-- If the pre-screen flags health content **and** no active consent exists, the message is not stored as content and is never sent to the external model. The widget receives `needs_phi_consent` and shows the consent panel.
-- The panel names: what is stored, who at DRM can see it, that an outside AI provider processes messages, the purpose, retention, how to delete, and links to `/privacy`. Buttons: **"Agree and continue"** and **"Continue without sharing health information."**
-- "Agree" calls `grant-phi-consent` with the capability; the server writes a versioned `phi_consent` row (policy version bumped) and returns the recorded version. Local storage is a cache only and is never trusted.
-- "Continue without sharing" sets a session-scoped non-health mode: pricing, product, and navigation questions still work, health content is declined with a short redirect line. Sales assistance is never blocked.
-- Fail closed: classifier error, `confidence < 0.6`, or missing consent record all take the no-external-processing path.
-- Withdrawal: Settings and `/privacy` gain a "Withdraw health-data consent" action that sets `revoked_at` server-side.
+### 5. P3 — deletion state machine (built and proven in test/staging)
+- Migration: `deletion_jobs` with states `requested → identity_verified → access_blocked → in_progress → waiting_for_processor → reconciled → completed`, plus `partial`/`failed`, per-category expected/actual counts, retry cursor; `profiles.deletion_pending` enforced by an authorization check that blocks writes, AI, notifications, email, sync, and purchases even for an unexpired JWT.
+- New `delete-my-account` (creates/queries the job only) and `deletion-worker` (pg_cron) executing §6.4 order: subject resolution, block + session revoke, deliberate Stripe cancellation, queue stop, dependency-ordered deletion with counts, Dexcom local token/data deletion with `action_required_by_member`, processor tracking, Storage objects, Auth user last, reconciliation. No-op and partial are failures; timeouts cannot produce a false completion.
+- `Settings.tsx` deletion dialog uses the verbatim §6.5 copy (reauth + typed `DELETE`, accepted/completed/partial messages).
 
-## P3 — Deletion, export, retention
+### 6. Retention — report-only
+- `purge-inactive-visitors` becomes a manifest-driven retention worker in **report-only** mode with the §6.7 per-category schedule and the "meaningful activity" definition. It produces counts only; no deletion is activated. `/privacy` copy rewritten to state 730 days as a maximum with the real category list.
 
-Shared inventory module `_shared/dataInventory.ts` lists every category with its tables and disposition:
+### 7. P4 — RLS enumeration then isolated probes
+- `scripts/rls/enumerate.sql` + `scripts/rls/report.ts`: read-only, dated, environment-fingerprinted inventory of RLS state, forced state, grants, every `USING`/`WITH CHECK`, views and `security_invoker`, security-definer functions and execute grants, Storage buckets/policies, Realtime publications, secret-using edge functions, and the admin-role source; flags RLS off, no policy, public grants, `USING (true)`, missing `WITH CHECK`, unsafe views, user-editable role sources; migration-intent diff; no row contents or real identifiers.
+- Policy fixes land as migrations, then `scripts/rls/probe.ts` runs anonymous / Member A / Member B / admin JWT (service role tested separately, never as an admin pass) against every personal table and operation, verifying the target row after each request, with a unique run ID and proven cleanup. Output: `docs/rls-verification-<date>.md`.
 
-- **Deleted immediately** — profile, health logs, blood sugar / A1C / measurements / meals / water / mood / walks / snacks, progress, streaks, badges, community posts/answers/votes, chat conversations & messages, visitor profile, device connections, consent records, notifications, AI meal plans, derived engagement scores.
-- **Sent to a processor** — Dexcom token revocation, Stripe customer detach.
-- **Retained for a documented reason** — order/subscription financial records, `phi_access_log` audit entries, the deletion request record itself.
+### 8. Verification
+Authorization tests (§4.5), consent tests including a network assertion that no free text reaches an external domain pre-consent (§5.7), export/deletion/retention tests on a seeded synthetic user (§6.8), then `tsgo`, ESLint on touched files, Vitest, and production build. No publish.
 
-New authenticated edge function `delete-my-account`:
+## Rollback and reconciliation
 
-- resolves the target strictly from the verified bearer token (never from the body);
-- requires typed confirmation echoed in the request;
-- walks the inventory, records per-category row counts, and reconciles by re-querying after deletion;
-- returns `partial` with the failing categories and HTTP 500 when anything remains; returns success only when every immediate category reconciles to zero;
-- idempotent and retry-safe via the `deletion_requests` row.
+Every migration is additive-first with a paired `-- rollback` block: new tables are dropped, added columns dropped, altered policies restored from the enumerated pre-change definitions captured in step 7's report. Data-affecting steps (legacy quarantine, deletion worker, retention) run report-only first, record expected vs actual counts, and require reconciliation to zero before advancing state; the quarantine flag is reversible until the 30-day purge, which stays disabled until you approve the counts.
 
-New `export-my-data` edge function returns both artifacts from the same inventory: a readable multi-CSV zip with a `README.txt` explaining each file, and one complete `drm-export.json`. Settings replaces the two divergent client-side exporters with these.
+## Completion report
 
-Retention: `purge-inactive-visitors` extends to the same inventory for accounts with no activity, logs per-category counts, and the `/privacy` copy is rewritten to state 730 days as a maximum with the actual category list. Settings deletion confirmation copy is rewritten to state exactly what is deleted, what is sent onward, and what is retained and why.
-
-## P4 — Live RLS verification
-
-Direct read access to the live database is available from this environment (`pg_policies` returns 159 rows), so enumeration will be done against production, not source files.
-
-1. `scripts/rls/enumerate.sql` dumps every table's `rowsecurity` flag, grants, and policy expressions for all personal/health/chat/order/subscription/community tables.
-2. A diff report compares that inventory against migration intent and flags tables with RLS off, no policies, `USING (true)`, or anon grants.
-3. `scripts/rls/probe.ts` runs behavioural probes through PostgREST as four principals: anonymous (publishable key), member A, member B, and admin — using two throwaway test accounts created for the run and deleted after. For each table it attempts select/insert/update/delete of the other member's row and records the result.
-4. Output written to `docs/rls-verification-<date>.md` with date, environment, principal matrix, pass/fail per table, and reviewer line.
-
-RLS is marked passed only if both enumeration and all four-principal probes complete. If test accounts cannot be created (signups disabled) the report will name that as the exact remaining blocker and the permission needed, and RLS stays failed.
-
-## Verification
-
-- Authorization tests (Vitest + Deno-side unit tests): anonymous A cannot access anonymous B; member A cannot claim B's profile; member A cannot inject into or read B's conversation; expired/tampered capability rejected; logout/login transitions.
-- Consent tests: pre-screen boundary cases, no external call before consent, classifier-failure fail-closed, withdrawal, non-health sales path unaffected.
-- Deletion tests: seeded-user reconciliation, downstream failure surfaces as failure, retry idempotency, unauthorized deletion rejected, no-op target returns failure not success.
-- Export completeness test: every inventory category present in the JSON export.
-- Then `tsgo` typecheck, ESLint, Vitest, and production build. No publish.
-
-## Report delivered at the end
-
-Threats corrected, full file/migration list, consent and deletion behaviour description, RLS evidence or the exact blocker with the permission required, test/build results, and the preview URL.
+Delivered per §9: files/migrations/functions changed, behaviors removed and their replacements, proof no browser UUID or web-storage capability remains as authorization, consent notice version and processor names with gate status, external data flows before/after, full manifest, export inclusion/exclusion report, deletion state-machine and reconciliation evidence, retention dry-run counts with confirmation nothing was deleted, RLS inventory and principal matrix or the exact blocker, test/type/lint/build results, and the preview URL.
