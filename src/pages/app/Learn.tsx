@@ -44,11 +44,18 @@ type BlogPost = {
 export default function Learn() {
   const { user } = useAuth();
   const currentProgramDay = useProgramDay();
-
+  const [searchParams] = useSearchParams();
+  const requestedGuide = searchParams.get("guide");
 
   const [activeWeek, setActiveWeek] = useState<MindsetWeek | null>(null);
   const [guides, setGuides] = useState<LearnGuide[]>(DEFAULT_LEARN_GUIDES);
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
+  const [tab, setTab] = useState(requestedGuide ? "learn" : "mindset");
+  const [openGuide, setOpenGuide] = useState<string>(requestedGuide ?? "");
+  const headingRefs = useRef<Record<string, HTMLSpanElement | null>>({});
+  // Focus/scroll only when the requested guide actually changes (a real
+  // navigation or redirect) — never on background data refreshes.
+  const lastFocusedGuide = useRef<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -81,6 +88,23 @@ export default function Learn() {
     };
   }, []);
 
+  // Deep link: /app/learn?guide=<slug> opens the matching article.
+  useEffect(() => {
+    if (!requestedGuide) return;
+    const exists = guides.some((g) => g.slug === requestedGuide);
+    if (!exists) return; // unknown slug — fall back to the normal Guides list
+    setTab("learn");
+    setOpenGuide(requestedGuide);
+    if (lastFocusedGuide.current === requestedGuide) return;
+    lastFocusedGuide.current = requestedGuide;
+    const t = window.setTimeout(() => {
+      const el = headingRefs.current[requestedGuide];
+      el?.scrollIntoView({ block: "center", behavior: "smooth" });
+      el?.focus({ preventScroll: true });
+    }, 120);
+    return () => window.clearTimeout(t);
+  }, [requestedGuide, guides]);
+
   return (
     <div className="space-y-6 animate-fade-in">
       <div>
@@ -92,11 +116,12 @@ export default function Learn() {
         </p>
       </div>
 
-      <Tabs defaultValue="mindset">
+      <Tabs value={tab} onValueChange={setTab}>
         <TabsList className="bg-muted">
           <TabsTrigger value="mindset" className="min-h-11">Mindset</TabsTrigger>
           <TabsTrigger value="learn" className="min-h-11">Guides</TabsTrigger>
           {blogPosts.length > 0 && <TabsTrigger value="blog" className="min-h-11">Blog</TabsTrigger>}
+
         </TabsList>
 
         {/* MINDSET TAB */}
