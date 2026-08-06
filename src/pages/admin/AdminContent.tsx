@@ -721,17 +721,18 @@ const SAMPLE_VARS = {
 };
 
 const NOTIFICATION_TEMPLATES: { name: string; template: string }[] = [
-  { name: "Daily action (not opened by 10 AM)", template: "VITA says: [First name], Day [X] is waiting. Today is [Action Name]. It takes less time than you think." },
-  { name: "Water reminder", template: "VITA says: [First name], you've had [X]oz of water today. You need [Y]oz more. Your cells are filing a complaint." },
-  { name: "Streak at risk", template: "VITA says: [N]-day streak. [First name], you have until midnight. Four rings. You've done this before." },
-  { name: "7-day streak", template: "VITA says: Seven days, [First name]. Research shows you are now 3.6 times more likely to stay with this. You're in the zone." },
-  { name: "14-day streak + freeze earned", template: "VITA says: 14 days, [First name]. You've earned your first Streak Freeze. It's saved — one missed day won't break what you've built." },
-  { name: "30-day streak", template: "VITA says: 30 days. [First name], that's a habit. Not a trial run. A habit." },
-  { name: "Streak broken", template: "VITA says: Your [N]-day streak reset, [First name]. That's okay. Every expert has a Day 1 in their past. New one starts now." },
-  { name: "Blood sugar not logged", template: "VITA says: [First name], your blood sugar hasn't been logged yet today. Even a bad number is useful information." },
-  { name: "Measurement due in 7 days", template: "VITA says: [First name], your Month [N] check-in is in 7 days. Keep going — the numbers are going to say something good." },
-  { name: "Good morning", template: "VITA says: Morning, [First name]. Your [N]-day streak is intact. [Today's action name] is ready for you." },
-  { name: "Level up", template: "VITA says: [First name], you just reached [Level Name]. [Level significance message]. This is permanent." },
+  { name: "Daily action (not opened by 10 AM)", template: "VITA says: [First name], Day [X] is ready. Today's action is [Action Name]. Start when it fits your day." },
+  { name: "Water reminder", template: "VITA says: [First name], you've logged [X] oz today. Your current app goal shows [Y] oz remaining." },
+  { name: "Streak at risk", template: "VITA says: [First name], one more completed action will keep your [N]-day streak going. If today got away from you, you can return tomorrow." },
+  { name: "7-day streak", template: "VITA says: Seven days, [First name]. You kept returning to your daily actions. Take a moment to notice what helped." },
+  { name: "14-day streak + freeze earned", template: "VITA says: 14 days, [First name]. You earned a Streak Freeze. It can protect your streak after one missed day." },
+  { name: "30-day streak", template: "VITA says: 30 days, [First name]. You have a month of practice to learn from." },
+  { name: "Streak broken", template: "VITA says: Your [N]-day streak reset, [First name]. Your past work still counts. Choose one useful action when you're ready." },
+  { name: "Blood sugar not logged", template: "VITA says: [First name], no blood-sugar reading is logged today. Log one only if it is part of your usual care plan." },
+  { name: "Measurement due in 7 days", template: "VITA says: [First name], your Month [N] check-in is in seven days. Use it to review what you recorded—without judging a single number." },
+  { name: "Good morning", template: "VITA says: Good morning, [First name]. [Today's action name] is ready when you are." },
+  { name: "Level up", template: "VITA says: [First name], you reached [Level Name]. [Level significance message]" },
+
 ];
 
 function fillTemplate(t: string) {
