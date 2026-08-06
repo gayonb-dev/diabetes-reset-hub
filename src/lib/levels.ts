@@ -1,4 +1,5 @@
 // Level system per Section 11 — levels unlock by program day, not points.
+// Names and messages are the approved S3 content-appendix table.
 
 export interface LevelInfo {
   level: number;
@@ -8,16 +9,16 @@ export interface LevelInfo {
 }
 
 export const LEVELS: LevelInfo[] = [
-  { level: 1, name: "The Beginner", dayThreshold: 0, message: "You started. Most people don't." },
-  { level: 2, name: "The Builder", dayThreshold: 14, message: "Foundation set." },
-  { level: 3, name: "The Momentum Maker", dayThreshold: 45, message: "Your body is responding." },
-  { level: 4, name: "The Shifter", dayThreshold: 90, message: "Numbers are changing." },
-  { level: 5, name: "The Reverser", dayThreshold: 135, message: "You are in it now." },
-  { level: 6, name: "The Reclaimer", dayThreshold: 180, message: "You did this." },
-  { level: 7, name: "The Sustainer", dayThreshold: 270, message: "Maintaining what you built." },
-  { level: 8, name: "The Champion", dayThreshold: 365, message: "One full year." },
-  { level: 9, name: "The Guide", dayThreshold: 450, message: "Others follow your path." },
-  { level: 10, name: "The Transformer", dayThreshold: 540, message: "This is who you are now." },
+  { level: 1, name: "The Starter", dayThreshold: 0, message: "You began." },
+  { level: 2, name: "The Builder", dayThreshold: 14, message: "Your routine is taking shape." },
+  { level: 3, name: "The Momentum Maker", dayThreshold: 45, message: "You keep returning." },
+  { level: 4, name: "The Pattern Finder", dayThreshold: 90, message: "You are learning from your routine." },
+  { level: 5, name: "The Steady Navigator", dayThreshold: 135, message: "You are choosing what helps." },
+  { level: 6, name: "The Consistency Keeper", dayThreshold: 180, message: "You built six months of practice." },
+  { level: 7, name: "The Sustainer", dayThreshold: 270, message: "You are carrying useful routines forward." },
+  { level: 8, name: "The Champion", dayThreshold: 365, message: "One full year of showing up." },
+  { level: 9, name: "The Guide", dayThreshold: 450, message: "Your experience can help you ask better questions." },
+  { level: 10, name: "The Long-Game Leader", dayThreshold: 540, message: "You have practiced for the long term." },
 ];
 
 export function levelFromDay(day: number): LevelInfo {
