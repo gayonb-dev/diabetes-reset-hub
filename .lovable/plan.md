@@ -1,65 +1,46 @@
-# Phase: S2, S3, S4 — remaining clinical content
+# S2–S4: Clinical content remediation (appendix-governed)
 
-Scope is limited to fasting safety, supplements/foot care/mindset/notifications, and AI health-content boundaries. No privacy, chat auth, billing, or landing-page work. Nothing is published.
+`DRM_S2_S4_Content_Approval_Appendix.md` is the final authority for all member-facing wording and interactions. Copy is implemented verbatim. Where a component limitation would force a wording change, that item stops and the old-vs-new text is reported instead of shipped.
 
-Clinical-review status stays internal. Members never see "pending clinician review" notices; review flags live in code comments and the completion report only.
+Clinical-review status stays internal — members never see "pending clinician review". CLINICIAN GATE items are tracked in the completion report only. Nothing is published.
 
-## Safeguards (added before implementation)
+## Correction that supersedes the earlier plan
 
-- **Fasting scheduling feature flag.** A single exported constant (`FASTING_SCHEDULING_ENABLED`, default `false`) in a dedicated `src/lib/featureFlags.ts`, mirrored server-side in `supabase/functions/_shared/featureFlags.ts`. Default is `false` in every environment; enabling requires editing the constant and the accompanying `CLINICAL_APPROVAL` record (approver, date, document reference), not deleting a comment. A test asserts the flag is `false` and that scheduling UI/handlers are unreachable while it is false.
-- **No broken supplements route.** `/app/supplements` becomes a redirect to the new Learn/Safety supplement education article. Every internal link is updated or removed: `src/App.tsx`, `src/pages/app/AppLayout.tsx`, `src/pages/app/Dashboard.tsx`, `src/components/dashboard/GettingStartedChecklist.tsx`, `src/components/onboarding/SupplementPrompt.tsx` (deleted), `src/pages/app/Support.tsx`, `src/pages/LLMInfo.tsx`.
-- **Full reference scan** for `/app/supplements`, "Nature Made", "Solgar", "R-ALA", "benfotiamine", "apple cider vinegar"/"ACV", "Ceylon cinnamon", "supplement pack", "supplement foundation" — across member UI, onboarding, Getting Started checklist, Learn content (`src/data/learnGuides.ts`), notifications, Ask/VITA knowledge (`supabase/functions/ask-vita/index.ts`), admin content, and database-managed content (`content_items`, `daily_actions`, `vita_quotes`). Commercial recommendations are removed; the approved educational article replaces them only where appropriate. Each hit is reported with its disposition.
-- **Duplicate notification templates.** The unsafe defaults exist in both `supabase/functions/send-notification/index.ts` and `src/pages/admin/AdminContent.tsx` (e.g. the "3.6 times more likely" line at AdminContent.tsx:727). Both are corrected, plus any stored/editable copies in the database, so existing rows stop emitting removed claims after the source defaults change.
-- **Fasting safety summary reuses S1.** Low-glucose wording and professional-contact boundaries come from `src/lib/glucose.ts` / `GlucoseSafetyCard`. No new treatment, carbohydrate, medication, or emergency instructions are authored in this phase.
-- **Report this content.** Requires an authenticated member; the edge function verifies the referenced record belongs to the reporter before accepting. The stored row holds only content type, owned record id, generation timestamp, selected reason, reporter id, and created/updated timestamps. No raw health or AI text is copied into the general support record.
-- **Escaping at the render boundary.** AI text is escaped where it is interpolated into HTML, not at generation. Meal-plan email, daily digest, and every other AI-to-HTML template discovered by the scan are covered and tested.
-- **Content regression scan** covers member content, AI prompts, admin templates, notification defaults, and seed data. The public landing-page rewrite stays out of this phase; any unsafe landing copy found (e.g. in `src/pages/Index.tsx`, `src/components/landing/FAQSection.tsx`) is reported for the later claims phase, not edited.
+The previous plan kept a fasting screening questionnaire with a doctor-attestation checkbox. That is removed. While scheduling is off, DRM asks for and stores no fasting-specific medication, pregnancy/breastfeeding, Type 1, eating-history, exclusion, or clinician-confirmation data. Any work already built that conflicts with this is revised before verification and listed in the report.
 
+## S2 — Fasting release state
 
-## S2 — Fasting safety
-
-Fasting becomes an optional advanced tool, entered deliberately, and stays out of the default first-14-day experience.
-
-- Fasting scheduling remains unavailable in production until clinical review completes. The tab presents fasting as optional educational content and the safety check; it does not schedule windows for members.
-- Fasting is removed from the default early journey: no fasting prompts, nav emphasis, or onboarding steps before a member deliberately opens the tool.
-- Screening result copy replaced:
-  - Cleared state becomes "Based on these answers, the app has not identified one of its listed stop conditions. This is not medical clearance."
-  - Medication state becomes "Ask your prescriber or pharmacist whether fasting is appropriate with your medicines. Never change a dose on your own." The "your doctor adjusts your doses first" wording is removed.
-  - The self-attestation checkbox is relabelled as a record that the conversation happened, not clearance; unchecking withdraws it.
-- An "Optional" label plus a short safety-summary card (stop conditions, what to do if you feel low, who to ask).
-- Locked/unavailable states stay neutral and point to the non-fasting tools (plate method, post-meal walks, consistent meal timing).
-- Incomplete or unknown answers keep everything locked.
+- `FASTING_SCHEDULING_ENABLED` stays `false` in every environment (new `src/lib/featureFlags.ts`, mirrored in `supabase/functions/_shared/featureFlags.ts`). Turning it on requires editing the constant plus a `CLINICAL_APPROVAL` record — not deleting a comment. A test asserts the flag is false and scheduling is unreachable.
+- Delete `src/components/safety/FastingScreening.tsx` and remove it from onboarding, `/app/fasting`, and Settings (`src/components/settings/FastingSettingsSection.tsx`). Remove its required-answer validation from onboarding so it cannot block setup. No replacement questionnaire, attestation checkbox, or "cleared" state.
+- Make timers, schedules, logging controls, fasting meal-plan modes, prompts, notifications, handlers, and background actions unreachable: `WindowCountdown`, `FastingTimeline`, `FastingTargetCard`, fasting writes in `useFastingProfile`, and the `if_fast_start` / `if_fast_complete` notification templates.
+- Remove Fasting from primary desktop nav, mobile More grid, onboarding, Getting Ready checklist, Today prompts, habit rings, and the default meal-plan journey.
+- `/app/fasting` stays as an authenticated education-only page carrying the appendix copy verbatim (Optional badge, "Fasting and diabetes", unavailable card, safety section, low-reading section reusing the S1 classifier text, tools list, both CTAs, ADA/NIDDK source line). Deliberate entry is one Learn → Guides link, "Fasting and diabetes: read this first".
+- No database columns are dropped and no stored records are erased in this phase.
 
 ## S3 — Supplements, foot care, mindset, notifications
 
-**Supplements** removed from the default member journey: the onboarding supplement modal is deleted (not replaced), and the Supplements tab is removed from navigation and the member journey. The named products, doses, purchase links, "foundation" language, and ACV/cinnamon content go away entirely.
+- New Learn/Safety article `supplements-and-diabetes-safety` with the appendix body, source card, NCCIH/FDA links, and `Return to Guides` CTA. `/app/supplements` redirects to `/app/learn?guide=supplements-and-diabetes-safety` with the interim line "Opening supplement safety guidance…".
+- Remove the Supplements nav item, `SupplementPrompt.tsx` onboarding modal, Dashboard prompt, Getting Ready purchase items, Support/Ask category prompts, product cards and search links, dose instructions, and the `supplement-guide` / `acv-cinnamon` entries. No replacement checklist task.
+- New Learn/Safety article `everyday-foot-care` (appendix body, NIDDK link). In workouts: delete the `epsom_soak` checkbox from `src/data/workouts.ts`, add the informational foot reminder link below the cooldown checklist — not a checkbox.
+- Replace all six weeks of `src/data/mindsetWeeks.ts` with the appendix text, preserving week numbers, titles, unlock days, card counts, postures, and the absent Week 6 assignment.
+- Apply the level rename table (Level 4 → The Pattern Finder, 5 → The Steady Navigator, 6 → The Consistency Keeper, 10 → The Long-Game Leader, plus every message) across `src/lib/levels.ts`, `LevelBadge.tsx`, `LevelUpOverlay.tsx`, `Dashboard.tsx`, `StreakHistoryModal.tsx`, and `gamify-action`. Replace visible "Reversal Streak" with "Daily Action Streak" and "Phase 3 — Reversal" with "Phase 3 — Build Your Routine".
+- Rewrite every notification template to the approved table in both `supabase/functions/send-notification/index.ts` and the admin previews in `src/pages/admin/AdminContent.tsx`, plus any stored/editable database copies, so corrected defaults are not undone by old rows. Deactivate `cheat_meal_window`, `if_fast_start`, `if_fast_complete`. Habit reminders are never announced as urgent.
 
-Neutral supplement education moves into Learn/Safety as an article: "Supplements: questions to discuss with your healthcare professional" — evidence varies, interaction risk with diabetes medicines, product-quality variability, questions to bring to a prescriber or pharmacist, and a clear statement that no supplement is required to use DRM. No product names, no doses, no purchase links.
+## S4 — AI boundaries
 
-**Foot care** — the Epsom-salt soak cool-down item is removed from the workout checklist and not replaced with another task. NIDDK-based foot-care education becomes a Learn/Safety article (daily visual check, wash and dry well including between toes, moisturize but not between toes, do not soak, well-fitting shoes and socks, report sores or numbness to a healthcare professional). One brief contextual line links to it from the workout cool-down — not a recurring task or new feature surface.
+- Ask screen: appendix labels, placeholder, boundary line, and button. AI answer cards get the `AI-generated • Educational only` label, the footer, `Report this answer`, and `Ask the community` only for non-medical program questions. Verified DRM-team answers keep their own label.
+- Deterministic pre-model safety layer in `supabase/functions/ask-vita/index.ts` selects the exact emergency, medication, personal-result, fasting, or uncertain-classification message. Deterministic keyword detection is the first layer, not the only one; uncertain classification fails safe. Tests cover false positives (navigation questions such as "Where do I record my medicines?" must still get a normal answer) and false negatives.
+- Report dialog with the appendix title, intro, five reasons, privacy note, buttons, and success/error messages. The edge function requires an authenticated member and verifies the referenced record belongs to them. Stored fields: content type, owned record id, generation timestamp, reason, reporter id, timestamps. No raw question, answer, meal plan, or health text.
+- Meal plan: `AI-generated meal plan` label and safety note below `My Meals`, short label on exports, `Report this meal plan`, and the replacement generation-state line. Replace the meal-plan system prompt with the appendix identity block verbatim in `generate-meal-plan`.
+- New `src/lib/html-utils.ts` escape helper applied at the final HTML render boundary for every AI-to-HTML template found by the scan — `send-meal-plan`, `daily-digest`, and any others.
 
-**Mindset content** rewritten around identity-safe behavior in the weeks holding flagged lines: consistency, learning from your own data, and returning after missed days. Removes "you are on the same path" as people who stopped medication, "your body is responding right now", "a version of you that does not have diabetes", and the "I am reversing my diabetes" assignments. Week structure, card count, postures, and unlock days unchanged.
+## Scans and verification
 
-**Notifications** — removes the unsupported "3.6 times more likely" statistic, "the numbers are going to say something good", "this is permanent", "this is working" during fasting, and the Epsom-salt line. Replacement copy stays in VITA's voice and describes actions and streaks, not predicted physiological results. Delivery logic, timing, and preference keys untouched.
+- Reference scan for `/app/supplements`, Nature Made, Solgar, R-ALA, benfotiamine, apple cider vinegar/ACV, Ceylon cinnamon, supplement pack, supplement foundation — across member UI, onboarding, checklist, Learn, notifications, Ask/VITA knowledge, admin content, and database-managed content. Each hit reported with its disposition.
+- Content-regression scan across member content, AI prompts, admin templates, notification defaults, and seed data.
+- `tsc --noEmit`, vitest regression tests, lint on touched files, production build.
+- Deferred to the later claims phase and reported, not edited: onboarding reversal goals, remaining reversal/proof/compliance labels, the existing blood-sugar / snack / cheat-meal / fasting Learn articles, landing page, legacy intake, six-week page, public chat prompt, lead magnet, `llms.txt`, testimonials.
 
-## S4 — AI health-content boundaries
+## Report
 
-- `generate-meal-plan` prompts: the invented "certified diabetes nutrition specialist" credential and the "reversal / therapeutic / every meal must lower blood sugar" framing are replaced with an educational meal-planning assistant that follows member preferences and the plate framework. Output schema and parsing unchanged.
-- `ask-vita` program knowledge is corrected to match S2/S3 (no named supplements or doses, fasting as optional and gated).
-- Deterministic medical handoff as the **first** safety layer, not the only one: a keyword/pattern check runs before the model and routes symptom, medication, dosage, interpretation, and emergency questions to the professional-contact response. The model's `is_medical_question` flag remains a second layer, and uncertain or failed classification fails safely to the handoff.
-- Meal plans and AI answers show an "AI-generated" status line with a **Report this content** action. The report submits a content reference (type, record id, generation timestamp) and a chosen reason only — no raw health content is copied into a general support record.
-- Prompt-injection protection: stored conversation summaries and other stored text are wrapped as untrusted data with explicit instructions not to follow embedded directions.
-- All AI-generated text is HTML-escaped wherever it enters HTML — meal-plan emails, daily digest emails, and any other HTML template.
-
-## Verification
-
-- Regression tests: fasting eligibility copy and locked states; deterministic medical routing including **false positives** (benign questions containing trigger words must not be blocked) and **false negatives** (phrasings that must be caught); HTML-escaping of AI text in email templates; report-content payload contains no health text; content assertions that flagged mindset/notification phrases no longer appear.
-- Run vitest, `tsc --noEmit`, lint on touched files, and the production build; fix failures caused by this phase.
-
-## Clinician review still required (internal, reported not displayed)
-
-Fasting contraindication and stop-rule list; foot-care education wording; any future supplement guidance. Fasting scheduling stays unavailable until review is complete.
-
-## Files expected to change
-
-`src/components/safety/FastingScreening.tsx`, `src/pages/app/Fasting.tsx`, `src/components/settings/FastingSettingsSection.tsx`, `src/components/fasting/*`, deletion of `src/components/onboarding/SupplementPrompt.tsx` and `src/pages/app/Supplements.tsx` with route/nav removal in `src/App.tsx` and `src/pages/app/AppLayout.tsx`, `src/data/learnGuides.ts` (new supplements + foot-care safety articles), `src/data/workouts.ts`, `src/data/mindsetWeeks.ts`, `supabase/functions/send-notification/index.ts`, `supabase/functions/generate-meal-plan/index.ts`, `supabase/functions/ask-vita/index.ts`, `supabase/functions/send-meal-plan/index.ts`, `supabase/functions/daily-digest/index.ts`, `supabase/functions/summarize-conversation/index.ts`, a shared HTML-escape helper, plus new test files.
+Files changed, visible replacements, scan results with dispositions, revisions made to conflicting earlier work, test/type/lint/build results, remaining CLINICIAN GATE items, and the preview URL. No publish.
