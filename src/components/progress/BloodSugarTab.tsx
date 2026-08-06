@@ -165,40 +165,43 @@ export default function BloodSugarTab() {
       ? mgdlToMmoll(latestReading.value_mgdl).toFixed(1)
       : String(Math.round(latestReading.value_mgdl))
     : null;
-  const latestTone = latestReading ? toneFor(latestReading.value_mgdl, latestReading.reading_type) : null;
-  const latestToneCls =
-    latestTone === "normal"
-      ? "text-status-normal"
-      : latestTone === "warning"
-      ? "text-status-warning"
-      : latestTone === "danger"
-      ? "text-status-danger"
-      : "text-foreground";
+  const latestStatus: GlucoseStatus | null = latestReading
+    ? classifyGlucose(latestReading.value_mgdl, latestReading.reading_type)
+    : null;
+  const latestToneCls = latestStatus ? glucoseToneClass(latestStatus) : "text-foreground";
 
   return (
     <div className="space-y-5">
-      {latestReading && (
-        <Card className="p-5 border border-border rounded-xl shadow-warm">
-          <p className="stat-label mb-2">Latest reading</p>
-          <p className={`metric-hero ${latestToneCls} flex items-baseline flex-wrap`}>
-            <span>{latestDisplay}</span>
-            <span className="stat-unit">{unit === "mmoll" ? "mmol/L" : "mg/dL"}</span>
-          </p>
-          <p className="text-[12px] text-tertiary-fg mt-2 flex items-center gap-2 flex-wrap">
-            <span>
-              {READING_TYPES.find((r) => r.k === latestReading.reading_type)?.label ??
-                (latestReading.reading_type === "cgm" ? "CGM" : latestReading.reading_type)}{" "}
-              · {new Date(latestReading.measured_at).toLocaleDateString()}
-            </span>
-            {latestReading.source === "dexcom" && (
-              <span className="text-[10px] uppercase tracking-wide px-1.5 py-0.5 rounded-full bg-accent-muted text-accent-foreground border border-accent/40">
-                CGM
+      {latestReading && latestStatus && (
+        <>
+          <Card className="p-5 border border-border rounded-xl shadow-warm">
+            <p className="stat-label mb-2">Latest reading</p>
+            <p className={`metric-hero ${latestToneCls} flex items-baseline flex-wrap`}>
+              <span>{latestDisplay}</span>
+              <span className="stat-unit">{unit === "mmoll" ? "mmol/L" : "mg/dL"}</span>
+            </p>
+            <p className={`text-[12px] font-medium mt-1 ${latestToneCls} flex items-center gap-1.5`}>
+              {isLowStatus(latestStatus) && <AlertTriangle className="h-3.5 w-3.5" aria-hidden="true" />}
+              <span>{GLUCOSE_STATUS_LABEL[latestStatus]}</span>
+            </p>
+            <p className="text-[12px] text-tertiary-fg mt-2 flex items-center gap-2 flex-wrap">
+              <span>
+                {READING_TYPES.find((r) => r.k === latestReading.reading_type)?.label ??
+                  (latestReading.reading_type === "cgm" ? "CGM" : latestReading.reading_type)}{" "}
+                · {new Date(latestReading.measured_at).toLocaleDateString()}
               </span>
-            )}
-          </p>
-
-        </Card>
+              {latestReading.source === "dexcom" && (
+                <span className="text-[10px] uppercase tracking-wide px-1.5 py-0.5 rounded-full bg-accent-muted text-accent-foreground border border-accent/40">
+                  CGM
+                </span>
+              )}
+            </p>
+          </Card>
+          {/* Saved reading — accessible text + icon, no assertive announcement on load. */}
+          {isLowStatus(latestStatus) && <GlucoseSafetyCard status={latestStatus} />}
+        </>
       )}
+
 
       {/* Top info bar */}
       <div className="rounded-lg bg-primary-muted px-4 py-3">
