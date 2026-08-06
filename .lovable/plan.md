@@ -66,7 +66,11 @@ New `src/lib/glucose.ts`:
 
 Tests (vitest + Testing Library, existing setup; Supabase client mocked so no production writes):
 - `src/lib/glucose.test.ts` — boundaries at 53/54/69/70 for every reading type, plus each type's elevated/high boundaries, and mmol/L equivalents (2.9/3.0/3.8/3.9) verifying conversion happens before rounding.
-- `src/components/progress/BloodSugarTab.test.tsx` — entering a low value renders the alert with `role="alert"`, both copy variants, the medication line, and never the word "Normal"; a previously saved low reading renders as low in the latest-reading card and the history chart; future timestamp and out-of-range values block Save with no insert call.
+- `src/components/progress/BloodSugarTab.test.tsx` — entering a low value renders the safety card with `role="alert"`, both copy variants and the medication line; a previously saved low reading renders as low in the latest-reading card and history/chart **without** any `role="alert"` element on load; the word "Normal" never appears; future timestamp and out-of-range values block Save with no insert call.
+- `src/pages/app/Dashboard.test.tsx` — a saved 55 mg/dL renders the low tone and label (not normal/green), and 95 fasting renders "In range".
+- `src/components/dashboard/QuickStats.test.tsx` — urgent-low, low, in-range, elevated and high values map to the classifier's tones and labels.
+- `src/pages/app/ProgressReport.test.tsx` — a low reading in the printable table is marked low with accessible text, and no assertive announcement is rendered.
+
 
 Verification commands: `vitest run`, `tsc --noEmit` (the project's existing TypeScript check), eslint on touched files, and a production build.
 
