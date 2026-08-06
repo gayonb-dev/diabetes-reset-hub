@@ -68,35 +68,12 @@ export default function LevelUpOverlay({ level, onDismiss }: LevelUpOverlayProps
 }
 
 function nameForLevel(l: number) {
-  const map: Record<number, string> = {
-    1: "The Beginner",
-    2: "The Builder",
-    3: "The Momentum Maker",
-    4: "The Shifter",
-    5: "The Reverser",
-    6: "The Reclaimer",
-    7: "The Sustainer",
-    8: "The Champion",
-    9: "The Guide",
-    10: "The Transformer",
-  };
-  return map[l] ?? "Lifetime Member";
+  return LEVELS.find((x) => x.level === l)?.name ?? "Lifetime Member";
 }
 function messageForLevel(l: number) {
-  const map: Record<number, string> = {
-    1: "You started. Most people don't.",
-    2: "Foundation set.",
-    3: "Your body is responding.",
-    4: "Numbers are changing.",
-    5: "You are in it now.",
-    6: "You did this.",
-    7: "Maintaining what you built.",
-    8: "One full year.",
-    9: "Others follow your path.",
-    10: "This is who you are now.",
-  };
-  return map[l] ?? "Another milestone in your reset.";
+  return LEVELS.find((x) => x.level === l)?.message ?? "Another milestone in your reset.";
 }
+
 
 function Confetti() {
   // Lightweight CSS confetti — amber/white squares falling.
