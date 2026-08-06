@@ -362,7 +362,7 @@ function BloodSugarHistory({ readings, unit }: { readings: Reading[]; unit: Gluc
     label: new Date(r.measured_at).toLocaleDateString(undefined, { month: "short", day: "numeric" }),
     value: unit === "mmoll" ? Number(mgdlToMmoll(r.value_mgdl).toFixed(1)) : Math.round(r.value_mgdl),
     mgdl: r.value_mgdl,
-    tone: toneFor(r.value_mgdl, r.reading_type),
+    status: classifyGlucose(r.value_mgdl, r.reading_type),
   }));
 
   const avg = (arr: number[]) => Math.round(arr.reduce((a, b) => a + b, 0) / arr.length);
