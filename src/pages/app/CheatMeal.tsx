@@ -88,7 +88,7 @@ export default function CheatMeal() {
       logged_at: now.toISOString(),
       meal_description: description || null,
       week_start_date: thisWeekKey,
-      fast_start_at: startFast ? now.toISOString() : null,
+      fast_start_at: null,
     });
     if (error) {
       setBusy(false);
@@ -96,22 +96,12 @@ export default function CheatMeal() {
       return;
     }
 
-    if (startFast) {
-      await sb.from("if_fasting_log").insert({
-        member_id: user.id,
-        fast_start_at: now.toISOString(),
-        planned_duration_hours: 14,
-        window_type: "14_10",
-        status: "active",
-      });
-    }
-
     setBusy(false);
     setOpen(false);
     setDescription("");
     toast({
       title: "Logged",
-      description: startFast ? "Enjoy it. Your fast starts now — 14 hours until your eating window opens tomorrow." : "Cheat meal recorded.",
+      description: "Cheat meal recorded.",
     });
     refresh();
   };
@@ -132,7 +122,7 @@ export default function CheatMeal() {
         <h1 className="font-heading font-semibold text-2xl text-primary flex items-center gap-2">
           <Utensils className="h-6 w-6" /> Cheat Meal
         </h1>
-        <p className="text-sm text-muted-foreground">One per week, your evening meal. Fast begins right after.</p>
+        <p className="text-sm text-muted-foreground">One per week, as your evening meal.</p>
       </div>
 
       {/* Rules */}
@@ -140,7 +130,6 @@ export default function CheatMeal() {
         <ul className="text-sm space-y-1 text-foreground">
           <li>• 1 cheat meal per week</li>
           <li>• Last meal of the day only</li>
-          <li>• Your fasting window begins immediately after</li>
           <li>• Unlocked after 21 days of compliance</li>
         </ul>
       </Card>
@@ -199,13 +188,6 @@ export default function CheatMeal() {
                 placeholder="e.g., jerk chicken with rice, a slice of cake..."
                 rows={2}
               />
-            </div>
-            <div className="flex items-center justify-between rounded-md border border-border p-3">
-              <div>
-                <p className="text-sm font-medium">Start 14-hour fast now</p>
-                <p className="text-xs text-muted-foreground">Begins your fasting timer immediately</p>
-              </div>
-              <Switch checked={startFast} onCheckedChange={setStartFast} />
             </div>
             <Button
               onClick={logCheatMeal}
