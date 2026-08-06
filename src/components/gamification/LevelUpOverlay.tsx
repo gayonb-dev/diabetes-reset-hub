@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Vita } from "@/components/vita/Vita";
-import { levelFromDay } from "@/lib/levels";
+import { LEVELS, levelFromDay } from "@/lib/levels";
 
 interface LevelUpOverlayProps {
   level: number | null;

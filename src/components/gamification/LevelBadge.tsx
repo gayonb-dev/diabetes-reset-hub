@@ -1,5 +1,4 @@
-import { LEVELS } from "@/lib/levels";
-import { levelFromDay } from "@/lib/levels";
+import { LEVELS, levelFromDay } from "@/lib/levels";
 
 interface LevelBadgeProps {
   level: number;
