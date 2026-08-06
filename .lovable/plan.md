@@ -54,7 +54,7 @@ Stored notification and Learn content changes ship as an idempotent, reversible 
 - Reference scan for `/app/supplements`, Nature Made, Solgar, R-ALA, benfotiamine, apple cider vinegar/ACV, Ceylon cinnamon, supplement pack, supplement foundation — across member UI, onboarding, checklist, Learn, notifications, Ask/VITA knowledge, admin content, and database-managed content. Each hit reported with its disposition.
 - Content-regression scan across member content, AI prompts, admin templates, notification defaults, and seed data.
 - `tsc --noEmit`, vitest regression tests, lint on touched files, production build.
-- Deferred to the later claims phase and reported, not edited: onboarding reversal goals, remaining reversal/proof/compliance labels, the existing blood-sugar / snack / cheat-meal / fasting Learn articles, landing page, legacy intake, six-week page, public chat prompt, lead magnet, `llms.txt`, testimonials.
+- Deferred to the later claims phase and reported, not edited: onboarding reversal goals, remaining reversal/proof/compliance labels, the existing blood-sugar / snack / cheat-meal Learn articles, landing page, legacy intake, six-week page, public chat prompt, lead magnet, `llms.txt`, testimonials. The fasting Learn guides are handled now, not deferred.
 
 ## Report
 
