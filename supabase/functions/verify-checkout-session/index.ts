@@ -34,7 +34,9 @@ serve(async (req) => {
       apiVersion: "2025-08-27.basil",
     });
 
-    const session = await stripe.checkout.sessions.retrieve(sessionId);
+    const session = await stripe.checkout.sessions.retrieve(sessionId, {
+      expand: ["payment_intent"],
+    });
 
     // Prompt 4 closeout mapping: an expired, unpaid, mismatched or otherwise
     // unconfirmable session is "unverified" — never a separate payment-failed
@@ -46,9 +48,16 @@ serve(async (req) => {
           ? "verified"
           : "unverified";
     }
-    // An "open" (not yet completed) or "expired" session is unverified.
-    // "processing" is reserved for payment verified + provisioning pending and
-    // is emitted by fulfilment, not by this read-only check.
+    // Delayed-settlement methods (e.g. bank debits) report a still-processing
+    // PaymentIntent. Those are "processing", not "unverified": the member should
+    // be told provisioning is still settling rather than that nothing happened.
+    const intent = session.payment_intent;
+    const intentStatus =
+      intent && typeof intent === "object" ? (intent as { status?: string }).status : undefined;
+    if (state !== "verified" && (intentStatus === "processing" || session.status === "open")) {
+      state = intentStatus === "processing" ? "processing" : "unverified";
+    }
+    // An "expired" session, or any session we cannot confirm, stays unverified.
 
     // Deliberately minimal payload — no customer identifiers echoed back.
     return json({ state });
