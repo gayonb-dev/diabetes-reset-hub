@@ -52,10 +52,13 @@ const LegalPage = ({ title, metaDescription, path, children }: LegalPageProps) =
             {title}
           </h1>
           <p className="text-sm text-muted-foreground mb-8">
-            Owner review date: {LAST_UPDATED} — owner review required before publication.
+            Last updated: {LAST_UPDATED}
           </p>
           <div className="space-y-5 text-muted-foreground leading-relaxed break-words [&_h2]:font-heading [&_h2]:font-bold [&_h2]:text-xl [&_h2]:text-foreground [&_h2]:pt-4 [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:space-y-2 [&_a]:text-primary [&_a]:underline [&_a]:underline-offset-4">
             {children}
+            {LEGAL_IDENTITY.entity_status !== "active" && (
+              <p className="text-sm">{PENDING_UK_REGISTRATION_NOTICE}</p>
+            )}
           </div>
         </article>
       </main>
