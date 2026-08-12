@@ -4,12 +4,8 @@
 // keyed by visitor_profile_id. Reads from activity_events + orders.
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
+import { corsFor, preflight } from "../_shared/cors.ts";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-};
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_ROLE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -25,7 +21,9 @@ function logNorm(x: number, cap = 2000) {
 }
 
 Deno.serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
+  const pre = preflight(req);
+  if (pre) return pre;
+  const corsHeaders = corsFor(req);
 
   const cronSecret = Deno.env.get("CRON_SECRET");
   if (!cronSecret || req.headers.get("x-cron-secret") !== cronSecret) {

@@ -5,21 +5,19 @@
 // who already has a 'checkin_email_sent' event in the last 30 days.
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
+import { sendEmail } from "../_shared/email.ts";
+import { corsFor, preflight } from "../_shared/cors.ts";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-};
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_ROLE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY")!;
 const FROM_EMAIL = "Gayon <hello@diabetesresetmethod.com>";
 const N_DAYS = 21;
 
 Deno.serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
+  const pre = preflight(req);
+  if (pre) return pre;
+  const corsHeaders = corsFor(req);
 
   const cronSecret = Deno.env.get("CRON_SECRET");
   if (!cronSecret || req.headers.get("x-cron-secret") !== cronSecret) {
@@ -82,16 +80,9 @@ Deno.serve(async (req) => {
         </div>
       `;
 
-      const resendRes = await fetch("https://api.resend.com/emails", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${RESEND_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ from: FROM_EMAIL, to: [email], subject, html }),
-      });
-      if (!resendRes.ok) {
-        console.warn("checkin send failed", email, await resendRes.text());
+      const sendResult = await sendEmail(supabase, { from: FROM_EMAIL, to: email, subject, html });
+      if (!sendResult.sent) {
+        console.warn("checkin send suppressed or failed:", sendResult.reason);
         continue;
       }
 

@@ -30,7 +30,14 @@ export function useClockSkew(): ClockSkew {
       if (!base) return;
       try {
         const url = `${base}/auth/v1/health?_=${Date.now()}`;
-        const res = await fetch(url, { method: "HEAD", cache: "no-store" });
+        // The auth health endpoint requires the publishable key; without it the
+        // probe 401s and the skew check silently never runs.
+        const apikey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+        const res = await fetch(url, {
+          method: "GET", // the auth health endpoint rejects HEAD with 405
+          cache: "no-store",
+          headers: apikey ? { apikey, Authorization: `Bearer ${apikey}` } : undefined,
+        });
         if (!res.ok) return; // non-2xx → treat as failed check, no banner
         const deviceTime = Date.now();
         const header = res.headers.get("Date");

@@ -5,12 +5,8 @@
 // surfaces know not to render in non-PHI contexts), writes to conversations.summary.
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
+import { corsFor, preflight } from "../_shared/cors.ts";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-};
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_ROLE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -18,7 +14,9 @@ const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY")!;
 const MODEL = "google/gemini-2.5-flash";
 
 Deno.serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
+  const pre = preflight(req);
+  if (pre) return pre;
+  const corsHeaders = corsFor(req);
 
   const internalSecret = Deno.env.get("INTERNAL_FUNCTION_SECRET");
   if (!internalSecret || req.headers.get("x-internal-secret") !== internalSecret) {

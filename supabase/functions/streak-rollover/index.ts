@@ -9,7 +9,7 @@
 
 import { createClient } from "npm:@supabase/supabase-js@2.57.2";
 
-import { corsHeaders, preflightHeaders } from "../_shared/cors.ts";
+import { corsFor } from "../_shared/cors.ts";
 
 const INTERNAL_SECRET = Deno.env.get("INTERNAL_FUNCTION_SECRET")!;
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
@@ -58,12 +58,12 @@ async function sendNotification(userId: string, templateKey: string, vars: Recor
 }
 
 Deno.serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response("ok", { headers: preflightHeaders(req) });
+  if (req.method === "OPTIONS") return new Response("ok", { headers: corsFor(req) });
 
   if (req.headers.get("x-internal-secret") !== INTERNAL_SECRET) {
     return new Response(JSON.stringify({ error: "unauthorized" }), {
       status: 401,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      headers: { ...corsFor(req), "Content-Type": "application/json" },
     });
   }
 
@@ -77,7 +77,7 @@ Deno.serve(async (req) => {
 
   if (!streaks?.length) {
     return new Response(JSON.stringify({ ok: true, processed: 0 }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      headers: { ...corsFor(req), "Content-Type": "application/json" },
     });
   }
 
@@ -170,6 +170,6 @@ Deno.serve(async (req) => {
 
   return new Response(
     JSON.stringify({ ok: true, checked: streaks.length, processed, consumed, reset, awarded, skippedHour, skippedDedupe }),
-    { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+    { headers: { ...corsFor(req), "Content-Type": "application/json" } },
   );
 });

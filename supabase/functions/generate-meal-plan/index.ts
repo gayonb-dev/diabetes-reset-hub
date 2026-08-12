@@ -22,10 +22,7 @@ import {
   scheduleForProfile,
   type FastingProfileLike,
 } from "../_shared/fastingTarget.ts";
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-cron-secret, x-supabase-client-platform",
-};
+import { corsFor, preflight } from "../_shared/cors.ts";
 
 // ---------- Lovable AI Gateway ----------
 const gateway = createOpenAICompatible({
@@ -346,7 +343,9 @@ function serializeError(error: unknown): unknown {
 
 // ---------- Handler ----------
 Deno.serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
+  const pre = preflight(req);
+  if (pre) return pre;
+  const corsHeaders = corsFor(req);
   if (req.method !== "POST") {
     return new Response("Method not allowed", { status: 405, headers: corsHeaders });
   }

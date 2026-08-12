@@ -9,7 +9,7 @@
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
 
-import { corsHeaders, preflightHeaders } from "../_shared/cors.ts";
+import { corsFor } from "../_shared/cors.ts";
 
 type Template = {
   /** Body template; supports {first_name}, {streak}, {day}, {action_name}, {water_have}, {water_need}, {n}, {hours}, {level_name}, {level_message}, {unlock_name}, {unlock_desc}, {day_name}, {milestone} */
@@ -146,7 +146,7 @@ function render(tpl: string, vars: Record<string, unknown>): string {
 }
 
 Deno.serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response("ok", { headers: preflightHeaders(req) });
+  if (req.method === "OPTIONS") return new Response("ok", { headers: corsFor(req) });
 
   try {
     const supabase = createClient(
@@ -163,7 +163,7 @@ Deno.serve(async (req) => {
     if (!userId || !templateKey) {
       return new Response(JSON.stringify({ error: "user_id and template_key required" }), {
         status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers: { ...corsFor(req), "Content-Type": "application/json" },
       });
     }
 
@@ -171,7 +171,7 @@ Deno.serve(async (req) => {
     if (!tpl) {
       return new Response(JSON.stringify({ error: `unknown template: ${templateKey}` }), {
         status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers: { ...corsFor(req), "Content-Type": "application/json" },
       });
     }
 
@@ -185,7 +185,7 @@ Deno.serve(async (req) => {
       if (!auth?.startsWith("Bearer ")) {
         return new Response(JSON.stringify({ error: "unauthorized" }), {
           status: 401,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          headers: { ...corsFor(req), "Content-Type": "application/json" },
         });
       }
       const { data: userData } = await supabase.auth.getUser(auth.slice(7));
@@ -193,7 +193,7 @@ Deno.serve(async (req) => {
       if (!callerId) {
         return new Response(JSON.stringify({ error: "unauthorized" }), {
           status: 401,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          headers: { ...corsFor(req), "Content-Type": "application/json" },
         });
       }
       if (callerId !== userId) {
@@ -206,7 +206,7 @@ Deno.serve(async (req) => {
         if (!roleRow) {
           return new Response(JSON.stringify({ error: "forbidden" }), {
             status: 403,
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
+            headers: { ...corsFor(req), "Content-Type": "application/json" },
           });
         }
       }
@@ -223,7 +223,7 @@ Deno.serve(async (req) => {
       const enabled = profile?.notification_prefs?.[tpl.prefKey];
       if (enabled === false) {
         return new Response(JSON.stringify({ ok: true, skipped: "pref_disabled" }), {
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          headers: { ...corsFor(req), "Content-Type": "application/json" },
         });
       }
     }
@@ -246,13 +246,13 @@ Deno.serve(async (req) => {
     if (error) throw error;
 
     return new Response(JSON.stringify({ ok: true, notification: inserted }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      headers: { ...corsFor(req), "Content-Type": "application/json" },
     });
   } catch (e) {
     console.error("send-notification error", e);
     return new Response(JSON.stringify({ error: "Internal server error" }), {
       status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      headers: { ...corsFor(req), "Content-Type": "application/json" },
     });
   }
 });

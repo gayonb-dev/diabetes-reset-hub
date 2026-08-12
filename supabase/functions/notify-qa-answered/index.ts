@@ -1,17 +1,18 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
+import { sendEmail } from "../_shared/email.ts";
 
-import { corsHeaders, preflightHeaders } from "../_shared/cors.ts";
+import { corsFor } from "../_shared/cors.ts";
 
 serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response("ok", { headers: preflightHeaders(req) });
+  if (req.method === "OPTIONS") return new Response("ok", { headers: corsFor(req) });
 
   try {
     const { submission_id } = await req.json();
     if (!submission_id) {
       return new Response(JSON.stringify({ error: "submission_id required" }), {
         status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers: { ...corsFor(req), "Content-Type": "application/json" },
       });
     }
 
@@ -27,7 +28,7 @@ serve(async (req) => {
     if (!userData?.user) {
       return new Response(JSON.stringify({ error: "unauthorized" }), {
         status: 401,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers: { ...corsFor(req), "Content-Type": "application/json" },
       });
     }
     const { data: roleRow } = await sb
@@ -39,7 +40,7 @@ serve(async (req) => {
     if (!roleRow) {
       return new Response(JSON.stringify({ error: "forbidden" }), {
         status: 403,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers: { ...corsFor(req), "Content-Type": "application/json" },
       });
     }
 
@@ -51,7 +52,7 @@ serve(async (req) => {
     if (!sub) {
       return new Response(JSON.stringify({ error: "not found" }), {
         status: 404,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers: { ...corsFor(req), "Content-Type": "application/json" },
       });
     }
 
@@ -77,19 +78,15 @@ serve(async (req) => {
     const email = target?.user?.email;
     if (!email) {
       return new Response(JSON.stringify({ ok: true, skipped: "no email" }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers: { ...corsFor(req), "Content-Type": "application/json" },
       });
     }
 
 
-    const key = Deno.env.get("RESEND_API_KEY");
     const APP_URL = Deno.env.get("APP_URL") || "https://diabetesresetmethod.com";
-    if (key) {
+    {
       const snippet = (sub.answer || "").slice(0, 240);
-      await fetch("https://api.resend.com/emails", {
-        method: "POST",
-        headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
-        body: JSON.stringify({
+      await sendEmail(sb, {
           from: "The Diabetes Reset Method <hello@diabetesresetmethod.com>",
           to: [email],
           subject: "Your question has been answered",
@@ -107,18 +104,17 @@ serve(async (req) => {
               </p>
               <p style="font-size:12px;color:#999;">Educational coaching — not medical advice.</p>
             </div>`,
-        }),
       });
     }
 
     return new Response(JSON.stringify({ ok: true }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      headers: { ...corsFor(req), "Content-Type": "application/json" },
     });
   } catch (err) {
     console.error("notify-qa-answered error:", err);
     return new Response(JSON.stringify({ error: "internal" }), {
       status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      headers: { ...corsFor(req), "Content-Type": "application/json" },
     });
   }
 });

@@ -147,7 +147,7 @@ export default function Onboarding() {
     } else {
       await supabase.from("visitor_profiles").insert({
         user_id: user.id,
-        anonymous_id: localStorage.getItem("drm_visitor_id") || crypto.randomUUID(),
+        anonymous_id: crypto.randomUUID(),
         metadata: meta,
         date_of_birth: dob || null,
       } as never);

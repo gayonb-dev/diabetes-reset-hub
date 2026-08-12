@@ -62,7 +62,6 @@ const PaymentModal = forwardRef<HTMLDivElement, PaymentModalProps>(
             customerName: fullName.trim(),
             customerEmail: email.trim().toLowerCase(),
             customerPhone: phone.trim() || undefined,
-            anonymousId: localStorage.getItem("drm_visitor_id") || undefined,
           },
         });
 

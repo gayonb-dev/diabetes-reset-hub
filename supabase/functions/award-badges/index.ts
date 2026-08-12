@@ -9,13 +9,8 @@
 //    Client callers (Ask.tsx etc.) never assert identity in the payload.
 
 import { createClient, SupabaseClient } from "npm:@supabase/supabase-js@2.49.4";
+import { corsFor, preflight } from "../_shared/cors.ts";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type, x-supabase-client-platform",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-};
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_ROLE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -311,7 +306,9 @@ async function awardMissingBadges(admin: SB, uid: string, notify = true) {
 }
 
 Deno.serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
+  const pre = preflight(req);
+  if (pre) return pre;
+  const corsHeaders = corsFor(req);
   try {
     const admin = createClient(SUPABASE_URL, SERVICE_ROLE);
     const authHeader = req.headers.get("Authorization") ?? "";

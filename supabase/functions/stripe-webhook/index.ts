@@ -2,9 +2,11 @@ import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@18.5.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
 
-import { corsHeaders, preflightHeaders } from "../_shared/cors.ts";
+import { corsFor } from "../_shared/cors.ts";
+import { sendEmail as sendGatedEmail } from "../_shared/email.ts";
 
 const ADMIN_EMAIL = "support@diabetesresetmethod.com";
+const FROM_EMAIL = "The 5-Day Diabetes Reset <hello@diabetesresetmethod.com>";
 
 function esc(s: string): string {
   return String(s ?? "")
@@ -15,29 +17,17 @@ function esc(s: string): string {
     .replace(/'/g, "&#39;");
 }
 
-async function sendEmail(apiKey: string, to: string, subject: string, html: string) {
-  try {
-    const res = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify({
-        from: "The 5-Day Diabetes Reset <hello@diabetesresetmethod.com>",
-        to: [to],
-        subject,
-        html,
-      }),
-    });
-    const data = await res.json();
-    if (!res.ok) {
-      console.error("Email send error:", data);
-    }
-    return data;
-  } catch (err) {
-    console.error("Email send failed:", err);
-  }
+// Every send goes through the central gate in _shared/email.ts. The legacy
+// `apiKey` parameter is retained for call-site compatibility and ignored: the
+// key is read inside the gate, and no request is made while the gate is closed.
+async function sendEmail(_apiKey: string | undefined, to: string, subject: string, html: string) {
+  const gateAdmin = createClient(
+    Deno.env.get("SUPABASE_URL") ?? "",
+    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
+  );
+  const result = await sendGatedEmail(gateAdmin, { from: FROM_EMAIL, to, subject, html });
+  if (!result.sent) console.warn("outbound email suppressed or failed:", result.reason);
+  return result;
 }
 
 function buildWelcomeEmail(name: string, origin: string) {
@@ -144,7 +134,7 @@ function buildAdminNotificationEmail(name: string, email: string, phone: string,
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: preflightHeaders(req) });
+    return new Response("ok", { headers: corsFor(req) });
   }
 
   try {
@@ -153,20 +143,22 @@ serve(async (req) => {
     });
 
     const signature = req.headers.get("stripe-signature");
-    const webhookSecret = Deno.env.get("STRIPE_WEBHOOK_SECRET");
+    // Each webhook function is a distinct endpoint with its own Stripe
+    // signing secret. There is deliberately no shared-secret fallback.
+    const webhookSecret = Deno.env.get("STRIPE_PAYMENT_WEBHOOK_SECRET");
 
     if (!webhookSecret) {
-      console.error("STRIPE_WEBHOOK_SECRET not configured");
+      console.error("STRIPE_PAYMENT_WEBHOOK_SECRET not configured");
       return new Response(
         JSON.stringify({ error: "Webhook secret not configured" }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        { status: 500, headers: { ...corsFor(req), "Content-Type": "application/json" } }
       );
     }
 
     if (!signature) {
       return new Response(
         JSON.stringify({ error: "No signature provided" }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        { status: 400, headers: { ...corsFor(req), "Content-Type": "application/json" } }
       );
     }
 
@@ -179,7 +171,7 @@ serve(async (req) => {
       console.error("Webhook signature verification failed:", err);
       return new Response(
         JSON.stringify({ error: "Webhook signature verification failed" }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        { status: 400, headers: { ...corsFor(req), "Content-Type": "application/json" } }
       );
     }
 
@@ -211,49 +203,16 @@ serve(async (req) => {
           console.log("Order completed for session:", session.id);
         }
 
-        // Anon → auth merge: link the chat-widget visitor_profile to a user
-        const anonymousId = (session.metadata as Record<string, string> | null)?.anonymousId;
-        const customerEmail = session.customer_details?.email?.toLowerCase();
+        // P1 legacy retirement: this webhook no longer reads the retired
+        // browser-generated identifier from Stripe session metadata, never
+        // looks a visitor profile up by it, and never binds a profile or
+        // purchase activity to an account from it. A valid Stripe signature
+        // authenticates the event, not the identity claims a browser once put
+        // inside it. Any such value still present on historical Stripe objects
+        // is processor-side residue: it is not read, logged, copied, exported
+        // or claimed erased. Order completion above is driven solely by the
+        // Stripe session -> order relationship.
 
-        if (anonymousId) {
-          let linkedUserId: string | null = null;
-          if (customerEmail) {
-            // Look up auth user by email (admin API)
-            try {
-              const { data: usersList } = await supabaseAdmin.auth.admin.listUsers();
-              const match = usersList?.users?.find(
-                (u) => u.email?.toLowerCase() === customerEmail,
-              );
-              linkedUserId = match?.id ?? null;
-            } catch (lookupErr) {
-              console.error("user lookup failed", lookupErr);
-            }
-          }
-
-          const { data: profile } = await supabaseAdmin
-            .from("visitor_profiles")
-            .select("id, user_id")
-            .eq("anonymous_id", anonymousId)
-            .maybeSingle();
-
-          if (profile) {
-            await supabaseAdmin
-              .from("visitor_profiles")
-              .update({
-                user_id: linkedUserId ?? profile.user_id,
-                last_activity_at: nowIso,
-              })
-              .eq("id", profile.id);
-
-            // Activity event — purchase
-            await supabaseAdmin.from("activity_events").insert({
-              visitor_profile_id: profile.id,
-              user_id: linkedUserId ?? profile.user_id,
-              event_type: "purchase",
-              metadata: { stripe_session_id: session.id, amount: session.amount_total },
-            });
-          }
-        }
 
         // Get customer details from order (for emails)
         const { data: orderData } = await supabaseAdmin
@@ -333,13 +292,13 @@ serve(async (req) => {
 
     return new Response(
       JSON.stringify({ received: true }),
-      { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 200 }
+      { headers: { ...corsFor(req), "Content-Type": "application/json" }, status: 200 }
     );
   } catch (error) {
     console.error("Webhook error:", error);
     return new Response(
       JSON.stringify({ error: "Internal server error" }),
-      { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 500 }
+      { headers: { ...corsFor(req), "Content-Type": "application/json" }, status: 500 }
     );
   }
 });

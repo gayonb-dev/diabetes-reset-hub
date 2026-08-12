@@ -76,7 +76,6 @@ const SixWeekReset = () => {
           customerPhone: phone.trim() || undefined,
           productId: "six-week-reset-497",
           paymentPlan: "full",
-          anonymousId: localStorage.getItem("drm_visitor_id") || undefined,
         },
       });
       if (error) throw error;
