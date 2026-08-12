@@ -1758,6 +1758,7 @@ export type Database = {
           created_at: string
           date_of_birth: string | null
           deletion_pending: boolean
+          deletion_restricted: boolean
           doctor_confirmed_at: string | null
           fasting_eligibility: string
           fasting_exclusions: Json
@@ -1784,6 +1785,7 @@ export type Database = {
           created_at?: string
           date_of_birth?: string | null
           deletion_pending?: boolean
+          deletion_restricted?: boolean
           doctor_confirmed_at?: string | null
           fasting_eligibility?: string
           fasting_exclusions?: Json
@@ -1810,6 +1812,7 @@ export type Database = {
           created_at?: string
           date_of_birth?: string | null
           deletion_pending?: boolean
+          deletion_restricted?: boolean
           doctor_confirmed_at?: string | null
           fasting_eligibility?: string
           fasting_exclusions?: Json
@@ -2718,15 +2721,29 @@ export type Database = {
         Returns: Json
       }
       deletion_lock_active: { Args: { p_user_id: string }; Returns: boolean }
+      deletion_restricted_active: {
+        Args: { p_user_id: string }
+        Returns: boolean
+      }
       get_app_config: { Args: { p_key: string }; Returns: Json }
       has_role: {
         Args: { p_role: string; p_user_id: string }
         Returns: boolean
       }
       member_access_allowed: { Args: never; Returns: boolean }
+      member_write_allowed: { Args: never; Returns: boolean }
       merge_visitor_session_into_member: {
         Args: { p_session_id: string; p_user_id: string }
         Returns: Json
+      }
+      my_deletion_status: {
+        Args: never
+        Returns: {
+          local_account_deletion: string
+          processors_pending: string[]
+          requested_at: string
+          state: string
+        }[]
       }
       purge_expired_export_artifacts: { Args: never; Returns: number }
       purge_expired_rate_limits: { Args: never; Returns: number }
