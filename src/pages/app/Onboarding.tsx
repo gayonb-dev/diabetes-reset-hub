@@ -358,7 +358,7 @@ export default function Onboarding() {
                   value={goal}
                   onChange={(v) => setGoal(v as Goal)}
                   options={[
-                    { v: "reverse", label: "Reverse my diabetes" },
+                    { v: "reverse", label: "Steadier blood sugar readings" },
                     { v: "lose_weight", label: "Lose weight" },
                     { v: "off_meds", label: "Discuss medication changes with my doctor" },
                     { v: "energy", label: "Feel better and have more energy" },
