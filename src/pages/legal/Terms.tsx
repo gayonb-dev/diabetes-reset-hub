@@ -1,5 +1,5 @@
 import LegalPage from "@/components/legal/LegalPage";
-import { LEGAL, OPERATOR_DESCRIPTION } from "@/config/legal";
+import { LEGAL, OPERATOR_DESCRIPTION, PENDING_UK_REGISTRATION_NOTICE } from "@/config/legal";
 
 const Terms = () => (
   <LegalPage
@@ -9,10 +9,8 @@ const Terms = () => (
   >
     <h2>Operator and acceptance</h2>
     <p>
-      These Terms govern Diabetes Reset Method, operated by {OPERATOR_DESCRIPTION}. Registered
-      company details (name {LEGAL.registered_company_name}, number {LEGAL.company_number},
-      jurisdiction {LEGAL.registered_jurisdiction}, registered office{" "}
-      {LEGAL.registered_office_address}) will be completed on incorporation. Correspondence from
+      These Terms govern Diabetes Reset Method, operated by {OPERATOR_DESCRIPTION}.{" "}
+      {PENDING_UK_REGISTRATION_NOTICE} Correspondence from
       Jamaica. By purchasing or using DRM, you agree to these Terms and the linked
       Privacy, Consumer Health Data Privacy, AI Use, and Refund notices. If you do not agree, do not
       purchase or use DRM.
@@ -116,8 +114,7 @@ const Terms = () => (
     <p>
       To the maximum extent permitted by applicable law, DRM is provided without a promise of a
       medical result or uninterrupted availability. Nothing in these Terms excludes a consumer right
-      or liability that applicable law does not allow DRM to exclude. Counsel must approve any
-      additional warranty, damages, indemnity, or liability limitation before publication.
+      or liability that applicable law does not allow DRM to exclude.
     </p>
 
     <h2>Governing law and disputes</h2>

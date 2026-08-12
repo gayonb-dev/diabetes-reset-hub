@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Helmet } from "react-helmet-async";
 import SiteHeader from "@/components/landing/SiteHeader";
-import DraftBanner from "@/components/landing/DraftBanner";
 import HeroSection from "@/components/landing/HeroSection";
 import SimplerStepSection from "@/components/landing/SimplerStepSection";
 import InsideMembershipSection from "@/components/landing/InsideMembershipSection";
@@ -66,7 +65,6 @@ const Index = () => {
         Skip to main content
       </a>
 
-      <DraftBanner />
       <SiteHeader />
       <div id="main-content" tabIndex={-1} className="outline-none">
         <HeroSection />

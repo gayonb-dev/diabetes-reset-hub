@@ -1,8 +1,7 @@
 import type { ReactNode } from "react";
 import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
-import DraftBanner from "@/components/landing/DraftBanner";
-import { LEGAL } from "@/config/legal";
+import { LAST_UPDATED_DISPLAY, PENDING_UK_REGISTRATION_NOTICE, LEGAL } from "@/config/legal";
 import Footer from "@/components/landing/Footer";
 
 /**
@@ -16,8 +15,9 @@ interface LegalPageProps {
   children: ReactNode;
 }
 
-/** Owner review, not counsel approval. Legal review is a future recommendation. */
-export const LAST_UPDATED = LEGAL.owner_review_date;
+/** Date shown on every legal page. Owner maintained. */
+export const LAST_UPDATED = LAST_UPDATED_DISPLAY;
+export const LEGAL_IDENTITY = LEGAL;
 
 const LegalPage = ({ title, metaDescription, path, children }: LegalPageProps) => {
   return (
@@ -31,7 +31,6 @@ const LegalPage = ({ title, metaDescription, path, children }: LegalPageProps) =
         <meta property="og:description" content={metaDescription} />
       </Helmet>
 
-      <DraftBanner />
 
       <header className="border-b border-border">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between gap-4">
@@ -53,10 +52,13 @@ const LegalPage = ({ title, metaDescription, path, children }: LegalPageProps) =
             {title}
           </h1>
           <p className="text-sm text-muted-foreground mb-8">
-            Owner review date: {LAST_UPDATED} — owner review required before publication.
+            Last updated: {LAST_UPDATED}
           </p>
           <div className="space-y-5 text-muted-foreground leading-relaxed break-words [&_h2]:font-heading [&_h2]:font-bold [&_h2]:text-xl [&_h2]:text-foreground [&_h2]:pt-4 [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:space-y-2 [&_a]:text-primary [&_a]:underline [&_a]:underline-offset-4">
             {children}
+            {LEGAL_IDENTITY.entity_status !== "active" && (
+              <p className="text-sm">{PENDING_UK_REGISTRATION_NOTICE}</p>
+            )}
           </div>
         </article>
       </main>
