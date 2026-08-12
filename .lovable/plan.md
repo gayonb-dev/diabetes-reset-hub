@@ -1,55 +1,70 @@
-# Prompt 4 — Payment-Truth Correction (focused)
+# Prompt 4.5 — Section 10 correction: magic-link sign-in stays enabled
 
-Scope: harden checkout verification so "verified" is only ever server-proven, remove any test-only bypass from production, and change one onboarding goal label. No redesign, no migrations, no deployment, no publication, no real payment.
+Scope: only the magic-link login path and the config flags it depends on. No changes to marketing, reminders, digests, check-ins, or any other Prompt 4.5 section.
 
-## 1. Harden `verify-checkout-session`
+## Current state (verified)
 
-Rewrite the verification decision as a strict allowlist. The function returns `verified` only when every one of these server-side checks passes:
+- `app_config` today holds: `ai_health_enabled=false`, `dexcom_enabled=false`, `email_delivery_enabled=false`, `email_test_allowlist=[]`, `phi_notice_version`, `retention_mode`, `stripe_deletion_enabled`, `stripe_mode=live`. There is **no** `auth_email_enabled`, `transactional_automation_enabled` or `marketing_email_enabled` key.
+- `send-magic-link` sends through the shared `sendEmail` gate, which requires `email_delivery_enabled=true` **and** the recipient to be on `email_test_allowlist`. Both are currently closed, so magic-link email is suppressed today. This is the configuration this task corrects.
+- `send-magic-link` finds the member with `listUsers({ page: 1, perPage: 200 })` — a member beyond the first 200 accounts silently gets no link. The same first-page-only pattern also exists in `verify-checkout-session` and `stripe-subscription-webhook`.
 
-- Session ID matches the `cs_...` shape (already present).
-- `session.status === "complete"`.
-- `session.payment_status === "paid"`. **`no_payment_required` maps to `unverified`** (a DRM membership always takes the $27 now).
-- Environment/mode agreement: `stripe_mode` from server config plus the Stripe key class check (`stripeKeyClassMismatch`); `session.livemode` must agree with the configured mode. A test-mode session seen by a live deployment is `unverified`.
-- Offer match against server-held constants (never client input): product = `STRIPE_PRODUCT_ID`, recurring price = `STRIPE_PRICE_ID_MONTHLY`, currency `usd`, mode `subscription`, exactly two line items — one-time 2700 and recurring 6700/month with a 14-day trial.
-- `amount_total` / one-time amount equals 2700 USD.
-- A local `orders` row exists whose `stripe_session_id` equals this exact session id.
-- Normalized (trim + lowercase) checkout email equals the normalized email on that order row.
-- Session is not `expired`, canceled, replayed against another order, or for another product.
-- Delayed-settlement PaymentIntent (`processing`) still maps to `processing`.
+## 1. Config flags
 
-Everything else maps to `unverified`; Stripe errors/timeouts map to `error`. Response payload stays minimal (`{ state }`) — no product, price, email or order data echoed back.
+New migration adding three keys and leaving existing ones untouched:
 
-Provisioning stays idempotent: the success page never provisions. It only reads. Existing webhook upserts (`user_roles` on conflict, `subscriptions` on `stripe_subscription_id`, order update by session id) remain the single provisioning path, so a concurrent webhook + page verification cannot create duplicate accounts, roles, orders, subscriptions, messages or access.
+- `auth_email_enabled = true`
+- `transactional_automation_enabled = false`
+- `marketing_email_enabled = false`
 
-## 2. Remove the screenshot fixture from production paths
+`email_delivery_enabled` stays `false`; it now governs only automated/marketing member email. Auth email no longer reads it. Config helpers gain `authEmailEnabled()` (defaults **true** — auth must not fail closed into a lockout) alongside the existing automation gates.
 
-- Move `state_fixture` handling out of `PaymentSuccess.tsx` into a dev/test-only harness module that is statically excluded from production bundles (`import.meta.env.DEV` guard plus a separate module so the branch is tree-shaken).
-- `PaymentSuccess.tsx` in production reads only `session_id` and trusts only the server response.
+## 2. Auth email path independent of the marketing gate
 
-## 3. Verification matrix (mocks and synthetic fixtures only)
+- Add an auth-specific send path in `_shared/email.ts` (`sendAuthEmail`) that checks only `auth_email_enabled`, never `email_delivery_enabled` and never the test allowlist.
+- `send-magic-link` uses it and returns a real provider outcome to the caller: an accepted request vs a confirmed provider failure are distinguishable, while account existence is not.
 
-New/extended tests covering: paid+fully matching → verified; `no_payment_required` → unverified; unpaid; processing; expired; test-mode session in production; wrong product; wrong price; wrong amount; wrong currency; wrong email/order binding; missing local order; malformed session id; replay; page refresh; concurrent webhook/page verification; Stripe timeout/unavailable; and assertions that no duplicate account, role, order, subscription, message or access is provisioned.
+## 3. Shared user-by-email resolver
 
-Plus a production-bundle scan test asserting:
-- `state_fixture` does not appear in the production build output.
-- No query parameter can make the real verifier return `verified`.
-- No test-only payment bypass string is present in the production bundle.
+New `_shared/findUserByEmail.ts`:
 
-## 4. Onboarding copy
+- Normalizes with trim + lowercase.
+- Uses the admin listing with paging, continuing page by page until a match is found or pages are exhausted, with a hard page cap and per-page size to bound work.
+- Returns `{ userId } | null` only — never accepts or trusts a client-supplied user id.
+- Logs nothing containing an email address.
 
-In `src/pages/app/Onboarding.tsx`, change the goal label `"Steadier blood sugar readings"` to `"Understand my blood sugar patterns"`. Keep `"Discuss medication changes with my doctor"` unchanged. Option values are untouched (no data migration).
+Adopted by `send-magic-link`, `verify-checkout-session` and `stripe-subscription-webhook` so the 200-user cliff is gone everywhere.
 
-## 5. Gates to run (only these)
+## 4. Reliability and abuse controls in `send-magic-link`
 
-Checkout-verification tests, PaymentSuccess state tests, idempotency/concurrency tests, production-bundle fixture scan, banned-claim scan on the changed onboarding copy, TypeScript, lint on touched files, production build.
+- Preserve exact-origin check, the `token_hash` scanner-resistant exchange, one-time short-lived tokens, and the same-site `next` allowlist (`safeNext` client-side, `/`-prefixed check server-side).
+- Rate limits via the existing `consumeRateLimit`: per keyed-IP bucket and a per-**hashed**-email bucket (HMAC of the normalized email; the raw address is never a bucket key or a log value).
+- Duplicate-click suppression: a short cooldown per hashed email so repeated clicks within the window do not send a second email, while the UI response stays identical.
+- No token, token hash, link or raw email is ever logged.
+
+## 5. Login UI copy
+
+`src/pages/Login.tsx`:
+
+- Accepted request → "If an account matches that email, your secure sign-in link will arrive shortly. Please check your inbox and spam folder."
+- Confirmed provider failure → "We couldn't send a sign-in link right now. Please try again or contact info@diabetesresetmethod.com." (no success state shown).
+- Resend button follows the same two outcomes. No "temporarily unavailable" state.
+
+## 6. Tests
+
+New `src/test/magicLink.test.ts` plus additions to the existing next-param tests, covering: `auth_email_enabled` true; known member request succeeds; user found on page 3 (beyond 200); user not found; mixed-case/whitespace email; provider failure surfaces the failure copy; repeated clicks send once; rate limit exceeded; safe and malicious `next` values; link replay; expired token; scanner-resistant exchange preserved; neutral response body identical for existing vs non-existing accounts; marketing/automation flags false without affecting sign-in; and a config assertion that no migration or rollback sets `auth_email_enabled` false.
+
+## 7. Verification and report
+
+Run Vitest, `tsgo --noEmit`, production build. Deploy `send-magic-link`. No automated email is sent during implementation.
+
+Report will include: proof of `auth_email_enabled=true` and both other flags false (config query output), proof of the >200-user lookup test passing, the list of every file changed, and the direct preview `/login` URL for one manual owner sign-in test. No publication.
 
 ## Files expected to change
 
-- `supabase/functions/verify-checkout-session/index.ts` (rewritten decision logic)
-- `supabase/functions/_shared/membershipOffer.ts` (new — server-held offer constants + matcher, shared with tests)
-- `src/pages/PaymentSuccess.tsx` (fixture removed from production path)
-- `src/lib/devStateFixture.ts` (new — dev/test-only harness)
-- `src/pages/app/Onboarding.tsx` (one label)
-- `src/test/checkoutVerification.test.ts`, `src/test/paymentSuccessStates.test.tsx`, `src/test/productionBundleFixture.test.ts` (new)
-
-Deliverable: a short amended §17 report covering only these corrections. No publication.
+- `supabase/migrations/<new>.sql` (three config keys)
+- `supabase/functions/_shared/config.ts`, `_shared/email.ts`
+- `supabase/functions/_shared/findUserByEmail.ts` (new)
+- `supabase/functions/send-magic-link/index.ts`
+- `supabase/functions/verify-checkout-session/index.ts`, `supabase/functions/stripe-subscription-webhook/index.ts` (resolver adoption only)
+- `src/pages/Login.tsx`
+- `src/test/magicLink.test.ts` (new)
