@@ -31,7 +31,6 @@ const LegalPage = ({ title, metaDescription, path, children }: LegalPageProps) =
         <meta property="og:description" content={metaDescription} />
       </Helmet>
 
-      <DraftBanner />
 
       <header className="border-b border-border">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between gap-4">
