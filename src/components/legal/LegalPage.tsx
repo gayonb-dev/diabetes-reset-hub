@@ -46,12 +46,12 @@ const LegalPage = ({ title, metaDescription, path, children }: LegalPageProps) =
       </header>
 
       <main className="container mx-auto px-4 py-10">
-        <article className="max-w-3xl mx-auto">
+        <article className="max-w-3xl mx-auto min-w-0">
           <h1 className="font-heading font-bold text-3xl sm:text-4xl text-foreground mb-2">
             {title}
           </h1>
           <p className="text-sm text-muted-foreground mb-8">Last updated: {LAST_UPDATED}</p>
-          <div className="space-y-5 text-muted-foreground leading-relaxed [&_h2]:font-heading [&_h2]:font-bold [&_h2]:text-xl [&_h2]:text-foreground [&_h2]:pt-4 [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:space-y-2 [&_a]:text-primary [&_a]:underline [&_a]:underline-offset-4">
+          <div className="space-y-5 text-muted-foreground leading-relaxed break-words [&_h2]:font-heading [&_h2]:font-bold [&_h2]:text-xl [&_h2]:text-foreground [&_h2]:pt-4 [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:space-y-2 [&_a]:text-primary [&_a]:underline [&_a]:underline-offset-4">
             {children}
           </div>
         </article>
