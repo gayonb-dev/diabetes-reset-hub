@@ -10,7 +10,12 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
 import LegalPage from "@/components/legal/LegalPage";
-import { LEGAL, OPERATOR_DESCRIPTION } from "@/config/legal";
+import {
+  LEGAL,
+  OPERATOR_DESCRIPTION,
+  INTERNATIONAL_PROCESSING_TEXT,
+  PRIVACY_APPEAL_TEXT,
+} from "@/config/legal";
 import { deleteThisChat, clearChatSession, hasChatSession } from "@/lib/chatSession";
 
 export default function Privacy() {
@@ -162,8 +167,8 @@ export default function Privacy() {
         <li>Rate-limit events/keyed IP hashes: 24 hours.</li>
         <li>One-time export artifact: no more than five minutes; minimal status afterward.</li>
         <li>
-          Pseudonymized deletion receipt: no more than 730 days after completion unless counsel
-          approves another period.
+          Pseudonymized deletion receipt: no more than 730 days after completion unless a
+          different period is required by law or adopted following an updated owner review.
         </li>
         <li>Local financial records: {LEGAL.financial_record_retention}. This does not extend retention of health logs, meals, progress, chat, AI, community or other member data.</li>
         <li>
@@ -212,11 +217,11 @@ export default function Privacy() {
 
       <h2>International processing</h2>
       <p>
-        DRM is operated from Jamaica and uses providers that may process information in the United
-        States and other documented locations. Your information may therefore be processed outside
-        your country, where laws may differ. Required contractual and legal protections must be
-        reviewed before publication.
+        {INTERNATIONAL_PROCESSING_TEXT}
       </p>
+
+      <h2>Privacy appeals</h2>
+      <p>{PRIVACY_APPEAL_TEXT}</p>
 
       <h2>Health-data incidents</h2>
       <p>
