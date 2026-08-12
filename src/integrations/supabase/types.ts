@@ -2729,6 +2729,7 @@ export type Database = {
         Returns: Json
       }
       purge_expired_export_artifacts: { Args: never; Returns: number }
+      purge_expired_rate_limits: { Args: never; Returns: number }
       search_verified_answers: {
         Args: {
           match_count?: number
