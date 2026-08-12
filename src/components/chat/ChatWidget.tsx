@@ -85,7 +85,15 @@ export default function ChatWidget() {
     };
   }, [open, gateLoading]);
 
+  // Prompt 4 §15 — only one fixed-bottom layer on mobile. While the chat panel
+  // is open, `body.drm-chat-open` hides the sticky purchase CTA (see index.css).
+  useEffect(() => {
+    document.body.classList.toggle("drm-chat-open", open);
+    return () => document.body.classList.remove("drm-chat-open");
+  }, [open]);
+
   // Dynamic mobile positioning above .sticky-bottom-cta
+
   useEffect(() => {
     if (!isMobile) {
       setBubbleOffset(24);

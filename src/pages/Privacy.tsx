@@ -1,4 +1,4 @@
-// Self-serve privacy page.
+// Public Privacy Notice (Prompt 4 §13.1).
 //
 // P1/P3: the legacy anonymous-ID deletion endpoint is retired. Deleting an
 // anonymous chat requires the active server-issued session, and member data
@@ -9,6 +9,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
+import LegalPage from "@/components/legal/LegalPage";
 import { deleteThisChat, clearChatSession, hasChatSession } from "@/lib/chatSession";
 
 export default function Privacy() {
@@ -45,70 +46,223 @@ export default function Privacy() {
   }
 
   return (
-    <main className="min-h-dvh bg-background px-4 py-12">
-      <div className="max-w-2xl mx-auto space-y-6">
-        <header className="space-y-2">
-          <h1 className="font-heading text-3xl font-bold tracking-tight">Your data & privacy</h1>
-          <p className="text-muted-foreground">
-            Educational content only, not medical advice. We treat anything you share like it
-            matters — because it does.
-          </p>
-        </header>
+    <LegalPage
+      title="Privacy Notice"
+      metaDescription="What personal information Diabetes Reset Method collects, why it uses it, which service providers process it, how long it is kept, and your choices."
+      path="/privacy"
+    >
+      <p>
+        Diabetes Reset Method (“DRM”) is a self-guided educational membership operated by
+        [[LEGAL_OPERATOR_NAME]] from Jamaica. This notice explains what personal information DRM
+        collects, why it uses it, which service providers may process it, how long it is kept, and
+        the choices available to you. DRM is not claiming that it is covered by HIPAA. Other
+        consumer-protection, privacy, security, and health-breach laws may apply.
+      </p>
 
-        <section className="space-y-3 rounded-xl border border-border p-5 bg-card">
-          <h2 className="font-semibold">What we store</h2>
-          <ul className="text-sm text-muted-foreground space-y-1 list-disc pl-5">
-            <li>Your chat messages with our assistant.</li>
-            <li>Anything you choose to share (goals, questions, membership details).</li>
-            <li>
-              A short-lived chat session that exists only for the current browser tab. We no longer
-              keep a persistent visitor ID.
-            </li>
-          </ul>
-        </section>
+      <h2>Information we collect</h2>
+      <ul>
+        <li>
+          Account/contact: name, email, optional profile information, authentication and consent
+          records.
+        </li>
+        <li>
+          Health and activity information you choose to enter: Type 2 diabetes/prediabetes context,
+          medicines, glucose and A1C entries, measurements, meals, movement, mood, goals, questions,
+          and reports.
+        </li>
+        <li>
+          Program information: onboarding choices, Today actions, progress, meal plans, saved tools,
+          and preferences.
+        </li>
+        <li>
+          Chat/AI information: messages, generated responses, classification/safety labels, reports,
+          and consent state. Health-sensitive AI processing is currently disabled.
+        </li>
+        <li>Community information: posts, comments, reactions, reports, and moderation state.</li>
+        <li>
+          Billing/service information: order, subscription, cancellation, refund, and limited
+          transaction records. DRM does not receive complete card numbers from Stripe.
+        </li>
+        <li>
+          Device integration information: connection status, tokens, and synchronized data only if a
+          supported integration is enabled and you connect it. Dexcom is currently disabled.
+        </li>
+        <li>Support/communications: support requests and communication preferences.</li>
+        <li>
+          Technical/security: short-lived session records, security events, and keyed IP hashes used
+          for abuse prevention. DRM does not use a browser UUID as authorization.
+        </li>
+      </ul>
 
-        <section className="space-y-3 rounded-xl border border-border p-5 bg-card">
-          <h2 className="font-semibold">Retention</h2>
-          <p className="text-sm text-muted-foreground">
-            All personal health information is deleted after{" "}
-            <strong>730 days (2 years) of inactivity</strong>. The clock resets every time you chat
-            with us, log in, or make a purchase.
-          </p>
-        </section>
+      <h2>Sources</h2>
+      <p>
+        Information comes from you, your use of DRM, Stripe for payment/subscription state, a device
+        provider only when you deliberately connect it, and DRM's service providers when they return
+        service/security status. DRM does not infer a diagnosis for advertising or buy health
+        information from data brokers.
+      </p>
 
-        <section className="space-y-3 rounded-xl border border-border p-5 bg-card">
-          <h2 className="font-semibold">Delete this chat</h2>
-          <p className="text-sm text-muted-foreground">
-            Removes the conversation, messages, consent and derived records for your current chat
-            session and signs that session out. Records held by outside providers are tracked
-            separately and are not claimed as deleted. Cannot be undone.
-          </p>
-          {done ? (
-            <p className="text-sm font-medium text-primary">
-              Deleted. You can close this page or{" "}
-              <Link to="/" className="underline">
-                go back home
-              </Link>
-              .
-            </p>
-          ) : (
-            <Button onClick={handleDeleteChat} disabled={busy} variant="destructive">
-              {busy ? "Deleting…" : "Delete this chat"}
-            </Button>
-          )}
-        </section>
+      <h2>Why we use information</h2>
+      <p>
+        DRM uses information to provide the membership you request, authenticate and protect
+        accounts, process billing, display your chosen logs and reports, provide support, record
+        consent, fulfill export/deletion requests, prevent fraud and abuse, meet legal obligations,
+        and create genuinely de-identified aggregate service information. DRM does not sell personal
+        or consumer health data and does not use it for targeted advertising.
+      </p>
 
-        <section className="space-y-3 rounded-xl border border-border p-5 bg-card">
-          <h2 className="font-semibold">Member account & export</h2>
-          <p className="text-sm text-muted-foreground">
-            If you have a membership, exporting or deleting your account happens in{" "}
-            <Link to="/app/settings" className="underline">
-              Settings
-            </Link>
-            . Both require a recent sign-in for your protection.
-          </p>
-        </section>
-      </div>
-    </main>
+      <h2>Service providers and disclosures</h2>
+      <ul>
+        <li>
+          Supabase/Lovable Cloud: hosting, database, authentication, storage, and Edge Functions.
+        </li>
+        <li>
+          Stripe: checkout, payment, subscription, cancellation, refund, and limited fraud/payment
+          records.
+        </li>
+        <li>
+          Lovable AI Gateway and Google Gemini: only for a specifically enabled, labeled AI feature
+          and only after the required health-data consent. Health-sensitive AI processing remains
+          disabled until the contract and consent gates pass.
+        </li>
+        <li>Resend: transactional email only when enabled. Outbound email is currently disabled.</li>
+        <li>
+          Dexcom: only if the integration is enabled and you connect it. Dexcom is currently
+          disabled.
+        </li>
+        <li>
+          Professional advisers, authorities, or counterparties only when reasonably necessary for
+          law, safety, fraud, claims, or a business transfer subject to appropriate protections.
+        </li>
+      </ul>
+      <p>
+        DRM does not disclose health information to advertising networks or data brokers. If
+        providers or practices change, DRM must update this notice and obtain any required consent
+        before a new use.
+      </p>
+
+      <h2>Cookies and browser storage</h2>
+      <p>
+        DRM uses necessary authentication/session technology and local preferences needed to provide
+        the site. The anonymous public-chat authorization token is kept only in active page memory,
+        not localStorage or sessionStorage. DRM does not use advertising cookies at launch. If
+        optional analytics or marketing tools are added, this notice and any required choice
+        mechanism must be updated first.
+      </p>
+
+      <h2>Retention</h2>
+      <ul>
+        <li>New unlinked anonymous chat data: up to 30 days after last activity.</li>
+        <li>
+          Member service, health, progress, chat, meal, community, and derived data: no more than
+          730 days after the member's last meaningful activity, unless deleted sooner or a shorter
+          purpose applies.
+        </li>
+        <li>Rate-limit events/keyed IP hashes: 24 hours.</li>
+        <li>One-time export artifact: no more than five minutes; minimal status afterward.</li>
+        <li>
+          Pseudonymized deletion receipt: no more than 730 days after completion unless counsel
+          approves another period.
+        </li>
+        <li>Local financial records: only approved minimum fields for [[FINANCIAL_RETENTION_PERIOD]].</li>
+        <li>
+          Processor copies: the verified contractual/operational period disclosed for that provider.
+        </li>
+      </ul>
+      <p>
+        A meaningful activity is a successful login, member-authored action/log/chat, or
+        purchase—not a background job, notification, email open, failed request, or admin view.
+        Retention automation remains report-only until separately approved.
+      </p>
+
+      <h2>Your choices and rights</h2>
+      <p>
+        Depending on where you live, you may request access, a copy, correction, deletion,
+        withdrawal of consent, or review/appeal of a privacy-request decision. Signed-in members can
+        download data, withdraw feature consent, delete chats, and request account deletion in
+        Settings. You may also contact{" "}
+        <a href="mailto:info@diabetesresetmethod.com">info@diabetesresetmethod.com</a>. DRM verifies
+        requests to protect the account and will not discriminate against you for exercising
+        applicable privacy rights.
+      </p>
+
+      <h2>Account deletion</h2>
+      <p>
+        Account deletion blocks access, cancels future subscription billing, and starts DRM's
+        reconciled deletion process. It is not a refund request. Some minimized transaction or legal
+        records and processor records may remain as described in the deletion receipt and{" "}
+        <a href="/refunds">Refund Terms</a>.
+      </p>
+
+      <h2>Security</h2>
+      <p>
+        DRM uses access controls, authentication, private storage, encryption provided by its
+        platforms, logging minimization, rate limits, and testing intended to protect information.
+        No system can promise absolute security. Report a suspected security issue to{" "}
+        <a href="mailto:info@diabetesresetmethod.com">info@diabetesresetmethod.com</a> without
+        including health information in the first message.
+      </p>
+
+      <h2>Children</h2>
+      <p>
+        DRM is for adults age 18 or older and is not directed to children. Do not create an account
+        or submit information for a child.
+      </p>
+
+      <h2>International processing</h2>
+      <p>
+        DRM is operated from Jamaica and uses providers that may process information in the United
+        States and other documented locations. Your information may therefore be processed outside
+        your country, where laws may differ. Required contractual and legal protections must be
+        reviewed before publication.
+      </p>
+
+      <h2>Health-data incidents</h2>
+      <p>
+        If an incident requires notice under applicable health-breach or privacy law, DRM will
+        follow its incident process and provide required notices. This statement is not a claim of
+        HIPAA coverage or certification.
+      </p>
+
+      <h2>Changes and contact</h2>
+      <p>
+        DRM will post a revised date when this notice changes. A material new use of health
+        information requires the notice and consent required by law; it will not be hidden in a
+        retroactive policy update. Contact: [[LEGAL_OPERATOR_NAME]], [[MAILING_ADDRESS]],{" "}
+        <a href="mailto:info@diabetesresetmethod.com">info@diabetesresetmethod.com</a>.
+      </p>
+
+      <h2>Delete this chat</h2>
+      <p>
+        Removes the conversation, messages, consent and derived records for your current chat
+        session and signs that session out. Records held by outside providers are tracked separately
+        and are not claimed as deleted. Cannot be undone.
+      </p>
+      {done ? (
+        <p className="text-sm font-medium text-primary">
+          Deleted. You can close this page or{" "}
+          <Link to="/" className="underline">
+            go back home
+          </Link>
+          .
+        </p>
+      ) : (
+        <Button
+          onClick={handleDeleteChat}
+          disabled={busy}
+          variant="destructive"
+          className="min-h-[44px]"
+        >
+          {busy ? "Deleting…" : "Delete this chat"}
+        </Button>
+      )}
+
+      <h2>Member account and export</h2>
+      <p>
+        If you have a membership, exporting or deleting your account happens in{" "}
+        <Link to="/app/settings">Settings</Link>. Both require a recent sign-in for your protection.
+        See <Link to="/data-rights">Your DRM data choices</Link>.
+      </p>
+    </LegalPage>
   );
 }

@@ -1,11 +1,18 @@
-import { ArrowRight, Shield, Users, Star } from "lucide-react";
+import { ArrowRight, Compass, ListChecks, Stethoscope, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import heroImage from "@/assets/hero-diabetes-reset.jpg";
 
-const scrollToPricing = () => {
-  document.getElementById("pricing")?.scrollIntoView({ behavior: "smooth" });
+const scrollTo = (id: string) => {
+  document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
 };
+
+const TRUST_ROW = [
+  { icon: Compass, label: "Self-guided membership" },
+  { icon: ListChecks, label: "Clear daily actions" },
+  { icon: Stethoscope, label: "Keep your healthcare professional in charge" },
+  { icon: XCircle, label: "Cancel in the app" },
+];
 
 const HeroSection = () => {
   return (
@@ -18,58 +25,42 @@ const HeroSection = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, ease: [0.25, 0.4, 0.25, 1] }}
           >
-            <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
-              <p className="text-base font-bold tracking-widest uppercase text-primary">
-                Type 2 Diabetes &amp; Prediabetes Membership
-              </p>
-              <span className="inline-flex items-center bg-primary text-primary-foreground px-4 py-2 rounded-full text-sm font-semibold shadow-lg">
-                $27 today · 14 days full access · cancel anytime
-              </span>
-            </div>
+            <p className="text-sm font-bold tracking-widest uppercase text-primary">
+              A self-guided Type 2 diabetes membership
+            </p>
 
             <h1 className="font-heading font-bold text-4xl sm:text-5xl lg:text-6xl text-foreground leading-tight">
-              Lower Your Blood Sugar.
-              <br />
-              Without the Overwhelm.
+              A simpler daily system for managing Type 2 diabetes
             </h1>
 
-            <h2 className="font-body text-xl sm:text-2xl text-muted-foreground leading-relaxed">
-              A membership built for Type 2 Diabetes and prediabetes. Start with a 7-Day Reset Sprint,
-              then unlock recipes, expert Q&A, and weekly accountability — for less than a copay.
-            </h2>
+            <p className="font-body text-lg sm:text-xl text-muted-foreground leading-relaxed">
+              Use guided daily actions, practical meal tools, progress tracking, and printable
+              reports to build habits between healthcare visits.
+            </p>
 
-
-            <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
-              <span className="flex items-center gap-1">
-                <Users className="h-4 w-4 text-primary" />
-                <strong>156+</strong> members
-              </span>
-              <span className="flex items-center gap-1">
-                <Star className="h-4 w-4 fill-secondary text-secondary" />
-                4.9/5 average rating
-              </span>
-            </div>
-
-            <div className="space-y-3">
+            <div className="flex flex-col sm:flex-row gap-3">
               <Button
-                onClick={scrollToPricing}
-                className="w-full md:w-auto bg-primary hover:bg-primary-dark text-primary-foreground px-8 py-5 text-lg font-bold rounded-xl transition-all transform hover:scale-105 shadow-lg h-auto"
+                onClick={() => scrollTo("pricing")}
+                className="w-full sm:w-auto min-h-[44px] bg-primary hover:bg-primary-dark text-primary-foreground px-8 py-5 text-lg font-bold rounded-xl h-auto shadow-lg"
               >
-                Start My Reset — $27 Today
-                <ArrowRight className="ml-2 h-5 w-5" />
+                Start 14 days for $27
+                <ArrowRight className="ml-2 h-5 w-5" aria-hidden="true" />
               </Button>
-
-              <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
-                <span className="flex items-center gap-1">
-                  <Shield className="h-4 w-4 text-primary" />
-                  14-day full access
-                </span>
-                <span>•</span>
-                <span>Cancel in 1 click</span>
-                <span>•</span>
-                <span>30-day money-back</span>
-              </div>
+              <Button
+                variant="outline"
+                onClick={() => scrollTo("inside-the-membership")}
+                className="w-full sm:w-auto min-h-[44px] px-8 py-5 text-lg font-semibold rounded-xl h-auto border-primary/40"
+              >
+                See inside the membership
+              </Button>
             </div>
+
+            <p className="text-sm text-foreground font-medium">
+              $27 today for the first 14 days. Then $67/month until canceled. Cancel in the app.
+            </p>
+            <p className="text-sm text-muted-foreground">
+              Educational support—not diagnosis, treatment, or emergency care.
+            </p>
           </motion.div>
 
           <motion.div
@@ -81,24 +72,27 @@ const HeroSection = () => {
             <div className="aspect-square rounded-3xl overflow-hidden shadow-2xl bg-gradient-to-br from-primary/20 to-secondary/20">
               <img
                 src={heroImage}
-                alt="A woman with Type 2 Diabetes preparing a balanced plate of vegetables and lean protein next to a glucose monitor"
+                alt="An adult preparing a plate of vegetables and lean protein in a home kitchen"
                 className="w-full h-full object-cover"
                 width={1024}
                 height={1024}
               />
             </div>
-
-            <motion.div
-              className="absolute -bottom-4 -right-4 bg-background p-4 rounded-2xl shadow-xl border-4 border-primary"
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5, delay: 0.6 }}
-            >
-              <p className="text-2xl font-bold text-primary">7 Days</p>
-              <p className="text-xs text-muted-foreground">to your first win</p>
-            </motion.div>
           </motion.div>
         </div>
+
+        {/* Honest trust row */}
+        <ul className="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          {TRUST_ROW.map(({ icon: Icon, label }) => (
+            <li
+              key={label}
+              className="flex items-center gap-3 rounded-xl border border-border bg-card px-4 py-3"
+            >
+              <Icon className="h-5 w-5 text-primary flex-shrink-0" aria-hidden="true" />
+              <span className="text-sm text-foreground">{label}</span>
+            </li>
+          ))}
+        </ul>
       </div>
     </section>
   );

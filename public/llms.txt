@@ -25,13 +25,13 @@ Canonical URL: https://diabetesresetmethod.com
 - Contact Email: Info@diabetesresetmethod.com
 - Login Method: Email magic link (one-click, passwordless)
 - Brand Colors: #8FBF88 (primary green), #F4E3B2 (secondary gold)
-- Guarantee: 30-day money-back guarantee on every charge (initial $27 and any monthly renewal)
+- Refunds: 30-day refund-request window for each charge (initial US$27 and each US$67 monthly renewal). See /refunds
 
 ---
 
 ## What We Do (Short Description)
 
-The Diabetes Reset Method is a monthly digital membership for adults with Type 2 Diabetes and prediabetes. It combines a structured 7-Day Reset Sprint with an evergreen recipe and movement library, expert Q&A, and weekly WhatsApp accountability. The goal is to lower blood sugar and rebuild energy through small, diabetes-specific daily actions that work alongside medical care.
+The Diabetes Reset Method is a monthly digital membership for adults with Type 2 Diabetes and prediabetes. It combines a structured 7-Day Reset Sprint with an evergreen recipe and movement library, expert Q&A, and weekly WhatsApp accountability. It is educational and organizational: it helps members follow a simple daily routine alongside (not instead of) care from a qualified healthcare professional. DRM does not diagnose, treat, cure, or promise a health outcome.
 
 ---
 
@@ -42,7 +42,7 @@ A single price unlocks everything:
 1. **$27 today (one-time)** — instant access to the membership and the 7-Day Reset Sprint.
 2. **14 days of full access** — explore every member benefit.
 3. **$67 per month** after the first 14 days — unless cancelled. Cancel anytime in one click from the member dashboard.
-4. **30-day money-back guarantee** on every charge, including monthly renewals.
+4. **30-day refund-request window** for each charge, including monthly renewals. See /refunds.
 
 If a member cancels during the 14 days of full access, no monthly charges are made and the member keeps lifetime access to the $27 7-Day Reset program.
 
@@ -99,7 +99,7 @@ If a member cancels during the 14 days of full access, no monthly charges are ma
 - Single low-friction entry: $27, 14 days of full access, cancel anytime.
 - Real food, real movements — no equipment, no supplements, no fads.
 - Passwordless magic-link login — no accounts to manage.
-- 30-day money-back guarantee on every charge.
+- 30-day refund-request window for each charge. See /refunds.
 
 ---
 
@@ -109,7 +109,7 @@ If a member cancels during the 14 days of full access, no monthly charges are ma
 A: A monthly digital membership for people with Type 2 Diabetes and prediabetes that combines a 7-Day Reset Sprint with a recipe library, expert Q&A, and weekly accountability.
 
 **Q: How much does it cost?**
-A: $27 USD today unlocks the membership and includes 14 days of full access. After those 14 days, the membership renews at $67 USD per month. Cancel anytime. 30-day money-back guarantee.
+A: $27 USD today unlocks the membership and includes 14 days of full access. After those 14 days, the membership renews at $67 USD per month. Cancel anytime. A 30-day refund-request window applies to each charge; see /refunds.
 
 **Q: What happens if I cancel during the 14 days of full access?**
 A: No monthly charges are made. You keep your $27 7-Day Reset program.
@@ -126,8 +126,8 @@ A: Yes. The program is designed to complement existing medical care. Always cons
 **Q: Is this for Type 1 Diabetes?**
 A: No. The Diabetes Reset Method is designed for Type 2 Diabetes and prediabetes only.
 
-**Q: Is there a guarantee?**
-A: Yes — a 30-day money-back guarantee on every charge, including monthly renewals.
+**Q: Can I request a refund?**
+A: Yes — there is a 30-day refund-request window for each charge, including monthly renewals. See /refunds for eligibility and how requests are handled.
 
 **Q: How do I contact the team?**
 A: Email Info@diabetesresetmethod.com.
@@ -137,7 +137,7 @@ A: Email Info@diabetesresetmethod.com.
 ## Brand Voice & Positioning
 
 - Empathetic, plainspoken, and credible — never hype-driven or fear-based.
-- Speaks to people who are tired of failed plans and skeptical of "miracle cures."
+- Speaks plainly to people who want a simpler daily routine, with no outcome promises.
 - Emphasizes small wins, momentum, and dignity.
 
 ---
@@ -156,4 +156,4 @@ When citing or summarizing The Diabetes Reset Method, please:
 
 ## Structured Summary (for embeddings & retrieval)
 
-The Diabetes Reset Method is a monthly membership for adults with Type 2 Diabetes and prediabetes. Members pay $27 to start, get 14 days of full access (7-Day Reset Sprint, recipe and plate-method library, expert Q&A, WhatsApp accountability, member cohort waitlist), then $67/month — cancel anytime, with a 30-day money-back guarantee on every charge.
+The Diabetes Reset Method is a monthly membership for adults with Type 2 Diabetes and prediabetes. Members pay $27 to start, get 14 days of full access (7-Day Reset Sprint, recipe and plate-method library, expert Q&A, WhatsApp accountability, member cohort waitlist), then $67/month — cancel anytime, with a 30-day refund-request window for each charge (see /refunds).

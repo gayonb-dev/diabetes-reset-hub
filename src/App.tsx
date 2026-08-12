@@ -10,10 +10,8 @@ import ClockSkewBanner from "@/components/ClockSkewBanner";
 import Index from "./pages/Index";
 
 // Lazy-loaded routes — keep the landing page bundle small.
-const IntakeForm = lazy(() => import("./pages/IntakeForm"));
-const BookSession = lazy(() => import("./pages/BookSession"));
 const ProgressTracker = lazy(() => import("./pages/ProgressTracker"));
-const SixWeekReset = lazy(() => import("./pages/SixWeekReset"));
+
 const PaymentSuccess = lazy(() => import("./pages/PaymentSuccess"));
 const PaymentCancelled = lazy(() => import("./pages/PaymentCancelled"));
 const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
@@ -58,7 +56,13 @@ const AdminDigest = lazy(() => import("./pages/admin/AdminDigest"));
 const AdminPhiLog = lazy(() => import("./pages/admin/AdminPhiLog"));
 const AdminCommunity = lazy(() => import("./pages/admin/AdminCommunity"));
 const Privacy = lazy(() => import("./pages/Privacy"));
+const Terms = lazy(() => import("./pages/legal/Terms"));
+const Refunds = lazy(() => import("./pages/legal/Refunds"));
+const AiUse = lazy(() => import("./pages/legal/AiUse"));
+const HealthDataPrivacy = lazy(() => import("./pages/legal/HealthDataPrivacy"));
+const DataRights = lazy(() => import("./pages/legal/DataRights"));
 const OAuthConsent = lazy(() => import("./pages/OAuthConsent"));
+
 // ChatWidget is mounted per-page on marketing routes only (see src/pages/Index.tsx).
 // It is intentionally NOT mounted here so it never appears inside /app/* or /admin/*.
 
@@ -78,10 +82,13 @@ const App = () => (
               <Route path="/" element={<Index />} />
               <Route path="/payment-success" element={<PaymentSuccess />} />
               <Route path="/payment-cancelled" element={<PaymentCancelled />} />
-              <Route path="/intake" element={<IntakeForm />} />
-              <Route path="/book" element={<BookSession />} />
+              {/* Prompt 4 §10 — retired conversion routes redirect to the single
+                  membership offer; no coaching, intake, or booking funnels remain. */}
+              <Route path="/intake" element={<Navigate to="/" replace />} />
+              <Route path="/book" element={<Navigate to="/" replace />} />
+              <Route path="/6-week-reset" element={<Navigate to="/" replace />} />
               <Route path="/progress" element={<ProgressTracker />} />
-              <Route path="/6-week-reset" element={<SixWeekReset />} />
+
               <Route
                 path="/admin"
                 element={
@@ -107,6 +114,12 @@ const App = () => (
               <Route path="/login" element={<Login />} />
               <Route path="/auth/callback" element={<AuthCallback />} />
               <Route path="/privacy" element={<Privacy />} />
+              <Route path="/terms" element={<Terms />} />
+              <Route path="/refunds" element={<Refunds />} />
+              <Route path="/ai-use" element={<AiUse />} />
+              <Route path="/health-data-privacy" element={<HealthDataPrivacy />} />
+              <Route path="/data-rights" element={<DataRights />} />
+
               <Route path="/.lovable/oauth/consent" element={<OAuthConsent />} />
 
 

@@ -1,14 +1,15 @@
 import { useState } from "react";
 import { Helmet } from "react-helmet-async";
 import SiteHeader from "@/components/landing/SiteHeader";
+import DraftBanner from "@/components/landing/DraftBanner";
 import HeroSection from "@/components/landing/HeroSection";
-import ProblemPromiseSection from "@/components/landing/ProblemPromiseSection";
-import HowItWorksSection from "@/components/landing/HowItWorksSection";
-import WhatYouGetSection from "@/components/landing/WhatYouGetSection";
-import TestimonialsSection from "@/components/landing/TestimonialsSection";
-import WhyThisWorksSection from "@/components/landing/WhyThisWorksSection";
+import SimplerStepSection from "@/components/landing/SimplerStepSection";
+import InsideMembershipSection from "@/components/landing/InsideMembershipSection";
+import FirstFourteenDaysSection from "@/components/landing/FirstFourteenDaysSection";
+import AudienceFitSection from "@/components/landing/AudienceFitSection";
+import FounderSection from "@/components/landing/FounderSection";
 import PricingSection from "@/components/landing/PricingSection";
-import FAQSection from "@/components/landing/FAQSection";
+import FAQSection, { FAQS } from "@/components/landing/FAQSection";
 import FinalCTASection from "@/components/landing/FinalCTASection";
 import Footer from "@/components/landing/Footer";
 import StickyBottomCTA from "@/components/landing/StickyBottomCTA";
@@ -16,78 +17,56 @@ import PaymentModal from "@/components/landing/PaymentModal";
 import ChatWidget from "@/components/chat/ChatWidget";
 import { usePaidMemberRedirect } from "@/hooks/usePaidMemberRedirect";
 
-const FAQS = [
-  { q: "What exactly am I paying for at $27?", a: "Your $27 unlocks immediate access to the Diabetes Reset Method membership: the 7-Day Reset Sprint, the recipe library (unlocks Day 6), expert Q&A, and 14 days of full access. After 14 days the membership renews at $67/month unless you cancel before day 15." },
-  { q: "What happens after my 14 days of full access?", a: "If you do nothing, your membership continues at $67/month, charged automatically. You can cancel anytime before day 15 from your member dashboard — one click, no call required. If you cancel inside the 14 days, no monthly charges are made and you keep your $27 7-Day Reset program." },
-  { q: "Is there a money-back guarantee?", a: "Yes. 30-day money-back guarantee on every charge — including the initial $27 and any monthly renewal. Email Info@diabetesresetmethod.com and we refund within 5 business days." },
-  { q: "Do I need special foods, supplements, or a gym?", a: "No. Everything uses real food from your regular grocery store and simple at-home movements." },
-  { q: "Can I do this while taking diabetes medication?", a: "Yes. The program complements medical care. Always consult your doctor before changing medications." },
-  { q: "Is this for Type 1 Diabetes?", a: "No. The Diabetes Reset Method is built specifically for Type 2 Diabetes and prediabetes." },
-];
+const TITLE = "Diabetes Reset Method | Daily Type 2 Diabetes Support";
+const DESCRIPTION =
+  "A self-guided membership with daily actions, meal tools, progress tracking, educational support, and printable reports. $27 for the first 14 days, then $67/month until canceled.";
 
 const Index = () => {
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
-  // B2.4 — active members go to the member area, not the sales page
-  usePaidMemberRedirect("/progress");
-
+  usePaidMemberRedirect("/app");
 
   return (
-    <main className="min-h-dvh pb-24 md:pb-0">
+    <main className="min-h-dvh pb-28 md:pb-0">
       <Helmet>
-        <title>Diabetes Reset Method — Lower Blood Sugar Membership ($27)</title>
-        <meta
-          name="description"
-          content="Membership built for Type 2 Diabetes and prediabetes. Start for $27 today, 14 days of full access, then $67/mo. 7-Day Reset Sprint, recipes, expert Q&A. Cancel anytime."
-        />
+        <title>{TITLE}</title>
+        <meta name="description" content={DESCRIPTION} />
         <link rel="canonical" href="https://diabetesresetmethod.com/" />
         <meta property="og:url" content="https://diabetesresetmethod.com/" />
-        <meta property="og:title" content="Diabetes Reset Method — Lower Blood Sugar Membership" />
-        <meta
-          property="og:description"
-          content="$27 today, 14 days of full access, then $67/mo. A diabetes-specific membership for real results. Cancel anytime."
-        />
-        <script type="application/ld+json">{JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "Product",
-          name: "Diabetes Reset Method Membership",
-          description:
-            "Monthly membership for people with Type 2 Diabetes and prediabetes: 7-Day Reset Sprint, recipe library, expert Q&A, WhatsApp accountability. $27 to start with 14 days of full access, then $67/month.",
-          brand: { "@type": "Brand", name: "The Diabetes Reset Method" },
-          offers: {
-            "@type": "Offer",
-            price: "27.00",
-            priceCurrency: "USD",
-            availability: "https://schema.org/InStock",
+        <meta property="og:title" content="A simpler daily system for managing Type 2 diabetes" />
+        <meta property="og:description" content={DESCRIPTION} />
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Service",
+            name: "Diabetes Reset Method membership",
+            serviceType: "Self-guided educational membership",
+            description:
+              "A self-guided educational membership with daily actions, meal tools, progress tracking, educational support, and printable healthcare-visit reports for adults with Type 2 diabetes or prediabetes.",
+            provider: { "@type": "Organization", name: "The Diabetes Reset Method" },
             url: "https://diabetesresetmethod.com/",
-            priceSpecification: {
-              "@type": "UnitPriceSpecification",
-              price: "67.00",
-              priceCurrency: "USD",
-              billingDuration: "P1M",
-              billingIncrement: 1,
-              referenceQuantity: { "@type": "QuantitativeValue", value: 1, unitCode: "MON" },
-            },
-          },
-          aggregateRating: { "@type": "AggregateRating", ratingValue: "4.9", reviewCount: "156" },
-        })}</script>
-        <script type="application/ld+json">{JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "FAQPage",
-          mainEntity: FAQS.map((f) => ({
-            "@type": "Question",
-            name: f.q,
-            acceptedAnswer: { "@type": "Answer", text: f.a },
-          })),
-        })}</script>
+          })}
+        </script>
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            mainEntity: FAQS.map((f) => ({
+              "@type": "Question",
+              name: f.question,
+              acceptedAnswer: { "@type": "Answer", text: f.answer },
+            })),
+          })}
+        </script>
       </Helmet>
 
+      <DraftBanner />
       <SiteHeader />
       <HeroSection />
-      <ProblemPromiseSection />
-      <HowItWorksSection />
-      <WhatYouGetSection />
-      <TestimonialsSection />
-      <WhyThisWorksSection />
+      <SimplerStepSection />
+      <InsideMembershipSection />
+      <FirstFourteenDaysSection />
+      <AudienceFitSection />
+      <FounderSection />
       <PricingSection onOpenPayment={() => setIsPaymentModalOpen(true)} />
       <FAQSection />
       <FinalCTASection onOpenPayment={() => setIsPaymentModalOpen(true)} />
@@ -95,10 +74,7 @@ const Index = () => {
 
       <StickyBottomCTA />
 
-      <PaymentModal
-        isOpen={isPaymentModalOpen}
-        onClose={() => setIsPaymentModalOpen(false)}
-      />
+      <PaymentModal isOpen={isPaymentModalOpen} onClose={() => setIsPaymentModalOpen(false)} />
 
       <ChatWidget />
     </main>

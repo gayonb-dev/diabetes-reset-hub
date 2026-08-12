@@ -3,110 +3,126 @@ import { ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import ScrollReveal from "./ScrollReveal";
 
+export const FAQS = [
+  {
+    question: "What do I receive during the first 14 days?",
+    answer:
+      "You can use the Today actions, meal tools and recipes, movement and habit tools, progress tracking, Ask/VITA educational support, community features, and the printable report. Onboarding introduces the tools gradually so you do not need to learn everything at once.",
+  },
+  {
+    question: "What does the membership cost?",
+    answer:
+      "You are charged $27 at checkout for your first 14 days. Unless you cancel before renewal, the membership then renews automatically at $67 per month until canceled. Prices are in U.S. dollars.",
+  },
+  {
+    question: "How do I cancel?",
+    answer:
+      "Sign in and open Settings or Billing, then choose Cancel membership. Cancellation stops future renewal charges. You keep access through the period you already paid for. You do not need to call, email, or complete a retention survey to cancel.",
+  },
+  {
+    question: "What is the refund policy?",
+    answer:
+      "Each $27 or $67 membership charge has a 30-day refund-request window. Submit the request from the email on your account through in-app Support or info@diabetesresetmethod.com. An approved refund cancels the membership and ends access when the refund is processed. Cancellation by itself does not request a refund, and account deletion is not a refund request. Read the complete Refund Terms before joining.",
+  },
+  {
+    question: "Does DRM replace my doctor or another healthcare professional?",
+    answer:
+      "No. DRM is a self-guided educational membership. It does not diagnose, treat, prescribe, monitor emergencies, or replace care from a doctor, pharmacist, dietitian, diabetes educator, or other qualified professional.",
+  },
+  {
+    question: "Will DRM tell me to change medication?",
+    answer:
+      "No. Never start, stop, or change medication based on DRM. Medication decisions belong with your qualified prescriber or pharmacist.",
+  },
+  {
+    question: "Are fasting or supplements required?",
+    answer:
+      "No. Fasting scheduling is unavailable, and supplements are not required. DRM does not sell a required supplement pack or use either one as a condition of progress.",
+  },
+  {
+    question: "Is DRM for Type 1 diabetes?",
+    answer:
+      "No. The current membership was not designed or reviewed for Type 1 diabetes. Do not use DRM to make insulin or other treatment decisions.",
+  },
+  {
+    question: "Does DRM use AI or share health information?",
+    answer:
+      "DRM stores the information you choose to enter to provide the membership. Health-sensitive AI processing is currently disabled. AI-generated content is labeled and educational only. Before any feature sends health information to an outside AI provider, DRM must show a separate consent choice. You can download or delete your data in Settings. Read the Privacy Notice, Consumer Health Data Privacy Policy, and AI Use Notice for details.",
+  },
+  {
+    question: "How much time does it take?",
+    answer:
+      "Many Today actions are designed to take about 10 minutes. You can use only the tools that are useful to you; you do not need to complete a large course or maintain a perfect streak.",
+  },
+  {
+    question: "What should I do in an emergency?",
+    answer:
+      "Do not use DRM for emergency help. Contact local emergency services or a qualified healthcare professional. Follow your healthcare professional's existing safety plan for urgent glucose or other symptoms.",
+  },
+];
+
 const FAQSection = () => {
   const [openIndex, setOpenIndex] = useState<number>(0);
 
-  const faqs = [
-    {
-      question: "What exactly am I paying for at $27?",
-      answer:
-        "Your $27 unlocks immediate access to the Diabetes Reset Method membership: the 7-Day Reset Sprint, the recipe and plate-method library (unlocks Day 6), expert Q&A, and 14 days of full access to everything. After those 14 days the membership renews at $67/month — unless you cancel before day 15.",
-    },
-
-    {
-      question: "What happens after my 14 days of full access?",
-      answer:
-        "If you do nothing, your membership continues at $67/month, charged automatically. You can cancel anytime before day 15 from your member dashboard — one click, no call required, no email required. If you cancel inside the 14 days, no monthly charges are ever made and you still keep your $27 7-Day Reset program.",
-    },
-    {
-      question: "How do I cancel?",
-      answer:
-        "In the app: Settings → Billing → Cancel. One click, done, confirmation on screen. You keep full access until your period ends, and the 30-day money-back guarantee applies to every charge.",
-    },
-    {
-      question: "Is there a money-back guarantee?",
-      answer:
-        "Yes — we offer a 30-day money-back guarantee on every charge, including the initial $27 and any monthly renewal. Email Info@diabetesresetmethod.com within 30 days of the charge and we'll refund it in full within 5 business days. No hoops, no questions, no need to call.",
-    },
-
-    {
-      question: "Do I need special foods, supplements, or a gym?",
-      answer:
-        "No. Everything uses real food from your regular grocery store and simple movements you can do at home. No equipment, no supplements, no fads.",
-    },
-    {
-      question: "Can I do this while taking diabetes medication?",
-      answer:
-        "Yes. The membership is designed to complement your medical care, not replace it. Always consult your doctor before changing any medications. Many members work with their doctor to adjust as their numbers improve.",
-    },
-    {
-      question: "Is this for Type 1 Diabetes?",
-      answer:
-        "No. The Diabetes Reset Method is built specifically for Type 2 Diabetes and prediabetes.",
-    },
-    {
-      question: "How do I log in after I sign up?",
-      answer:
-        "We use one-click magic-link login — no passwords to remember. Go to the login page, enter your email, and we'll send you a secure link.",
-    },
-    {
-      question: "How much time does it take each day?",
-      answer:
-        "10–20 minutes a day. The Reset is built for busy people. If you can walk to your kitchen, you can do this.",
-    },
-  ];
-
   return (
-    <section id="faq" className="bg-background py-10">
+    <section id="faq" className="bg-background py-12">
       <div className="container mx-auto px-4 max-w-3xl">
         <ScrollReveal>
-          <h2 className="font-heading font-bold text-3xl sm:text-4xl text-center text-foreground mb-2">
-            Questions? We've Got Answers.
+          <h2 className="font-heading font-bold text-3xl sm:text-4xl text-center text-foreground mb-8">
+            Frequently asked questions
           </h2>
-          <p className="text-center text-muted-foreground mb-8">
-            Straight answers about pricing, billing, and how the membership works.
-          </p>
         </ScrollReveal>
 
         <div className="space-y-4">
-          {faqs.map((faq, index) => (
-            <ScrollReveal key={index} delay={index * 0.05}>
-              <div
-                className={`bg-card rounded-xl border-2 transition-colors shadow-md ${
-                  openIndex === index ? "border-primary" : "border-border hover:border-primary"
-                }`}
-              >
-                <button
-                  onClick={() => setOpenIndex(openIndex === index ? -1 : index)}
-                  className="w-full flex items-center justify-between p-6 text-left"
+          {FAQS.map((faq, index) => {
+            const open = openIndex === index;
+            return (
+              <ScrollReveal key={faq.question} delay={index * 0.03}>
+                <div
+                  className={`bg-card rounded-xl border-2 transition-colors shadow-sm ${
+                    open ? "border-primary" : "border-border hover:border-primary"
+                  }`}
                 >
-                  <span className="font-heading font-semibold text-foreground pr-4">
-                    {faq.question}
-                  </span>
-                  <ChevronDown
-                    className={`h-5 w-5 text-muted-foreground flex-shrink-0 transition-transform ${
-                      openIndex === index ? "rotate-180" : ""
-                    }`}
-                  />
-                </button>
-                <AnimatePresence>
-                  {openIndex === index && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.3 }}
-                      className="overflow-hidden"
-                    >
-                      <div className="px-6 pb-6">
-                        <p className="text-muted-foreground leading-relaxed">{faq.answer}</p>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-            </ScrollReveal>
-          ))}
+                  <button
+                    type="button"
+                    aria-expanded={open}
+                    aria-controls={`faq-panel-${index}`}
+                    id={`faq-button-${index}`}
+                    onClick={() => setOpenIndex(open ? -1 : index)}
+                    className="w-full flex items-center justify-between gap-4 p-6 min-h-[44px] text-left"
+                  >
+                    <span className="font-heading font-semibold text-foreground">
+                      {faq.question}
+                    </span>
+                    <ChevronDown
+                      aria-hidden="true"
+                      className={`h-5 w-5 text-muted-foreground flex-shrink-0 transition-transform ${
+                        open ? "rotate-180" : ""
+                      }`}
+                    />
+                  </button>
+                  <AnimatePresence initial={false}>
+                    {open && (
+                      <motion.div
+                        id={`faq-panel-${index}`}
+                        role="region"
+                        aria-labelledby={`faq-button-${index}`}
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.25 }}
+                        className="overflow-hidden"
+                      >
+                        <div className="px-6 pb-6">
+                          <p className="text-muted-foreground leading-relaxed">{faq.answer}</p>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              </ScrollReveal>
+            );
+          })}
         </div>
       </div>
     </section>

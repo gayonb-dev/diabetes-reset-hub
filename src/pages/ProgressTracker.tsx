@@ -268,22 +268,24 @@ const ProgressTracker = () => {
             Edit My Entries
           </Button>
 
-          {/* Upsell CTA */}
+          {/* Prompt 4 §10 — the coaching upsell route is retired; the single
+              next step is the membership itself. */}
           <div className="bg-primary/5 border-2 border-primary rounded-2xl p-6 text-center">
             <h2 className="font-heading font-bold text-xl text-foreground mb-2">
-              You proved you can do this.
+              Keep the routine going
             </h2>
             <p className="text-muted-foreground mb-4">
-              In 5 days you built real habits. Imagine what 6 weeks of personalized coaching could do.
+              The membership gives you the same daily structure, with everything in one place.
             </p>
             <Button
-              onClick={() => navigate("/6-week-reset")}
-              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-4 font-bold rounded-xl h-auto text-lg"
+              onClick={() => navigate("/")}
+              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-4 font-bold rounded-xl h-auto text-lg min-h-[48px]"
             >
-              See the 6-Week Reset
+              See what's inside the membership
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </div>
+
         </div>
       </div>
     );
@@ -292,28 +294,8 @@ const ProgressTracker = () => {
   return (
     <div className="min-h-dvh bg-background">
       <div className="max-w-2xl mx-auto px-4 py-8">
-        <div className="flex gap-3 mb-6">
-          <Button
-            asChild
-            variant="outline"
-            size="sm"
-            className="rounded-xl border-primary/30 hover:bg-primary/5"
-          >
-            <a href="/book" target="_blank" rel="noopener noreferrer">
-              <Calendar className="mr-2 h-4 w-4" /> Book Sessions
-            </a>
-          </Button>
-          <Button
-            asChild
-            variant="outline"
-            size="sm"
-            className="rounded-xl border-primary/30 hover:bg-primary/5"
-          >
-            <a href="/intake" target="_blank" rel="noopener noreferrer">
-              <ClipboardList className="mr-2 h-4 w-4" /> Intake Form
-            </a>
-          </Button>
-        </div>
+
+
 
         {/* Header */}
         <div className="text-center mb-8">

@@ -1,42 +1,46 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 
-const scrollToPricing = () => {
-  document.getElementById("pricing")?.scrollIntoView({ behavior: "smooth" });
+const scrollTo = (id: string) => {
+  document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
 };
+
+const NAV = [
+  { label: "How it works", id: "how-it-works" },
+  { label: "Inside the membership", id: "inside-the-membership" },
+  { label: "Pricing", id: "pricing" },
+  { label: "FAQ", id: "faq" },
+];
 
 const SiteHeader = () => {
   return (
-    <header className="sticky top-0 z-40 bg-background/80 backdrop-blur border-b border-border/60">
-      <div className="container mx-auto px-4 h-14 flex items-center justify-between">
+    <header className="sticky top-0 z-40 bg-background/90 backdrop-blur border-b border-border/60">
+      <div className="container mx-auto px-4 min-h-14 py-2 flex items-center justify-between gap-3">
         <a href="/" className="font-heading font-bold text-base sm:text-lg text-foreground">
           The Diabetes Reset Method
         </a>
-        <nav className="flex items-center gap-2 sm:gap-4">
-          <a
-            href="#pricing"
-            className="hidden sm:inline text-sm text-muted-foreground hover:text-foreground"
-          >
-            Pricing
-          </a>
-          <a
-            href="#faq"
-            className="hidden sm:inline text-sm text-muted-foreground hover:text-foreground"
-          >
-            FAQ
-          </a>
+        <nav aria-label="Primary" className="flex items-center gap-1 sm:gap-3">
+          {NAV.map((item) => (
+            <button
+              key={item.id}
+              type="button"
+              onClick={() => scrollTo(item.id)}
+              className="hidden lg:inline-flex items-center min-h-[44px] px-2 text-sm text-muted-foreground hover:text-foreground"
+            >
+              {item.label}
+            </button>
+          ))}
           <Link
             to="/login"
-            className="text-sm font-semibold text-primary hover:text-primary-dark"
+            className="inline-flex items-center min-h-[44px] px-2 text-sm font-semibold text-primary hover:text-primary-dark"
           >
             Member login
           </Link>
           <Button
-            onClick={scrollToPricing}
-            size="sm"
-            className="bg-primary hover:bg-primary-dark text-primary-foreground font-semibold"
+            onClick={() => scrollTo("pricing")}
+            className="min-h-[44px] bg-primary hover:bg-primary-dark text-primary-foreground font-semibold"
           >
-            Start for $27
+            Start 14 days for $27
           </Button>
         </nav>
       </div>

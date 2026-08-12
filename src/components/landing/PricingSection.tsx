@@ -1,4 +1,5 @@
-import { Check, Lock, MessageCircle, Zap, Shield } from "lucide-react";
+import { Check, Lock, Shield, Zap } from "lucide-react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import ScrollReveal from "./ScrollReveal";
 
@@ -6,72 +7,64 @@ interface PricingSectionProps {
   onOpenPayment: () => void;
 }
 
+const INCLUDED = [
+  "Guided Today actions",
+  "Meal-planning tools and recipes",
+  "Movement and habit tools",
+  "Progress tracking",
+  "Ask/VITA educational support",
+  "Community features",
+  "Printable healthcare-visit report",
+];
+
+const TRUST_BADGES = [
+  { icon: Lock, text: "Secure checkout" },
+  { icon: Zap, text: "Instant access" },
+  { icon: Shield, text: "Cancel in the app" },
+];
+
 const PricingSection = ({ onOpenPayment }: PricingSectionProps) => {
-  const features = [
-    { text: "7-Day Reset Sprint (daily 10-min actions)" },
-    { text: "Full recipe & plate-method library" },
-    { text: "Safe, joint-friendly movement plans" },
-    { text: "Expert Q&A — ask anything, get answers" },
-    { text: "Optional WhatsApp accountability broadcasts (opt-in)" },
-    { text: "Community wins feed and progress tracking" },
-  ];
-
-  const trustBadges = [
-    { icon: Lock, text: "Secure Checkout" },
-    { icon: MessageCircle, text: "Email Support" },
-    { icon: Zap, text: "Instant Access" },
-  ];
-
   return (
-    <section id="pricing" className="bg-gradient-to-b from-primary/5 to-background py-10">
+    <section id="pricing" className="bg-gradient-to-b from-primary/5 to-background py-12">
       <div className="container mx-auto px-4">
         <ScrollReveal>
-          <h2 className="font-heading font-bold text-3xl sm:text-4xl text-center text-foreground mb-2">
-            Start Your Reset Today
-          </h2>
-          <p className="text-center text-muted-foreground mb-8">
-            One simple price. Full access. Cancel anytime.
+          <p className="text-sm font-semibold tracking-widest uppercase text-primary text-center mb-2">
+            Simple membership pricing
           </p>
+          <h2 className="font-heading font-bold text-3xl sm:text-4xl text-center text-foreground mb-8">
+            Start with 14 days for $27
+          </h2>
         </ScrollReveal>
 
         <ScrollReveal>
           <div className="max-w-md mx-auto">
-            <div className="bg-card rounded-3xl border-4 border-primary shadow-2xl relative mt-6">
-              <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-10">
-                <span className="bg-secondary text-secondary-foreground px-5 py-1.5 rounded-full text-sm font-bold shadow-md">
-                  Most Popular
-                </span>
-              </div>
-
-              <div className="bg-gradient-to-r from-primary to-primary-dark p-6 pt-8 text-center text-primary-foreground rounded-t-[1.25rem]">
-                <h3 className="font-heading font-bold text-2xl mb-1">
-                  Diabetes Reset Method Membership
-                </h3>
-                <p className="opacity-90">Everything you need, for as long as you need it.</p>
-              </div>
-
-              <div className="p-8 text-center">
-                <div className="flex items-baseline justify-center gap-2 mb-1">
-                  <span className="text-6xl font-bold text-primary">$27</span>
-                  <span className="text-lg text-muted-foreground">today</span>
-                </div>
-                <p className="text-muted-foreground">
-                  Then <strong className="text-foreground">$67/month</strong> after{" "}
-                  <strong className="text-foreground">14 days of full access</strong>
+            <div className="bg-card rounded-xl border-2 border-primary shadow-xl overflow-hidden">
+              <div className="p-8 text-center border-b border-border">
+                <p className="text-5xl font-heading font-bold text-primary tabular-nums">
+                  $27 charged today
                 </p>
-                <p className="text-sm text-primary font-medium mt-3">
-                  Cancel during your 14 days and keep your $27 program — no further charges.
+                <p className="text-muted-foreground mt-2">Your first 14 days</p>
+                <p className="text-foreground font-medium mt-1 tabular-nums">
+                  Then $67/month until canceled
                 </p>
               </div>
 
-              <div className="px-8 pb-6">
+              <div className="px-8 py-6 border-b border-border">
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  Your membership renews automatically at $67 per month after day 14 unless you
+                  cancel. Cancel inside the app at any time. When you cancel, access continues
+                  through the period you already paid for.
+                </p>
+              </div>
+
+              <div className="px-8 py-6">
                 <ul className="space-y-3">
-                  {features.map((feature, index) => (
-                    <li key={index} className="flex items-start gap-3">
-                      <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                        <Check className="h-3.5 w-3.5 text-primary-foreground" />
-                      </div>
-                      <span className="text-muted-foreground">{feature.text}</span>
+                  {INCLUDED.map((feature) => (
+                    <li key={feature} className="flex items-start gap-3">
+                      <span className="w-6 h-6 bg-primary rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <Check className="h-3.5 w-3.5 text-primary-foreground" aria-hidden="true" />
+                      </span>
+                      <span className="text-muted-foreground">{feature}</span>
                     </li>
                   ))}
                 </ul>
@@ -80,49 +73,39 @@ const PricingSection = ({ onOpenPayment }: PricingSectionProps) => {
               <div className="px-8 pb-4">
                 <Button
                   onClick={onOpenPayment}
-                  className="w-full bg-primary hover:bg-primary-dark text-primary-foreground py-6 text-xl font-bold rounded-xl transition-all transform hover:scale-105 shadow-lg h-auto"
+                  className="w-full min-h-[44px] bg-primary hover:bg-primary-dark text-primary-foreground py-5 text-lg font-bold rounded-xl h-auto shadow-lg"
                 >
-                  Start My Reset — $27
+                  Start 14 days for $27
                 </Button>
+                <p className="text-center text-xs text-muted-foreground mt-3">
+                  Secure payment processing by Stripe. Full renewal terms appear before payment.
+                </p>
                 <p className="text-center text-xs text-muted-foreground mt-2">
-                  Secure checkout via Stripe • Opens in a new tab
+                  30-day refund guarantee on each charge. Request it within 30 days under the{" "}
+                  <Link to="/refunds" className="underline underline-offset-4">
+                    Refund Terms
+                  </Link>
+                  .
                 </p>
               </div>
 
-              <div className="px-8 pb-4">
-                <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
-                  <Shield className="h-4 w-4 text-primary" />
-                  <span>30-day money-back guarantee on every charge</span>
-                </div>
-                <p className="text-center text-xs text-muted-foreground mt-3 leading-relaxed">
-                  Cancel inside the app in one click — no emails, no phone calls, no retention screens. Access continues to the end of your billing period.
-                </p>
-                <p className="text-center text-xs text-muted-foreground mt-2 leading-relaxed">
-                  100% ad-free. No ads interrupt your logging, and your health data is never sold.
-                </p>
-              </div>
-
-
-              <div className="px-8 pb-8">
+              <div className="px-8 pb-8 pt-2">
                 <div className="grid grid-cols-3 gap-4">
-                  {trustBadges.map((badge, index) => {
-                    const Icon = badge.icon;
-                    return (
-                      <div key={index} className="text-center">
-                        <Icon className="h-5 w-5 text-muted-foreground mx-auto mb-1" />
-                        <p className="text-xs text-muted-foreground">{badge.text}</p>
-                      </div>
-                    );
-                  })}
+                  {TRUST_BADGES.map(({ icon: Icon, text }) => (
+                    <div key={text} className="text-center">
+                      <Icon className="h-5 w-5 text-muted-foreground mx-auto mb-1" aria-hidden="true" />
+                      <p className="text-xs text-muted-foreground">{text}</p>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
 
             <p className="text-center text-sm text-muted-foreground mt-6">
               Already a member?{" "}
-              <a href="/login" className="text-primary font-semibold hover:underline">
+              <Link to="/login" className="text-primary font-semibold hover:underline">
                 Log in here
-              </a>
+              </Link>
             </p>
           </div>
         </ScrollReveal>
