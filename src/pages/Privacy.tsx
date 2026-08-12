@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
 import LegalPage from "@/components/legal/LegalPage";
+import { LEGAL, OPERATOR_DESCRIPTION } from "@/config/legal";
 import { deleteThisChat, clearChatSession, hasChatSession } from "@/lib/chatSession";
 
 export default function Privacy() {
@@ -53,7 +54,7 @@ export default function Privacy() {
     >
       <p>
         Diabetes Reset Method (“DRM”) is a self-guided educational membership operated by
-        [[LEGAL_OPERATOR_NAME]] from Jamaica. This notice explains what personal information DRM
+        {OPERATOR_DESCRIPTION}. This notice explains what personal information DRM
         collects, why it uses it, which service providers may process it, how long it is kept, and
         the choices available to you. DRM is not claiming that it is covered by HIPAA. Other
         consumer-protection, privacy, security, and health-breach laws may apply.
@@ -164,7 +165,7 @@ export default function Privacy() {
           Pseudonymized deletion receipt: no more than 730 days after completion unless counsel
           approves another period.
         </li>
-        <li>Local financial records: only approved minimum fields for [[FINANCIAL_RETENTION_PERIOD]].</li>
+        <li>Local financial records: {LEGAL.financial_record_retention}. This does not extend retention of health logs, meals, progress, chat, AI, community or other member data.</li>
         <li>
           Processor copies: the verified contractual/operational period disclosed for that provider.
         </li>
@@ -228,7 +229,7 @@ export default function Privacy() {
       <p>
         DRM will post a revised date when this notice changes. A material new use of health
         information requires the notice and consent required by law; it will not be hidden in a
-        retroactive policy update. Contact: [[LEGAL_OPERATOR_NAME]], [[MAILING_ADDRESS]],{" "}
+        retroactive policy update. Contact: {OPERATOR_DESCRIPTION},{" "}
         <a href="mailto:info@diabetesresetmethod.com">info@diabetesresetmethod.com</a>.
       </p>
 

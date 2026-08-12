@@ -41,12 +41,14 @@ describe("legal publication gate", () => {
   it("the draft banner exists and is preview-only", () => {
     const banner = readFileSync(resolve(root, "src/components/landing/DraftBanner.tsx"), "utf8");
     expect(banner).toContain('import.meta.env.MODE !== "production"');
-    expect(banner).toContain("DO NOT PUBLISH");
+    expect(banner).toContain("owner review must be completed before publication");
   });
 
   it("the release gate script exists and blocks on placeholders", () => {
     const gate = readFileSync(resolve(root, "scripts/release-gate.mjs"), "utf8");
     expect(gate).toContain("[[");
+    expect(gate).toContain("entity_status");
+    expect(gate).toContain("state_fixture");
     expect(gate).toContain("DraftBanner");
     expect(gate).toContain("process.exit(1)");
   });

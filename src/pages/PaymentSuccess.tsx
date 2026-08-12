@@ -55,17 +55,19 @@ const PaymentSuccess = () => {
   const verify = useCallback(async () => {
     const params = new URLSearchParams(window.location.search);
 
-    // Screenshot/QA fixture. Non-production builds only — a production bundle
-    // ignores it entirely, so no production URL can render a verified state
-    // that the payment processor has not confirmed.
-    if (import.meta.env.MODE !== "production") {
-      const fixture = params.get("state_fixture");
-      if (fixture === "verified" || fixture === "processing" || fixture === "unverified" || fixture === "error" || fixture === "checking") {
-        setState(fixture as State);
+    // Development-only screenshot harness. The whole branch — including the
+    // imported module — is removed from production bundles by Vite, so no
+    // published URL can render a state the payment processor has not confirmed.
+    if (import.meta.env.DEV) {
+      const { readDevFixture } = await import("@/lib/devPaymentFixture");
+      const fixture = readDevFixture(window.location.search);
+      if (fixture) {
+        setState(fixture);
         return;
       }
     }
 
+    // Production reads exactly one parameter and trusts only the server.
     const sessionId = params.get("session_id");
     if (!sessionId) {
       setState("unverified");
