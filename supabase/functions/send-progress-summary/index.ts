@@ -159,9 +159,9 @@ serve(async (req) => {
             ${daysHtml}
 
             <div style="background: #085041; color: white; border-radius: 8px; padding: 15px; margin-top: 20px; text-align: center;">
-              <p style="margin: 0; font-size: 16px; font-weight: bold;">Follow up with this client!</p>
+              <p style="margin: 0; font-size: 16px; font-weight: bold;">Member milestone reached</p>
               <p style="margin: 5px 0 0; font-size: 14px;">
-                Send a WhatsApp message to congratulate them and discuss the 6-Week Reset.
+                This member finished the check-in window.
               </p>
             </div>
           </div>

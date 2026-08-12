@@ -293,6 +293,9 @@ export default function ChatWidget() {
 
       {open && (
         <div
+          role="dialog"
+          aria-modal="false"
+          aria-label="Chat with VITA"
           className={cn(
             "fixed z-50 bg-card flex flex-col overflow-hidden shadow-2xl",
             isMobile

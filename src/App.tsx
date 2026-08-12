@@ -6,11 +6,13 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import AuthGuard from "@/components/AuthGuard";
+import RetiredRoute from "@/components/RetiredRoute";
+import RetiredOfferRoute from "@/components/RetiredOfferRoute";
 import ClockSkewBanner from "@/components/ClockSkewBanner";
 import Index from "./pages/Index";
 
 // Lazy-loaded routes — keep the landing page bundle small.
-const ProgressTracker = lazy(() => import("./pages/ProgressTracker"));
+
 
 const PaymentSuccess = lazy(() => import("./pages/PaymentSuccess"));
 const PaymentCancelled = lazy(() => import("./pages/PaymentCancelled"));
@@ -82,12 +84,32 @@ const App = () => (
               <Route path="/" element={<Index />} />
               <Route path="/payment-success" element={<PaymentSuccess />} />
               <Route path="/payment-cancelled" element={<PaymentCancelled />} />
-              {/* Prompt 4 §10 — retired conversion routes redirect to the single
-                  membership offer; no coaching, intake, or booking funnels remain. */}
-              <Route path="/intake" element={<Navigate to="/" replace />} />
-              <Route path="/book" element={<Navigate to="/" replace />} />
-              <Route path="/6-week-reset" element={<Navigate to="/" replace />} />
-              <Route path="/progress" element={<ProgressTracker />} />
+              {/* Prompt 4 closeout — retired routes. Client-side replacements
+                  (Lovable hosting has no server 301/308); no retired funnel,
+                  coaching, booking, or $497 content is rendered. */}
+              <Route
+                path="/intake"
+                element={
+                  <RetiredRoute
+                    authedTo="/app/onboarding"
+                    anonTo="/login?next=%2Fapp%2Fonboarding"
+                  />
+                }
+              />
+              <Route
+                path="/progress"
+                element={
+                  <RetiredRoute
+                    authedTo="/app/progress"
+                    anonTo="/login?next=%2Fapp%2Fprogress"
+                  />
+                }
+              />
+              <Route path="/book" element={<RetiredOfferRoute />} />
+              <Route path="/6-week-reset" element={<RetiredOfferRoute />} />
+              <Route path="/six-week-reset" element={<RetiredOfferRoute />} />
+              <Route path="/coaching" element={<RetiredOfferRoute />} />
+
 
               <Route
                 path="/admin"

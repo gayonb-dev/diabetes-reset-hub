@@ -18,20 +18,23 @@ interface CheckoutRequest {
 }
 
 
+// Prompt 4 closeout — retired offer keys. These are rejected with HTTP 410
+// BEFORE any Stripe client is constructed, any Stripe call is made, or any
+// order row is written. The retired $497 6-week program is permanently gone.
+const RETIRED_PRODUCTS = new Set([
+  "six-week-reset-497",
+  "six-week-reset",
+  "6-week-reset",
+]);
+
 const PRODUCTS: Record<string, { name: string; description: string; amount: number; installmentAmount?: number; installmentCount?: number }> = {
   "five-day-reset-27": {
     name: "5-Day Diabetes Reset Challenge",
     description: "Quick wins that lower sugar, jumpstart weight loss, and restore your energy in just 5 days.",
     amount: 2700,
   },
-  "six-week-reset-497": {
-    name: "6-Week Diabetes Reset Program",
-    description: "Full transformation: 12 coaching sessions, custom meal plans, daily WhatsApp support, and more.",
-    amount: 49700,
-    installmentAmount: 26700,
-    installmentCount: 2,
-  },
 };
+
 
 serve(async (req) => {
   const pre = preflight(req);
@@ -45,6 +48,20 @@ serve(async (req) => {
     // (anonymousId, anonymous_id, visitor_id, visitor_profile_id, metadata, …)
     // is ignored and can never reach Stripe.
     const { customerName, customerEmail, customerPhone, productId = "five-day-reset-27", paymentPlan = "full" }: CheckoutRequest = await req.json();
+
+    // Retired offers are rejected first: no Stripe client, no Stripe call,
+    // no order row. HTTP 410 Gone with a safe replacement destination.
+    if (RETIRED_PRODUCTS.has(productId)) {
+      return new Response(
+        JSON.stringify({
+          error: "This offer is no longer available.",
+          replacement: "/#pricing",
+        }),
+        { status: 410, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+
 
     if (!customerName || !customerEmail) {
       return new Response(

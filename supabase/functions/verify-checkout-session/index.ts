@@ -10,7 +10,7 @@ import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@18.5.0";
 import { corsFor, preflight } from "../_shared/cors.ts";
 
-type State = "verified" | "processing" | "unverified" | "failed" | "error";
+type State = "verified" | "processing" | "unverified" | "error";
 
 serve(async (req) => {
   const pre = preflight(req);
@@ -34,17 +34,30 @@ serve(async (req) => {
       apiVersion: "2025-08-27.basil",
     });
 
-    const session = await stripe.checkout.sessions.retrieve(sessionId);
+    const session = await stripe.checkout.sessions.retrieve(sessionId, {
+      expand: ["payment_intent"],
+    });
 
-    let state: State = "processing";
+    // Prompt 4 closeout mapping: an expired, unpaid, mismatched or otherwise
+    // unconfirmable session is "unverified" — never a separate payment-failed
+    // state. "processing" means paid but provisioning is still settling.
+    let state: State = "unverified";
     if (session.status === "complete") {
       state =
         session.payment_status === "paid" || session.payment_status === "no_payment_required"
           ? "verified"
-          : "processing";
-    } else if (session.status === "expired") {
-      state = "failed";
+          : "unverified";
     }
+    // Delayed-settlement methods (e.g. bank debits) report a still-processing
+    // PaymentIntent. Those are "processing", not "unverified": the member should
+    // be told provisioning is still settling rather than that nothing happened.
+    const intent = session.payment_intent;
+    const intentStatus =
+      intent && typeof intent === "object" ? (intent as { status?: string }).status : undefined;
+    if (state !== "verified" && (intentStatus === "processing" || session.status === "open")) {
+      state = intentStatus === "processing" ? "processing" : "unverified";
+    }
+    // An "expired" session, or any session we cannot confirm, stays unverified.
 
     // Deliberately minimal payload — no customer identifiers echoed back.
     return json({ state });

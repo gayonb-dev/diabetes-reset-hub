@@ -34,7 +34,7 @@ The offer (single path):
 - $27 today unlocks the membership + the 7-Day Reset Sprint
 - 14 days of full access included (recipe library, coach Q&A library, WhatsApp accountability broadcasts, all member tools)
 - Then $67/month, cancel anytime in one click
-- 30-day money-back guarantee on every charge
+- 30-day refund policy on each charge (see the Refund Terms page)
 - Cancel during the 14 days → no monthly charge, keep the $27 7-Day Reset for life
 
 VOICE — non-negotiable:

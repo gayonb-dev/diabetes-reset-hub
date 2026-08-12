@@ -59,17 +59,26 @@ const Index = () => {
         </script>
       </Helmet>
 
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-lg focus:bg-primary focus:px-4 focus:py-2 focus:text-primary-foreground"
+      >
+        Skip to main content
+      </a>
+
       <DraftBanner />
       <SiteHeader />
-      <HeroSection />
-      <SimplerStepSection />
-      <InsideMembershipSection />
-      <FirstFourteenDaysSection />
-      <AudienceFitSection />
-      <FounderSection />
-      <PricingSection onOpenPayment={() => setIsPaymentModalOpen(true)} />
-      <FAQSection />
-      <FinalCTASection onOpenPayment={() => setIsPaymentModalOpen(true)} />
+      <div id="main-content" tabIndex={-1} className="outline-none">
+        <HeroSection />
+        <SimplerStepSection />
+        <InsideMembershipSection />
+        <FirstFourteenDaysSection />
+        <AudienceFitSection />
+        <FounderSection />
+        <PricingSection onOpenPayment={() => setIsPaymentModalOpen(true)} />
+        <FAQSection />
+        <FinalCTASection onOpenPayment={() => setIsPaymentModalOpen(true)} />
+      </div>
       <Footer />
 
       <StickyBottomCTA />

@@ -3,6 +3,7 @@ import { useSearchParams, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
+import { safeNext } from "@/lib/safeNext";
 import { Loader2, CheckCircle2 } from "lucide-react";
 
 export default function Login() {
@@ -14,9 +15,9 @@ export default function Login() {
 
   const expired = params.get("expired") === "1";
   const inactive = params.get("inactive") === "1";
-  const rawNext = params.get("next") ?? "";
-  // Only accept same-origin relative paths as next targets.
-  const next = /^\/(?!\/)/.test(rawNext) ? rawNext : "";
+  // Only accept same-site relative paths as next targets.
+  const next = safeNext(params.get("next"));
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,7 +42,7 @@ export default function Login() {
 
 
   return (
-    <div className="min-h-dvh flex items-center justify-center bg-gradient-to-b from-primary/5 to-background p-4">
+    <main className="min-h-dvh flex items-center justify-center bg-gradient-to-b from-primary/5 to-background p-4">
       <div className="w-full max-w-md bg-card border-2 border-primary/20 rounded-2xl shadow-xl p-8">
         <p className="text-xs font-semibold tracking-widest uppercase text-primary mb-1 text-center">
           The Diabetes Reset Method
@@ -81,7 +82,10 @@ export default function Login() {
                     await supabase.functions.invoke("send-magic-link", {
                       body: { email: email.trim().toLowerCase(), next: next || undefined },
                     });
-                  } catch {}
+                  } catch {
+                    // Non-blocking: the confirmation state below is intentionally identical
+                    // whether or not the resend call succeeded (no account enumeration).
+                  }
                   setSending(false);
                 }}
                 disabled={sending}
@@ -113,6 +117,7 @@ export default function Login() {
             )}
             <Input
               type="email"
+              aria-label="Email address"
               placeholder="you@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -147,6 +152,6 @@ export default function Login() {
           </Link>
         </div>
       </div>
-    </div>
+    </main>
   );
 }
