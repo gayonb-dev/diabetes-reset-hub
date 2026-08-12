@@ -114,6 +114,12 @@ const App = () => (
               <Route path="/login" element={<Login />} />
               <Route path="/auth/callback" element={<AuthCallback />} />
               <Route path="/privacy" element={<Privacy />} />
+              <Route path="/terms" element={<Terms />} />
+              <Route path="/refunds" element={<Refunds />} />
+              <Route path="/ai-use" element={<AiUse />} />
+              <Route path="/health-data-privacy" element={<HealthDataPrivacy />} />
+              <Route path="/data-rights" element={<DataRights />} />
+
               <Route path="/.lovable/oauth/consent" element={<OAuthConsent />} />
 
 
