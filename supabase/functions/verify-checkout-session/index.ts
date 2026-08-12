@@ -10,7 +10,7 @@ import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@18.5.0";
 import { corsFor, preflight } from "../_shared/cors.ts";
 
-type State = "verified" | "processing" | "unverified" | "failed" | "error";
+type State = "verified" | "processing" | "unverified" | "error";
 
 serve(async (req) => {
   const pre = preflight(req);
@@ -36,15 +36,19 @@ serve(async (req) => {
 
     const session = await stripe.checkout.sessions.retrieve(sessionId);
 
-    let state: State = "processing";
+    // Prompt 4 closeout mapping: an expired, unpaid, mismatched or otherwise
+    // unconfirmable session is "unverified" — never a separate payment-failed
+    // state. "processing" means paid but provisioning is still settling.
+    let state: State = "unverified";
     if (session.status === "complete") {
       state =
         session.payment_status === "paid" || session.payment_status === "no_payment_required"
           ? "verified"
-          : "processing";
-    } else if (session.status === "expired") {
-      state = "failed";
+          : "unverified";
     }
+    // An "open" (not yet completed) or "expired" session is unverified.
+    // "processing" is reserved for payment verified + provisioning pending and
+    // is emitted by fulfilment, not by this read-only check.
 
     // Deliberately minimal payload — no customer identifiers echoed back.
     return json({ state });

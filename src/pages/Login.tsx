@@ -3,6 +3,7 @@ import { useSearchParams, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
+import { safeNext } from "@/lib/safeNext";
 import { Loader2, CheckCircle2 } from "lucide-react";
 
 export default function Login() {
@@ -14,9 +15,9 @@ export default function Login() {
 
   const expired = params.get("expired") === "1";
   const inactive = params.get("inactive") === "1";
-  const rawNext = params.get("next") ?? "";
-  // Only accept same-origin relative paths as next targets.
-  const next = /^\/(?!\/)/.test(rawNext) ? rawNext : "";
+  // Only accept same-site relative paths as next targets.
+  const next = safeNext(params.get("next"));
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -9,13 +9,15 @@ import { supabase } from "@/integrations/supabase/client";
  * Prompt 4 §11.2 — server-verified payment success.
  *
  * Five states, never a claim of payment the server has not confirmed:
- *   checking    — verification in flight
- *   verified    — Stripe confirmed the checkout session is complete and paid
- *   processing  — session exists but is not settled yet (poll/retry)
- *   unverified  — no usable session reference in the URL
- *   failed      — session expired or verification could not complete
+ *   checking    — "Confirming your membership." (verification in flight)
+ *   verified    — payment verified and the account is ready
+ *   processing  — payment verified, provisioning still pending (poll/retry)
+ *   unverified  — missing, malformed, mismatched, unpaid, expired, wrong-mode,
+ *                 wrong-product, wrong-price, wrong-amount, or otherwise
+ *                 unverified session
+ *   error       — payment processor unavailable or timed out
  */
-type State = "checking" | "verified" | "processing" | "unverified" | "failed";
+type State = "checking" | "verified" | "processing" | "unverified" | "error";
 
 const SUPPORT_EMAIL = "info@diabetesresetmethod.com";
 const MAX_POLLS = 5;
@@ -51,24 +53,38 @@ const PaymentSuccess = () => {
   const polls = useRef(0);
 
   const verify = useCallback(async () => {
-    const sessionId = new URLSearchParams(window.location.search).get("session_id");
+    const params = new URLSearchParams(window.location.search);
+
+    // Screenshot/QA fixture. Non-production builds only — a production bundle
+    // ignores it entirely, so no production URL can render a verified state
+    // that the payment processor has not confirmed.
+    if (import.meta.env.MODE !== "production") {
+      const fixture = params.get("state_fixture");
+      if (fixture === "verified" || fixture === "processing" || fixture === "unverified" || fixture === "error" || fixture === "checking") {
+        setState(fixture as State);
+        return;
+      }
+    }
+
+    const sessionId = params.get("session_id");
     if (!sessionId) {
       setState("unverified");
       return;
     }
+
     try {
       const { data, error } = await supabase.functions.invoke("verify-checkout-session", {
         body: { sessionId },
       });
       if (error) throw error;
-      const next = data?.state as State | "error" | undefined;
-      if (next === "verified" || next === "failed" || next === "unverified") {
+      const next = data?.state as State | undefined;
+      if (next === "verified" || next === "unverified" || next === "processing") {
         setState(next);
         return;
       }
-      setState(next === "processing" ? "processing" : "failed");
+      setState("error");
     } catch {
-      setState("failed");
+      setState("error");
     }
   }, []);
 
@@ -90,10 +106,10 @@ const PaymentSuccess = () => {
     return (
       <Shell
         icon={<Loader2 className="h-8 w-8 text-primary animate-spin" />}
-        title={state === "checking" ? "Confirming your checkout" : "Still confirming"}
+        title={state === "checking" ? "Confirming your membership." : "Finishing setting up your membership"}
       >
         <p>
-          We're confirming your checkout with our payment processor. This usually takes a few
+          We're confirming your membership with our payment processor. This usually takes a few
           seconds. You do not need to pay again.
         </p>
         {state === "processing" && polls.current >= MAX_POLLS && (
@@ -152,12 +168,12 @@ const PaymentSuccess = () => {
     return (
       <Shell
         icon={<AlertCircle className="h-8 w-8 text-primary" />}
-        title="We couldn't check this page"
+        title="We couldn't verify this checkout"
       >
         <p>
-          This page was opened without a checkout reference, so we can't confirm a payment here. If
-          you completed checkout, sign in with the email you used and your membership will be
-          there.
+          We can't confirm a payment for this page. That can happen when the page is opened
+          without a valid checkout reference, or when the checkout was not completed. If you did
+          complete checkout, sign in with the email you used and your membership will be there.
         </p>
         <div className="space-y-3">
           <Button asChild className="w-full min-h-[48px] rounded-xl h-auto text-base font-semibold">
@@ -172,9 +188,10 @@ const PaymentSuccess = () => {
   }
 
   return (
-    <Shell icon={<Mail className="h-8 w-8 text-primary" />} title="We couldn't confirm this checkout">
+    <Shell icon={<Mail className="h-8 w-8 text-primary" />} title="We couldn't reach our payment processor">
       <p>
-        We were not able to confirm this checkout. Do not pay again yet. Email{" "}
+        We couldn't reach our payment processor to check this membership. Do not pay again yet.
+        Email{" "}
         <a className="text-primary underline underline-offset-4" href={`mailto:${SUPPORT_EMAIL}`}>
           {SUPPORT_EMAIL}
         </a>{" "}

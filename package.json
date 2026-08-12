@@ -10,7 +10,9 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "release:verify": "node scripts/release-gate.mjs",
+    "build:production": "node scripts/release-gate.mjs && vite build --mode production && node scripts/release-gate.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

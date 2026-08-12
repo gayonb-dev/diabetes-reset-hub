@@ -80,7 +80,7 @@ function buildWelcomeEmail(name: string, origin: string) {
       </a>
       
       <p style="font-size: 15px; color: #333; line-height: 1.6; margin-top: 20px;">
-        This 5-day challenge is the beginning of your full transformation. At the end of the 5 days, if it feels like the right fit, I'll show you how to continue into the full 6-Week Reset.
+        Take it one day at a time. Everything you need for the next few days is inside your membership.
       </p>
       
       <p style="font-size: 13px; color: #999; margin-top: 30px; border-top: 1px solid #eee; padding-top: 15px;">
