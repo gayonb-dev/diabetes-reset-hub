@@ -1,4 +1,5 @@
 import LegalPage from "@/components/legal/LegalPage";
+import { PRIVACY_APPEAL_TEXT } from "@/config/legal";
 
 const DataRights = () => (
   <LegalPage
@@ -24,9 +25,9 @@ const DataRights = () => (
     </p>
     <p>
       Depending on where you live, you may also request access, correction, deletion, consent
-      withdrawal, or appeal of a refusal. Reply <strong>Privacy appeal</strong> to a request
-      decision or contact the same address.
+      withdrawal, or appeal of a refusal.
     </p>
+    <p>{PRIVACY_APPEAL_TEXT}</p>
   </LegalPage>
 );
 

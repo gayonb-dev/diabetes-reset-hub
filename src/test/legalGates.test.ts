@@ -1,67 +1,36 @@
 import { describe, it, expect } from "vitest";
-import { readFileSync, readdirSync, statSync } from "node:fs";
-import { resolve, join } from "node:path";
+import { existsSync } from "node:fs";
+import { resolve } from "node:path";
+
+import {
+  LEGAL,
+  LAST_UPDATED_DISPLAY,
+  PENDING_UK_REGISTRATION_FIELDS,
+  PENDING_UK_REGISTRATION_NOTICE,
+} from "@/config/legal";
 
 /**
- * Legal publication gate (unit half).
- *
- * The build half lives in scripts/release-gate.mjs, which the production
- * release path must run. Preview builds may ship placeholders while the draft
- * banner is visible; a production-release build must not.
+ * Legal presentation checks. These are informational and MUST NOT block a
+ * build or publication: publication is a manual owner decision.
  */
 const root = resolve(__dirname, "../..");
 
-function walk(dir: string, out: string[] = []): string[] {
-  for (const entry of readdirSync(dir)) {
-    if (entry === "node_modules" || entry === "dist" || entry.startsWith(".")) continue;
-    const full = join(dir, entry);
-    if (statSync(full).isDirectory()) walk(full, out);
-    else if (/\.(tsx?|html)$/.test(full)) out.push(full);
-  }
-  return out;
-}
-
-const files = walk(resolve(root, "src")).concat([resolve(root, "index.html")]);
-
-export function findPlaceholders(): { file: string; line: number; text: string }[] {
-  const hits: { file: string; line: number; text: string }[] = [];
-  for (const f of files) {
-    if (f.includes(`${"src"}/test/`)) continue; // this gate file itself
-    if (f.endsWith("components/ui/sidebar.tsx")) continue; // CSS calc(), not a legal placeholder
-    const src = readFileSync(f, "utf8");
-    src.split("\n").forEach((line, i) => {
-      const m = line.match(/\[\[[^\]]+\]\]/g);
-      if (m) hits.push({ file: f.replace(`${root}/`, ""), line: i + 1, text: m.join(", ") });
-    });
-  }
-  return hits;
-}
-
-describe("legal publication gate", () => {
-  it("the draft banner exists and is preview-only", () => {
-    const banner = readFileSync(resolve(root, "src/components/landing/DraftBanner.tsx"), "utf8");
-    expect(banner).toContain('import.meta.env.MODE !== "production"');
-    expect(banner).toContain("owner review must be completed before publication");
+describe("legal presentation", () => {
+  it("no automated release gate remains", () => {
+    expect(existsSync(resolve(root, "scripts/release-gate.mjs"))).toBe(false);
+    expect(existsSync(resolve(root, "src/components/landing/DraftBanner.tsx"))).toBe(false);
   });
 
-  it("the release gate script exists and blocks on placeholders", () => {
-    const gate = readFileSync(resolve(root, "scripts/release-gate.mjs"), "utf8");
-    expect(gate).toContain("[[");
-    expect(gate).toContain("entity_status");
-    expect(gate).toContain("state_fixture");
-    expect(gate).toContain("DraftBanner");
-    expect(gate).toContain("process.exit(1)");
+  it("shows the owner-reviewed date", () => {
+    expect(LAST_UPDATED_DISPLAY).toBe("August 12, 2026");
+    expect(LEGAL.owner_review_date).toBe("2026-08-12");
+    expect(LEGAL.ico_fee_assessment_date).toBe("2026-08-12");
   });
 
-  it("reports every unresolved legal placeholder (release-blocking, expected non-empty pre-approval)", () => {
-    const hits = findPlaceholders();
-    // Informational: the count is reported, the release gate enforces it.
-    expect(Array.isArray(hits)).toBe(true);
-    if (hits.length) {
-      console.warn(
-        `[legal-gate] ${hits.length} unresolved placeholder line(s):\n` +
-          hits.map((h) => `  ${h.file}:${h.line} ${h.text}`).join("\n"),
-      );
+  it("never renders a raw placeholder token for pending UK registration", () => {
+    for (const key of PENDING_UK_REGISTRATION_FIELDS) {
+      expect(/\[\[.+\]\]/.test(String(LEGAL[key]))).toBe(false);
     }
+    expect(PENDING_UK_REGISTRATION_NOTICE).toContain("awaiting completion of its UK company registration");
   });
 });

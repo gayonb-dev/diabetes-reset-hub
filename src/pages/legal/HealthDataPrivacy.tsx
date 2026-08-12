@@ -1,4 +1,5 @@
 import LegalPage from "@/components/legal/LegalPage";
+import { INTERNATIONAL_PROCESSING_TEXT, PRIVACY_APPEAL_TEXT } from "@/config/legal";
 
 const HealthDataPrivacy = () => (
   <LegalPage
@@ -35,10 +36,10 @@ const HealthDataPrivacy = () => (
     <p>
       You may request access, confirmation, correction, deletion, or withdrawal of consent through
       signed-in Settings or <a href="mailto:info@diabetesresetmethod.com">info@diabetesresetmethod.com</a>.
-      DRM authenticates requests. Where applicable, you may appeal a refusal by replying{" "}
-      <strong>Privacy appeal</strong> to the decision email. DRM will not discriminate against you
-      for exercising a right.
+      DRM authenticates requests.
     </p>
+    <p>{PRIVACY_APPEAL_TEXT}</p>
+    <p>{INTERNATIONAL_PROCESSING_TEXT}</p>
     <p>
       DRM will disclose and obtain any consent required before collecting or sharing an additional
       category of consumer health data or using it for an additional purpose.
