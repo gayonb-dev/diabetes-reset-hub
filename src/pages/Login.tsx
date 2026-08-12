@@ -42,7 +42,7 @@ export default function Login() {
 
 
   return (
-    <div className="min-h-dvh flex items-center justify-center bg-gradient-to-b from-primary/5 to-background p-4">
+    <main className="min-h-dvh flex items-center justify-center bg-gradient-to-b from-primary/5 to-background p-4">
       <div className="w-full max-w-md bg-card border-2 border-primary/20 rounded-2xl shadow-xl p-8">
         <p className="text-xs font-semibold tracking-widest uppercase text-primary mb-1 text-center">
           The Diabetes Reset Method
@@ -82,7 +82,10 @@ export default function Login() {
                     await supabase.functions.invoke("send-magic-link", {
                       body: { email: email.trim().toLowerCase(), next: next || undefined },
                     });
-                  } catch {}
+                  } catch {
+                    // Non-blocking: the confirmation state below is intentionally identical
+                    // whether or not the resend call succeeded (no account enumeration).
+                  }
                   setSending(false);
                 }}
                 disabled={sending}
@@ -114,6 +117,7 @@ export default function Login() {
             )}
             <Input
               type="email"
+              aria-label="Email address"
               placeholder="you@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -148,6 +152,6 @@ export default function Login() {
           </Link>
         </div>
       </div>
-    </div>
+    </main>
   );
 }
