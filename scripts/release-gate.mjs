@@ -19,7 +19,9 @@ import { join, resolve } from "node:path";
 
 const root = resolve(process.cwd());
 const failures = [];
-const PLACEHOLDER = /\[\[[^\]]+\]\]/g;
+// Legal placeholders are authored as [[UPPERCASE LABEL]]. The narrow shape avoids
+// false positives on minified bundle code such as `t[[0]]` or CSS calc brackets.
+const PLACEHOLDER = /\[\[[A-Z][A-Z0-9 _./|\-]{2,120}\]\]/g;
 const BANNER_TEXT = "DRAFT — OWNER AND COUNSEL REVIEW REQUIRED. DO NOT PUBLISH.";
 
 const SKIP_FILES = new Set([
@@ -78,9 +80,11 @@ for (const file of distFiles) {
   if (text.includes(BANNER_TEXT)) {
     failures.push(`Draft banner text found in build output: ${file.replace(`${root}/`, "")}`);
   }
-  if (PLACEHOLDER.test(text)) {
-    PLACEHOLDER.lastIndex = 0;
-    failures.push(`Legal placeholder found in build output: ${file.replace(`${root}/`, "")}`);
+  const distHits = text.match(PLACEHOLDER);
+  if (distHits) {
+    failures.push(
+      `Legal placeholder found in build output: ${file.replace(`${root}/`, "")} (${[...new Set(distHits)].slice(0, 5).join(", ")})`,
+    );
   }
 }
 
