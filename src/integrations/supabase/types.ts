@@ -85,6 +85,27 @@ export type Database = {
           },
         ]
       }
+      app_config: {
+        Row: {
+          description: string | null
+          key: string
+          updated_at: string
+          value: Json
+        }
+        Insert: {
+          description?: string | null
+          key: string
+          updated_at?: string
+          value: Json
+        }
+        Update: {
+          description?: string | null
+          key?: string
+          updated_at?: string
+          value?: Json
+        }
+        Relationships: []
+      }
       badges: {
         Row: {
           category: string
@@ -492,6 +513,63 @@ export type Database = {
         }
         Relationships: []
       }
+      consent_records: {
+        Row: {
+          created_at: string
+          granted_at: string
+          id: string
+          notice_version: string
+          purpose_key: string
+          revoked_at: string | null
+          source: string
+          subject_kind: string
+          user_id: string | null
+          visitor_profile_id: string | null
+          visitor_session_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          granted_at?: string
+          id?: string
+          notice_version: string
+          purpose_key: string
+          revoked_at?: string | null
+          source?: string
+          subject_kind: string
+          user_id?: string | null
+          visitor_profile_id?: string | null
+          visitor_session_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          granted_at?: string
+          id?: string
+          notice_version?: string
+          purpose_key?: string
+          revoked_at?: string | null
+          source?: string
+          subject_kind?: string
+          user_id?: string | null
+          visitor_profile_id?: string | null
+          visitor_session_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "consent_records_visitor_profile_id_fkey"
+            columns: ["visitor_profile_id"]
+            isOneToOne: false
+            referencedRelation: "visitor_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "consent_records_visitor_session_id_fkey"
+            columns: ["visitor_session_id"]
+            isOneToOne: false
+            referencedRelation: "visitor_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       content_items: {
         Row: {
           body: string | null
@@ -662,6 +740,57 @@ export type Database = {
           id?: string
           numbers?: Json
           what_agent_heard?: string | null
+        }
+        Relationships: []
+      }
+      deletion_jobs: {
+        Row: {
+          access_blocked_at: string | null
+          completed_at: string | null
+          created_at: string
+          failure_reason: string | null
+          id: string
+          identity_verified_at: string | null
+          notes: string | null
+          processor_items: Json
+          requested_at: string
+          reversal_authorized_by: string | null
+          reversed_at: string | null
+          state: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          access_blocked_at?: string | null
+          completed_at?: string | null
+          created_at?: string
+          failure_reason?: string | null
+          id?: string
+          identity_verified_at?: string | null
+          notes?: string | null
+          processor_items?: Json
+          requested_at?: string
+          reversal_authorized_by?: string | null
+          reversed_at?: string | null
+          state?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          access_blocked_at?: string | null
+          completed_at?: string | null
+          created_at?: string
+          failure_reason?: string | null
+          id?: string
+          identity_verified_at?: string | null
+          notes?: string | null
+          processor_items?: Json
+          requested_at?: string
+          reversal_authorized_by?: string | null
+          reversed_at?: string | null
+          state?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -1583,6 +1712,7 @@ export type Database = {
           community_display_name: string | null
           created_at: string
           date_of_birth: string | null
+          deletion_pending: boolean
           doctor_confirmed_at: string | null
           fasting_eligibility: string
           fasting_exclusions: Json
@@ -1608,6 +1738,7 @@ export type Database = {
           community_display_name?: string | null
           created_at?: string
           date_of_birth?: string | null
+          deletion_pending?: boolean
           doctor_confirmed_at?: string | null
           fasting_eligibility?: string
           fasting_exclusions?: Json
@@ -1633,6 +1764,7 @@ export type Database = {
           community_display_name?: string | null
           created_at?: string
           date_of_birth?: string | null
+          deletion_pending?: boolean
           doctor_confirmed_at?: string | null
           fasting_eligibility?: string
           fasting_exclusions?: Json
@@ -1723,6 +1855,57 @@ export type Database = {
           question_type?: string
           status?: string
           updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      rate_limits: {
+        Row: {
+          bucket: string
+          count: number
+          created_at: string
+          window_start: string
+        }
+        Insert: {
+          bucket: string
+          count?: number
+          created_at?: string
+          window_start: string
+        }
+        Update: {
+          bucket?: string
+          count?: number
+          created_at?: string
+          window_start?: string
+        }
+        Relationships: []
+      }
+      reauth_tickets: {
+        Row: {
+          action: string
+          consumed_at: string | null
+          created_at: string
+          expires_at: string
+          id: string
+          token_hash: string
+          user_id: string
+        }
+        Insert: {
+          action: string
+          consumed_at?: string | null
+          created_at?: string
+          expires_at: string
+          id?: string
+          token_hash: string
+          user_id: string
+        }
+        Update: {
+          action?: string
+          consumed_at?: string | null
+          created_at?: string
+          expires_at?: string
+          id?: string
+          token_hash?: string
           user_id?: string
         }
         Relationships: []
@@ -2166,6 +2349,62 @@ export type Database = {
         }
         Relationships: []
       }
+      visitor_sessions: {
+        Row: {
+          created_at: string
+          expires_at: string
+          id: string
+          ip_hmac: string | null
+          issued_at: string
+          last_seen_at: string
+          merged_at: string | null
+          revoked_at: string | null
+          rotated_from: string | null
+          token_hash: string
+          user_agent_hash: string | null
+          user_id: string | null
+          visitor_profile_id: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          ip_hmac?: string | null
+          issued_at?: string
+          last_seen_at?: string
+          merged_at?: string | null
+          revoked_at?: string | null
+          rotated_from?: string | null
+          token_hash: string
+          user_agent_hash?: string | null
+          user_id?: string | null
+          visitor_profile_id: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          ip_hmac?: string | null
+          issued_at?: string
+          last_seen_at?: string
+          merged_at?: string | null
+          revoked_at?: string | null
+          rotated_from?: string | null
+          token_hash?: string
+          user_agent_hash?: string | null
+          user_id?: string | null
+          visitor_profile_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "visitor_sessions_visitor_profile_id_fkey"
+            columns: ["visitor_profile_id"]
+            isOneToOne: false
+            referencedRelation: "visitor_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       vita_quotes: {
         Row: {
           category: string
@@ -2411,11 +2650,22 @@ export type Database = {
           longest_streak: number
         }[]
       }
+      consume_rate_limit: {
+        Args: { p_bucket: string; p_limit: number; p_window_seconds: number }
+        Returns: boolean
+      }
+      consume_reauth_ticket: {
+        Args: { p_action: string; p_token_hash: string; p_user_id: string }
+        Returns: boolean
+      }
       current_program_day: { Args: { p_user_id: string }; Returns: number }
+      deletion_lock_active: { Args: { p_user_id: string }; Returns: boolean }
+      get_app_config: { Args: { p_key: string }; Returns: Json }
       has_role: {
         Args: { p_role: string; p_user_id: string }
         Returns: boolean
       }
+      member_access_allowed: { Args: never; Returns: boolean }
       search_verified_answers: {
         Args: {
           match_count?: number
