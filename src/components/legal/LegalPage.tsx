@@ -15,8 +15,9 @@ interface LegalPageProps {
   children: ReactNode;
 }
 
-/** Owner review, not counsel approval. Legal review is a future recommendation. */
-export const LAST_UPDATED = LEGAL.owner_review_date;
+/** Date shown on every legal page. Owner maintained. */
+export const LAST_UPDATED = LAST_UPDATED_DISPLAY;
+export const LEGAL_IDENTITY = LEGAL;
 
 const LegalPage = ({ title, metaDescription, path, children }: LegalPageProps) => {
   return (
