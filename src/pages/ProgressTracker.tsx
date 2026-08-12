@@ -268,22 +268,24 @@ const ProgressTracker = () => {
             Edit My Entries
           </Button>
 
-          {/* Upsell CTA */}
+          {/* Prompt 4 §10 — the coaching upsell route is retired; the single
+              next step is the membership itself. */}
           <div className="bg-primary/5 border-2 border-primary rounded-2xl p-6 text-center">
             <h2 className="font-heading font-bold text-xl text-foreground mb-2">
-              You proved you can do this.
+              Keep the routine going
             </h2>
             <p className="text-muted-foreground mb-4">
-              In 5 days you built real habits. Imagine what 6 weeks of personalized coaching could do.
+              The membership gives you the same daily structure, with everything in one place.
             </p>
             <Button
-              onClick={() => navigate("/6-week-reset")}
-              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-4 font-bold rounded-xl h-auto text-lg"
+              onClick={() => navigate("/")}
+              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-4 font-bold rounded-xl h-auto text-lg min-h-[48px]"
             >
-              See the 6-Week Reset
+              See what's inside the membership
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </div>
+
         </div>
       </div>
     );
