@@ -114,8 +114,7 @@ const Terms = () => (
     <p>
       To the maximum extent permitted by applicable law, DRM is provided without a promise of a
       medical result or uninterrupted availability. Nothing in these Terms excludes a consumer right
-      or liability that applicable law does not allow DRM to exclude. Counsel must approve any
-      additional warranty, damages, indemnity, or liability limitation before publication.
+      or liability that applicable law does not allow DRM to exclude.
     </p>
 
     <h2>Governing law and disputes</h2>
