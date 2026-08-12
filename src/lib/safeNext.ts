@@ -23,6 +23,7 @@ export function safeNext(raw: string | null | undefined, fallback = ""): string 
 
   if (!normalised.startsWith("/")) return fallback;
   if (normalised.startsWith("//")) return fallback;
+  // eslint-disable-next-line no-control-regex -- control chars must be rejected here
   if (/[\u0000-\u001f\u007f]/.test(normalised)) return fallback;
   if (/^\/[a-z][a-z0-9+.-]*:/i.test(normalised)) return fallback;
 
