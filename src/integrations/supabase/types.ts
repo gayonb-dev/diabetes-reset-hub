@@ -753,6 +753,8 @@ export type Database = {
           identity_verified_at: string | null
           notes: string | null
           processor_items: Json
+          receipt: Json | null
+          reconciliation: Json
           requested_at: string
           reversal_authorized_by: string | null
           reversed_at: string | null
@@ -769,6 +771,8 @@ export type Database = {
           identity_verified_at?: string | null
           notes?: string | null
           processor_items?: Json
+          receipt?: Json | null
+          reconciliation?: Json
           requested_at?: string
           reversal_authorized_by?: string | null
           reversed_at?: string | null
@@ -785,6 +789,8 @@ export type Database = {
           identity_verified_at?: string | null
           notes?: string | null
           processor_items?: Json
+          receipt?: Json | null
+          reconciliation?: Json
           requested_at?: string
           reversal_authorized_by?: string | null
           reversed_at?: string | null
@@ -921,6 +927,42 @@ export type Database = {
           id?: string
           status?: string
           stripe_invoice_id?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      export_artifacts: {
+        Row: {
+          byte_size: number
+          consumed_at: string | null
+          content: string
+          created_at: string
+          expires_at: string
+          format: string
+          id: string
+          token_hash: string
+          user_id: string
+        }
+        Insert: {
+          byte_size: number
+          consumed_at?: string | null
+          content: string
+          created_at?: string
+          expires_at: string
+          format: string
+          id?: string
+          token_hash: string
+          user_id: string
+        }
+        Update: {
+          byte_size?: number
+          consumed_at?: string | null
+          content?: string
+          created_at?: string
+          expires_at?: string
+          format?: string
+          id?: string
+          token_hash?: string
           user_id?: string
         }
         Relationships: []
@@ -2650,6 +2692,15 @@ export type Database = {
           longest_streak: number
         }[]
       }
+      consume_export_artifact: {
+        Args: { p_token_hash: string }
+        Returns: {
+          byte_size: number
+          format: string
+          id: string
+          user_id: string
+        }[]
+      }
       consume_rate_limit: {
         Args: { p_bucket: string; p_limit: number; p_window_seconds: number }
         Returns: boolean
@@ -2674,6 +2725,7 @@ export type Database = {
         Args: { p_session_id: string; p_user_id: string }
         Returns: Json
       }
+      purge_expired_export_artifacts: { Args: never; Returns: number }
       search_verified_answers: {
         Args: {
           match_count?: number
