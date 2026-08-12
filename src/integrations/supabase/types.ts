@@ -2659,6 +2659,10 @@ export type Database = {
         Returns: boolean
       }
       current_program_day: { Args: { p_user_id: string }; Returns: number }
+      delete_visitor_session_data: {
+        Args: { p_session_id: string }
+        Returns: Json
+      }
       deletion_lock_active: { Args: { p_user_id: string }; Returns: boolean }
       get_app_config: { Args: { p_key: string }; Returns: Json }
       has_role: {
@@ -2666,6 +2670,10 @@ export type Database = {
         Returns: boolean
       }
       member_access_allowed: { Args: never; Returns: boolean }
+      merge_visitor_session_into_member: {
+        Args: { p_session_id: string; p_user_id: string }
+        Returns: Json
+      }
       search_verified_answers: {
         Args: {
           match_count?: number
