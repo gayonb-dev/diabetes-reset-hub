@@ -1,8 +1,7 @@
 import type { ReactNode } from "react";
 import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
-import DraftBanner from "@/components/landing/DraftBanner";
-import { LEGAL } from "@/config/legal";
+import { LAST_UPDATED_DISPLAY, PENDING_UK_REGISTRATION_NOTICE, LEGAL } from "@/config/legal";
 import Footer from "@/components/landing/Footer";
 
 /**
