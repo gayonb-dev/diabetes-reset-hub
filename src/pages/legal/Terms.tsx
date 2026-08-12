@@ -1,5 +1,5 @@
 import LegalPage from "@/components/legal/LegalPage";
-import { LEGAL, OPERATOR_DESCRIPTION } from "@/config/legal";
+import { LEGAL, OPERATOR_DESCRIPTION, PENDING_UK_REGISTRATION_NOTICE } from "@/config/legal";
 
 const Terms = () => (
   <LegalPage
