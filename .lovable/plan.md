@@ -55,3 +55,19 @@ Run and report in full:
 ## Deliverable
 
 One corrected §17 completion report in chat. Nothing published.
+
+## 6. Corrections (override conflicting wording above)
+
+**Redirects.** Lovable hosting has no `_redirects`/config-file redirect support, so true HTTP 301/308 for `/book`, `/6-week-reset`, and other stale-offer routes is not available. Use `<Navigate replace>` as the accepted fallback: render no retired content before navigation, add `noindex` plus a canonical to `/` (pricing anchor) on those route stubs, never describe it as an HTTP permanent redirect, and record the platform limitation plainly in the report.
+
+**Retired $497 checkout.** Reject `six-week-reset-497` at the top of `create-checkout-session`, before any Stripe client construction, Stripe call, or order insert. Return a real HTTP 410 with `{ error, replacement: "/#pricing" }`. Add a focused Deno/vitest-level test proving: status 410, zero Stripe network calls, no order row created, and the $27/$67 membership path unchanged. Sweep both checkout functions and every active product/price registry for other retired keys and handle them the same way.
+
+**Banned-content scan scope.** Scan `src/`, `public/`, `index.html`, `supabase/functions/`, email and notification templates, admin-managed content and defaults, AI prompts and knowledge/context, seed/default content, sitemap, robots, structured data, and `llms.txt`. Only tests, historical evidence, migration docs, and narrowly necessary rejection tests may be excluded — each exclusion listed individually in the report.
+
+**Payment-state mapping.** Five outcomes exactly: `checking` ("Confirming your membership."), `verified` (payment verified, account ready), `processing` (verified but provisioning pending), `unverified` (missing, malformed, mismatched, unpaid, **expired**, wrong-mode, wrong-product, wrong-price, wrong-amount, or otherwise unverified), `error` (processor unavailable/timeout). Remove the current `failed` mapping for expired sessions and fold it into `unverified`. Verified-state screenshots come only from a test-only fixture that cannot be reached from a production URL; a synthetic session id must never make the real function report verified.
+
+**Legal publication gate.** Add a production-release build guard (a prebuild/verify script the release path runs, not only `legalGates.test.ts`): preview builds may succeed with placeholders while showing `DraftBanner`; a production-release build fails while any `[[...]]` placeholder remains and fails if `DraftBanner` can reach the production bundle. The report includes an intentional production-release build attempt showing it is currently blocked. The gate is not removed or bypassed until owner fields and counsel approval arrive.
+
+**Accessibility verification.** Full authority checklist: 320px reflow and 390px layout, keyboard order and visible focus, skip link and landmarks, accessible labels/instructions/errors, dialog focus management and Escape, no focus trapped behind VITA or the sticky CTA, text and interface contrast, reduced-motion behavior, meaningful alt text, icon-plus-text status communication, and 44px minimum touch targets.
+
+**Pending migrations.** Both stay unapplied. Since their Member A / Member B / anonymous / backend tests require controlled application to an isolated non-production database, report them as `PREPARED — NOT EXECUTED` (never verified/passed), with those tests recorded as a required release-window gate after controlled application.
