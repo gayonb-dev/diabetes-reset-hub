@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
 import DraftBanner from "@/components/landing/DraftBanner";
+import { LEGAL } from "@/config/legal";
 import Footer from "@/components/landing/Footer";
 
 /**
@@ -15,7 +16,8 @@ interface LegalPageProps {
   children: ReactNode;
 }
 
-export const LAST_UPDATED = "[[COUNSEL_APPROVAL_DATE]]";
+/** Owner review, not counsel approval. Legal review is a future recommendation. */
+export const LAST_UPDATED = LEGAL.owner_review_date;
 
 const LegalPage = ({ title, metaDescription, path, children }: LegalPageProps) => {
   return (
@@ -50,7 +52,9 @@ const LegalPage = ({ title, metaDescription, path, children }: LegalPageProps) =
           <h1 className="font-heading font-bold text-3xl sm:text-4xl text-foreground mb-2">
             {title}
           </h1>
-          <p className="text-sm text-muted-foreground mb-8">Last updated: {LAST_UPDATED}</p>
+          <p className="text-sm text-muted-foreground mb-8">
+            Owner review date: {LAST_UPDATED} — owner review required before publication.
+          </p>
           <div className="space-y-5 text-muted-foreground leading-relaxed break-words [&_h2]:font-heading [&_h2]:font-bold [&_h2]:text-xl [&_h2]:text-foreground [&_h2]:pt-4 [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:space-y-2 [&_a]:text-primary [&_a]:underline [&_a]:underline-offset-4">
             {children}
           </div>

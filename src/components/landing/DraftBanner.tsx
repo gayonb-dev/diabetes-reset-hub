@@ -1,11 +1,12 @@
 /**
  * Prompt 4 §2 — preview-only legal review gate.
  *
- * This banner is rendered ONLY in non-production builds. A release test
- * (src/test/legalGates.test.ts) fails the build if any `[[...]]` legal
- * placeholder or this banner text can reach a production bundle.
+ * This banner is rendered ONLY in non-production builds. The release gate
+ * (scripts/release-gate.mjs) fails the production build if this text or any
+ * `[[...]]` legal placeholder can reach a production bundle.
  */
-const DRAFT_BANNER_TEXT = "DRAFT — OWNER AND COUNSEL REVIEW REQUIRED. DO NOT PUBLISH.";
+export const DRAFT_BANNER_TEXT =
+  "Draft legal information — UK company registration and owner review must be completed before publication.";
 
 export const isPreviewBuild = import.meta.env.MODE !== "production";
 

@@ -25,6 +25,12 @@ const RETIRED_PRODUCTS = new Set([
   "six-week-reset-497",
   "six-week-reset",
   "6-week-reset",
+  "six-week-reset-installment",
+  "coaching",
+  "coaching-call",
+  "coaching-program",
+  "booking",
+  "book",
 ]);
 
 const PRODUCTS: Record<string, { name: string; description: string; amount: number; installmentAmount?: number; installmentCount?: number }> = {

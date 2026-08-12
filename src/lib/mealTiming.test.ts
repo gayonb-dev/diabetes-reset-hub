@@ -25,11 +25,12 @@ describe("eligibility gate", () => {
     expect(canFast(null)).toBe(false);
   });
 
-  it("needs_doctor requires the doctor confirmation", () => {
+  it("needs_doctor cannot fast — scheduling is disabled release-wide", () => {
     expect(canFast(base({ fasting_eligibility: "needs_doctor" }))).toBe(false);
+    // Even a doctor-confirmed member cannot fast while FASTING_SCHEDULING_ENABLED is false.
     expect(
       canFast(base({ fasting_eligibility: "needs_doctor", doctor_confirmed_at: "2026-01-01T00:00:00Z" })),
-    ).toBe(true);
+    ).toBe(false);
   });
 
   it("not_eligible produces no fasting window for ANY target value", () => {
@@ -48,22 +49,24 @@ describe("eligibility gate", () => {
 });
 
 describe("ramp", () => {
-  it("week one runs at 12:12 regardless of chosen target", () => {
+  it("no ramp is reachable while fasting scheduling is disabled", () => {
     const p = base({ fasting_target: 3, fasting_started_on: "2026-08-01" });
-    expect(effectiveTarget(p, new Date("2026-08-03T12:00:00"))).toBe(1);
-    expect(effectiveTarget(p, new Date("2026-08-09T12:00:00"))).toBe(3);
+    expect(effectiveTarget(p, new Date("2026-08-03T12:00:00"))).toBe(0);
+    expect(effectiveTarget(p, new Date("2026-08-09T12:00:00"))).toBe(0);
+    expect(getFastingWindow(p, new Date("2026-08-09T12:00:00"))).toBeNull();
   });
 
-  it("needs_doctor members follow the full gradual progression", () => {
+  it("needs_doctor members get no schedule while scheduling is disabled", () => {
     const p = base({
       fasting_eligibility: "needs_doctor",
       doctor_confirmed_at: "2026-08-01T00:00:00Z",
       fasting_target: 3,
       fasting_started_on: "2026-08-01",
     });
-    expect(effectiveTarget(p, new Date("2026-08-10T12:00:00"))).toBe(1);
-    expect(effectiveTarget(p, new Date("2026-08-20T12:00:00"))).toBe(2);
-    expect(effectiveTarget(p, new Date("2026-09-05T12:00:00"))).toBe(3);
+    expect(effectiveTarget(p, new Date("2026-08-10T12:00:00"))).toBe(0);
+    expect(effectiveTarget(p, new Date("2026-08-20T12:00:00"))).toBe(0);
+    expect(effectiveTarget(p, new Date("2026-09-05T12:00:00"))).toBe(0);
+    expect(getFastingWindow(p, new Date("2026-09-05T12:00:00"))).toBeNull();
   });
 });
 
