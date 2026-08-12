@@ -1,264 +1,57 @@
-# Prompt 3 — Step A: read-only production preflight report
+# Prompt 4 Closeout Correction — Retired Routes, Route Tests, Verification Evidence
 
-No migration, code edit, deploy, secret change, database write, Stripe call, email, or publish was
-performed. Every result below comes from read-only inspection of the connected backend, the live
-repository, and the attached package.
+Scope: fix retired-route behavior, add focused route tests, and produce the missing §17 verification evidence. No redesign, no Prompt 3 rework, no migrations applied, no publish, no live payments/emails/AI-health calls.
 
-**Recommendation: NO-GO for promotion right now.** Four owner actions block it (Section 11). The
-code/database side is unusually clean — zero collisions, zero unresolved merge conflicts.
+## 1. Retired-route behavior (corrected)
 
----
+Currently `/intake`, `/book`, `/6-week-reset` all redirect to `/`, and `/progress` still renders the legacy 5-day tracker page. Correct to:
 
-## 1. Package integrity — PASS
+| Route | Anonymous | Authenticated |
+| --- | --- | --- |
+| `/intake` | `/login?next=%2Fapp%2Fonboarding` | `/app/onboarding` |
+| `/progress` | `/login?next=%2Fapp%2Fprogress` | `/app/progress` |
+| `/book` | `/#pricing` (permanent) | `/#pricing` |
+| `/6-week-reset` | `/#pricing` (permanent) | `/#pricing` |
 
-| Marker | Expected | Observed | Result |
-| --- | --- | --- | --- |
-| ZIP SHA-256 | `a4a5d430…528bda` | `a4a5d4305aeeddae02ef91cf3ad77f615bdbe4318f7ec9ae2897615aab528bda` | match |
-| ZIP entries | 71 | 71 | match |
-| PACKAGE_TREE_SHA256 | `dce5f5dd…f24330` | recomputed independently over the sorted 70-file `<path> <sha256>` list (excluding `package-sha.txt`), newline-joined, no trailing newline → `dce5f5ddfebe42d564bd372be7c6a905e5fc619e405941ade2ca4671fcf24330` | match |
-| Migration filenames | 9 source-controlled names | all 9 present verbatim | match |
-| `01_`–`07_` prefixed copies | none | none | match |
-| Structure | `docs/promotion/**` + 9 final report docs | as manifested | match |
+Implementation:
+- Add a small `RetiredRouteRedirect` component that reads auth state (`useAuth`) and renders `<Navigate replace>` to the authed or anonymous target once loading resolves (render nothing while loading, so no flash to `/login` for signed-in members).
+- Wire `/intake` and `/progress` through it; `/book` and `/6-week-reset` become static `<Navigate replace to="/#pricing">`.
+- The legacy `ProgressTracker` page component is no longer routed. Leave the file in place, unrouted (no content restoration, no deletion needed for this closeout) — or delete if it has no other importer; verified during implementation.
 
-Package-authored, non-migration files confirmed present and correctly named:
-`migrations/00_PRE_member_uploads_bucket.md` (Markdown pre-step) and
-`migrations/PACKAGE_ONLY_production_app_config.sql` (hand-applied overlay, deliberately not a
-Supabase migration filename). `policies.sql` is evidence only. `patch.diff` is absent as stated.
+## 2. Legacy $497 offer surfaces
 
-The nine migrations:
-`20260807023947_2d3706dc`, `20260807024324_6b205339`, `20260807033505_78c0065c`,
-`20260807033958_53f37591`, `20260807035926_03404f86`, `20260807040717_368c0427`,
-`20260807042157_eca6ba28`, `20260810071546_9acad9db`, `20260810143536_ac671806`.
+- `supabase/functions/create-checkout-session/index.ts` still defines the `six-week-reset-497` product ($49,700). Disable it: the function rejects that product key with a 410-style JSON response pointing at `/#pricing`; no checkout session is created. The $27/$67 membership path is untouched.
+- Remove the stale 6-Week Reset upsell sentences in `stripe-webhook` and `send-progress-summary` email copy (text-only edits, no logic change).
+- No retired form, coaching, booking, WhatsApp, health-data collection, or $497 content is restored anywhere.
 
-## 2. Production target — CONFIRMED
+## 3. Focused automated route tests
 
-| Source | Value |
-| --- | --- |
-| `.env` (`VITE_SUPABASE_PROJECT_ID`, `VITE_SUPABASE_URL`) | `wqennhjdojjqmmqzjhti` |
-| `supabase/config.toml` `project_id` | `wqennhjdojjqmmqzjhti` |
-| Connected backend metadata | project ID `wqennhjdojjqmmqzjhti`, URL `https://wqennhjdojjqmmqzjhti.supabase.co`, managed, not paused |
-| Database connection | pooler `postgres.wqennhjdojjqmmqzjhti`, database `postgres` |
-| Deployed domain | `https://diabetesresetmethod.com` responds 200; same project ref serves it |
+New `src/test/retiredRoutes.test.tsx` (vitest + Testing Library, mocked `useAuth`, `MemoryRouter`):
+- `/intake` anonymous → `/login?next=%2Fapp%2Fonboarding`; authenticated → `/app/onboarding`.
+- `/progress` anonymous → `/login?next=%2Fapp%2Fprogress`; authenticated → `/app/progress`.
+- `/book` → `/#pricing`; `/6-week-reset` → `/#pricing`.
+- Any other stale offer route discovered during the sweep gets a case in the same file.
 
-Staging reference `sewhbihzsutdnsosfjys`: **zero occurrences** anywhere in the live repository —
-not in source, functions, migrations, config, or `.env`. It appears only inside the attached
-package's historical evidence documents. Target is conclusively production.
+New `src/test/nextParam.test.ts` for the `next` allowlist used by `Login`/`AuthGuard`:
+- Preserves same-site paths (`/app/progress`, `/app/onboarding`, with query/hash).
+- Rejects `https://evil.com`, `//evil.com`, `\\/evil.com`, `javascript:...`, backslash and encoded variants, and empty/malformed values (falls back to the default destination).
 
-## 3. Backup gate — BLOCKED (owner action)
+## 4. Verification evidence to produce (read-only)
 
-Lovable cannot enumerate, create, or verify a Supabase database backup or PITR restore point from
-this environment; no backup identifier or timestamp is accessible read-only. No restore point can
-be reported, so per `preflight.md` item 1 promotion stays blocked.
+Run and report in full:
+- Banned-claim scan across `src/`, `index.html`, `public/`, and legal pages — every hit listed with disposition (removed / allowed-in-context / false positive).
+- ESLint, production build (`vite build`), and full vitest run (including the 3 known pre-existing `mealTiming.test.ts` failures, reported as pre-existing).
+- Accessibility pass (heading order, landmarks, focus visibility, 44px targets) on landing + legal routes.
+- Route/funnel matrix (all retired + live routes, expected vs actual), sitemap check, structured-data check, footer-link check.
+- `verify-checkout-session` state/test matrix: `checking`, `verified`, `processing` (+ poll exhaustion), `unverified` (no/invalid `session_id`), `failed` (expired session), `error` — exercised against the function's input validation and the page state machine using synthetic session ids only, never a live payment.
+- Desktop (1280px) and mobile (390px) screenshots via headless Chromium for: hero, product proof, first 14 days, audience fit, founder, pricing, FAQ, each legal page (`/privacy`, `/terms`, `/refunds`, `/ai-use`, `/health-data-privacy`, `/data-rights`), payment-success verified and unverified states, and VITA/sticky-CTA open + closed.
+- Full list of unresolved `[[...]]` legal placeholders, plus confirmation that the release gate (`src/test/legalGates.test.ts` + preview-only `DraftBanner`) fails the build while any placeholder or the draft banner can reach production.
 
-**Owner action B1:** confirm a restorable production backup / PITR window exists immediately
-before the migration window and record its identifier and UTC timestamp in the deployment record.
-On Lovable Cloud this is an owner/platform action, not self-serve from here.
+## 5. Left untouched
 
-## 4. Current-code drift and conflict analysis — 66/66 resolved, 0 manual merges
+- `supabase/migrations-pending/01_profiles_column_grants.sql` and `02_win_posts_reaction_counts.sql` stay prepared and unapplied.
+- All other completed Prompt 4 work, S1–S4, and Prompt 3 controls preserved.
 
-Method: every `diff --git` block in `patch-full.diff` was matched against the live working tree by
-Git blob SHA (`index <base>..<final>`), so classification is by content identity, not by guesswork.
+## Deliverable
 
-| Classification | Count |
-| --- | --- |
-| Cleanly applicable (live file byte-identical to the patch base) | 34 |
-| New file, no live file exists (clean create) | 31 |
-| Already equivalent (live already at final) | 0 |
-| Changed but non-overlapping | 0 |
-| Overlapping conflict requiring manual merge | **1** (see below) |
-| Missing dependency / unknown | 0 |
-| **Total** | **66** |
-
-**S1–S4 safety:** all 17 client files and all 34 modified runtime files match the package base
-blob exactly, which proves the live project is still at `STAGING_BASE_SHA` content for every path
-the patch touches. No S1–S4 clinical-safety or content work sits inside any patched hunk, so
-nothing can be overwritten or reversed by applying the patch. This is the strongest possible
-outcome for this check.
-
-**The single non-clean path — `src/integrations/supabase/types.ts`:** live content matches neither
-the base nor the final blob. This is expected and benign: the file is auto-generated by the
-platform and has been regenerated in production since `STAGING_BASE_SHA`; the package additionally
-sanitised it by stripping the staging-only `staging_seed_legacy_phi_consent` RPC entry.
-**Proposed disposition:** do **not** apply the `types.ts` hunk. Skip it during patch application
-and let the platform regenerate `types.ts` after the nine migrations are applied. Then verify the
-regenerated file contains the new tables (`app_config`, `visitor_sessions`, `consent_records`,
-`deletion_jobs`, `export_artifacts`, `reauth_tickets`, `rate_limits`) and does **not** contain
-`staging_seed_legacy_phi_consent`, and that `tsc --noEmit` passes. With this disposition no
-overlap remains unresolved.
-
-## 5. Database collision and migration preflight — CLEAN
-
-Schema/catalog inspection only; no row contents read beyond the single count `preflight.md` item 4
-requires.
-
-| Object | Status |
-| --- | --- |
-| `app_config` | absent |
-| `visitor_sessions` | absent |
-| `consent_records` | absent |
-| `deletion_jobs` | absent |
-| `export_artifacts` | absent |
-| `reauth_tickets` | absent |
-| `rate_limits` | absent |
-| `profiles.deletion_restricted` | absent |
-| `get_app_config`, `account_lifecycle_active`, `current_visitor_session`, `has_consent` | absent |
-| Package triggers / views / policies keyed to the above | absent (no parent objects exist) |
-
-Migration history: **none** of the nine tested versions is recorded. Latest applied production
-migration is `20260802032107`, so all nine sort strictly after it and apply in their documented
-order with no gap, no partial application, and no history repair needed. No history row was
-inserted or altered.
-
-Legacy baseline: `public.phi_consent` holds **1** row (count only — no row contents read). Record
-this as the pre-migration value; migration `20260807023947_…` blocks new writes and never
-migrates, purges, or converts it.
-
-## 6. Existing-code isolation — ZERO-HIT SATISFIED
-
-Full-tree search of the live client source and all Edge Function sources for `app_config` and
-`get_app_config`: **0 hits**. Catalog search for a database function, trigger, or view named
-`get_app_config` or referencing `app_config`: **0 hits**. No currently deployed code can observe
-migration 1's temporary staging seed values during the migration window. Re-run this grep against
-the exact bundle being deployed at promotion time to keep the result current.
-
-## 7. Storage and RLS baseline — read-only
-
-| Check | Result |
-| --- | --- |
-| `member-uploads` bucket | absent — `storage.buckets` has **0** rows, so no bucket collision and no policy collision |
-| Bucket privacy | n/a (does not exist); must be created private as `00_PRE_member_uploads_bucket.md` specifies, **before** migration `20260807033958_…` |
-| Public tables | 58 |
-| RLS enabled | 58 / 58 |
-| RLS **forced** | 0 / 58 — table owners and `service_role` bypass; the package's fail-closed lifecycle model relies on policy definitions, so confirm at deploy time whether any package table requires `FORCE ROW LEVEL SECURITY` |
-| Policies in `public` | 159 today vs. the package's post-promotion inventory of 209 across 60 tables |
-| `SECURITY DEFINER` functions in `public` | 18 — execute grants must be re-enumerated after promotion |
-| Realtime exposure | `supabase_realtime` publication has **0** tables — no Realtime leak path for personal data today |
-
-Nothing was created or altered. No member identifiers, health data, messages, or payment details
-were read.
-
-## 8. Secret and flag readiness — BLOCKED (owner action)
-
-Presence only; no value was read, printed, or compared.
-
-**Section A required names**
-
-| Name | Present |
-| --- | --- |
-| `IP_HMAC_KEY` | **MISSING** |
-| `ALLOWED_ORIGINS` | **MISSING** |
-| Platform Supabase keys (`SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_DB_URL`, `SUPABASE_PUBLISHABLE_KEYS`, `SUPABASE_SECRET_KEYS`, `SUPABASE_JWKS`) | present (platform-injected) |
-| `CRON_SECRET` | present |
-| `STRIPE_SECRET_KEY` | present |
-| `STRIPE_PAYMENT_WEBHOOK_SECRET` | **MISSING** |
-| `STRIPE_SUBSCRIPTION_WEBHOOK_SECRET` | **MISSING** |
-| `APP_URL` | present |
-
-`SESSION_TOKEN_KEY` is correctly not required and is not present.
-
-**Stripe key class:** cannot be determined read-only. Secret values are encrypted and are never
-returned to this environment, so the `sk_live_`/`rk_live_` prefix class cannot be asserted here.
-**Owner action B3.**
-
-**Webhook-secret distinctness:** cannot be evaluated — both required names are absent, so there is
-nothing to digest-compare. This becomes checkable only once both are created.
-
-**Section D obsolete names**
-
-| Name | Present |
-| --- | --- |
-| `STRIPE_WEBHOOK_SECRET` | **PRESENT — must be retired** |
-| `INTERNAL_FUNCTION_SECRET` | **PRESENT — must be retired** |
-| `CRON_INTERNAL_SECRET` | **PRESENT — must be retired** |
-| `SESSION_HASH_KEY` | absent |
-| `TRUSTED_IP_HEADER` | absent |
-
-Retirement order matters: `STRIPE_WEBHOOK_SECRET` is still read by the currently deployed
-`stripe-webhook` and `stripe-subscription-webhook`. It can only be deleted **after** the package
-versions of both functions are deployed and validated against their own per-endpoint secrets;
-deleting it earlier breaks live payment and subscription webhooks.
-
-**Section C deferred credentials — present, none created by me**
-
-| Credential | State |
-| --- | --- |
-| Resend (`RESEND_API_KEY`, `DIGEST_RECIPIENT`) | present — must stay inert behind `email_delivery_enabled=false` |
-| Dexcom (`DEXCOM_CLIENT_ID`, `DEXCOM_CLIENT_SECRET`, `DEXCOM_ENVIRONMENT`, `DEXCOM_REDIRECT_URI`, `DEXCOM_STATE_SIGNING_KEY`, `DEXCOM_TOKEN_ENC_KEY`) | present — must stay inert behind `dexcom_enabled=false` (DEL-25 BLOCKED) |
-| Lovable health-AI (`LOVABLE_API_KEY`) | present and platform-managed — health-AI purposes stay server-disabled |
-
-These pre-date the package. Their presence is not consent to enable the corresponding flags; the
-overlay must keep all three feature flags false.
-
-## 9. Operational readiness
-
-| Item | State |
-| --- | --- |
-| Stripe webhook endpoints | not inspectable read-only from here without a Stripe API call, which this step forbids. Configuration state is inferable only from secrets: a single shared `STRIPE_WEBHOOK_SECRET` exists, consistent with one shared signing secret across both endpoints — exactly what the package replaces with per-endpoint secrets. **Owner action B3** covers enumerating the live endpoints, their URLs, enabled events, and per-endpoint signing secrets. |
-| Live key class | unverifiable read-only — see B3 |
-| Cron / scheduler | 13 active jobs, all pointing at production function URLs. **None** of the package's deletion-worker, retention-report, or rate-limit-purge schedules exists yet (expected). Note for the deployment record: duplicate overlapping schedules already exist (`compute-engagement-scores` daily+nightly, `daily-digest` daily+nightly, `purge-inactive-visitors` nightly+weekly, `drm-notifications-hourly` + `notifications-cron-hourly`). These are pre-existing and out of scope for this package, but the new schedules must not compound them. |
-| Email delivery | Resend credentials live and existing functions can send today. The package gates sending behind `email_delivery_enabled=false`; until the package functions are deployed, pre-existing senders remain live. Do not enable the flag. |
-| Dexcom | credentials present; 30-minute sync cron is not among the 13 jobs. `dexcom_enabled` must be seeded false; DEL-25 stays BLOCKED and untested. |
-| Maintenance window | **required.** Migration `20260807035926_…` drops two admin read policies and changes a session-expiry default; the bucket pre-step and the nine migrations land before any new function or client is published. |
-| Can Lovable execute every step? | **No — three gaps.** (a) database backup / restore point: platform-owner action; (b) Storage bucket creation: `00_PRE_member_uploads_bucket.md` is an operational step the `storage` schema does not accept from migrations; (c) Stripe endpoint inspection and signed/forged event validation: requires Stripe dashboard/API work by the owner. Everything else — migrations, overlay, function deploys, client publish, cron installation, and the documented forward/compensating rollback migrations — is executable from Lovable. |
-
-## 10. Data handled
-
-Only counts and catalog metadata were read. No member identifier, health value, message body,
-payment detail, secret value, or row content appears in this report.
-
----
-
-## 11. Unresolved owner actions (all blocking)
-
-- **B1 — Backup.** Confirm and record a production restore point (identifier + UTC timestamp)
-  immediately before the migration window.
-- **B2 — Create four secrets.** `IP_HMAC_KEY`, `ALLOWED_ORIGINS`,
-  `STRIPE_PAYMENT_WEBHOOK_SECRET`, `STRIPE_SUBSCRIPTION_WEBHOOK_SECRET`. The two webhook secrets
-  must come from the two distinct Stripe endpoints and must differ (verified by digest comparison
-  only).
-- **B3 — Stripe.** Enumerate the live webhook endpoints and confirm the configured secret key is
-  live-class (`sk_live_`/`rk_live_`) with no test credential present. Values are never printed.
-- **B4 — Storage.** Create the private `member-uploads` bucket per
-  `00_PRE_member_uploads_bucket.md` and verify exactly one row with `public = false`, before
-  migration `20260807033958_…`.
-
-**GO / NO-GO: NO-GO.** Package integrity, production identity, code drift, database collisions,
-migration history, existing-code isolation, and the Storage/RLS baseline all pass. Promotion is
-blocked solely on B1–B4.
-
-## 12. Proposed production deployment sequence (for approval — not executed)
-
-1. Owner completes B1–B4. Announce the maintenance window.
-2. Re-run the `app_config` / `get_app_config` zero-hit grep against the exact bundle to be
-   deployed; abort on any hit.
-3. Record `select count(*) from public.phi_consent` (expected 1).
-4. Apply the nine migrations in `migration-order.md` order, oldest first, verifying each. Confirm
-   the `member-uploads` bucket check passes before `20260807033958_…`.
-5. Apply `PACKAGE_ONLY_production_app_config.sql` by hand (idempotent
-   `INSERT … ON CONFLICT (key) DO UPDATE`, all eight keys), keeping `stripe_deletion_enabled`,
-   `email_delivery_enabled`, and `dexcom_enabled` **false**. Run the `deployment-order.md` step 6
-   verification query immediately. Do not stage this file into `supabase/migrations/`.
-6. Let the platform regenerate `src/integrations/supabase/types.ts`; do not apply the packaged
-   `types.ts` hunk. Confirm the new tables appear and `staging_seed_legacy_phi_consent` does not.
-7. Apply the remaining 65 runtime files from `patch-full.diff` (34 clean updates + 31 creates).
-   Run `tsc --noEmit`, the test suite, and the ESLint delta against the recorded baseline.
-8. Deploy the 40 Edge Functions, then run the 22-function boot smoke (expect 0×503).
-9. Validate both Stripe webhooks independently: correctly signed event accepted, forged event
-   rejected. Only then retire `STRIPE_WEBHOOK_SECRET`, then `INTERNAL_FUNCTION_SECRET` and
-   `CRON_INTERNAL_SECRET`.
-10. Install the deletion-worker, retention, and rate-limit-purge schedules with the production
-    `CRON_SECRET`; confirm no duplication of existing jobs.
-11. Publish the client.
-12. Re-run production read-only RLS/grant/policy enumeration and prove the installed definitions
-    match the staging-tested definitions exactly. **P4 does not pass before this comparison.**
-13. Keep `stripe_deletion_enabled`, `email_delivery_enabled`, and `dexcom_enabled` false until
-    their own gates pass.
-
-### Rollback outline (from `rollback.md`, to be confirmed at approval time)
-
-Forward/compensating migrations only — no automatic restoration of any policy already identified
-as insecure. Reverse order: unpublish/redeploy the previous client bundle, redeploy the previous
-Edge Function versions, re-instate `STRIPE_WEBHOOK_SECRET` handling if it was already retired,
-remove the new cron schedules, apply the compensating migrations in reverse dependency order, and
-fall back to the B1 restore point only if a compensating path fails. The `member-uploads` bucket is
-removed manually. Any rollback that crosses a data-write boundary requires the restore point.
+One corrected §17 completion report in chat. Nothing published.
