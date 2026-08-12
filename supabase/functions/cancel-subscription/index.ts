@@ -7,17 +7,17 @@
 import Stripe from "https://esm.sh/stripe@18.5.0";
 import { createClient } from "npm:@supabase/supabase-js@2.57.2";
 
-import { corsHeaders, preflightHeaders } from "../_shared/cors.ts";
+import { corsFor } from "../_shared/cors.ts";
 
 Deno.serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response("ok", { headers: preflightHeaders(req) });
+  if (req.method === "OPTIONS") return new Response("ok", { headers: corsFor(req) });
 
   try {
     const auth = req.headers.get("Authorization");
     if (!auth?.startsWith("Bearer ")) {
       return new Response(JSON.stringify({ error: "unauthorized" }), {
         status: 401,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers: { ...corsFor(req), "Content-Type": "application/json" },
       });
     }
 
@@ -30,7 +30,7 @@ Deno.serve(async (req) => {
     if (claimsErr || !claims?.claims?.sub) {
       return new Response(JSON.stringify({ error: "unauthorized" }), {
         status: 401,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers: { ...corsFor(req), "Content-Type": "application/json" },
       });
     }
     const userId = claims.claims.sub;
@@ -43,7 +43,7 @@ Deno.serve(async (req) => {
     if (!stripeKey) {
       return new Response(JSON.stringify({ error: "STRIPE_SECRET_KEY missing" }), {
         status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers: { ...corsFor(req), "Content-Type": "application/json" },
       });
     }
     const stripe = new Stripe(stripeKey, { apiVersion: "2025-08-27.basil" });
@@ -73,7 +73,7 @@ Deno.serve(async (req) => {
     if (!subscriptionId) {
       return new Response(JSON.stringify({ error: "no_active_subscription" }), {
         status: 404,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers: { ...corsFor(req), "Content-Type": "application/json" },
       });
     }
 
@@ -101,13 +101,13 @@ Deno.serve(async (req) => {
           : null,
         status: updated.status,
       }),
-      { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      { headers: { ...corsFor(req), "Content-Type": "application/json" } },
     );
   } catch (e) {
     console.error("cancel-subscription error:", e);
     return new Response(
       JSON.stringify({ error: "internal", message: e instanceof Error ? e.message : String(e) }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      { status: 500, headers: { ...corsFor(req), "Content-Type": "application/json" } },
     );
   }
 });

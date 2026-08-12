@@ -8,7 +8,8 @@
 
 import { createClient } from "npm:@supabase/supabase-js@2";
 
-import { corsHeaders, preflightHeaders } from "../_shared/cors.ts";
+import { corsFor } from "../_shared/cors.ts";
+import { dexcomEnabled } from "../_shared/config.ts";
 import { aesGcmEncrypt, bytesToPgHex } from "../_shared/dexcom-crypto.ts";
 import { safeExpiresInSeconds } from "../_shared/dexcom-time.ts";
 
@@ -51,8 +52,8 @@ function secretPresenceMap(): Record<string, { present: boolean; len: number }> 
   return out;
 }
 
-// Names and lengths only — never values.
-console.log("[dexcom-auth] boot secret presence", JSON.stringify(secretPresenceMap()));
+// Secret presence is NOT logged at boot. It is available only from the
+// authenticated `status` path when the integration is enabled.
 
 const DEXCOM_BASE =
   ENV === "production" ? "https://api.dexcom.com" : "https://sandbox-api.dexcom.com";
@@ -61,7 +62,7 @@ const admin = createClient(SB_URL, SRV_KEY, { auth: { persistSession: false } })
 
 
 function b64url(bytes: Uint8Array): string {
-  let s = btoa(String.fromCharCode(...bytes));
+  const s = btoa(String.fromCharCode(...bytes));
   return s.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 }
 function b64urlDecode(s: string): Uint8Array {
@@ -90,10 +91,17 @@ async function hmacSign(key: string, data: string): Promise<Uint8Array> {
   return new Uint8Array(sig);
 }
 
+// The current request, set at the top of the handler so the small `json`
+// helper can emit the correct per-origin CORS headers.
+let CURRENT_REQ: Request | null = null;
+
 function json(status: number, body: unknown): Response {
   return new Response(JSON.stringify(body), {
     status,
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
+    headers: {
+      ...(CURRENT_REQ ? corsFor(CURRENT_REQ) : {}),
+      "Content-Type": "application/json",
+    },
   });
 }
 
@@ -182,7 +190,8 @@ async function exchange(userId: string, code: string, state: string): Promise<Re
   });
   const tokJson = await resp.json().catch(() => ({}));
   if (!resp.ok) {
-    console.error("dexcom token exchange failed", resp.status, tokJson);
+    // Status only: the provider body contains tokens.
+    console.error("dexcom token exchange failed", resp.status);
     return json(502, { error: "token_exchange_failed", details: tokJson });
   }
   const { access_token, refresh_token, expires_in } = tokJson as {
@@ -262,9 +271,15 @@ async function syncNow(userId: string): Promise<Response> {
 }
 
 Deno.serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response("ok", { headers: preflightHeaders(req) });
+  CURRENT_REQ = req;
+  if (req.method === "OPTIONS") return new Response("ok", { headers: corsFor(req) });
   let action = "";
   try {
+    // Server-controlled integration gate. Enforced BEFORE any credential is
+    // read, any token is exchanged, and any member data is touched.
+    if (!(await dexcomEnabled(admin))) {
+      return json(503, { error: "dexcom_disabled" });
+    }
     const gate = await requireUser(req);
     if (gate instanceof Response) return gate;
     const { userId } = gate;
@@ -272,8 +287,8 @@ Deno.serve(async (req) => {
     action = String(body?.action || "");
     const missing = SECRET_NAMES.filter((n) => !(Deno.env.get(n) ?? "").length);
     if (missing.length) {
-      console.error("[dexcom-auth]", action, "missing_secrets", missing.join(","));
-      return json(500, { error: "missing_secrets", missing });
+      console.error("[dexcom-auth]", action, "missing_secrets", missing.length);
+      return json(500, { error: "missing_secrets" });
     }
     switch (action) {
       case "authorize_url":

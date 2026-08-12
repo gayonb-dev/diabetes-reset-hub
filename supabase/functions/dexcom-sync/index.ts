@@ -8,7 +8,8 @@
 
 import { createClient } from "npm:@supabase/supabase-js@2";
 
-import { corsHeaders, preflightHeaders } from "../_shared/cors.ts";
+import { corsFor } from "../_shared/cors.ts";
+import { dexcomEnabled } from "../_shared/config.ts";
 import {
   aesGcmDecrypt,
   aesGcmEncrypt,
@@ -50,10 +51,17 @@ async function decryptToken(ct: unknown, iv: unknown): Promise<string> {
   }
 }
 
+// The current request, set at the top of the handler so the small `json`
+// helper can emit the correct per-origin CORS headers.
+let CURRENT_REQ: Request | null = null;
+
 function json(status: number, body: unknown): Response {
   return new Response(JSON.stringify(body), {
     status,
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
+    headers: {
+      ...(CURRENT_REQ ? corsFor(CURRENT_REQ) : {}),
+      "Content-Type": "application/json",
+    },
   });
 }
 
@@ -73,11 +81,7 @@ async function refreshIfNeeded(conn: ConnRow): Promise<string> {
   if (expiresAt === null) {
     // An unparseable expires_at must never reach a Date comparison — treat the
     // token as expired and refresh instead.
-    console.warn(
-      "[dexcom-sync] invalid expires_at, forcing refresh",
-      conn.member_id,
-      JSON.stringify(conn.expires_at),
-    );
+    console.warn("[dexcom-sync] invalid expires_at, forcing refresh");
   } else if (expiresAt.getTime() > soonMs) {
     return await decryptToken(conn.access_token_enc, conn.token_iv);
   }
@@ -125,11 +129,7 @@ async function syncOne(conn: ConnRow): Promise<{ inserted: number; through: stri
   if (conn.last_sync_at) {
     const parsed = parseDexcomTime(conn.last_sync_at);
     if (parsed === null) {
-      console.warn(
-        "[dexcom-sync] invalid last_sync_at cursor, falling back to now-24h",
-        conn.member_id,
-        JSON.stringify(conn.last_sync_at),
-      );
+      console.warn("[dexcom-sync] invalid last_sync_at cursor, falling back to now-24h");
       start = fallbackStart;
     } else {
       start = new Date(parsed.getTime() - 60_000);
@@ -170,7 +170,7 @@ async function syncOne(conn: ConnRow): Promise<{ inserted: number; through: stri
           skipped++;
           if (firstBadSystemTime === null) {
             firstBadSystemTime = String(rec.systemTime);
-            console.warn("[dexcom-sync] unparseable systemTime", JSON.stringify(rec.systemTime));
+            console.warn("[dexcom-sync] unparseable systemTime encountered");
           }
           continue;
         }
@@ -206,11 +206,7 @@ async function syncOne(conn: ConnRow): Promise<{ inserted: number; through: stri
   }
 
   if (skipped > 0) {
-    console.warn(
-      "[dexcom-sync] skipped records with unparseable systemTime",
-      skipped,
-      firstBadSystemTime,
-    );
+    console.warn("[dexcom-sync] skipped records with unparseable systemTime", skipped);
   }
 
   const through = now.toISOString();
@@ -230,8 +226,13 @@ async function markError(memberId: string, err: string) {
 }
 
 Deno.serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response("ok", { headers: preflightHeaders(req) });
+  CURRENT_REQ = req;
+  if (req.method === "OPTIONS") return new Response("ok", { headers: corsFor(req) });
   try {
+    // Server-controlled integration gate, before credentials or member data.
+    if (!(await dexcomEnabled(admin))) {
+      return json(503, { error: "dexcom_disabled" });
+    }
     // Three-branch auth — no fallthrough.
     const cronHeader = req.headers.get("x-cron-secret");
     const authHeader = req.headers.get("Authorization");
@@ -268,13 +269,13 @@ Deno.serve(async (req) => {
         if (e instanceof TokenDecryptError) {
           const msg =
             "Your Dexcom connection needs to be reconnected — please disconnect and connect again in Settings.";
-          console.error("sync skipped (undecryptable tokens)", conn.member_id);
+          console.error("sync skipped (undecryptable tokens)");
           await markError(conn.member_id, msg);
           results.push({ member_id: conn.member_id, ok: false, error: msg });
           continue;
         }
         const msg = e instanceof Error ? e.message : String(e);
-        console.error("sync failed", conn.member_id, msg);
+        console.error("sync failed");
         await markError(conn.member_id, msg);
         results.push({ member_id: conn.member_id, ok: false, error: msg });
       }

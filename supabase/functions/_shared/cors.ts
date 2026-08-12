@@ -1,34 +1,101 @@
-// Canonical CORS headers for all edge functions.
+// Exact-origin CORS allowlist (audit finding 2).
 //
-// Import this instead of declaring an inline copy — a per-function allow-list
-// drifts the moment the Supabase browser client starts sending a new header
-// (that is exactly what broke dexcom-auth: the client sends
-// `x-supabase-client-platform`, the function only allowed four headers, and the
-// browser blocked the request before any POST left the page).
+// There is no wildcard, no domain-suffix regular expression, and no hardcoded
+// localhost. The allowlist is exactly the set of normalized origins supplied
+// through `ALLOWED_ORIGINS` (comma separated). `APP_URL` is read for backward
+// compatibility and is likewise treated as a set of exact origins.
+//
+// Staging lists its exact preview origin. Production lists the DRM production
+// origin plus any additional owner-approved exact origin. Nothing else is
+// accepted — an unrelated Lovable project, a lookalike domain, localhost, and
+// a missing Origin are all rejected.
 
-export const corsHeaders: Record<string, string> = {
-  "Access-Control-Allow-Origin": "*",
+function normalize(value: string): string | null {
+  const trimmed = value.trim();
+  if (!trimmed) return null;
+  try {
+    const u = new URL(trimmed);
+    if (u.protocol !== "https:" && u.protocol !== "http:") return null;
+    return u.origin.toLowerCase();
+  } catch {
+    return null;
+  }
+}
+
+function envOrigins(): Set<string> {
+  const raw = `${Deno.env.get("ALLOWED_ORIGINS") ?? ""},${Deno.env.get("APP_URL") ?? ""}`;
+  const out = new Set<string>();
+  for (const part of raw.split(",")) {
+    const o = normalize(part);
+    if (o) out.add(o);
+  }
+  return out;
+}
+
+export function allowedOrigins(): string[] {
+  return Array.from(envOrigins()).sort();
+}
+
+export function isAllowedOrigin(origin: string | null): boolean {
+  if (!origin) return false;
+  const normalized = normalize(origin);
+  if (!normalized) return false;
+  return envOrigins().has(normalized);
+}
+
+const BASE_HEADERS: Record<string, string> = {
   "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type, x-supabase-client-platform",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-visitor-session, x-reauth-ticket",
+  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+  "Access-Control-Max-Age": "600",
+  Vary: "Origin",
 };
 
+/** Headers for a request. Omits the allow-origin header for unknown origins. */
+export function corsFor(req: Request): Record<string, string> {
+  const origin = req.headers.get("Origin");
+  if (isAllowedOrigin(origin)) {
+    return { ...BASE_HEADERS, "Access-Control-Allow-Origin": normalize(origin!)! };
+  }
+  return { ...BASE_HEADERS };
+}
+
+/** Standard preflight handling. Returns null when this is not a preflight. */
+export function preflight(req: Request): Response | null {
+  if (req.method !== "OPTIONS") return null;
+  const headers = corsFor(req);
+  if (!headers["Access-Control-Allow-Origin"]) {
+    return new Response("origin not allowed", { status: 403 });
+  }
+  return new Response("ok", { headers });
+}
+
 /**
- * Headers for the CORS preflight (OPTIONS) response.
+ * Browser-facing guard. Rejects BEFORE any work is performed when the request
+ * carries no Origin or an unapproved Origin. Omitting the response header is
+ * not sufficient — a non-browser client would ignore it.
  *
- * Echoes back whatever `Access-Control-Request-Headers` the browser asked for,
- * so the allow-list can never drift behind the client. Falls back to the static
- * list when the header is absent. `Vary` is required so the Cloudflare edge
- * caches one response per requested-header set.
+ * Returns a 403 Response to return immediately, or null to continue.
  */
-export function preflightHeaders(req: Request): Record<string, string> {
-  const requested = req.headers.get("Access-Control-Request-Headers");
-  return {
-    ...corsHeaders,
-    "Access-Control-Allow-Headers":
-      requested && requested.trim().length > 0
-        ? requested
-        : corsHeaders["Access-Control-Allow-Headers"],
-    Vary: "Access-Control-Request-Headers",
-  };
+export function requireAllowedOrigin(req: Request): Response | null {
+  const origin = req.headers.get("Origin");
+  if (!isAllowedOrigin(origin)) {
+    return new Response(
+      JSON.stringify({ error: "origin_not_allowed" }),
+      { status: 403, headers: { ...BASE_HEADERS, "Content-Type": "application/json" } },
+    );
+  }
+  return null;
+}
+
+export function json(
+  req: Request,
+  body: unknown,
+  status = 200,
+  extra: Record<string, string> = {},
+): Response {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { ...corsFor(req), ...extra, "Content-Type": "application/json" },
+  });
 }

@@ -145,19 +145,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (event === "SIGNED_IN" && !loginLogged) {
           loginLogged = true;
           setTimeout(async () => {
-            const anonId = localStorage.getItem("drm_visitor_id");
             try {
-              let profileId: string | null = null;
-              if (anonId) {
-                const { data: profile } = await supabase
-                  .from("visitor_profiles")
-                  .select("id")
-                  .eq("anonymous_id", anonId)
-                  .maybeSingle();
-                profileId = profile?.id ?? null;
-              }
+              // P1: no legacy visitor UUID. Login events are keyed to the
+              // verified user only; anonymous chat sessions are merged
+              // explicitly through the visitor-session merge action.
               await supabase.from("activity_events" as never).insert({
-                visitor_profile_id: profileId,
+                visitor_profile_id: null,
                 user_id: s.user.id,
                 event_type: "login",
                 metadata: {},

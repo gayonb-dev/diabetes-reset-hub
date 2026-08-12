@@ -1,20 +1,22 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@18.5.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
+import { buildCheckoutMetadata } from "./metadata.ts";
+import { corsFor, preflight, requireAllowedOrigin } from "../_shared/cors.ts";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
-};
 
+// P1 legacy retirement: no browser-supplied identifier is accepted here, and
+// Stripe metadata is built from an explicit allowlist of non-identity fields
+// only (see ./metadata.ts). Caller-provided metadata objects are never spread
+// or forwarded.
 interface CheckoutRequest {
   customerName: string;
   customerEmail: string;
   customerPhone?: string;
   productId?: string;
   paymentPlan?: "full" | "installment";
-  anonymousId?: string; // From chat widget localStorage — used to merge visitor_profile on webhook
 }
+
 
 const PRODUCTS: Record<string, { name: string; description: string; amount: number; installmentAmount?: number; installmentCount?: number }> = {
   "five-day-reset-27": {
@@ -32,12 +34,17 @@ const PRODUCTS: Record<string, { name: string; description: string; amount: numb
 };
 
 serve(async (req) => {
-  if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
-  }
+  const pre = preflight(req);
+  if (pre) return pre;
+  const originDenied = requireAllowedOrigin(req);
+  if (originDenied) return originDenied;
+  const corsHeaders = corsFor(req);
 
   try {
-    const { customerName, customerEmail, customerPhone, productId = "five-day-reset-27", paymentPlan = "full", anonymousId }: CheckoutRequest = await req.json();
+    // Only these fields are read. Any other caller-supplied property
+    // (anonymousId, anonymous_id, visitor_id, visitor_profile_id, metadata, …)
+    // is ignored and can never reach Stripe.
+    const { customerName, customerEmail, customerPhone, productId = "five-day-reset-27", paymentPlan = "full" }: CheckoutRequest = await req.json();
 
     if (!customerName || !customerEmail) {
       return new Response(
@@ -114,13 +121,13 @@ serve(async (req) => {
       mode: "payment",
       success_url: successUrl,
       cancel_url: cancelUrl,
-      metadata: {
+      metadata: buildCheckoutMetadata({
         customerName,
         customerPhone: customerPhone || "",
         productId,
         paymentPlan,
-        anonymousId: anonymousId || "",
-      },
+      }),
+
     });
 
     const { error: insertError } = await supabaseAdmin

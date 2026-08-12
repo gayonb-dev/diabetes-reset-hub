@@ -124,23 +124,15 @@ const IntakeForm = () => {
 
       if (error) throw error;
 
-      // Best-effort: link the chat anonymous_id and log an activity_event.
-      const anonId = localStorage.getItem("drm_visitor_id");
-      if (anonId) {
-        const { data: profile } = await supabase
-          .from("visitor_profiles")
-          .select("id, user_id")
-          .eq("anonymous_id", anonId)
-          .maybeSingle();
-        if (profile) {
-          await supabase.from("activity_events" as never).insert({
-            visitor_profile_id: profile.id,
-            user_id: profile.user_id,
-            event_type: "intake_submit",
-            metadata: { email: form.email.trim().toLowerCase() },
-          } as never);
-        }
-      }
+      // P1: no legacy visitor UUID linking. The activity event is recorded
+      // without an anonymous identifier; anonymous sessions are only joined
+      // to a member through the explicit, one-time merge action.
+      await supabase.from("activity_events" as never).insert({
+        visitor_profile_id: null,
+        user_id: null,
+        event_type: "intake_submit",
+        metadata: {},
+      } as never);
 
       setIsSubmitted(true);
       toast.success("Intake form submitted successfully!");

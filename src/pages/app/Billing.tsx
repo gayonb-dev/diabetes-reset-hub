@@ -136,6 +136,9 @@ export default function Billing() {
     }
   };
 
+  // Must stay above the early return: hooks run in the same order every render.
+  const visibleInvoices = useMemo(() => (isMobile ? invoices.slice(0, 6) : invoices), [invoices, isMobile]);
+
   if (!subscription) {
     return (
       <div className="max-w-xl mx-auto py-12 text-center text-sm text-muted-foreground">
@@ -144,7 +147,6 @@ export default function Billing() {
     );
   }
 
-  const visibleInvoices = useMemo(() => (isMobile ? invoices.slice(0, 6) : invoices), [invoices, isMobile]);
 
   const status = STATUS_LABEL[subscription.status] ?? { label: subscription.status, color: "text-foreground" };
   const nextChargeDate =

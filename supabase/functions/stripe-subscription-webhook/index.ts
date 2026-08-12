@@ -2,9 +2,11 @@ import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@18.5.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
 
-import { corsHeaders, preflightHeaders } from "../_shared/cors.ts";
+import { corsFor } from "../_shared/cors.ts";
+import { sendEmail as sendGatedEmail } from "../_shared/email.ts";
 
 const ADMIN_EMAIL = "support@diabetesresetmethod.com";
+const FROM_EMAIL = "The Diabetes Reset Method <hello@diabetesresetmethod.com>";
 
 function esc(s: string): string {
   return String(s ?? "")
@@ -15,22 +17,17 @@ function esc(s: string): string {
     .replace(/'/g, "&#39;");
 }
 
-async function sendEmail(apiKey: string, to: string, subject: string, html: string) {
-  try {
-    const res = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
-      body: JSON.stringify({
-        from: "The Diabetes Reset Method <hello@diabetesresetmethod.com>",
-        to: [to],
-        subject,
-        html,
-      }),
-    });
-    if (!res.ok) console.error("Email send failed", await res.text());
-  } catch (e) {
-    console.error("Email send error:", e);
-  }
+// Every send goes through the central gate in _shared/email.ts. The legacy
+// `apiKey` parameter is retained for call-site compatibility and ignored: the
+// key is read inside the gate, and no request is made while the gate is closed.
+async function sendEmail(_apiKey: string | undefined, to: string, subject: string, html: string) {
+  const gateAdmin = createClient(
+    Deno.env.get("SUPABASE_URL") ?? "",
+    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
+  );
+  const result = await sendGatedEmail(gateAdmin, { from: FROM_EMAIL, to, subject, html });
+  if (!result.sent) console.warn("outbound email suppressed or failed:", result.reason);
+  return result;
 }
 
 function welcomeHtml(name: string, magicLink: string) {
@@ -74,19 +71,20 @@ function adminNotifHtml(name: string, email: string, phone: string) {
 }
 
 serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response("ok", { headers: preflightHeaders(req) });
+  if (req.method === "OPTIONS") return new Response("ok", { headers: corsFor(req) });
 
   try {
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
       apiVersion: "2025-08-27.basil",
     });
     const signature = req.headers.get("stripe-signature");
-    const webhookSecret = Deno.env.get("STRIPE_WEBHOOK_SECRET");
+    // Distinct endpoint, distinct signing secret. No shared fallback.
+    const webhookSecret = Deno.env.get("STRIPE_SUBSCRIPTION_WEBHOOK_SECRET");
     if (!webhookSecret) {
-      console.error("STRIPE_WEBHOOK_SECRET not configured");
-      return new Response("Webhook secret not configured", { status: 500, headers: corsHeaders });
+      console.error("STRIPE_SUBSCRIPTION_WEBHOOK_SECRET not configured");
+      return new Response("Webhook secret not configured", { status: 500, headers: corsFor(req) });
     }
-    if (!signature) return new Response("No signature", { status: 400, headers: corsHeaders });
+    if (!signature) return new Response("No signature", { status: 400, headers: corsFor(req) });
 
     const body = await req.text();
     let event: Stripe.Event;
@@ -94,7 +92,7 @@ serve(async (req) => {
       event = await stripe.webhooks.constructEventAsync(body, signature, webhookSecret);
     } catch (err) {
       console.error("Sig verify failed:", err);
-      return new Response("bad sig", { status: 400, headers: corsHeaders });
+      return new Response("bad sig", { status: 400, headers: corsFor(req) });
     }
 
     const sb = createClient(
@@ -272,14 +270,14 @@ serve(async (req) => {
     }
 
     return new Response(JSON.stringify({ received: true }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      headers: { ...corsFor(req), "Content-Type": "application/json" },
       status: 200,
     });
   } catch (err) {
     console.error("[sub-webhook] error:", err);
     return new Response(JSON.stringify({ error: "Internal server error" }), {
       status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      headers: { ...corsFor(req), "Content-Type": "application/json" },
     });
   }
 });

@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
+import { requestActionTicket } from "@/lib/reauth";
 import { useWeekStart } from "@/hooks/useWeekStart";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -60,6 +61,21 @@ const COOKING_TIME_OPTIONS = [
   "I prefer no-cook or minimal prep",
 ] as const;
 
+type NotifPrefs = Record<string, boolean>;
+const DEFAULT_NOTIF_PREFS: NotifPrefs = {
+  vita_morning: true,
+  daily_action: true,
+  streak_at_risk: true,
+  level_up: true,
+  water: true,
+  workout: true,
+  a1c: true,
+  measurement: true,
+  cheat_meal: true,
+  birthday: true,
+  community_mission: true,
+};
+
 export default function Settings() {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
@@ -83,20 +99,6 @@ export default function Settings() {
   const [initialDisplayName, setInitialDisplayName] = useState<string>("");
 
   // Notification preferences (profiles.notification_prefs jsonb)
-  type NotifPrefs = Record<string, boolean>;
-  const DEFAULT_NOTIF_PREFS: NotifPrefs = {
-    vita_morning: true,
-    daily_action: true,
-    streak_at_risk: true,
-    level_up: true,
-    water: true,
-    workout: true,
-    a1c: true,
-    measurement: true,
-    cheat_meal: true,
-    birthday: true,
-    community_mission: true,
-  };
   const NOTIF_LABELS: Record<string, { title: string; desc: string }> = {
     vita_morning: { title: "VITA morning greeting", desc: "Daily nudge from VITA to start your day." },
     daily_action: { title: "Daily action reminders", desc: "Today-screen habit nudges." },
@@ -442,7 +444,8 @@ export default function Settings() {
         .order("day_number", { ascending: true }),
     ]);
 
-    const toCsv = (headers: string[], rows: Array<Array<string | number | null | undefined>>) => {
+    type CsvRow = Record<string, unknown>;
+    const toCsv = (headers: string[], rows: Array<Array<unknown>>) => {
       const esc = (v: unknown) => {
         if (v === null || v === undefined) return "";
         const s = String(v);
@@ -456,7 +459,7 @@ export default function Settings() {
       "readings.csv",
       toCsv(
         ["Measured at", "Reading (mg/dL)", "Meal context", "Notes"],
-        (readings ?? []).map((r: any) => [r.measured_at, r.value_mgdl, r.meal_context ?? "", r.notes ?? ""]),
+        (readings ?? []).map((r: CsvRow) => [r.measured_at, r.value_mgdl, r.meal_context ?? "", r.notes ?? ""]),
       ),
     );
     zip.file(
@@ -464,22 +467,22 @@ export default function Settings() {
       toCsv(
         ["Date", "Weight (lb)", "Notes"],
         (healthRows ?? [])
-          .filter((r: any) => r.weight != null)
-          .map((r: any) => [r.log_date, r.weight, r.notes ?? ""]),
+          .filter((r: CsvRow) => r.weight != null)
+          .map((r: CsvRow) => [r.log_date, r.weight, r.notes ?? ""]),
       ),
     );
     zip.file(
       "a1c.csv",
       toCsv(
         ["Measured on", "A1C (%)", "A1C (mmol/mol)", "Source", "Notes"],
-        (a1c ?? []).map((r: any) => [r.measured_on, r.value_percent, r.value_mmol_mol ?? "", r.source ?? "", r.notes ?? ""]),
+        (a1c ?? []).map((r: CsvRow) => [r.measured_on, r.value_percent, r.value_mmol_mol ?? "", r.source ?? "", r.notes ?? ""]),
       ),
     );
     zip.file(
       "measurements.csv",
       toCsv(
         ["Measured at", "Waist", "Hips", "Chest", "Thigh", "Arm", "Neck", "Notes"],
-        (measurements ?? []).map((r: any) => [
+        (measurements ?? []).map((r: CsvRow) => [
           r.measured_at, r.waist ?? "", r.hips ?? "", r.chest ?? "", r.thigh ?? "", r.arm ?? "", r.neck ?? "", r.notes ?? "",
         ]),
       ),
@@ -488,7 +491,7 @@ export default function Settings() {
       "meals.csv",
       toCsv(
         ["Date", "Meal", "Vegetables", "Protein", "Complex carbs", "Notes"],
-        (meals ?? []).map((r: any) => [
+        (meals ?? []).map((r: CsvRow) => [
           r.log_date, r.meal_type,
           r.vegetables ? "yes" : "no",
           r.protein ? "yes" : "no",
@@ -501,7 +504,7 @@ export default function Settings() {
       "fasts.csv",
       toCsv(
         ["Start", "End", "Planned hours", "Actual hours", "Window", "Status", "Notes"],
-        (fasts ?? []).map((r: any) => [
+        (fasts ?? []).map((r: CsvRow) => [
           r.fast_start_at, r.fast_end_at ?? "", r.planned_duration_hours,
           r.actual_duration_hours ?? "", r.window_type, r.status, r.notes ?? "",
         ]),
@@ -511,8 +514,8 @@ export default function Settings() {
       "actions_completed.csv",
       toCsv(
         ["Day", "Action", "Status", "Completed at", "Notes"],
-        (actions ?? []).map((r: any) => [
-          r.day_number, r.daily_actions?.action_title ?? "", r.status, r.completed_at ?? "", r.notes ?? "",
+        (actions ?? []).map((r: CsvRow) => [
+          r.day_number, (r.daily_actions as { action_title?: string } | null)?.action_title ?? "", r.status, r.completed_at ?? "", r.notes ?? "",
         ]),
       ),
     );
@@ -528,47 +531,101 @@ export default function Settings() {
     toast({ title: "Export downloaded" });
   };
 
+  // P3: server-side export. Requires a single-use, server-verified reauth
+  // ticket. Legacy consent rows are labelled and IP / user-agent values are
+  // redacted server-side before the file is produced.
   const exportDataJson = async () => {
     if (!user) return;
-    const [{ data: logs }, { data: progress }, { data: streak }, { data: badges }] = await Promise.all([
-      supabase.from("health_logs").select("*").eq("user_id", user.id),
-      supabase.from("member_progress").select("*").eq("user_id", user.id),
-      supabase.from("user_streaks").select("*").eq("user_id", user.id),
-      supabase.from("user_badges").select("earned_at, badges(slug,name)").eq("user_id", user.id),
-    ]);
-    const blob = new Blob(
-      [JSON.stringify({ user: { id: user.id, email: user.email }, logs, progress, streak, badges }, null, 2)],
-      { type: "application/json" },
+    const password = window.prompt(
+      "For your protection, re-enter your password to export your data.",
     );
+    if (!password) return;
+
+    const ticket = await requestActionTicket("export", password);
+    if (!ticket.ok) {
+      toast({
+        title:
+          ticket.error === "reauthentication_failed"
+            ? "That password didn't match"
+            : ticket.error === "rate_limited"
+              ? "Too many attempts"
+              : "Couldn't verify it's you",
+        description: "Please try again in a few minutes.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const { data, error } = await supabase.functions.invoke("export-my-data", {
+      body: { ticket: ticket.ticket! },
+    });
+    if (error || !data) {
+      toast({
+        title: "Export failed",
+        description: "Please try again or email support.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `drm-data-${user.id}.json`;
+    a.download = `drm-data-export-${new Date().toISOString().slice(0, 10)}.json`;
     a.click();
     URL.revokeObjectURL(url);
-    toast({ title: "Developer JSON downloaded" });
+    toast({ title: "Export downloaded" });
   };
 
+  // P3: account deletion opens the verified deletion lifecycle. Personal-data
+  // access is locked once the job reaches access_blocked, not on request.
   const deleteAccount = async () => {
     if (!user) return;
+    const password = window.prompt(
+      "For your protection, re-enter your password to delete your account.",
+    );
+    if (!password) return;
+
     setDeleting(true);
-    // Fire the deletion edge function for PHI purge; account row stays referenced via auth.
-    try {
-      await supabase.functions.invoke("request-data-deletion", {
-        body: { anonymous_id: user.id },
-      });
-      toast({
-        title: "Deletion requested",
-        description: "Your health data is being purged. You'll be signed out.",
-      });
-      await signOut();
-      navigate("/", { replace: true });
-    } catch {
-      toast({ title: "Couldn't process request", description: "Email support.", variant: "destructive" });
-    } finally {
+    const ticket = await requestActionTicket("delete", password);
+    if (!ticket.ok) {
       setDeleting(false);
-      setDeleteOpen(false);
+      toast({
+        title:
+          ticket.error === "reauthentication_failed"
+            ? "That password didn't match"
+            : ticket.error === "rate_limited"
+              ? "Too many attempts"
+              : "Couldn't verify it's you",
+        description: "Please try again in a few minutes.",
+        variant: "destructive",
+      });
+      return;
     }
+
+    const { data, error } = await supabase.functions.invoke("request-account-deletion", {
+      body: { ticket: ticket.ticket! },
+    });
+    setDeleting(false);
+    setDeleteOpen(false);
+
+    if (error || !data?.job_id) {
+      toast({
+        title: "Couldn't start deletion",
+        description: "Please try again or email support.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    toast({
+      title: "Deletion started",
+      description:
+        "Your account is locked while we delete your data. You'll be signed out now, and any existing session can no longer reach your records.",
+    });
+    await signOut();
+    navigate("/", { replace: true });
   };
 
   return (

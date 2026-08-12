@@ -6,17 +6,13 @@
 // Persists into daily_digest and emails Gayon. NEVER includes raw PHI.
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
+import { sendEmail } from "../_shared/email.ts";
+import { corsFor, preflight } from "../_shared/cors.ts";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-};
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_ROLE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY")!;
-const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY")!;
 const FROM_EMAIL = "Diabetes Reset <hello@diabetesresetmethod.com>";
 const DIGEST_TO = Deno.env.get("DIGEST_RECIPIENT") ?? "hello@diabetesresetmethod.com";
 
@@ -41,7 +37,9 @@ async function llm(messages: any[], jsonMode = false) {
 }
 
 Deno.serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
+  const pre = preflight(req);
+  if (pre) return pre;
+  const corsHeaders = corsFor(req);
 
   const cronSecret = Deno.env.get("CRON_SECRET");
   if (!cronSecret || req.headers.get("x-cron-secret") !== cronSecret) {
@@ -182,12 +180,10 @@ Deno.serve(async (req) => {
         <p style="font-size:12px;color:#888;margin-top:32px;">The Diabetes Reset Method · Internal operator digest. Do not forward.</p>
       </div>`;
 
-    const resendRes = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: { Authorization: `Bearer ${RESEND_API_KEY}`, "Content-Type": "application/json" },
-      body: JSON.stringify({ from: FROM_EMAIL, to: [DIGEST_TO], subject: `Daily Digest · ${digestDate}`, html }),
+    const sendResult = await sendEmail(supabase, {
+      from: FROM_EMAIL, to: DIGEST_TO, subject: `Daily Digest · ${digestDate}`, html,
     });
-    const emailOk = resendRes.ok;
+    const emailOk = sendResult.sent;
     if (emailOk && row?.id) {
       await supabase.from("daily_digest").update({ email_sent_at: new Date().toISOString() }).eq("id", row.id);
     }

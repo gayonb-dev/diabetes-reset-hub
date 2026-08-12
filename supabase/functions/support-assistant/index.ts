@@ -7,7 +7,7 @@
 
 import { createClient } from "npm:@supabase/supabase-js@2.57.2";
 
-import { corsHeaders, preflightHeaders } from "../_shared/cors.ts";
+import { corsFor } from "../_shared/cors.ts";
 
 const SYSTEM_PROMPT = `You are the in-app support assistant for The Diabetes Reset Method member area.
 
@@ -33,14 +33,14 @@ APP MAP (use for navigation answers):
 - Support (this screen): /app/support — bug reports, billing tickets, this chat.`;
 
 Deno.serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response("ok", { headers: preflightHeaders(req) });
+  if (req.method === "OPTIONS") return new Response("ok", { headers: corsFor(req) });
 
   try {
     const auth = req.headers.get("Authorization");
     if (!auth?.startsWith("Bearer ")) {
       return new Response(JSON.stringify({ error: "unauthorized" }), {
         status: 401,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers: { ...corsFor(req), "Content-Type": "application/json" },
       });
     }
 
@@ -54,7 +54,7 @@ Deno.serve(async (req) => {
     if (userErr || !userData?.user) {
       return new Response(JSON.stringify({ error: "unauthorized" }), {
         status: 401,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers: { ...corsFor(req), "Content-Type": "application/json" },
       });
     }
 
@@ -62,7 +62,7 @@ Deno.serve(async (req) => {
     if (!LOVABLE_API_KEY) {
       return new Response(JSON.stringify({ error: "LOVABLE_API_KEY missing" }), {
         status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers: { ...corsFor(req), "Content-Type": "application/json" },
       });
     }
 
@@ -73,7 +73,7 @@ Deno.serve(async (req) => {
     if (!messages.length) {
       return new Response(JSON.stringify({ error: "messages required" }), {
         status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers: { ...corsFor(req), "Content-Type": "application/json" },
       });
     }
 
@@ -98,7 +98,7 @@ Deno.serve(async (req) => {
       console.error(`Gateway ${upstream.status}: ${detail}`);
       return new Response(
         JSON.stringify({ error: "assistant_upstream_error", status: upstream.status, details: detail.slice(0, 500) }),
-        { status: upstream.status, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+        { status: upstream.status, headers: { ...corsFor(req), "Content-Type": "application/json" } },
       );
     }
 
@@ -114,13 +114,13 @@ Deno.serve(async (req) => {
     if (!reply) reply = "Sorry — I didn't catch that. Try rephrasing, or use the Report an issue button.";
 
     return new Response(JSON.stringify({ reply }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      headers: { ...corsFor(req), "Content-Type": "application/json" },
     });
   } catch (e) {
     console.error("support-assistant error:", e);
     return new Response(JSON.stringify({ error: "internal" }), {
       status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      headers: { ...corsFor(req), "Content-Type": "application/json" },
     });
   }
 });

@@ -4,15 +4,15 @@
 // day after, then invokes generate-meal-plan with the cron secret.
 
 import { createClient } from "npm:@supabase/supabase-js@2.45.4";
-import { corsHeaders, preflightHeaders } from "../_shared/cors.ts";
+import { corsFor } from "../_shared/cors.ts";
 
 Deno.serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response("ok", { headers: preflightHeaders(req) });
+  if (req.method === "OPTIONS") return new Response("ok", { headers: corsFor(req) });
 
   const CRON_SECRET = Deno.env.get("CRON_SECRET")!;
   const auth = req.headers.get("Authorization") ?? "";
   if (auth !== `Bearer ${CRON_SECRET}`) {
-    return new Response("forbidden", { status: 403, headers: corsHeaders });
+    return new Response("forbidden", { status: 403, headers: corsFor(req) });
   }
 
   const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
@@ -90,6 +90,6 @@ Deno.serve(async (req) => {
   }
 
   return new Response(JSON.stringify({ processed: results.length, results }), {
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
+    headers: { ...corsFor(req), "Content-Type": "application/json" },
   });
 });

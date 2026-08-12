@@ -1,5 +1,7 @@
 // Phase A2 + Phase B1/B2: Conversational commerce agent with memory & hospitality
-// - Resolves/creates visitor_profile from anonymous_id (+ optional auth)
+// - Resolves the visitor profile only from the opaque server-issued session
+//   token (see _shared/session.ts); no browser-supplied identifier is accepted
+
 // - Logs every turn to conversations + messages
 // - Calls Lovable AI Gateway (google/gemini-2.5-flash)
 // - Classifies user message with confidence; enforces PHI consent gate
@@ -12,12 +14,12 @@
 // - Fires summarize-conversation async every ~10 user turns
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
+import { corsFor, preflight, requireAllowedOrigin } from "../_shared/cors.ts";
+import { consumeRateLimit } from "../_shared/ratelimit.ts";
+import { readSessionToken, resolveVisitorSession } from "../_shared/session.ts";
+import { aiHealthEnabled } from "../_shared/config.ts";
+import { AI_HEALTH_UNAVAILABLE, EMERGENCY_LINE, isPossibleEmergency, isHealthRelated } from "../_shared/copy.ts";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-};
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_ROLE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -65,10 +67,11 @@ CTA TRIGGER:
 When the conversation reaches a clear buying moment — they ask how to start, ask the price after you've explained value, say "okay let's do it" or similar — keep your reply SHORT and the backend will attach a one-tap checkout button below your message. Do not paste links yourself.`;
 
 interface ChatRequest {
-  anonymous_id: string;
+  session_token?: string;
   message: string;
   conversation_id?: string;
 }
+
 
 interface Classifier {
   intent: string;
@@ -139,72 +142,173 @@ function buildCta(intent: string, origin: string) {
 }
 
 Deno.serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
+  const pre = preflight(req);
+  if (pre) return pre;
+  const originBlocked = requireAllowedOrigin(req);
+  if (originBlocked) return originBlocked;
+  const corsHeaders = corsFor(req);
+
 
   try {
-    const body = (await req.json()) as ChatRequest;
-    if (!body.anonymous_id || !body.message?.trim()) {
-      return new Response(JSON.stringify({ error: "anonymous_id and message required" }), {
+    // Reject oversized payloads before any authorization or processing work.
+    const declared = Number(req.headers.get("content-length") ?? "0");
+    if (Number.isFinite(declared) && declared > 32_768) {
+      return new Response(JSON.stringify({ error: "payload too large" }), {
+        status: 413,
+        headers: { ...corsFor(req), "Content-Type": "application/json" },
+      });
+    }
+    const rawBody = await req.text();
+    if (rawBody.length > 32_768) {
+      return new Response(JSON.stringify({ error: "payload too large" }), {
+        status: 413,
+        headers: { ...corsFor(req), "Content-Type": "application/json" },
+      });
+    }
+    let body: ChatRequest;
+    try {
+      body = JSON.parse(rawBody) as ChatRequest;
+    } catch {
+      return new Response(JSON.stringify({ error: "invalid JSON body" }), {
         status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers: { ...corsFor(req), "Content-Type": "application/json" },
+      });
+    }
+    if (typeof body.message === "string" && body.message.length > 4000) {
+      return new Response(JSON.stringify({ error: "message too long" }), {
+        status: 400,
+        headers: { ...corsFor(req), "Content-Type": "application/json" },
+      });
+    }
+    if (!body.message?.trim()) {
+      return new Response(JSON.stringify({ error: "message required" }), {
+        status: 400,
+        headers: { ...corsFor(req), "Content-Type": "application/json" },
       });
     }
 
     const supabase = createClient(SUPABASE_URL, SERVICE_ROLE);
     const origin = req.headers.get("origin") || "https://diabetesresetmethod.com";
 
-    // Resolve optional auth user
-    let userId: string | null = null;
-    let authedEmail: string | null = null;
-    let authedName: string | null = null;
-    const authHeader = req.headers.get("Authorization");
-    if (authHeader?.startsWith("Bearer ")) {
-      const token = authHeader.slice(7);
-      const { data: userData } = await supabase.auth.getUser(token);
-      userId = userData?.user?.id ?? null;
-      authedEmail = userData?.user?.email ?? null;
-      authedName =
-        (userData?.user?.user_metadata?.full_name as string | undefined) ??
-        (userData?.user?.user_metadata?.name as string | undefined) ??
-        null;
+    // ---- P4: the deletion lifecycle lock covers AI access too ----
+    const bearer = req.headers.get("Authorization")?.replace(/^Bearer\s+/i, "");
+    if (bearer) {
+      const { data: userData } = await supabase.auth.getUser(bearer);
+      const uid = userData?.user?.id;
+      if (uid) {
+        const { data: locked, error: lockErr } = await supabase.rpc("deletion_lock_active", {
+          p_user_id: uid,
+        });
+        // Fail closed: an indeterminate lookup denies access.
+        if (lockErr || locked !== false) {
+          return new Response(
+            JSON.stringify({ error: "account_deletion_in_progress", locked: true }),
+            { status: 423, headers: { ...corsFor(req), "Content-Type": "application/json" } },
+          );
+        }
+      }
     }
 
-    // Get or create visitor profile
-    const { data: existingProfile } = await supabase
+    // ---- P1: authorization is the opaque session token, nothing else ----
+
+    const session = await resolveVisitorSession(
+      supabase,
+      readSessionToken(req, body as unknown as Record<string, unknown>),
+    );
+    if (!session) {
+      return new Response(JSON.stringify({ error: "no_active_session" }), {
+        status: 401,
+        headers: { ...corsFor(req), "Content-Type": "application/json" },
+      });
+    }
+
+    // Bucket keyed by the opaque session id only. No address is read.
+    const withinLimit = await consumeRateLimit(supabase, {
+      scope: "chat",
+      principal: { kind: "session", id: session.id },
+      windowSeconds: 60,
+      limit: 20,
+    });
+    if (!withinLimit) {
+      return new Response(JSON.stringify({ error: "rate_limited" }), {
+        status: 429,
+        headers: { ...corsFor(req), "Content-Type": "application/json" },
+      });
+    }
+
+    // ---- Deterministic emergency path: no storage, no processor, no AI ----
+    if (isPossibleEmergency(body.message)) {
+      return new Response(
+        JSON.stringify({
+          conversation_id: body.conversation_id ?? null,
+          assistant_message: EMERGENCY_LINE,
+          emergency: true,
+          stored: false,
+          cta: null,
+          intent: "emergency",
+          health_related: true,
+        }),
+        { headers: { ...corsFor(req), "Content-Type": "application/json" } },
+      );
+    }
+
+    // ---- P2: AI-health gate. Closed by default, server-controlled. ----
+    const healthGateOpen = await aiHealthEnabled(supabase);
+    if (!healthGateOpen && isHealthRelated(body.message)) {
+      return new Response(
+        JSON.stringify({
+          conversation_id: body.conversation_id ?? null,
+          ai_health_available: false,
+          unavailable_state: AI_HEALTH_UNAVAILABLE,
+          assistant_message: AI_HEALTH_UNAVAILABLE.body,
+          stored: false,
+          cta: null,
+          intent: "health_unavailable",
+          health_related: true,
+        }),
+        { headers: { ...corsFor(req), "Content-Type": "application/json" } },
+      );
+    }
+
+    const nowIso = new Date().toISOString();
+    const { data: profile } = await supabase
       .from("visitor_profiles")
       .select("*")
-      .eq("anonymous_id", body.anonymous_id)
+      .eq("id", session.visitor_profile_id)
       .maybeSingle();
-
-    let profile = existingProfile;
-    const nowIso = new Date().toISOString();
     if (!profile) {
-      const { data: newProfile, error: pErr } = await supabase
-        .from("visitor_profiles")
-        .insert({
-          anonymous_id: body.anonymous_id,
-          user_id: userId,
-          source: "chat_widget",
-        })
-        .select()
-        .single();
-      if (pErr) throw pErr;
-      profile = newProfile;
-    } else if (userId && profile.user_id !== userId) {
-      await supabase
-        .from("visitor_profiles")
-        .update({ user_id: userId, last_activity_at: nowIso })
-        .eq("id", profile.id);
-      profile.user_id = userId;
-    } else {
-      await supabase
-        .from("visitor_profiles")
-        .update({ last_activity_at: nowIso })
-        .eq("id", profile.id);
+      return new Response(JSON.stringify({ error: "no_active_session" }), {
+        status: 401,
+        headers: { ...corsFor(req), "Content-Type": "application/json" },
+      });
     }
+    await supabase
+      .from("visitor_profiles")
+      .update({ last_activity_at: nowIso })
+      .eq("id", profile.id);
 
-    // Conversation
-    let conversationId = body.conversation_id;
+    const userId = session.user_id;
+    const authedEmail: string | null = null;
+    const authedName: string | null = null;
+
+    // ---- Conversation: a caller-supplied id is only honoured when it belongs
+    //      to this session's visitor profile. It is never authorization. ----
+    let conversationId: string | undefined;
+    if (body.conversation_id) {
+      const { data: owned } = await supabase
+        .from("conversations")
+        .select("id")
+        .eq("id", body.conversation_id)
+        .eq("visitor_profile_id", profile.id)
+        .maybeSingle();
+      conversationId = owned?.id;
+      if (!conversationId) {
+        return new Response(JSON.stringify({ error: "conversation_not_found" }), {
+          status: 403,
+          headers: { ...corsFor(req), "Content-Type": "application/json" },
+        });
+      }
+    }
     if (!conversationId) {
       const { data: conv, error: cErr } = await supabase
         .from("conversations")
@@ -215,30 +319,27 @@ Deno.serve(async (req) => {
       conversationId = conv.id;
     }
 
-    // Classify
+    // Classify (non-health traffic only — health messages never reach the gateway)
     const classifier = await classifyMessage(body.message);
 
-    // PHI gate
-    if (classifier.contains_phi) {
-      const { data: consent } = await supabase
-        .from("phi_consent")
-        .select("id")
-        .eq("visitor_profile_id", profile.id)
-        .is("revoked_at", null)
-        .maybeSingle();
-
-      if (!consent) {
-        return new Response(
-          JSON.stringify({
-            conversation_id: conversationId,
-            needs_phi_consent: true,
-            assistant_message:
-              "Before I respond — you just shared some health information. I want to make sure you're okay with me remembering it across our conversations so I can actually be helpful. It's stored securely, only you and our care team see it, and you can delete it anytime. Mind tapping 'I agree' below before we continue?",
-          }),
-          { headers: { ...corsHeaders, "Content-Type": "application/json" } },
-        );
-      }
+    // Belt and braces: if the classifier still flags PHI while the gate is
+    // closed, refuse without storing and without a further processor call.
+    if (!healthGateOpen && classifier.contains_phi) {
+      return new Response(
+        JSON.stringify({
+          conversation_id: conversationId,
+          ai_health_available: false,
+          unavailable_state: AI_HEALTH_UNAVAILABLE,
+          assistant_message: AI_HEALTH_UNAVAILABLE.body,
+          stored: false,
+          cta: null,
+          intent: "health_unavailable",
+          health_related: true,
+        }),
+        { headers: { ...corsFor(req), "Content-Type": "application/json" } },
+      );
     }
+
 
     // Persist user message
     const { error: msgErr } = await supabase.from("messages").insert({
@@ -284,7 +385,7 @@ Deno.serve(async (req) => {
           intent: "medical_question",
           health_related: true,
         }),
-        { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+        { headers: { ...corsFor(req), "Content-Type": "application/json" } },
       );
     }
 
@@ -385,13 +486,13 @@ Deno.serve(async (req) => {
     if (aiRes.status === 429) {
       return new Response(JSON.stringify({ error: "Rate limited. Try again in a moment." }), {
         status: 429,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers: { ...corsFor(req), "Content-Type": "application/json" },
       });
     }
     if (aiRes.status === 402) {
       return new Response(JSON.stringify({ error: "AI credits exhausted." }), {
         status: 402,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers: { ...corsFor(req), "Content-Type": "application/json" },
       });
     }
     if (!aiRes.ok) {
@@ -448,14 +549,14 @@ Deno.serve(async (req) => {
         intent: classifier.intent,
         health_related: healthRelated,
       }),
-      { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      { headers: { ...corsFor(req), "Content-Type": "application/json" } },
     );
 
   } catch (e) {
     console.error("chat-agent fatal", e);
     return new Response(JSON.stringify({ error: "Internal server error" }), {
       status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      headers: { ...corsFor(req), "Content-Type": "application/json" },
     });
   }
 });

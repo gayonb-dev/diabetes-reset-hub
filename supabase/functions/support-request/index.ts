@@ -3,13 +3,9 @@
 // team inbox via Resend. Replaces the old mailto: links.
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
+import { sendEmail } from "../_shared/email.ts";
+import { corsFor, preflight, requireAllowedOrigin } from "../_shared/cors.ts";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type, x-supabase-client-platform",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-};
 
 const SUPPORT_INBOX = "info@diabetesresetmethod.com";
 const FROM_EMAIL = "DRM Support <support@diabetesresetmethod.com>";
@@ -17,7 +13,11 @@ const FROM_EMAIL = "DRM Support <support@diabetesresetmethod.com>";
 const CATEGORIES = new Set(["Bug", "Question", "Feedback", "Billing"]);
 
 Deno.serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
+  const pre = preflight(req);
+  if (pre) return pre;
+  const originDenied = requireAllowedOrigin(req);
+  if (originDenied) return originDenied;
+  const corsHeaders = corsFor(req);
   if (req.method !== "POST") {
     return new Response(JSON.stringify({ error: "method_not_allowed" }), {
       status: 405,
@@ -108,32 +108,25 @@ Deno.serve(async (req) => {
         </table>
       </div>`;
 
-    const resendKey = Deno.env.get("RESEND_API_KEY");
-    if (!resendKey) throw new Error("RESEND_API_KEY missing");
-
-    const resp = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${resendKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        from: FROM_EMAIL,
-        to: [SUPPORT_INBOX],
-        reply_to: user.email,
-        subject,
-        html,
-      }),
+    const gateAdmin = createClient(
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
+    );
+    const sendResult = await sendEmail(gateAdmin, {
+      from: FROM_EMAIL,
+      to: SUPPORT_INBOX,
+      reply_to: user.email,
+      subject,
+      html,
     });
 
-    if (!resp.ok) {
-      const errBody = await resp.text();
-      console.error("Resend send failed", resp.status, errBody);
+    if (!sendResult.sent && sendResult.reason !== "gate_closed") {
       return new Response(
-        JSON.stringify({ error: "email_send_failed", details: errBody }),
+        JSON.stringify({ error: "email_send_failed", reason: sendResult.reason }),
         { status: 502, headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
     }
+
 
     return new Response(JSON.stringify({ ok: true }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },

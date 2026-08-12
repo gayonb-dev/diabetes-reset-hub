@@ -1,9 +1,8 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
+import { sendEmail } from "../_shared/email.ts";
+import { corsFor, preflight, requireAllowedOrigin } from "../_shared/cors.ts";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
-};
 
 function esc(s: string): string {
   return String(s ?? "")
@@ -29,23 +28,23 @@ function rateLimited(ip: string): boolean {
 }
 
 serve(async (req) => {
-  if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
-  }
+  const pre = preflight(req);
+  if (pre) return pre;
+  const originDenied = requireAllowedOrigin(req);
+  if (originDenied) return originDenied;
+  const corsHeaders = corsFor(req);
 
   try {
-    const ip =
-      req.headers.get("x-forwarded-for")?.split(",")[0].trim() ||
-      req.headers.get("cf-connecting-ip") ||
-      "unknown";
-    if (rateLimited(ip)) {
+    const body = await req.json();
+    // Throttle on the submitted address, never on a caller-supplied IP header.
+    if (rateLimited(String(body?.email ?? "").toLowerCase())) {
       return new Response(
         JSON.stringify({ error: "Too many requests. Please try again in a minute." }),
         { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    const { name, email } = await req.json();
+    const { name, email } = body;
 
     // Validate inputs to prevent abuse of the email relay
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -63,18 +62,11 @@ serve(async (req) => {
       );
     }
 
-    const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
-    if (!RESEND_API_KEY) {
-      throw new Error("RESEND_API_KEY is not configured");
-    }
-
-    const res = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${RESEND_API_KEY}`,
-      },
-      body: JSON.stringify({
+    const gateAdmin = createClient(
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
+    );
+    const sendResult = await sendEmail(gateAdmin, {
         from: "The 5-Day Diabetes Reset <hello@diabetesresetmethod.com>",
         to: [email],
         subject: "Your Free 2-Day Diabetic-Friendly Meal Plan 🍽️",
@@ -96,7 +88,7 @@ serve(async (req) => {
             <p style="font-size: 16px; color: #333; line-height: 1.6;">
               <strong>Ready for the full transformation?</strong> Our 5-Day Diabetes Reset Challenge gives you a complete action plan with daily guidance, accountability, and proven strategies.
             </p>
-            <a href="https://id-preview--187534ee-b3c7-4a03-a061-621309d24e10.lovable.app" 
+            <a href="${Deno.env.get("APP_URL") || "https://diabetesresetmethod.com"}" 
                style="display: inline-block; background: #085041; color: white; padding: 14px 28px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 16px; margin: 10px 0;">
               Join the 5-Day Challenge →
             </a>
@@ -105,14 +97,10 @@ serve(async (req) => {
             </p>
           </div>
         `,
-      }),
     });
 
-    const data = await res.json();
-
-    if (!res.ok) {
-      console.error("Resend API error:", data);
-      throw new Error(data.message || "Failed to send email");
+    if (!sendResult.sent && sendResult.reason !== "gate_closed") {
+      throw new Error(`email not sent: ${sendResult.reason}`);
     }
 
     return new Response(

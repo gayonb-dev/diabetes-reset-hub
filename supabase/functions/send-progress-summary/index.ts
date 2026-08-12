@@ -1,10 +1,8 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
+import { sendEmail } from "../_shared/email.ts";
+import { corsFor, preflight, requireAllowedOrigin } from "../_shared/cors.ts";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
-};
 
 function esc(s: unknown): string {
   return String(s ?? "")
@@ -24,9 +22,11 @@ const MOODS: Record<number, string> = {
 };
 
 serve(async (req) => {
-  if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
-  }
+  const pre = preflight(req);
+  if (pre) return pre;
+  const originDenied = requireAllowedOrigin(req);
+  if (originDenied) return originDenied;
+  const corsHeaders = corsFor(req);
 
   try {
     const { email } = await req.json();
@@ -130,17 +130,12 @@ serve(async (req) => {
       </div>
     `).join("");
 
-    const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
-    if (!RESEND_API_KEY) throw new Error("RESEND_API_KEY is not configured");
-
-    // Send summary email to coach
-    const res = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${RESEND_API_KEY}`,
-      },
-      body: JSON.stringify({
+    // Send summary email to coach, through the central delivery gate.
+    const gateAdmin = createClient(
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
+    );
+    const sendResult = await sendEmail(gateAdmin, {
         from: "The Diabetes Reset Method <hello@diabetesresetmethod.com>",
         to: ["Info@diabetesresetmethod.com"],
         subject: `🎉 5-Day Challenge Completed: ${clientName}`,
@@ -171,12 +166,10 @@ serve(async (req) => {
             </div>
           </div>
         `,
-      }),
     });
 
-    if (!res.ok) {
-      const errBody = await res.text();
-      throw new Error(`Resend API error [${res.status}]: ${errBody}`);
+    if (!sendResult.sent && sendResult.reason !== "gate_closed") {
+      throw new Error(`email not sent: ${sendResult.reason}`);
     }
 
     // Log the send for idempotency / audit
