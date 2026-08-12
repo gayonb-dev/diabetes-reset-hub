@@ -1,0 +1,1 @@
+UPDATE public.app_config SET value = 'true'::jsonb, updated_at = now() WHERE key = 'stripe_deletion_enabled';
