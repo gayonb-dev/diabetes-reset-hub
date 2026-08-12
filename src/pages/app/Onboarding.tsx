@@ -360,7 +360,7 @@ export default function Onboarding() {
                   options={[
                     { v: "reverse", label: "Reverse my diabetes" },
                     { v: "lose_weight", label: "Lose weight" },
-                    { v: "off_meds", label: "Get off medication" },
+                    { v: "off_meds", label: "Discuss medication changes with my doctor" },
                     { v: "energy", label: "Feel better and have more energy" },
                     { v: "all", label: "All of the above" },
                   ]}
