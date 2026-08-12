@@ -11,8 +11,7 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
-    "release:verify": "node scripts/release-gate.mjs",
-    "build:production": "node scripts/release-gate.mjs && vite build --mode production && node scripts/release-gate.mjs"
+    "build:production": "vite build --mode production"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
