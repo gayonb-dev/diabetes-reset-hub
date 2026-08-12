@@ -4,10 +4,11 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
 import { corsFor, preflight } from "../_shared/cors.ts";
 
 
+// Prompt 4 §7.2 — checkout collects name and email only. A phone number is not
+// required to buy the membership, so it is no longer collected or stored.
 interface ReqBody {
   customerName: string;
   customerEmail: string;
-  customerPhone?: string;
 }
 
 serve(async (req) => {
@@ -16,7 +17,7 @@ serve(async (req) => {
   const corsHeaders = corsFor(req);
 
   try {
-    const { customerName, customerEmail, customerPhone }: ReqBody = await req.json();
+    const { customerName, customerEmail }: ReqBody = await req.json();
 
     const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!customerName?.trim() || !customerEmail?.trim() || !emailRe.test(customerEmail.trim())) {
@@ -69,7 +70,6 @@ serve(async (req) => {
         metadata: {
           source: "landing_page",
           customer_name: customerName.trim(),
-          customer_phone: customerPhone?.trim() || "",
         },
       },
       payment_method_collection: "always",
@@ -80,7 +80,6 @@ serve(async (req) => {
       metadata: {
         source: "landing_page",
         customer_name: customerName.trim(),
-        customer_phone: customerPhone?.trim() || "",
       },
     });
 
@@ -88,7 +87,7 @@ serve(async (req) => {
     await supabaseAdmin.from("orders").insert({
       customer_name: customerName.trim(),
       customer_email: email,
-      customer_phone: customerPhone?.trim() || null,
+      customer_phone: null,
       amount: 2700,
       currency: "usd",
       status: "pending",

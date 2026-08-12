@@ -297,3 +297,11 @@ html {
   .report-section { page-break-inside: avoid; }
   a { color: inherit !important; text-decoration: none !important; }
 }
+
+/* Prompt 4 §15 — one fixed-bottom layer on mobile.
+   ChatWidget sets `drm-chat-open` on <body> while its panel is open; the
+   sticky purchase CTA is hidden so the two never overlap each other,
+   content, or the browser safe area. */
+body.drm-chat-open .sticky-bottom-cta {
+  display: none;
+}

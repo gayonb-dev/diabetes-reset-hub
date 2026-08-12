@@ -1,4 +1,14 @@
-import { Shield } from "lucide-react";
+import { Link } from "react-router-dom";
+
+const LEGAL_LINKS = [
+  { label: "Privacy Notice", to: "/privacy" },
+  { label: "Consumer Health Data Privacy", to: "/health-data-privacy" },
+  { label: "AI Use", to: "/ai-use" },
+  { label: "Terms", to: "/terms" },
+  { label: "Refund Terms", to: "/refunds" },
+  { label: "Data rights", to: "/data-rights" },
+  { label: "Member login", to: "/login" },
+];
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -7,36 +17,44 @@ const Footer = () => {
     <footer className="bg-foreground text-background py-12">
       <div className="container mx-auto px-4">
         <div className="text-center mb-8">
-          <h3 className="font-heading font-bold text-2xl mb-2">
-            The Diabetes Reset Method
-          </h3>
-          <p className="text-background/60">
-            Your path to reversing diabetes and reclaiming your life.
+          <h2 className="font-heading font-bold text-2xl mb-2">The Diabetes Reset Method</h2>
+          <p className="text-background/70">
+            Self-guided education for adults managing Type 2 diabetes or prediabetes.
           </p>
         </div>
 
-        <div className="flex items-center justify-center gap-2 text-background/60 text-sm mb-6">
-          <Shield className="h-4 w-4" />
-          <span>30-day money-back guarantee on all programs</span>
-        </div>
+        <nav aria-label="Footer" className="border-t border-background/20 pt-8">
+          <ul className="flex flex-wrap items-center justify-center gap-x-6 gap-y-1 text-sm">
+            {LEGAL_LINKS.map((l) => (
+              <li key={l.to}>
+                <Link
+                  to={l.to}
+                  className="inline-flex items-center min-h-[44px] text-background/80 hover:text-background underline underline-offset-4"
+                >
+                  {l.label}
+                </Link>
+              </li>
+            ))}
+            <li>
+              <a
+                href="mailto:info@diabetesresetmethod.com"
+                className="inline-flex items-center min-h-[44px] text-background/80 hover:text-background underline underline-offset-4"
+              >
+                Contact
+              </a>
+            </li>
+          </ul>
+        </nav>
 
-        <div className="border-t border-background/20 pt-8">
-          <p className="text-background/60 text-sm text-center mb-4">
-            Educational program only. We do not diagnose, treat, cure, or prevent any disease.
-            Always consult your healthcare provider before making changes to your diet, exercise, or medication.
-          </p>
+        <p className="text-background/70 text-sm text-center mt-6 max-w-2xl mx-auto">
+          DRM is a self-guided educational membership. It does not diagnose, treat, prescribe, or
+          replace care from a qualified healthcare professional. Contact emergency services for
+          urgent symptoms.
+        </p>
 
-          <p className="text-background/40 text-sm text-center">
-            © {currentYear} The Diabetes Reset Method. All rights reserved. ·{" "}
-            <a href="/login" className="hover:text-background/70 underline underline-offset-4">
-              Member login
-            </a>{" "}
-            ·{" "}
-            <a href="/llm-info" className="hover:text-background/70 underline underline-offset-4">
-              LLM Info
-            </a>
-          </p>
-        </div>
+        <p className="text-background/50 text-sm text-center mt-4">
+          © {currentYear} The Diabetes Reset Method. All rights reserved.
+        </p>
       </div>
     </footer>
   );

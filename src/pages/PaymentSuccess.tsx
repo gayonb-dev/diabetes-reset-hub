@@ -1,151 +1,190 @@
-import { CheckCircle2, Mail, ClipboardList, MessageCircle, Calendar, Trophy } from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { Helmet } from "react-helmet-async";
+import { Link } from "react-router-dom";
+import { CheckCircle2, Loader2, AlertCircle, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
+
+/**
+ * Prompt 4 §11.2 — server-verified payment success.
+ *
+ * Five states, never a claim of payment the server has not confirmed:
+ *   checking    — verification in flight
+ *   verified    — Stripe confirmed the checkout session is complete and paid
+ *   processing  — session exists but is not settled yet (poll/retry)
+ *   unverified  — no usable session reference in the URL
+ *   failed      — session expired or verification could not complete
+ */
+type State = "checking" | "verified" | "processing" | "unverified" | "failed";
+
+const SUPPORT_EMAIL = "info@diabetesresetmethod.com";
+const MAX_POLLS = 5;
+
+const Shell = ({
+  icon,
+  title,
+  children,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  children: React.ReactNode;
+}) => (
+  <main className="min-h-dvh bg-background flex items-center justify-center p-4">
+    <Helmet>
+      <title>Checkout status | Diabetes Reset Method</title>
+      <meta name="robots" content="noindex" />
+    </Helmet>
+    <div className="max-w-xl w-full py-12">
+      <div className="text-center mb-8">
+        <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-5">
+          {icon}
+        </div>
+        <h1 className="font-heading font-bold text-3xl sm:text-4xl text-foreground mb-3">{title}</h1>
+      </div>
+      <div className="space-y-5 text-muted-foreground leading-relaxed text-center">{children}</div>
+    </div>
+  </main>
+);
 
 const PaymentSuccess = () => {
-  return (
-    <main className="min-h-dvh bg-gradient-to-b from-primary/5 to-background flex items-center justify-center p-4">
-      <div className="max-w-2xl w-full py-12">
-        <div className="text-center mb-8">
-          <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
-            <CheckCircle2 className="h-12 w-12 text-primary" />
-          </div>
+  const [state, setState] = useState<State>("checking");
+  const polls = useRef(0);
 
-          <p className="text-sm font-semibold tracking-widest uppercase text-primary mb-3">The Diabetes Reset Method</p>
+  const verify = useCallback(async () => {
+    const sessionId = new URLSearchParams(window.location.search).get("session_id");
+    if (!sessionId) {
+      setState("unverified");
+      return;
+    }
+    try {
+      const { data, error } = await supabase.functions.invoke("verify-checkout-session", {
+        body: { sessionId },
+      });
+      if (error) throw error;
+      const next = data?.state as State | "error" | undefined;
+      if (next === "verified" || next === "failed" || next === "unverified") {
+        setState(next);
+        return;
+      }
+      setState(next === "processing" ? "processing" : "failed");
+    } catch {
+      setState("failed");
+    }
+  }, []);
 
-          <h1 className="font-heading font-bold text-4xl text-foreground mb-3">
-            You're In! 🎉
-          </h1>
+  useEffect(() => {
+    void verify();
+  }, [verify]);
 
-          <p className="text-foreground text-lg font-medium mb-1">
-            Welcome to The Diabetes Reset Challenge.
-          </p>
-          <p className="text-muted-foreground max-w-md mx-auto">
-            Your payment was successful. This 5-day challenge is your first step toward lowering your blood sugar, losing weight, and feeling better in your body.
-          </p>
-          <p className="text-xs text-muted-foreground max-w-md mx-auto mt-3">
-            You're in control: cancel anytime in one click from Settings → Billing.
-          </p>
-        </div>
+  // Poll a few times while Stripe settles, then stop and keep the honest state.
+  useEffect(() => {
+    if (state !== "processing" || polls.current >= MAX_POLLS) return;
+    const t = setTimeout(() => {
+      polls.current += 1;
+      void verify();
+    }, 3000);
+    return () => clearTimeout(t);
+  }, [state, verify]);
 
-
-        <div className="bg-background border border-border rounded-2xl shadow-lg p-6 md:p-8 mb-8">
-          <h2 className="font-heading font-semibold text-xl text-foreground mb-5">
-            Here's what happens next:
-          </h2>
-
-          <div className="space-y-4">
-            <div className="flex items-start gap-4">
-              <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center flex-shrink-0">
-                <Mail className="h-5 w-5 text-primary" />
-              </div>
-              <div>
-                <p className="font-medium text-foreground">Check your email</p>
-                <p className="text-sm text-muted-foreground">
-                  Your <strong>Starter Kit</strong> with everything you need before Day 1 is on its way.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-4">
-              <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center flex-shrink-0">
-                <MessageCircle className="h-5 w-5 text-primary" />
-              </div>
-              <div>
-                <p className="font-medium text-foreground">Check WhatsApp</p>
-                <p className="text-sm text-muted-foreground">
-                  Your welcome message is waiting — this is your main support channel.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-4">
-              <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center flex-shrink-0">
-                <ClipboardList className="h-5 w-5 text-primary" />
-              </div>
-              <div>
-                <p className="font-medium text-foreground">Complete your intake form</p>
-                <p className="text-sm text-muted-foreground">
-                  Help us personalize your challenge experience.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-4">
-              <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center flex-shrink-0">
-                <Calendar className="h-5 w-5 text-primary" />
-              </div>
-              <div>
-                <p className="font-medium text-foreground">Book your Day 1 session</p>
-                <p className="text-sm text-muted-foreground">
-                  30–45 min daily sessions for 5 days.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-4">
-              <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center flex-shrink-0">
-                <Trophy className="h-5 w-5 text-primary" />
-              </div>
-              <div>
-                <p className="font-medium text-foreground">Use the Progress Tracker</p>
-                <p className="text-sm text-muted-foreground">
-                  Log your daily wins and build momentum throughout the challenge.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="space-y-3">
-          <Button
-            asChild
-            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-4 font-bold rounded-xl h-auto text-lg"
-          >
-            <a href="/intake" target="_blank" rel="noopener noreferrer">
-              <ClipboardList className="mr-2 h-5 w-5" />
-              Complete Your Intake Form
-            </a>
-          </Button>
-
-          <Button
-            asChild
-            variant="outline"
-            className="w-full py-3 font-semibold rounded-xl h-auto border-primary/30 hover:bg-primary/5"
-          >
-            <a href="https://wa.me/18768822547?text=Hi!%20I%20just%20purchased%20the%205-Day%20Reset!" target="_blank" rel="noopener noreferrer">
-              <MessageCircle className="mr-2 h-5 w-5" />
-              Check WhatsApp Now
-            </a>
-          </Button>
-
-          <Button
-            asChild
-            variant="outline"
-            className="w-full py-3 font-semibold rounded-xl h-auto border-primary/30 hover:bg-primary/5"
-          >
-            <a href="/book" target="_blank" rel="noopener noreferrer">
-              <Calendar className="mr-2 h-5 w-5" />
-              Book Your First Session
-            </a>
-          </Button>
-
-          <Button
-            asChild
-            variant="outline"
-            className="w-full py-3 font-semibold rounded-xl h-auto border-primary/30 hover:bg-primary/5"
-          >
-            <a href="/progress" target="_blank" rel="noopener noreferrer">
-              <Trophy className="mr-2 h-5 w-5" />
-              Open Progress Tracker
-            </a>
-          </Button>
-        </div>
-
-        <p className="text-xs text-muted-foreground mt-6 text-center">
-          Didn't get the email? Check your spam folder or contact support@diabetesresetmethod.com
+  if (state === "checking" || state === "processing") {
+    return (
+      <Shell
+        icon={<Loader2 className="h-8 w-8 text-primary animate-spin" />}
+        title={state === "checking" ? "Confirming your checkout" : "Still confirming"}
+      >
+        <p>
+          We're confirming your checkout with our payment processor. This usually takes a few
+          seconds. You do not need to pay again.
         </p>
-      </div>
-    </main>
+        {state === "processing" && polls.current >= MAX_POLLS && (
+          <p>
+            It's taking longer than usual. You can close this page — if the payment went through,
+            your membership will be active when you sign in. If you have any doubt, email{" "}
+            <a className="text-primary underline underline-offset-4" href={`mailto:${SUPPORT_EMAIL}`}>
+              {SUPPORT_EMAIL}
+            </a>{" "}
+            before trying again.
+          </p>
+        )}
+      </Shell>
+    );
+  }
+
+  if (state === "verified") {
+    return (
+      <Shell
+        icon={<CheckCircle2 className="h-8 w-8 text-primary" />}
+        title="Your membership is active"
+      >
+        <p>
+          Your checkout is confirmed. You were charged US$27 for the first 14 days. Unless you
+          cancel before renewal, your membership renews at US$67 per month until canceled. You can
+          cancel any time in Settings → Billing.
+        </p>
+        <div className="rounded-xl border border-border bg-card p-5 text-left space-y-3">
+          <p className="font-heading font-semibold text-foreground">Next step</p>
+          <p className="text-sm">
+            Sign in with the email you used at checkout. We'll send a sign-in link to that address —
+            no password to remember.
+          </p>
+        </div>
+        <div className="space-y-3">
+          <Button asChild className="w-full min-h-[48px] rounded-xl h-auto text-base font-semibold">
+            <Link to="/login">Sign in to your membership</Link>
+          </Button>
+          <p className="text-sm">
+            Refund questions? See the{" "}
+            <Link className="text-primary underline underline-offset-4" to="/refunds">
+              30-Day Refund Terms
+            </Link>
+            .
+          </p>
+        </div>
+        <p className="text-xs">
+          DRM is a self-guided educational membership. It does not diagnose, treat, or replace care
+          from a qualified healthcare professional.
+        </p>
+      </Shell>
+    );
+  }
+
+  if (state === "unverified") {
+    return (
+      <Shell
+        icon={<AlertCircle className="h-8 w-8 text-primary" />}
+        title="We couldn't check this page"
+      >
+        <p>
+          This page was opened without a checkout reference, so we can't confirm a payment here. If
+          you completed checkout, sign in with the email you used and your membership will be
+          there.
+        </p>
+        <div className="space-y-3">
+          <Button asChild className="w-full min-h-[48px] rounded-xl h-auto text-base font-semibold">
+            <Link to="/login">Sign in</Link>
+          </Button>
+          <Button asChild variant="ghost" className="w-full min-h-[44px] h-auto">
+            <Link to="/">Return home</Link>
+          </Button>
+        </div>
+      </Shell>
+    );
+  }
+
+  return (
+    <Shell icon={<Mail className="h-8 w-8 text-primary" />} title="We couldn't confirm this checkout">
+      <p>
+        We were not able to confirm this checkout. Do not pay again yet. Email{" "}
+        <a className="text-primary underline underline-offset-4" href={`mailto:${SUPPORT_EMAIL}`}>
+          {SUPPORT_EMAIL}
+        </a>{" "}
+        with the date and amount of the charge and we'll check it for you. Never include a full card
+        number in an email.
+      </p>
+      <Button asChild variant="ghost" className="w-full min-h-[44px] h-auto">
+        <Link to="/">Return home</Link>
+      </Button>
+    </Shell>
   );
 };
 
