@@ -32,11 +32,25 @@ export function hasChatSession(): boolean {
 }
 
 
-let inflight: Promise<string | null> | null = null;
+export interface ChatSessionStart {
+  token: string | null;
+  aiHealthAvailable: boolean;
+  noticeVersion: string | null;
+  /** Set when the session could not be issued (origin, network, rate limit). */
+  error?: string;
+}
 
-export async function getChatSession(): Promise<string | null> {
+let inflight: Promise<ChatSessionStart> | null = null;
+let lastStart: ChatSessionStart | null = null;
+
+/**
+ * Single source of truth for the chat session. Every caller — the widget, the
+ * privacy page, the consent grant — goes through here, so "Delete this chat"
+ * can always see the live token. Concurrent callers share one request.
+ */
+export async function startChatSession(): Promise<ChatSessionStart> {
   const existing = read();
-  if (existing) return existing;
+  if (existing && lastStart) return lastStart;
   if (inflight) return inflight;
 
   inflight = (async () => {
@@ -44,12 +58,33 @@ export async function getChatSession(): Promise<string | null> {
       body: { action: "start" },
     });
     inflight = null;
-    if (error || !data?.session_token) return null;
+    if (error || !data?.session_token) {
+      // Fail closed: no session means health AI is treated as unavailable.
+      const failed: ChatSessionStart = {
+        token: null,
+        aiHealthAvailable: false,
+        noticeVersion: null,
+        error: error?.message ?? "session_start_failed",
+      };
+      lastStart = null;
+      return failed;
+    }
     write(data.session_token as string);
-    return data.session_token as string;
+    lastStart = {
+      token: data.session_token as string,
+      aiHealthAvailable: data.ai_health_available === true,
+      noticeVersion: (data.notice_version as string) ?? null,
+    };
+    return lastStart;
   })();
 
   return inflight;
+}
+
+export async function getChatSession(): Promise<string | null> {
+  const existing = read();
+  if (existing) return existing;
+  return (await startChatSession()).token;
 }
 
 /** Deletes this session's conversation, messages, consent and derived records. */
