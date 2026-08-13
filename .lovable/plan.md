@@ -30,9 +30,32 @@ Verify across Privacy, Consumer Health Data Privacy, AI Use, Terms, Refund Terms
 - Server failure preserves the token and reports failure. Repeat deletion is idempotent and cannot delete another chat. Outside-processor deletion is claimed only when verified.
 - Tests: synthetic chat deleted from VITA; synthetic chat deleted from Privacy after same-tab SPA navigation; reload/new tab shows no-active-chat; server failure; cross-session and forged token; repeated deletion; exact-ID cleanup proving zero residue.
 
+### Public-chat diagnosis and restoration
+
+The live website chat is reported as down. Diagnose and restore the safe public-chat experience in this run. Intended behaviour: the VITA widget opens on the public site, an anonymous opaque session can be created, deterministic answers work for membership, price, cancellation, login, membership status and site navigation without any external AI call, a personal health question receives the approved safe/unavailable response while `ai_health_enabled=false`, the interface never implies personalized health AI, and the privacy/deletion controls stay available.
+
+Diagnose in order: widget renders → production origin/CORS admits `https://diabetesresetmethod.com` → `visitor-session` creates a session → whether an applicable `public_chat_enabled` flag exists and its effective value (do not invent one unless the architecture genuinely requires it) → deterministic FAQ routing before consent → consent fails safely → only the external AI/health path is disabled → whether a rate limit or deletion-state check is wrongly disabling the whole widget. Fix the actual failing stage using the existing Prompt 3 architecture.
+
+Never: enable `ai_health_enabled`; send health or unrestricted free text to an external provider; restore browser-UUID authorization; store the opaque token in browser storage; weaken exact-origin CORS; fake an AI response; or make the whole chat depend on the external model.
+
+Tests and smoke proof: widget opens on the production origin; visitor-session creation succeeds; a price question returns `$27 for the first 14 days, then $67 per month until canceled`; login and cancellation questions return deterministic answers; a health question reaches no external AI endpoint and returns the approved safe response; disallowed and lookalike origins fail; rate limiting causes no global outage for unrelated visitors; "Delete this chat" uses the same active in-memory token and succeeds only after server confirmation; no health-AI flag is enabled; no real visitor's chat is read, changed or deleted.
+
+Client corrections land in preview only, unpublished. Only a changed Edge Function is deployed, after focused tests. The report states separately whether the live published widget currently works, whether the corrected behaviour exists only in preview pending publication, the exact failing stage found, whether deterministic FAQs work, and confirmation that health AI remains disabled.
+
+
 ## Part 1 — Stage 0 preflight and gap inventory
 
-Confirm the connected project ref, record code SHA and migration head, and read (never write) `stripe_mode`, `stripe_deletion_enabled`, `ai_health_enabled`, `dexcom_enabled`, `email_delivery_enabled`, `retention_mode`. Divergence from the expected values is reported, not silently corrected.
+Confirm the connected Supabase project is production ref `wqennhjdojjqmmqzjhti`. A different ref is a hard stop. Record code SHA and migration head, then read (never write) the expected configuration:
+
+```text
+stripe_mode=live                          ai_health_enabled=false
+stripe_deletion_enabled=true              dexcom_enabled=false
+email_delivery_enabled=false              retention_mode=report_only
+auth_email_enabled=true                   transactional_automation_enabled=false
+marketing_email_enabled=false
+```
+
+Any differing flag value is reported and investigated, never silently changed.
 
 Both Prompt 4 migrations already exist in source control under their production timestamps (`20260812205011…`, `20260812205044…`) with rollback SQL retained, so this is catalog reconciliation only — no re-execution.
 
@@ -111,7 +134,8 @@ Complete the outstanding Prompt 4.5 no-cost abuse work by reusing the existing P
 - Reject unsupported methods, content types, malformed input and oversized bodies before any database, Stripe, email or AI work.
 - Temporary limits only, answered with 429 plus `Retry-After`. No automatic permanent bans.
 - No raw IP, email, token, authorization header or health content in logs.
-- Abuse controls never block cancellation, refund requests, support, export, deletion or privacy appeals.
+- Cancellation, refund requests, support, authenticated export, deletion and privacy appeals remain available, but their endpoints may use proportionate temporary rate limits to prevent abuse. A rate-limited person receives a clear retry time and, where applicable, the monitored contact `info@diabetesresetmethod.com`. Temporary automated limits must not become a permanent denial of these rights or account controls.
+- Server-to-server behaviour is preserved: Stripe webhooks keep accepting correctly signed requests with no browser `Origin`, and cron/internal functions keep their existing secret authentication. Browser-origin requirements are never applied to legitimate Stripe, cron or internal service calls. Authentication and signature verification remain mandatory.
 
 ## Verification
 
