@@ -11,6 +11,7 @@ import { sha256Hex, verifiedUserId } from "../_shared/session.ts";
 import { buildProcessorItems } from "../_shared/processors.ts";
 import { collectBillingEvidence } from "../_shared/billingEvidence.ts";
 import { stripeDeletionEnabled } from "../_shared/config.ts";
+import { guardRequest, LIMITS } from "../_shared/abuseGuard.ts";
 
 
 Deno.serve(async (req) => {
@@ -30,6 +31,16 @@ Deno.serve(async (req) => {
 
   const userId = await verifiedUserId(admin, req);
   if (!userId) return json(req, { error: "unauthenticated" }, 401);
+
+  // Part 7. Temporary throttle only — erasure is a right, so this pauses a
+  // burst of repeated clicks and expires on its own. It is never a denial.
+  const delGuard = await guardRequest(admin, req, {
+    scope: "request-account-deletion",
+    userId,
+    rightsEndpoint: true,
+    ...LIMITS.rights,
+  });
+  if (!delGuard.allowed) return json(req, delGuard.body, 429);
 
   const ticket = req.headers.get("x-reauth-ticket") ?? body.ticket;
   if (typeof ticket !== "string" || !ticket) {
