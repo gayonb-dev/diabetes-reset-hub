@@ -129,7 +129,7 @@ describe("evaluateMembership with refunds", () => {
       },
       NOW,
     );
-    expect(ev.state).toBe("blocked");
+    expect(ev.state).toBe("restricted_billing");
     expect(ev.reason).toBe("payment_refunded");
   });
 
@@ -142,7 +142,7 @@ describe("evaluateMembership with refunds", () => {
       },
       NOW,
     );
-    expect(ev.state).toBe("full");
+    expect(ev.state).toBe("allowed");
   });
 });
 
@@ -224,7 +224,7 @@ describe("evaluateMembership with dispute holds", () => {
       { ...active, disputeHold: { open: true, reviewOnly: true } },
       NOW,
     );
-    expect(ev.state).toBe("full");
+    expect(ev.state).toBe("allowed");
   });
 
   it("does not suspend once the disputed entitlement has ended", () => {
@@ -232,23 +232,23 @@ describe("evaluateMembership with dispute holds", () => {
       { ...active, disputeHold: { open: true, entitlementEnd: new Date(NOW - day).toISOString() } },
       NOW,
     );
-    expect(ev.state).toBe("full");
+    expect(ev.state).toBe("allowed");
   });
 
   it("restores access after the hold resolves only if it independently qualifies", () => {
     const won = canonicalDisputeOutcome("won");
     const restored = evaluateMembership({ ...active, disputeHold: { open: !won.resolveHold } }, NOW);
-    expect(restored.state).toBe("full");
+    expect(restored.state).toBe("allowed");
 
     const noSub = evaluateMembership(
       { status: "cancelled", currentPeriodEnd: new Date(NOW - day).toISOString(), disputeHold: { open: false } },
       NOW,
     );
-    expect(noSub.state).toBe("blocked");
+    expect(noSub.state).toBe("restricted_billing");
   });
 
   it("leaves grace and trial semantics untouched when there is no hold", () => {
-    expect(evaluateMembership({ status: "trialing" }, NOW).state).toBe("full");
+    expect(evaluateMembership({ status: "trialing" }, NOW).state).toBe("allowed");
     expect(
       evaluateMembership(
         { status: "past_due", graceStartedAt: new Date(NOW - 2 * day).toISOString() },

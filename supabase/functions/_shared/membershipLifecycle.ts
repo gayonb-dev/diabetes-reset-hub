@@ -30,15 +30,83 @@ import {
 export const GRACE_DAYS = 7;
 export const GRACE_MS = GRACE_DAYS * 24 * 60 * 60 * 1000;
 
+/**
+ * The approved canonical access vocabulary. There is no `blocked` state: a
+ * member is never simply "blocked", they are restricted for a stated reason,
+ * and each reason keeps a different set of surfaces reachable.
+ */
 export type AccessState =
   /** Everything is paid and current. */
-  | "full"
+  | "allowed"
   /** Payment failed; inside the seven-day window; access preserved. */
   | "grace"
+  /** Programme withheld pending payment, re-subscription or refund recovery. */
+  | "restricted_billing"
+  /** Account deletion is in progress; the deletion lifecycle governs access. */
+  | "restricted_deletion"
   /** A formal card dispute is open against the entitlement funding access. */
-  | "suspended_dispute"
-  /** Access withheld pending payment or re-subscription. */
-  | "blocked";
+  | "suspended_dispute";
+
+/**
+ * Historical/internal values that predate the approved vocabulary. Mapped at
+ * the read boundary only — nothing writes these names again.
+ */
+export function mapLegacyAccessState(value: unknown): AccessState {
+  switch (String(value ?? "").trim().toLowerCase()) {
+    case "full":
+      return "allowed";
+    case "blocked":
+      return "restricted_billing";
+    case "allowed":
+    case "grace":
+    case "restricted_billing":
+    case "restricted_deletion":
+    case "suspended_dispute":
+      return String(value).trim().toLowerCase() as AccessState;
+    default:
+      return "restricted_billing";
+  }
+}
+
+/** Areas of the member app an access state may permit. */
+export type Surface = "programme" | "billing" | "settings" | "support" | "profile";
+
+/** Every surface, in a stable order. */
+export const ALL_SURFACES: Surface[] = [
+  "programme",
+  "billing",
+  "settings",
+  "support",
+  "profile",
+];
+
+/**
+ * Account-administration surfaces. Withholding these would obstruct payment
+ * recovery, cancellation and data rights, so they stay reachable whenever the
+ * member is signed in and billing (not deletion) is the reason for restriction.
+ */
+export const ACCOUNT_SURFACES: Surface[] = ["billing", "settings", "support", "profile"];
+
+/**
+ * Surfaces the deletion lifecycle permits. Deliberately narrower than the
+ * billing list: a deletion-pending member gets exactly what Prompt 3 allows
+ * and nothing more.
+ */
+export const DELETION_SURFACES: Surface[] = ["settings", "support"];
+
+export function surfacesFor(state: AccessState): Surface[] {
+  switch (state) {
+    case "allowed":
+    case "grace":
+      return ALL_SURFACES;
+    case "restricted_deletion":
+      return DELETION_SURFACES;
+    case "restricted_billing":
+    case "suspended_dispute":
+    default:
+      return ACCOUNT_SURFACES;
+  }
+}
 
 export type AccessReason =
   | "active"
@@ -51,7 +119,9 @@ export type AccessReason =
   | "incomplete"
   | "no_subscription"
   | "dispute_hold"
+  | "deletion_pending"
   | "payment_refunded";
+
 
 /**
  * One paid period. `status` is the canonical order status, so a fully refunded
@@ -83,12 +153,18 @@ export interface MembershipFacts {
   /** Unresolved dispute hold, when one exists. */
   disputeHold?: DisputeHoldFacts | null;
   /**
+   * Account deletion is in progress. Prompt 3's deletion lifecycle takes
+   * priority over every billing decision and is never widened by one.
+   */
+  deletionRestricted?: boolean | null;
+  /**
    * Every paid period known for this member. Used to recompute entitlement
    * after a refund: a refunded payment only revokes the entitlement IT funded,
    * and only when no other valid paid period covers the moment.
    */
   paidPeriods?: PaidPeriod[] | null;
 }
+
 
 /** True when a fully refunded period covers `nowMs` and nothing else does. */
 export function refundRevokesEntitlement(
@@ -123,11 +199,22 @@ export interface MembershipEvaluation {
   graceEndsAt: number | null;
   /** Whole days left in grace, floored at 0. Only meaningful while in grace. */
   graceDaysRemaining: number;
-  /** Convenience: may the member read member-only content? */
+  /**
+   * The single source of truth for route access. Nothing outside this module
+   * may re-derive a surface list from a status string.
+   */
+  allowed_surfaces: Surface[];
+  /** Convenience: may the member read programme content? */
   allowRead: boolean;
   /** Convenience: may the member create or change their own content? */
   allowWrite: boolean;
 }
+
+/** Is `surface` reachable in this evaluation? */
+export function surfaceAllowed(ev: MembershipEvaluation, surface: Surface): boolean {
+  return ev.allowed_surfaces.includes(surface);
+}
+
 
 /**
  * Evaluates entitlement from local facts only. No Stripe call, so it is safe
@@ -137,7 +224,7 @@ export function evaluateMembership(
   facts: MembershipFacts | null | undefined,
   nowMs: number = Date.now(),
 ): MembershipEvaluation {
-  if (!facts) return blocked("no_subscription", "none", nowMs, facts ?? null);
+  if (!facts) return restricted("no_subscription", "none");
 
   const status = canonicalSubscriptionStatus(facts.status);
   const periodEnd = toMs(facts.currentPeriodEnd);
@@ -159,6 +246,12 @@ export function evaluateMembership(
       graceEndsAt === null ? 0 : Math.max(0, Math.ceil((graceEndsAt - nowMs) / 86_400_000)),
   };
 
+  // Prompt 3's deletion lifecycle outranks every billing decision, and its
+  // surface list is never widened by one.
+  if (facts.deletionRestricted === true) {
+    return grant("restricted_deletion", "deletion_pending", base);
+  }
+
   // A formal, unresolved dispute against the entitlement funding access
   // suspends the programme. Inquiries and early warnings never do.
   const hold = facts.disputeHold;
@@ -171,22 +264,22 @@ export function evaluateMembership(
 
   // A fully refunded payment revokes only the entitlement it funded.
   if (refundRevokesEntitlement(facts.paidPeriods, nowMs)) {
-    return grant("blocked", "payment_refunded", base);
+    return grant("restricted_billing", "payment_refunded", base);
   }
 
 
   switch (status) {
     case "trialing":
-      return grant("full", "trialing", base);
+      return grant("allowed", "trialing", base);
 
     case "active":
       // cancel_at_period_end is a CONDITION, not a cancellation. Access
       // continues until the paid period actually ends.
       if (conditions.cancel_at_period_end && periodEnd !== null && nowMs >= periodEnd) {
-        return grant("blocked", "period_ended", base);
+        return grant("restricted_billing", "period_ended", base);
       }
       return grant(
-        "full",
+        "allowed",
         conditions.cancel_at_period_end ? "cancelling_at_period_end" : "active",
         base,
       );
@@ -203,70 +296,69 @@ export function evaluateMembership(
           // grace window cannot be demonstrated. Granting one here would be an
           // unbounded entitlement that never expires, which is the worse
           // failure. Billing, account and export surfaces stay reachable.
-          return grant("blocked", "grace_expired", base);
+          return grant("restricted_billing", "grace_expired", base);
         }
         if (nowMs >= periodEnd + GRACE_MS) {
-          return grant("blocked", "grace_expired", base);
+          return grant("restricted_billing", "grace_expired", base);
         }
         return grant("grace", "payment_failed_in_grace", base);
       }
       return inGraceWindow
         ? grant("grace", "payment_failed_in_grace", base)
-        : grant("blocked", "grace_expired", base);
+        : grant("restricted_billing", "grace_expired", base);
 
     case "cancelled":
       // A cancelled subscription keeps access through the period already paid.
       if (periodEnd !== null && nowMs < periodEnd) {
-        return grant("full", "cancelling_at_period_end", base);
+        return grant("allowed", "cancelling_at_period_end", base);
       }
-      return grant("blocked", "period_ended", base);
+      return grant("restricted_billing", "period_ended", base);
 
     case "incomplete":
     case "incomplete_expired":
-      return grant("blocked", "incomplete", base);
+      return grant("restricted_billing", "incomplete", base);
 
     case "paused":
-      return grant("blocked", "never_started", base);
+      return grant("restricted_billing", "never_started", base);
 
     case "none":
     default:
-      return grant("blocked", "no_subscription", base);
+      return grant("restricted_billing", "no_subscription", base);
   }
 }
 
 function grant(
   state: AccessState,
   reason: AccessReason,
-  base: Omit<MembershipEvaluation, "state" | "reason" | "allowRead" | "allowWrite">,
+  base: Omit<
+    MembershipEvaluation,
+    "state" | "reason" | "allowRead" | "allowWrite" | "allowed_surfaces"
+  >,
 ): MembershipEvaluation {
+  const allowed_surfaces = surfacesFor(state);
   return {
     ...base,
     state,
     reason,
-    // A blocked member may still READ their own account, billing and export
-    // surfaces — withholding those would obstruct payment recovery and would
-    // obstruct data rights. Blocking applies to programme content and writes.
-    allowRead: state !== "blocked" && state !== "suspended_dispute",
-    allowWrite: state !== "blocked" && state !== "suspended_dispute",
+    allowed_surfaces,
+    // A restricted member may still reach their account, billing, support and
+    // export surfaces — withholding those would obstruct payment recovery and
+    // data rights. Restriction applies to programme content and writes.
+    allowRead: allowed_surfaces.includes("programme"),
+    allowWrite: state === "allowed" || state === "grace",
   };
 }
 
-function blocked(
+function restricted(
   reason: AccessReason,
   canonicalStatus: CanonicalSubscriptionStatus,
-  _nowMs: number,
-  _facts: MembershipFacts | null,
 ): MembershipEvaluation {
-  return {
-    state: "blocked",
-    reason,
+  return grant("restricted_billing", reason, {
     canonicalStatus,
     conditions: { cancel_at_period_end: false, in_trial: false, in_grace: false },
     graceEndsAt: null,
     graceDaysRemaining: 0,
-    allowRead: false,
-    allowWrite: false,
-  };
+  });
 }
 
 /**

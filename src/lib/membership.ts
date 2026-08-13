@@ -12,10 +12,17 @@
 
 export {
   evaluateMembership,
+  mapLegacyAccessState,
+  surfacesFor,
+  surfaceAllowed,
+  ALL_SURFACES,
+  ACCOUNT_SURFACES,
+  DELETION_SURFACES,
   GRACE_DAYS,
   GRACE_MS,
   type AccessState,
   type AccessReason,
+  type Surface,
   type MembershipEvaluation,
   type MembershipFacts,
 } from "../../supabase/functions/_shared/membershipLifecycle";
@@ -34,11 +41,18 @@ export interface SubscriptionRow {
 export function evaluateSubscriptionRow(
   row: SubscriptionRow | null | undefined,
   nowMs: number = Date.now(),
+  extra: { deletionRestricted?: boolean } = {},
 ): MembershipEvaluation {
-  if (!row) return evaluateMembership(null, nowMs);
+  if (!row) {
+    return evaluateMembership(
+      extra.deletionRestricted ? { deletionRestricted: true } : null,
+      nowMs,
+    );
+  }
   return evaluateMembership(
     {
       status: row.status,
+      deletionRestricted: extra.deletionRestricted === true,
       cancelAtPeriodEnd: row.cancel_at_period_end ?? false,
       currentPeriodEnd: row.current_period_end ?? null,
       trialEnd: row.trial_end_date ?? null,
@@ -55,7 +69,7 @@ export function evaluateSubscriptionRow(
  */
 export function membershipNotice(
   ev: MembershipEvaluation,
-): { tone: "info" | "warning" | "blocked"; title: string; body: string } | null {
+): { tone: "info" | "warning" | "restricted"; title: string; body: string } | null {
   switch (ev.reason) {
     case "payment_failed_in_grace": {
       const d = ev.graceDaysRemaining;
@@ -69,14 +83,14 @@ export function membershipNotice(
     }
     case "grace_expired":
       return {
-        tone: "blocked",
+        tone: "restricted",
         title: "Your membership is paused",
         body:
           "We couldn't take payment, so your programme is on hold. Update your payment method to pick up exactly where you left off — nothing has been deleted.",
       };
     case "period_ended":
       return {
-        tone: "blocked",
+        tone: "restricted",
         title: "Your membership has ended",
         body:
           "Your paid period is over. You can restart at any time, and your history is still here.",
@@ -89,20 +103,27 @@ export function membershipNotice(
       };
     case "incomplete":
       return {
-        tone: "blocked",
+        tone: "restricted",
         title: "Your membership isn't set up yet",
         body: "The first payment hasn't completed. Finish checkout to unlock your programme.",
       };
     case "dispute_hold":
       return {
-        tone: "blocked",
+        tone: "restricted",
         title: "Your membership is on hold",
         body:
           "Your bank has raised a formal dispute on a payment, so your programme is paused while it's resolved. Your billing, account settings, data export and support are all still available — contact us and we'll help sort it out.",
       };
+    case "deletion_pending":
+      return {
+        tone: "restricted",
+        title: "Your account is being closed",
+        body:
+          "You asked us to delete your account, so your programme is closed while we finish. Your settings and support are still available if you need them.",
+      };
     case "payment_refunded":
       return {
-        tone: "blocked",
+        tone: "restricted",
         title: "Your membership is paused",
         body:
           "The payment covering this period was refunded, so your programme is on hold. Nothing has been deleted — restart any time and pick up where you left off.",
