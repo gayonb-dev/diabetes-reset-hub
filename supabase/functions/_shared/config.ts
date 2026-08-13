@@ -84,7 +84,13 @@ export function stripeKeyClassMismatch(mode: string, key: string): string | null
   return null;
 }
 
-/** Whether outbound mail may be delivered to this address. */
+/**
+ * Whether outbound AUTOMATED/MARKETING mail may be delivered to this address.
+ *
+ * Authentication email (magic-link sign-in) does NOT pass through this gate —
+ * see `authEmailEnabled` / `sendAuthEmail`. A member-requested sign-in link is
+ * not an automated member email.
+ */
 export async function emailAllowed(
   admin: SupabaseClient,
   to: string,
@@ -94,6 +100,16 @@ export async function emailAllowed(
   const allow = await getConfig<string[]>(admin, "email_test_allowlist", []);
   if (!Array.isArray(allow) || allow.length === 0) return false;
   return allow.map((a) => String(a).toLowerCase()).includes(to.toLowerCase());
+}
+
+/**
+ * Magic-link sign-in email gate. Required core feature, so it defaults to TRUE:
+ * a missing or unreadable config row must never lock members out. It is
+ * deliberately independent of `email_delivery_enabled`,
+ * `transactional_automation_enabled` and `marketing_email_enabled`.
+ */
+export async function authEmailEnabled(admin: SupabaseClient): Promise<boolean> {
+  return (await getConfig<boolean>(admin, "auth_email_enabled", true)) !== false;
 }
 
 /** Test-only: drops the memoised values so a flag flip is observed immediately. */
