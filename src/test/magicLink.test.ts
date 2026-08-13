@@ -116,9 +116,11 @@ describe("auth email is independent of marketing and automation flags", () => {
   });
 
   it("send-magic-link uses the auth path, not the marketing gate", () => {
-    expect(FN).toContain("sendAuthEmail");
-    expect(FN).not.toContain("sendGatedEmail");
-    expect(FN).not.toContain("email_delivery_enabled");
+    const code = FN.split("\n").filter((l) => !l.trim().startsWith("//")).join("\n");
+    expect(code).toContain("sendAuthEmail");
+    expect(code).not.toContain("sendGatedEmail");
+    expect(code).not.toContain("emailAllowed");
+    expect(code).not.toContain("email_delivery_enabled");
   });
 });
 

@@ -18,6 +18,10 @@ export function safeNextServer(raw: unknown, fallback: string = DEFAULT_NEXT): s
   let value = raw.trim();
   if (!value) return fallback;
 
+  // Backslashes — literal or encoded at any depth — are never legitimate here.
+  if (value.includes("\\") || /%(25)*5c/i.test(value)) return fallback;
+
+
   // Decode up to twice so double-encoded bypasses (%252f, %255c) are inspected.
   for (let i = 0; i < 2; i++) {
     let decoded: string;
