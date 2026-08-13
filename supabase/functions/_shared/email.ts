@@ -60,3 +60,44 @@ export async function sendEmail(
   }
   return { sent: true, status: res.status };
 }
+
+/**
+ * AUTHENTICATION email (magic-link sign-in).
+ *
+ * Deliberately independent of `email_delivery_enabled`, the test allowlist and
+ * every marketing/automation flag: a member-requested sign-in link is a core
+ * feature, not an automated member email. Gated only by `auth_email_enabled`,
+ * which defaults to true so a config read failure cannot lock members out.
+ *
+ * Never logs the recipient, subject, body, link or token.
+ */
+export async function sendAuthEmail(
+  admin: SupabaseClient,
+  payload: EmailPayload,
+): Promise<EmailResult> {
+  const recipients = (Array.isArray(payload.to) ? payload.to : [payload.to])
+    .map((r) => String(r ?? "").trim())
+    .filter(Boolean);
+  if (recipients.length === 0) return { sent: false, reason: "no_recipient" };
+
+  if (!(await authEmailEnabled(admin))) return { sent: false, reason: "gate_closed" };
+
+  const key = Deno.env.get("RESEND_API_KEY");
+  if (!key) return { sent: false, reason: "no_api_key" };
+
+  const res = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${key}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ ...payload, to: recipients }),
+  });
+
+  if (!res.ok) {
+    // Status only. The provider body can echo the recipient address.
+    console.error("auth email provider rejected the send", res.status);
+    return { sent: false, reason: "provider_error", status: res.status };
+  }
+  return { sent: true, status: res.status };
+}
