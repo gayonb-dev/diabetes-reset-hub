@@ -8,6 +8,7 @@ import Stripe from "https://esm.sh/stripe@18.5.0";
 import { createClient } from "npm:@supabase/supabase-js@2.57.2";
 
 import { corsFor } from "../_shared/cors.ts";
+import { guardRequest, LIMITS } from "../_shared/abuseGuard.ts";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsFor(req) });
@@ -52,6 +53,20 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
     );
+
+    // Part 7. Cancel/reactivate mutates lifecycle state at Stripe. Bounded so a
+    // stuck client cannot flap the subscription back and forth.
+    const guard = await guardRequest(supa, req, {
+      scope: "cancel-subscription",
+      userId,
+      ...LIMITS.billingAction,
+    });
+    if (!guard.allowed) {
+      return new Response(JSON.stringify(guard.body), {
+        status: 429,
+        headers: { ...corsFor(req), "Content-Type": "application/json" },
+      });
+    }
 
     // 1. Find subscription id — prefer local row.
     const { data: subRow } = await supa

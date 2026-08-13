@@ -17,6 +17,7 @@ import { z } from "npm:zod@3.23.8";
 import { createClient } from "npm:@supabase/supabase-js@2.45.4";
 import { classifyQuestion } from "../_shared/medicalSafety.ts";
 import { corsFor, preflight } from "../_shared/cors.ts";
+import { guardRequest, LIMITS } from "../_shared/abuseGuard.ts";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_ROLE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -179,6 +180,21 @@ Deno.serve(async (req) => {
     if (!user) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
         status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // Part 7. Each answer costs real money to produce, so the bound sits
+    // before the request body is even parsed.
+    const guardAdmin = createClient(SUPABASE_URL, SERVICE_ROLE);
+    const guard = await guardRequest(guardAdmin, req, {
+      scope: "ask-vita",
+      userId: user.id,
+      ...LIMITS.assistant,
+    });
+    if (!guard.allowed) {
+      return new Response(JSON.stringify(guard.body), {
+        status: 429,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }

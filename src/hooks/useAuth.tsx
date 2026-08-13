@@ -8,6 +8,8 @@ interface Subscription {
   trial_end_date: string | null;
   current_period_end: string | null;
   cancel_at_period_end: boolean;
+  /** B5. First verified payment failure of the current episode; starts grace. */
+  grace_started_at: string | null;
   day_number: number;
   stripe_customer_id: string;
   stripe_subscription_id: string;

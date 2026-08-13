@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
@@ -15,6 +15,7 @@ import { Loader2, AlertCircle, CreditCard, ExternalLink, RotateCcw } from "lucid
 import { toast } from "@/hooks/use-toast";
 import EmptyState from "@/components/ui/empty-state";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { evaluateSubscriptionRow, membershipNotice } from "@/lib/membership";
 
 interface Invoice {
   id: string;
@@ -59,17 +60,48 @@ export default function Billing() {
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | null>(null);
   const [invLoading, setInvLoading] = useState(true);
+  const [invError, setInvError] = useState(false);
+
+  // B1. Hook stability.
+  //
+  // The previous version fired one unguarded request on mount and wrote the
+  // result into state whenever it happened to arrive. Three consequences:
+  // a slow response could overwrite a newer one, an unmounted component was
+  // still written to, and a failure was indistinguishable from "no invoices"
+  // — a member with a real billing history saw an empty state and no way to
+  // retry. Each request now carries a sequence number, and only the newest
+  // one is allowed to land.
+  const reqSeq = useRef(0);
+  const subscriptionId = subscription?.id ?? null;
+
+  const loadInvoices = useCallback(async () => {
+    const seq = ++reqSeq.current;
+    setInvLoading(true);
+    setInvError(false);
+    try {
+      const { data, error } = await supabase.functions.invoke("list-invoices", {});
+      if (seq !== reqSeq.current) return; // a newer request superseded this one
+      if (error || !data) {
+        setInvError(true);
+        return;
+      }
+      setInvoices(Array.isArray(data.invoices) ? data.invoices : []);
+      setPaymentMethod(data.payment_method ?? null);
+    } catch {
+      if (seq === reqSeq.current) setInvError(true);
+    } finally {
+      if (seq === reqSeq.current) setInvLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
-    (async () => {
-      const { data, error } = await supabase.functions.invoke("list-invoices", {});
-      if (!error && data) {
-        setInvoices(data.invoices || []);
-        setPaymentMethod(data.payment_method || null);
-      }
-      setInvLoading(false);
-    })();
-  }, []);
+    void loadInvoices();
+    // Refetch when the subscription identity changes, so the history shown
+    // always belongs to the subscription currently on screen.
+  }, [loadInvoices, subscriptionId]);
+
+  // Invalidate any in-flight response on unmount: nothing may land afterwards.
+  useEffect(() => () => { reqSeq.current++; }, []);
 
   const openPortal = async () => {
     setLoading(true);
@@ -90,6 +122,9 @@ export default function Billing() {
   };
 
   const invokeCancel = async (cancel: boolean) => {
+    // B1. A double tap (or a tap on each button in quick succession) must not
+    // produce two lifecycle calls racing each other to a different result.
+    if (cancelling || reactivating) return;
     const setter = cancel ? setCancelling : setReactivating;
     setter(true);
     try {
@@ -139,6 +174,10 @@ export default function Billing() {
   // Must stay above the early return: hooks run in the same order every render.
   const visibleInvoices = useMemo(() => (isMobile ? invoices.slice(0, 6) : invoices), [invoices, isMobile]);
 
+  // B5. Same evaluator the server uses, for presentation only.
+  const evaluation = useMemo(() => evaluateSubscriptionRow(subscription), [subscription]);
+  const notice = useMemo(() => membershipNotice(evaluation), [evaluation]);
+
   if (!subscription) {
     return (
       <div className="max-w-xl mx-auto py-12 text-center text-sm text-muted-foreground">
@@ -160,6 +199,23 @@ export default function Billing() {
   return (
     <div className="max-w-2xl mx-auto space-y-5">
       <h1 className="font-heading font-semibold text-2xl text-primary">Your Subscription</h1>
+
+      {/* B5. Lifecycle notice — honest about access that is continuing. */}
+      {notice && (
+        <div
+          role="status"
+          className={`rounded-xl border p-4 text-sm ${
+            notice.tone === "blocked"
+              ? "border-destructive/40 bg-destructive/5"
+              : notice.tone === "warning"
+                ? "border-accent/50 bg-accent/10"
+                : "border-border bg-muted/50"
+          }`}
+        >
+          <p className="font-medium text-foreground mb-1">{notice.title}</p>
+          <p className="text-secondary-fg">{notice.body}</p>
+        </div>
+      )}
 
       {/* Status card */}
       <Card className="p-6 border border-border">
@@ -251,6 +307,17 @@ export default function Billing() {
         <p className="text-sm font-medium text-foreground mb-3">Billing history</p>
         {invLoading ? (
           <p className="text-sm text-muted-foreground">Loading…</p>
+        ) : invError ? (
+          // B1. A failed fetch must never be presented as "no charges yet".
+          <div className="text-sm">
+            <p className="text-secondary-fg mb-3">
+              We couldn't load your billing history just now. This doesn't affect your membership
+              or your payments.
+            </p>
+            <Button variant="outline" onClick={() => void loadInvoices()} className="h-10">
+              Try again
+            </Button>
+          </div>
         ) : invoices.length === 0 ? (
           <EmptyState
             title="No charges yet"

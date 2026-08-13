@@ -21,6 +21,7 @@ import {
   type SessionFacts,
 } from "../_shared/membershipOffer.ts";
 import { findUserByEmail, type AdminListUsersClient } from "../_shared/findUserByEmail.ts";
+import { guardRequest, LIMITS } from "../_shared/abuseGuard.ts";
 
 serve(async (req) => {
   const pre = preflight(req);
@@ -45,6 +46,14 @@ serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
       { auth: { persistSession: false } },
     );
+
+    // Part 7. The success page polls this endpoint, so the limit is higher
+    // than checkout but still finite: an id guesser gets very few attempts.
+    const guard = await guardRequest(admin, req, {
+      scope: "verify-checkout-session",
+      ...LIMITS.checkoutVerify,
+    });
+    if (!guard.allowed) return json("unverified");
 
     const stripeKey = Deno.env.get("STRIPE_SECRET_KEY") || "";
     const mode = await stripeMode(admin);

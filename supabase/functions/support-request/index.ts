@@ -5,6 +5,7 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
 import { sendEmail } from "../_shared/email.ts";
 import { corsFor, preflight, requireAllowedOrigin } from "../_shared/cors.ts";
+import { guardRequest, LIMITS } from "../_shared/abuseGuard.ts";
 
 
 const SUPPORT_INBOX = "info@diabetesresetmethod.com";
@@ -47,6 +48,19 @@ Deno.serve(async (req) => {
       });
     }
     const user = userData.user;
+
+    // Part 7. Free text delivered to a human inbox is the classic spam target.
+    const guard = await guardRequest(supabase, req, {
+      scope: "support-request",
+      userId: user.id,
+      ...LIMITS.support,
+    });
+    if (!guard.allowed) {
+      return new Response(JSON.stringify(guard.body), {
+        status: 429,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
 
     const body = await req.json().catch(() => ({}));
     const category = String(body.category ?? "Question");

@@ -5,6 +5,13 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
 import { corsFor } from "../_shared/cors.ts";
 import { sendEmail as sendGatedEmail } from "../_shared/email.ts";
 import { findUserByEmail, type AdminListUsersClient } from "../_shared/findUserByEmail.ts";
+import {
+  canonicalSubscriptionStatus,
+  decideEventApplication,
+  eventObjectId,
+  subscriptionConditions,
+} from "../_shared/billingCanonical.ts";
+import { nextGraceMarker } from "../_shared/membershipLifecycle.ts";
 
 const ADMIN_EMAIL = "support@diabetesresetmethod.com";
 const FROM_EMAIL = "The Diabetes Reset Method <hello@diabetesresetmethod.com>";
@@ -105,6 +112,80 @@ serve(async (req) => {
 
     console.log("[sub-webhook] event:", event.type);
 
+    // -----------------------------------------------------------------
+    // B4. Idempotency and ordering, before any state is touched.
+    //
+    // Stripe retries, and Stripe does not promise delivery order. Claiming
+    // the event ID makes a redelivery a no-op, and comparing timestamps
+    // stops an older event from rolling newer state backwards.
+    // -----------------------------------------------------------------
+    const rawObject = event.data.object as unknown as Record<string, unknown>;
+    const objectId = eventObjectId(event.type, rawObject);
+    const objectType = String((rawObject?.object as string) ?? "unknown");
+
+    const { data: claimRows, error: claimErr } = await sb.rpc("claim_billing_event", {
+      p_event_id: event.id,
+      p_event_type: event.type,
+      p_created: new Date((event.created ?? 0) * 1000).toISOString(),
+      p_object_id: objectId,
+      p_object_type: objectType,
+      p_livemode: event.livemode ?? null,
+      p_synthetic: false,
+    });
+    if (claimErr) {
+      // Never process without the ledger: that is how double-charging and
+      // duplicate provisioning happen. Return 500 so Stripe retries.
+      console.error("[sub-webhook] ledger claim failed:", claimErr.message);
+      return new Response(JSON.stringify({ error: "ledger_unavailable" }), {
+        status: 500,
+        headers: { ...corsFor(req), "Content-Type": "application/json" },
+      });
+    }
+    const claim = Array.isArray(claimRows) ? claimRows[0] : claimRows;
+    const decision = decideEventApplication({
+      eventId: event.id,
+      eventCreated: event.created ?? null,
+      objectId,
+      alreadyClaimed: claim?.claimed !== true,
+      lastAppliedCreated: claim?.last_applied_created ?? null,
+    });
+    console.log("[sub-webhook] decision:", decision.action, decision.reason);
+
+    if (decision.action === "skip_duplicate") {
+      await sb.rpc("finalize_billing_event", {
+        p_event_id: event.id,
+        p_state: "skipped_duplicate",
+        p_reason: decision.reason,
+      });
+      return new Response(JSON.stringify({ received: true, duplicate: true }), {
+        headers: { ...corsFor(req), "Content-Type": "application/json" },
+        status: 200,
+      });
+    }
+
+    // The payload in hand is stale or ambiguous. Its contents must not be
+    // written. Re-retrieve the authoritative object from Stripe instead.
+    let subscriptionOverride: Stripe.Subscription | null = null;
+    if (decision.action === "refetch_current" && objectId?.startsWith("sub_")) {
+      try {
+        subscriptionOverride = await stripe.subscriptions.retrieve(objectId);
+      } catch (e) {
+        console.error("[sub-webhook] refetch failed:", (e as Error).message);
+      }
+    }
+
+    const finalize = async (state: string, extra: Record<string, unknown> = {}) => {
+      await sb.rpc("finalize_billing_event", {
+        p_event_id: event.id,
+        p_state: state,
+        p_reason: decision.reason,
+        p_order_status: (extra.orderStatus as string) ?? null,
+        p_sub_status: (extra.subStatus as string) ?? null,
+        p_conditions: (extra.conditions as Record<string, unknown>) ?? {},
+      });
+    };
+    const appliedState = decision.action === "refetch_current" ? "refetched_current" : "applied";
+
     switch (event.type) {
       case "checkout.session.completed": {
         const session = event.data.object as Stripe.Checkout.Session;
@@ -197,12 +278,20 @@ serve(async (req) => {
           }
           await sendEmail(RESEND, ADMIN_EMAIL, `🎉 New member: ${name}`, adminNotifHtml(name, email, phone));
         }
+        await finalize(appliedState, {
+          orderStatus: "paid",
+          subStatus: canonicalSubscriptionStatus(status),
+          conditions: subscriptionConditions({ status, trialEnd }),
+        });
         break;
       }
 
       case "customer.subscription.updated":
       case "customer.subscription.deleted": {
-        const sub = event.data.object as Stripe.Subscription;
+        // When the decision was `refetch_current`, the payload in hand is
+        // stale and the authoritative object retrieved from Stripe is used
+        // in its place.
+        const sub = subscriptionOverride ?? (event.data.object as Stripe.Subscription);
         await sb
           .from("subscriptions")
           .update({
@@ -215,20 +304,59 @@ serve(async (req) => {
             updated_at: new Date().toISOString(),
           })
           .eq("stripe_subscription_id", sub.id);
+        await finalize(appliedState, {
+          subStatus: canonicalSubscriptionStatus(sub.status),
+          conditions: subscriptionConditions({
+            status: sub.status,
+            cancelAtPeriodEnd: sub.cancel_at_period_end,
+            trialEnd: sub.trial_end,
+          }),
+        });
+        break;
+      }
+
+      // B5. A verified success ends the failure episode: the grace marker is
+      // cleared so a later, unrelated failure starts a fresh seven days
+      // rather than inheriting an exhausted window.
+      case "invoice.payment_succeeded":
+      case "invoice.paid": {
+        const inv = event.data.object as Stripe.Invoice;
+        const subId = inv.subscription as string | null;
+        if (subId) {
+          await sb
+            .from("subscriptions")
+            .update({ grace_started_at: null, updated_at: new Date().toISOString() })
+            .eq("stripe_subscription_id", subId);
+        }
+        await finalize(appliedState, { orderStatus: "paid" });
         break;
       }
 
       case "invoice.payment_failed": {
         const inv = event.data.object as Stripe.Invoice;
         if (inv.subscription) {
-          await sb.from("subscriptions")
-            .update({ status: "past_due", updated_at: new Date().toISOString() })
-            .eq("stripe_subscription_id", inv.subscription as string);
-          const { data: subRow } = await sb
+          const { data: existingRow } = await sb
             .from("subscriptions")
-            .select("user_id")
+            .select("user_id, grace_started_at")
             .eq("stripe_subscription_id", inv.subscription as string)
-            .single();
+            .maybeSingle();
+
+          // B5. Grace starts at the FIRST verified failure of this episode.
+          // Repeated retries do not extend it.
+          const graceStart = nextGraceMarker({
+            event: "payment_failed",
+            existingGraceStartedAt: existingRow?.grace_started_at ?? null,
+            eventAt: (event.created ?? 0) * 1000,
+          });
+
+          await sb.from("subscriptions")
+            .update({
+              status: "past_due",
+              grace_started_at: graceStart,
+              updated_at: new Date().toISOString(),
+            })
+            .eq("stripe_subscription_id", inv.subscription as string);
+          const subRow = existingRow;
           if (subRow?.user_id) {
             await sb.from("dunning_attempts").insert({
               user_id: subRow.user_id,
@@ -262,12 +390,20 @@ serve(async (req) => {
             }
           }
         }
+        await finalize(appliedState, {
+          orderStatus: "failed",
+          subStatus: "past_due",
+          conditions: { cancel_at_period_end: false, in_trial: false, in_grace: true },
+        });
         break;
       }
 
 
       default:
         console.log("[sub-webhook] unhandled:", event.type);
+        // Recorded, but explicitly NOT counted as applied state, so it can
+        // never be mistaken for lifecycle coverage that does not exist.
+        await finalize("ignored");
     }
 
     return new Response(JSON.stringify({ received: true }), {

@@ -148,6 +148,60 @@ export type Database = {
         }
         Relationships: []
       }
+      billing_events: {
+        Row: {
+          applied_at: string | null
+          canonical_order_status: string | null
+          canonical_subscription_status: string | null
+          decision_reason: string | null
+          event_type: string
+          id: string
+          is_synthetic: boolean
+          livemode: boolean | null
+          object_id: string | null
+          object_type: string | null
+          processing_state: string
+          received_at: string
+          stripe_created: string | null
+          stripe_event_id: string
+          subscription_conditions: Json
+        }
+        Insert: {
+          applied_at?: string | null
+          canonical_order_status?: string | null
+          canonical_subscription_status?: string | null
+          decision_reason?: string | null
+          event_type: string
+          id?: string
+          is_synthetic?: boolean
+          livemode?: boolean | null
+          object_id?: string | null
+          object_type?: string | null
+          processing_state?: string
+          received_at?: string
+          stripe_created?: string | null
+          stripe_event_id: string
+          subscription_conditions?: Json
+        }
+        Update: {
+          applied_at?: string | null
+          canonical_order_status?: string | null
+          canonical_subscription_status?: string | null
+          decision_reason?: string | null
+          event_type?: string
+          id?: string
+          is_synthetic?: boolean
+          livemode?: boolean | null
+          object_id?: string | null
+          object_type?: string | null
+          processing_state?: string
+          received_at?: string
+          stripe_created?: string | null
+          stripe_event_id?: string
+          subscription_conditions?: Json
+        }
+        Relationships: []
+      }
       blood_sugar_readings: {
         Row: {
           created_at: string
@@ -1129,6 +1183,13 @@ export type Database = {
             referencedRelation: "orders"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "intake_submissions_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "v_canonical_orders"
+            referencedColumns: ["id"]
+          },
         ]
       }
       leads: {
@@ -2090,6 +2151,7 @@ export type Database = {
           created_at: string
           current_period_end: string | null
           day_number: number
+          grace_started_at: string | null
           id: string
           last_active_at: string | null
           status: string
@@ -2105,6 +2167,7 @@ export type Database = {
           created_at?: string
           current_period_end?: string | null
           day_number?: number
+          grace_started_at?: string | null
           id?: string
           last_active_at?: string | null
           status: string
@@ -2120,6 +2183,7 @@ export type Database = {
           created_at?: string
           current_period_end?: string | null
           day_number?: number
+          grace_started_at?: string | null
           id?: string
           last_active_at?: string | null
           status?: string
@@ -2677,7 +2741,96 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      v_canonical_orders: {
+        Row: {
+          amount: number | null
+          created_at: string | null
+          currency: string | null
+          customer_email: string | null
+          id: string | null
+          order_status: string | null
+          product_id: string | null
+          raw_status: string | null
+          stripe_payment_intent_id: string | null
+          stripe_session_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          amount?: number | null
+          created_at?: string | null
+          currency?: string | null
+          customer_email?: string | null
+          id?: string | null
+          order_status?: never
+          product_id?: string | null
+          raw_status?: string | null
+          stripe_payment_intent_id?: string | null
+          stripe_session_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          amount?: number | null
+          created_at?: string | null
+          currency?: string | null
+          customer_email?: string | null
+          id?: string | null
+          order_status?: never
+          product_id?: string | null
+          raw_status?: string | null
+          stripe_payment_intent_id?: string | null
+          stripe_session_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      v_canonical_subscriptions: {
+        Row: {
+          created_at: string | null
+          current_period_end: string | null
+          grace_ends_at: string | null
+          grace_started_at: string | null
+          id: string | null
+          raw_status: string | null
+          stripe_customer_id: string | null
+          stripe_subscription_id: string | null
+          subscription_conditions: Json | null
+          subscription_status: string | null
+          trial_end_date: string | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          current_period_end?: string | null
+          grace_ends_at?: never
+          grace_started_at?: string | null
+          id?: string | null
+          raw_status?: string | null
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          subscription_conditions?: never
+          subscription_status?: never
+          trial_end_date?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          current_period_end?: string | null
+          grace_ends_at?: never
+          grace_started_at?: string | null
+          id?: string | null
+          raw_status?: string | null
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          subscription_conditions?: never
+          subscription_status?: never
+          trial_end_date?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       award_helpful_points: {
@@ -2696,6 +2849,26 @@ export type Database = {
         Returns: {
           current_streak: number
           longest_streak: number
+        }[]
+      }
+      canonical_order_status: { Args: { p_raw: string }; Returns: string }
+      canonical_subscription_status: {
+        Args: { p_raw: string }
+        Returns: string
+      }
+      claim_billing_event: {
+        Args: {
+          p_created: string
+          p_event_id: string
+          p_event_type: string
+          p_livemode?: boolean
+          p_object_id: string
+          p_object_type: string
+          p_synthetic?: boolean
+        }
+        Returns: {
+          claimed: boolean
+          last_applied_created: string
         }[]
       }
       consume_export_artifact: {
@@ -2725,6 +2898,17 @@ export type Database = {
         Args: { p_user_id: string }
         Returns: boolean
       }
+      finalize_billing_event: {
+        Args: {
+          p_conditions?: Json
+          p_event_id: string
+          p_order_status?: string
+          p_reason?: string
+          p_state: string
+          p_sub_status?: string
+        }
+        Returns: undefined
+      }
       get_app_config: { Args: { p_key: string }; Returns: Json }
       has_role: {
         Args: { p_role: string; p_user_id: string }
@@ -2732,6 +2916,8 @@ export type Database = {
       }
       member_access_allowed: { Args: never; Returns: boolean }
       member_write_allowed: { Args: never; Returns: boolean }
+      membership_access_state: { Args: { p_user_id: string }; Returns: string }
+      membership_write_allowed: { Args: never; Returns: boolean }
       merge_visitor_session_into_member: {
         Args: { p_session_id: string; p_user_id: string }
         Returns: Json

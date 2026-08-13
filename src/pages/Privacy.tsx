@@ -25,7 +25,13 @@ export default function Privacy() {
 
   async function handleDeleteChat() {
     if (!hasChatSession()) {
-      setDone(true);
+      // No false success. "Deleted" must only ever follow a server-confirmed
+      // deletion; with no session in this tab there was nothing to delete and
+      // saying otherwise would be a claim we cannot support.
+      toast({
+        title: "Nothing to delete",
+        description: "There's no active chat session in this browser tab.",
+      });
       return;
     }
     setBusy(true);

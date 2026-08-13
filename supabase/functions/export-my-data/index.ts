@@ -9,6 +9,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
 import { corsFor, preflight, json, requireAllowedOrigin } from "../_shared/cors.ts";
 import { sha256Hex, newToken, verifiedUserId, deletionLockActive } from "../_shared/session.ts";
 import { buildSnapshot, snapshotReadme } from "../_shared/exportBuild.ts";
+import { guardRequest, LIMITS } from "../_shared/abuseGuard.ts";
 import { buildZip, toCsv } from "../_shared/zip.ts";
 
 const TTL_SECONDS = 300;
@@ -38,6 +39,17 @@ Deno.serve(async (req) => {
 
   const userId = await verifiedUserId(admin, req);
   if (!userId) return json(req, { error: "unauthenticated" }, 401);
+
+  // Part 7. A TEMPORARY, self-expiring throttle on a rights endpoint. It slows
+  // a burst; it never refuses the right. The window is short and the message
+  // offers a human route, so no one can be locked out of their own data.
+  const exportGuard = await guardRequest(admin, req, {
+    scope: "export-my-data",
+    userId,
+    rightsEndpoint: true,
+    ...LIMITS.rights,
+  });
+  if (!exportGuard.allowed) return json(req, exportGuard.body, 429);
 
   const ticket = req.headers.get("x-reauth-ticket") ?? body.ticket;
   if (typeof ticket !== "string" || !ticket) {
