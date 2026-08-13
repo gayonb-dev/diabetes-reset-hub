@@ -20,6 +20,7 @@ import {
   type LocalFacts,
   type SessionFacts,
 } from "../_shared/membershipOffer.ts";
+import { findUserByEmail, type AdminListUsersClient } from "../_shared/findUserByEmail.ts";
 
 serve(async (req) => {
   const pre = preflight(req);
@@ -164,7 +165,7 @@ async function userIdForEmail(
   admin: ReturnType<typeof createClient>,
   email: string,
 ): Promise<string> {
-  const { data } = await admin.auth.admin.listUsers({ page: 1, perPage: 200 });
-  const hit = data?.users?.find((u) => (u.email || "").toLowerCase() === email);
-  return hit?.id ?? "00000000-0000-0000-0000-000000000000";
+  // B2: resolve beyond the first 200 accounts via the shared resolver.
+  const hit = await findUserByEmail(admin as unknown as AdminListUsersClient, email);
+  return hit?.userId ?? "00000000-0000-0000-0000-000000000000";
 }
