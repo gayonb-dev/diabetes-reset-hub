@@ -123,10 +123,18 @@ export function evaluateMembership(
     case "past_due":
     case "unpaid":
       if (graceStart === null) {
-        // Failure recorded without a verified failure timestamp. Fail toward
-        // the member for the grace length measured from the period end, and
-        // never silently to "blocked" on the first webhook.
-        if (periodEnd !== null && nowMs >= periodEnd + GRACE_MS) {
+        // Past due, but no verified failure timestamp was recorded — an older
+        // row, or a status set by a subscription event rather than an invoice
+        // failure. Fall back to the paid period end as the start of the clock,
+        // so the member is never dropped on the first webhook.
+        if (periodEnd === null) {
+          // No marker AND no period end: there is no clock at all, so an open
+          // grace window cannot be demonstrated. Granting one here would be an
+          // unbounded entitlement that never expires, which is the worse
+          // failure. Billing, account and export surfaces stay reachable.
+          return grant("blocked", "grace_expired", base);
+        }
+        if (nowMs >= periodEnd + GRACE_MS) {
           return grant("blocked", "grace_expired", base);
         }
         return grant("grace", "payment_failed_in_grace", base);
