@@ -1,0 +1,2 @@
+DELETE FROM public.visitor_sessions WHERE id IN ('641252cf-95a7-4fc4-85fb-aae318434825','24e79435-b66d-4cb2-bcbe-4416fe04d41f','e5987315-ecc7-44ee-9b91-bd34aa20c29c','1b1983c5-6f7e-49cf-87a3-4a79dec929cb');
+DELETE FROM public.visitor_profiles WHERE id IN ('0951f6a9-927a-4793-8ba3-c72c911916f9','1ac27da6-1b51-4483-b494-785a421c9dea','48954b1d-e95f-43e1-a6d2-38c1aed97f38','2ad73988-1df8-4dde-aac7-20865de03cfd');

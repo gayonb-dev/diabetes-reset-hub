@@ -67,22 +67,23 @@ export default function ChatWidget() {
   }, []);
 
   // Establish the opaque session (and read the server gate) when the chat opens.
+  // The in-flight guard is a ref, not `gateLoading`: keeping the loading flag in
+  // the dependency list re-ran this effect as soon as it was set, and the first
+  // run's cleanup then discarded the result, leaving the panel on "One moment…".
+  const gateStarted = useRef(false);
   useEffect(() => {
-    if (!open || sessionReady.current || gateLoading) return;
-    let cancelled = false;
+    if (!open || gateStarted.current) return;
+    gateStarted.current = true;
     setGateLoading(true);
     (async () => {
       const start = await startChatSession();
-      if (cancelled) return;
       sessionReady.current = start.token !== null;
       setAiHealthAvailable(start.aiHealthAvailable);
       setNoticeVersion(start.noticeVersion);
       setGateLoading(false);
     })();
-    return () => {
-      cancelled = true;
-    };
-  }, [open, gateLoading]);
+  }, [open]);
+
 
   // Prompt 4 §15 — only one fixed-bottom layer on mobile. While the chat panel
   // is open, `body.drm-chat-open` hides the sticky purchase CTA (see index.css).
@@ -193,6 +194,8 @@ export default function ChatWidget() {
       return;
     }
     sessionReady.current = false;
+    gateStarted.current = false;
+
     clearChatSession();
     setMessages([]);
     setConversationId(undefined);
