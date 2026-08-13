@@ -54,19 +54,19 @@ While `suspended_dispute` applies, Billing, Settings, support, cancellation, aut
 ## Technical changes
 
 **Migration (additive only, no rewrite of existing rows):**
-- `orders`: `stripe_charge_id`, `amount_refunded` (default 0), `raw_refund_status`, `refund_review_required` (bool), all nullable/defaulted so existing rows are untouched.
-- New `public.billing_holds` (user_id, order_id, hold_type `dispute`, stripe_dispute_id, dispute_status, raw_status, opened_at, resolved_at) with RLS: no client read of Stripe IDs, service_role full, admin read.
-- `membership_access_state(uuid)` extended: an open dispute hold on the entitlement backing the current subscription returns `blocked`; the billing/settings/support/export/deletion surfaces are already outside the membership gate, so suspension does not touch them.
+- `orders`: `stripe_charge_id`, `stripe_invoice_id`, `amount_refunded` (default 0), `raw_refund_status`, `period_start`/`period_end` (the entitlement period the payment funds), `refund_review_required` (bool) — all nullable/defaulted so existing rows are untouched.
+- New `public.billing_holds` (user_id, order_id, hold_type `dispute`, stripe_dispute_id, dispute_status, raw_status, review_only bool, opened_at, resolved_at) with RLS: no client read of Stripe IDs, service_role full, admin read.
+- `membership_access_state(uuid)` extended with the existing canonical `suspended_dispute` state: an unresolved, non-review-only dispute hold on the entitlement backing the current qualifying payment returns `suspended_dispute`; a fully refunded qualifying payment with no other valid paid period falls through to the existing blocked path. Billing/settings/support/export/deletion surfaces are already outside the membership gate, so neither state touches them.
 
 **Shared modules:**
-- `_shared/billingCanonical.ts`: add `canonicalRefundOutcome()` and `canonicalDisputeOutcome()` pure mappers (plus refund-aggregate helper). Pure, unit-testable.
-- `_shared/membershipLifecycle.ts`: accept an optional `disputeHold` fact in the evaluator so client presentation matches the server.
+- `_shared/billingCanonical.ts`: add `canonicalRefundOutcome()` and `canonicalDisputeOutcome()` pure mappers (aggregate-refund helper included), with the exact dispute-status table above and an explicit fail-closed owner-review branch for unknown statuses.
+- `_shared/membershipLifecycle.ts`: add `suspended_dispute` to `AccessState` and accept `disputeHold` plus the set of qualifying paid periods, so server, SQL and client presentation share one vocabulary and one entitlement recomputation.
 
 **Webhook:** four new `case` branches following the existing pattern (`decision` -> optional refetch -> mutate -> `finalize(...)`). Unsupported events keep falling through to `finalize("ignored")`.
 
 ## Verification (synthetic only)
 
-New `src/test/billingRefundDispute.test.ts` plus Deno-level fixture tests covering: full refund; partial refund; multiple partials summing to full; pending/failed/canceled refunds; refund isolated to its own entitlement; dispute created; dispute won with and without independently valid access; dispute lost; warning/enquiry states; duplicate delivery; concurrent delivery; reverse ordering; same-second events; stale payload corrected by retrieval; wrong endpoint secret, forged signature, missing signature; unknown event; and no mutation of unrelated orders/subscriptions/members.
+New `src/test/billingRefundDispute.test.ts` plus Deno-level fixture tests covering: full refund; partial refund; multiple partials summing to full; pending/failed/canceled refunds; full refund of the introductory payment during the first 14 days; refund of the introductory payment after a later renewal has independently paid; refund of an older renewal while a newer renewal is valid; refund of the currently qualifying renewal; two independent qualifying entitlements where only one is refunded; live subscription whose qualifying payment was fully refunded; dispute created (`needs_response`, `under_review`); `warning_needs_response` and `warning_under_review` raising review without suspension; `warning_closed`; `prevented`; dispute won with and without independently valid access; dispute lost; unknown dispute status failing closed to owner review; duplicate delivery; concurrent delivery; reverse ordering; same-second events; stale payload corrected by retrieval; wrong endpoint secret, forged signature, missing signature; unknown event; and no mutation of unrelated orders/subscriptions/members.
 
 Then rerun the existing subscription, lifecycle, checkout, deletion-cancellation and magic-link regressions, TypeScript, lint on touched files, and build. Deploy only `stripe-subscription-webhook`. No client publish, no real Stripe object touched, no real member row mutated; synthetic rows are removed and residue re-checked.
 
