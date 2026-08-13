@@ -8,7 +8,7 @@
 // No message body, subject, or recipient address is logged.
 
 import type { SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
-import { emailAllowed } from "./config.ts";
+import { authEmailEnabled, emailAllowed } from "./config.ts";
 
 export interface EmailPayload {
   to: string | string[];
