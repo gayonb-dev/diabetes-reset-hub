@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import { safeNext } from "@/lib/safeNext";
+import { MAGIC_LINK_NEUTRAL_RESPONSE } from "@/lib/authCopy";
 import { Loader2, CheckCircle2 } from "lucide-react";
 
 export default function Login() {
