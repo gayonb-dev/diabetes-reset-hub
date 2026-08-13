@@ -261,3 +261,221 @@ export function eventObjectId(eventType: string, object: Record<string, unknown>
   if (eventType.startsWith("charge.") || eventType.startsWith("payment_intent.")) return id;
   return id;
 }
+
+// ---------------------------------------------------------------------------
+// Refunds
+// ---------------------------------------------------------------------------
+//
+// Full-vs-partial is decided from Stripe's CURRENT aggregate `amount_refunded`
+// on the charge, never from a single refund object. Several partial refunds
+// that add up to the charge total are a full refund. A refund that has not
+// succeeded never changes the order status: "a refund was requested" is not
+// "money went back".
+
+export type RefundDisposition = "full" | "partial" | "none" | "review";
+
+export interface RefundOutcome {
+  disposition: RefundDisposition;
+  /** Canonical order status to write, or null to leave the order untouched. */
+  orderStatus: CanonicalOrderStatus | null;
+  /** Owner review required (partial refunds, and anything unrecognised). */
+  reviewRequired: boolean;
+  /** Aggregate refunded amount, in the smallest currency unit. */
+  amountRefunded: number;
+  reason: string;
+}
+
+export interface RefundFacts {
+  /** Status of the refund object, when the event carried one. */
+  refundStatus?: unknown;
+  /** Charge total, smallest currency unit. */
+  amount?: number | null;
+  /** Charge aggregate `amount_refunded`, smallest currency unit. */
+  amountRefunded?: number | null;
+  /** Charge-level `refunded` boolean, when present. */
+  chargeRefunded?: boolean | null;
+}
+
+function n(v: unknown): number {
+  const x = typeof v === "number" ? v : Number(v);
+  return Number.isFinite(x) && x >= 0 ? x : 0;
+}
+
+export function canonicalRefundOutcome(facts: RefundFacts): RefundOutcome {
+  const amount = n(facts.amount);
+  const refunded = n(facts.amountRefunded);
+  const raw = String(facts.refundStatus ?? "").trim().toLowerCase();
+
+  // A refund that is not (yet) money returned must not move the order.
+  if (raw === "pending" || raw === "requires_action") {
+    return {
+      disposition: "none",
+      orderStatus: null,
+      reviewRequired: false,
+      amountRefunded: refunded,
+      reason: `refund ${raw}; no state change`,
+    };
+  }
+  if (raw === "failed" || raw === "canceled" || raw === "cancelled") {
+    return {
+      disposition: "none",
+      orderStatus: null,
+      reviewRequired: false,
+      amountRefunded: refunded,
+      reason: `refund ${raw}; never treated as refunded`,
+    };
+  }
+  if (raw !== "" && raw !== "succeeded") {
+    // Unrecognised refund status: fail closed into owner review rather than
+    // guessing that money moved.
+    return {
+      disposition: "review",
+      orderStatus: null,
+      reviewRequired: true,
+      amountRefunded: refunded,
+      reason: `unrecognised refund status "${raw}"; owner review`,
+    };
+  }
+
+  if (refunded <= 0) {
+    return {
+      disposition: "none",
+      orderStatus: null,
+      reviewRequired: false,
+      amountRefunded: 0,
+      reason: "no refunded amount on the charge",
+    };
+  }
+
+  if (amount <= 0) {
+    // Aggregate present but the charge total is unknown: cannot prove "full".
+    return {
+      disposition: "review",
+      orderStatus: null,
+      reviewRequired: true,
+      amountRefunded: refunded,
+      reason: "charge amount unknown; owner review",
+    };
+  }
+
+  if (refunded >= amount || facts.chargeRefunded === true) {
+    return {
+      disposition: "full",
+      orderStatus: "refunded",
+      reviewRequired: false,
+      amountRefunded: refunded,
+      reason: "aggregate refund covers the charge",
+    };
+  }
+
+  return {
+    disposition: "partial",
+    orderStatus: "partially_refunded",
+    reviewRequired: true,
+    amountRefunded: refunded,
+    reason: "partial refund; entitlement unchanged, owner review raised",
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Disputes
+// ---------------------------------------------------------------------------
+
+export const DISPUTE_STATUSES = [
+  "needs_response",
+  "under_review",
+  "warning_needs_response",
+  "warning_under_review",
+  "warning_closed",
+  "won",
+  "lost",
+  "prevented",
+] as const;
+export type StripeDisputeStatus = (typeof DISPUTE_STATUSES)[number];
+
+export type DisputeKind = "formal" | "inquiry" | "resolved" | "unknown";
+
+export interface DisputeOutcome {
+  kind: DisputeKind;
+  /** Open a hold that suspends programme access for this entitlement. */
+  suspendAccess: boolean;
+  /** Hold exists for owner visibility only; access is NOT suspended. */
+  reviewOnly: boolean;
+  /** Resolve any existing hold for this dispute. */
+  resolveHold: boolean;
+  /** After resolution, access may return IF it independently qualifies. */
+  restoreAllowed: boolean;
+  reviewRequired: boolean;
+  reason: string;
+}
+
+export function canonicalDisputeOutcome(rawStatus: unknown): DisputeOutcome {
+  const s = String(rawStatus ?? "").trim().toLowerCase();
+  switch (s) {
+    case "needs_response":
+    case "under_review":
+      return {
+        kind: "formal",
+        suspendAccess: true,
+        reviewOnly: false,
+        resolveHold: false,
+        restoreAllowed: false,
+        reviewRequired: true,
+        reason: `formal dispute (${s})`,
+      };
+    case "warning_needs_response":
+    case "warning_under_review":
+      return {
+        kind: "inquiry",
+        suspendAccess: false,
+        reviewOnly: true,
+        resolveHold: false,
+        restoreAllowed: false,
+        reviewRequired: true,
+        reason: `inquiry/early warning (${s}); access not suspended`,
+      };
+    case "warning_closed":
+    case "prevented":
+      return {
+        kind: "resolved",
+        suspendAccess: false,
+        reviewOnly: false,
+        resolveHold: true,
+        restoreAllowed: true,
+        reviewRequired: false,
+        reason: `${s}; hold resolved, entitlement reevaluated independently`,
+      };
+    case "won":
+      return {
+        kind: "resolved",
+        suspendAccess: false,
+        reviewOnly: false,
+        resolveHold: true,
+        restoreAllowed: true,
+        reviewRequired: false,
+        reason: "dispute won; access restored only if it independently qualifies",
+      };
+    case "lost":
+      return {
+        kind: "resolved",
+        suspendAccess: false,
+        reviewOnly: false,
+        resolveHold: true,
+        restoreAllowed: false,
+        reviewRequired: true,
+        reason: "dispute lost; no automatic restore of the associated entitlement",
+      };
+    default:
+      // Fail closed into owner review: no guess, no new access granted, and no
+      // revocation of unrelated access.
+      return {
+        kind: "unknown",
+        suspendAccess: false,
+        reviewOnly: true,
+        resolveHold: false,
+        restoreAllowed: false,
+        reviewRequired: true,
+        reason: `unrecognised dispute status "${s}"; owner review`,
+      };
+  }
+}
