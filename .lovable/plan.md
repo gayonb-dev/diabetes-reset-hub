@@ -2,6 +2,13 @@
 
 One publication of the client only. No database, Edge Function, secret, Stripe, webhook-event, email-flag, health-AI-flag or member-data change. No payment, refund, cancellation, dispute, deletion or email is issued.
 
+Approved operational clarifications:
+
+- The live VITA smoke test may create one clearly labelled synthetic anonymous visitor session, since session issuance is required to exercise live chat. Only the fixed product, login, cancellation and safe health-boundary questions are asked; no external health AI is called. The synthetic session, conversations, messages, consent and derived rows are deleted by exact ID immediately afterwards and zero residue is proven. This is the only permitted database write in the release test; no real visitor or member data is read or changed.
+- The rollback record must include an actually restorable Lovable version / source commit alongside the asset hash. An asset hash alone is not described as a rollback mechanism.
+- Normal authentication-session timestamps from the owner signing in are acceptable; the owner's profile, billing and lifecycle data are not altered.
+
+
 ## 1. Release boundary
 
 - Record the currently published bundle as the documented rollback point (published URL asset hash + publish settings read).
