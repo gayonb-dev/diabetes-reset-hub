@@ -200,6 +200,23 @@ export default function Billing() {
     <div className="max-w-2xl mx-auto space-y-5">
       <h1 className="font-heading font-semibold text-2xl text-primary">Your Subscription</h1>
 
+      {/* B5. Lifecycle notice — honest about access that is continuing. */}
+      {notice && (
+        <div
+          role="status"
+          className={`rounded-xl border p-4 text-sm ${
+            notice.tone === "blocked"
+              ? "border-destructive/40 bg-destructive/5"
+              : notice.tone === "warning"
+                ? "border-accent/50 bg-accent/10"
+                : "border-border bg-muted/50"
+          }`}
+        >
+          <p className="font-medium text-foreground mb-1">{notice.title}</p>
+          <p className="text-secondary-fg">{notice.body}</p>
+        </div>
+      )}
+
       {/* Status card */}
       <Card className="p-6 border border-border">
         <p className={`text-sm font-medium ${status.color} mb-2`}>{status.label}</p>
