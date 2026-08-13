@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import { safeNext } from "@/lib/safeNext";
+import { MAGIC_LINK_NEUTRAL_RESPONSE } from "@/lib/authCopy";
 import { Loader2, CheckCircle2 } from "lucide-react";
 
 export default function Login() {
@@ -70,8 +71,7 @@ export default function Login() {
             <CheckCircle2 className="h-12 w-12 text-primary mx-auto mb-3" />
             <h2 className="font-bold text-lg mb-2">Check your email</h2>
             <p className="text-muted-foreground text-sm mb-6">
-              If <strong>{email}</strong> is registered, a login link is on its way. Check your inbox
-              (and spam folder).
+              {MAGIC_LINK_NEUTRAL_RESPONSE}
             </p>
             <div className="space-y-2">
               <Button
