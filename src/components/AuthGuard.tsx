@@ -3,7 +3,8 @@ import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2 } from "lucide-react";
-import { evaluateSubscriptionRow } from "@/lib/membership";
+import { evaluateSubscriptionRow, surfaceAllowed } from "@/lib/membership";
+import { recoveryPathFor, surfaceForPath } from "@/lib/appSurfaces";
 
 interface Props {
   children: ReactNode;
@@ -19,14 +20,39 @@ export default function AuthGuard({ children, requireAdmin, requireActiveSub = t
   // When we'd otherwise block due to inactive sub, check onboarding state:
   // a new user with no onboarded_at gets routed to onboarding instead of login.
   const [onboardState, setOnboardState] = useState<"unknown" | "needs" | "done">("unknown");
+  // Prompt 3 deletion lifecycle. Fetched once per guard mount; while unknown we
+  // assume nothing and simply do not widen anything.
+  const [deletionRestricted, setDeletionRestricted] = useState(false);
   const needSubCheck = !loading && !!user && !!requireActiveSub && !isAdmin;
-  // B5. One evaluator, shared with the server. The previous status allow-list
-  // could not express grace at all: a member whose card failed was either
-  // waved through indefinitely (because `past_due` was listed) or shut out
-  // immediately. The evaluator distinguishes full / grace / suspended_dispute /
-  // blocked, and only the states that withhold reads withhold programme access.
-  const inactive = needSubCheck && !evaluateSubscriptionRow(subscription).allowRead;
 
+  // ONE evaluator, shared with the server, and ONE surface list. Authentication
+  // and entitlement are separate decisions: a signed-in member whose programme
+  // is restricted stays signed in and keeps their billing, settings, support
+  // and profile surfaces, which are exactly the ones needed to recover payment,
+  // cancel, export data or close the account.
+  const evaluation = evaluateSubscriptionRow(subscription, Date.now(), {
+    deletionRestricted,
+  });
+  const surface = surfaceForPath(loc.pathname);
+  const surfaceBlocked = needSubCheck && !surfaceAllowed(evaluation, surface);
+  // Programme restricted AND the member has never onboarded -> onboarding.
+  const inactive = surfaceBlocked;
+
+  useEffect(() => {
+    if (!user) return;
+    let cancelled = false;
+    (async () => {
+      const { data } = await supabase.rpc("my_deletion_status");
+      if (cancelled) return;
+      const row = Array.isArray(data) ? data[0] : data;
+      setDeletionRestricted(
+        (row as { state?: string } | null)?.state === "blocked_on_processor",
+      );
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [user?.id]);
 
   useEffect(() => {
     if (!inactive || !user) return;
@@ -121,21 +147,13 @@ export default function AuthGuard({ children, requireAdmin, requireActiveSub = t
     if (onboardState === "needs") {
       return <Navigate to="/app/onboarding" replace />;
     }
-    console.warn("[auth-debug] AuthGuard redirect", {
-      target: "/login?inactive=1",
-      reason: "no active subscription",
-      hasUser: true,
-      loading,
-      authRecheck,
-      subscriptionStatus: subscription?.status ?? null,
-      requireAdmin: !!requireAdmin,
-      requireActiveSub,
-      path: loc.pathname,
-      search: loc.search,
-    });
-    return <Navigate to="/login?inactive=1" replace />;
+    // Never back to Login: the member IS authenticated. They are sent to the
+    // nearest account surface with calm explanatory state. No Stripe
+    // identifier and no internal reason code travels in the URL.
+    const to = recoveryPathFor(evaluation.allowed_surfaces);
+    if (loc.pathname === to) return <>{children}</>;
+    return <Navigate to={to} replace state={{ membershipRestricted: true }} />;
   }
-
 
   return <>{children}</>;
 }

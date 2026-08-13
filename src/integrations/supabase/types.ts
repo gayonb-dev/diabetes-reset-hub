@@ -1695,6 +1695,7 @@ export type Database = {
           customer_name: string
           customer_phone: string | null
           id: string
+          linkage_review_reason: string | null
           period_end: string | null
           period_start: string | null
           product_id: string
@@ -1706,6 +1707,8 @@ export type Database = {
           stripe_invoice_id: string | null
           stripe_payment_intent_id: string | null
           stripe_session_id: string | null
+          stripe_subscription_id: string | null
+          subscription_id: string | null
           updated_at: string
           user_id: string | null
         }
@@ -1718,6 +1721,7 @@ export type Database = {
           customer_name: string
           customer_phone?: string | null
           id?: string
+          linkage_review_reason?: string | null
           period_end?: string | null
           period_start?: string | null
           product_id: string
@@ -1729,6 +1733,8 @@ export type Database = {
           stripe_invoice_id?: string | null
           stripe_payment_intent_id?: string | null
           stripe_session_id?: string | null
+          stripe_subscription_id?: string | null
+          subscription_id?: string | null
           updated_at?: string
           user_id?: string | null
         }
@@ -1741,6 +1747,7 @@ export type Database = {
           customer_name?: string
           customer_phone?: string | null
           id?: string
+          linkage_review_reason?: string | null
           period_end?: string | null
           period_start?: string | null
           product_id?: string
@@ -1752,10 +1759,27 @@ export type Database = {
           stripe_invoice_id?: string | null
           stripe_payment_intent_id?: string | null
           stripe_session_id?: string | null
+          stripe_subscription_id?: string | null
+          subscription_id?: string | null
           updated_at?: string
           user_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "orders_subscription_id_fkey"
+            columns: ["subscription_id"]
+            isOneToOne: false
+            referencedRelation: "subscriptions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "orders_subscription_id_fkey"
+            columns: ["subscription_id"]
+            isOneToOne: false
+            referencedRelation: "v_canonical_subscriptions"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       phi_access_log: {
         Row: {

@@ -109,9 +109,9 @@ describe("B4 webhook idempotency and ordering", () => {
 describe("B5 seven-day grace lifecycle", () => {
   it("grants access while trialing and while active", () => {
     expect(evaluateMembership({ status: "trialing", currentPeriodEnd: NOW + DAY }, NOW).state)
-      .toBe("full");
+      .toBe("allowed");
     expect(evaluateMembership({ status: "active", currentPeriodEnd: NOW + DAY }, NOW).state)
-      .toBe("full");
+      .toBe("allowed");
   });
 
   it("keeps access during grace after a failed payment", () => {
@@ -131,14 +131,14 @@ describe("B5 seven-day grace lifecycle", () => {
       { status: "past_due", graceStartedAt: NOW - (GRACE_MS + 1) },
       NOW,
     );
-    expect(ev.state).toBe("blocked");
+    expect(ev.state).toBe("restricted_billing");
     expect(ev.reason).toBe("grace_expired");
     expect(ev.allowRead).toBe(false);
   });
 
   it("treats the exact boundary as expired, not as an extra moment of access", () => {
     const ev = evaluateMembership({ status: "past_due", graceStartedAt: NOW - GRACE_MS }, NOW);
-    expect(ev.state).toBe("blocked");
+    expect(ev.state).toBe("restricted_billing");
   });
 
   it("keeps full access when cancelling at period end, until the period ends", () => {
@@ -146,23 +146,23 @@ describe("B5 seven-day grace lifecycle", () => {
       { status: "active", cancelAtPeriodEnd: true, currentPeriodEnd: NOW + DAY },
       NOW,
     );
-    expect(before.state).toBe("full");
+    expect(before.state).toBe("allowed");
     expect(before.reason).toBe("cancelling_at_period_end");
 
     const after = evaluateMembership(
       { status: "canceled", cancelAtPeriodEnd: true, currentPeriodEnd: NOW - DAY },
       NOW,
     );
-    expect(after.state).toBe("blocked");
+    expect(after.state).toBe("restricted_billing");
   });
 
   it("blocks when there is no subscription at all", () => {
-    expect(evaluateMembership(null, NOW).state).toBe("blocked");
+    expect(evaluateMembership(null, NOW).state).toBe("restricted_billing");
     expect(evaluateMembership(null, NOW).reason).toBe("no_subscription");
   });
 
   it("blocks an incomplete subscription: no verified payment, no access", () => {
-    expect(evaluateMembership({ status: "incomplete" }, NOW).state).toBe("blocked");
+    expect(evaluateMembership({ status: "incomplete" }, NOW).state).toBe("restricted_billing");
   });
 
   it("starts grace at the FIRST verified failure and never restarts it", () => {
@@ -206,7 +206,7 @@ describe("B5 seven-day grace lifecycle", () => {
       { status: "past_due", graceStartedAt: null, currentPeriodEnd: NOW - 8 * DAY },
       NOW,
     );
-    expect(outOfWindow.state).toBe("blocked");
+    expect(outOfWindow.state).toBe("restricted_billing");
   });
 
   it("never grants an unbounded grace window when there is no clock at all", () => {
@@ -216,6 +216,6 @@ describe("B5 seven-day grace lifecycle", () => {
       { status: "past_due", graceStartedAt: null, currentPeriodEnd: null },
       NOW,
     );
-    expect(ev.state).toBe("blocked");
+    expect(ev.state).toBe("restricted_billing");
   });
 });

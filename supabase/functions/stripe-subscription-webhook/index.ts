@@ -14,6 +14,7 @@ import {
   subscriptionConditions,
 } from "../_shared/billingCanonical.ts";
 import { nextGraceMarker } from "../_shared/membershipLifecycle.ts";
+import { resolveRefundLinkage, type LinkageFacts } from "../_shared/refundLinkage.ts";
 
 
 const ADMIN_EMAIL = "support@diabetesresetmethod.com";
@@ -197,13 +198,17 @@ serve(async (req) => {
     // dispute touches ONLY the order it resolves to; unrelated orders,
     // subscriptions and members are never written.
     // -----------------------------------------------------------------
-    const ORDER_COLS = "id, user_id, amount, customer_email, period_end";
+    const ORDER_COLS =
+      "id, user_id, amount, customer_email, period_start, period_end, subscription_id, stripe_subscription_id";
     type OrderRow = {
       id: string;
       user_id: string | null;
       amount: number | null;
       customer_email: string | null;
+      period_start: string | null;
       period_end: string | null;
+      subscription_id: string | null;
+      stripe_subscription_id: string | null;
     };
 
     const chargeId = (c: unknown): string | null =>
@@ -230,6 +235,63 @@ serve(async (req) => {
       return found?.userId ?? null;
     };
 
+    // The trusted chain, gathered from CURRENT Stripe state, then decided by
+    // the pure resolver in _shared/refundLinkage.ts.
+    const gatherLinkage = async (
+      charge: Stripe.Charge,
+      order: OrderRow | null,
+    ): Promise<LinkageFacts> => {
+      let invoiceSubscriptionId: string | null = null;
+      const invoiceProductIds: string[] = [];
+      const invId = chargeId(charge.invoice);
+      if (invId) {
+        try {
+          const inv = await stripe.invoices.retrieve(invId, { expand: ["lines.data.price"] });
+          invoiceSubscriptionId = chargeId(inv.subscription);
+          for (const line of inv.lines?.data ?? []) {
+            const prod = (line.price as Stripe.Price | null)?.product;
+            const pid = typeof prod === "string" ? prod : ((prod as { id?: string } | null)?.id ?? null);
+            if (pid) invoiceProductIds.push(pid);
+          }
+        } catch (e) {
+          console.error("[sub-webhook] invoice retrieve failed:", (e as Error).message);
+        }
+      }
+
+      let subscription: LinkageFacts["subscription"] = null;
+      if (order?.subscription_id) {
+        const { data } = await sb
+          .from("subscriptions")
+          .select("id, user_id, stripe_subscription_id")
+          .eq("id", order.subscription_id)
+          .maybeSingle();
+        if (data) {
+          subscription = {
+            id: data.id as string,
+            userId: (data.user_id as string | null) ?? null,
+            stripeSubscriptionId: (data.stripe_subscription_id as string | null) ?? null,
+          };
+        }
+      }
+
+      return {
+        invoiceSubscriptionId,
+        invoiceProductIds,
+        membershipProductId: Deno.env.get("STRIPE_PRODUCT_ID") || null,
+        order: order
+          ? {
+              id: order.id,
+              userId: order.user_id,
+              subscriptionId: order.subscription_id,
+              stripeSubscriptionId: order.stripe_subscription_id,
+              periodStart: order.period_start,
+              periodEnd: order.period_end,
+            }
+          : null,
+        subscription,
+      };
+    };
+
     const applyRefund = async (charge: Stripe.Charge, refundStatus?: unknown) => {
       const outcome = canonicalRefundOutcome({
         refundStatus,
@@ -240,9 +302,21 @@ serve(async (req) => {
       console.log("[sub-webhook] refund outcome:", outcome.disposition, outcome.reason);
 
       const order = await resolveOrderForCharge(charge);
-      if (!order) {
-        // No local binding: record the decision, mutate nothing.
-        await finalize(appliedState, { orderStatus: outcome.orderStatus ?? undefined });
+      const linkage = resolveRefundLinkage(await gatherLinkage(charge, order));
+      console.log("[sub-webhook] refund linkage:", linkage.decision, linkage.reason);
+
+      if (linkage.decision !== "apply") {
+        // Missing, contradictory or ambiguous relationship: record an
+        // owner-review item (no personal data), change nothing else. No
+        // member is guessed, no account is created or linked.
+        if (order) {
+          await sb.from("orders").update({
+            refund_review_required: true,
+            linkage_review_reason: linkage.reason,
+            updated_at: new Date().toISOString(),
+          }).eq("id", order.id);
+        }
+        await finalize("owner_review");
         return;
       }
 
@@ -255,7 +329,7 @@ serve(async (req) => {
       if (outcome.orderStatus) update.status = outcome.orderStatus;
       if (outcome.reviewRequired) update.refund_review_required = true;
 
-      await sb.from("orders").update(update).eq("id", order.id);
+      await sb.from("orders").update(update).eq("id", order!.id);
       // Entitlement is not written here: `membership_access_state` recomputes
       // it from the current set of paid periods, so a refunded payment revokes
       // only what it funded and a later valid payment still qualifies.
@@ -380,6 +454,22 @@ serve(async (req) => {
           },
           { onConflict: "stripe_subscription_id" },
         );
+
+        // 4b. Bind the order to the subscription immutably. This is the link
+        // every later refund decision is required to walk.
+        if (subId) {
+          const { data: subRow } = await sb
+            .from("subscriptions")
+            .select("id")
+            .eq("stripe_subscription_id", subId)
+            .maybeSingle();
+          await sb.from("orders").update({
+            user_id: userId,
+            subscription_id: subRow?.id ?? null,
+            stripe_subscription_id: subId,
+            updated_at: new Date().toISOString(),
+          }).eq("stripe_session_id", session.id);
+        }
 
         // 5. Generate magic link + send welcome email
         if (RESEND) {

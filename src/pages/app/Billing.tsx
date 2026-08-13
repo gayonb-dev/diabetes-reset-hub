@@ -205,7 +205,7 @@ export default function Billing() {
         <div
           role="status"
           className={`rounded-xl border p-4 text-sm ${
-            notice.tone === "blocked"
+            notice.tone === "restricted"
               ? "border-destructive/40 bg-destructive/5"
               : notice.tone === "warning"
                 ? "border-accent/50 bg-accent/10"
