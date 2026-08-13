@@ -307,6 +307,17 @@ export default function Billing() {
         <p className="text-sm font-medium text-foreground mb-3">Billing history</p>
         {invLoading ? (
           <p className="text-sm text-muted-foreground">Loading…</p>
+        ) : invError ? (
+          // B1. A failed fetch must never be presented as "no charges yet".
+          <div className="text-sm">
+            <p className="text-secondary-fg mb-3">
+              We couldn't load your billing history just now. This doesn't affect your membership
+              or your payments.
+            </p>
+            <Button variant="outline" onClick={() => void loadInvoices()} className="h-10">
+              Try again
+            </Button>
+          </div>
         ) : invoices.length === 0 ? (
           <EmptyState
             title="No charges yet"
