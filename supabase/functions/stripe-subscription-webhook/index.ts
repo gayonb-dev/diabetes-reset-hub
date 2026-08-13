@@ -390,12 +390,20 @@ serve(async (req) => {
             }
           }
         }
+        await finalize(appliedState, {
+          orderStatus: "failed",
+          subStatus: "past_due",
+          conditions: { cancel_at_period_end: false, in_trial: false, in_grace: true },
+        });
         break;
       }
 
 
       default:
         console.log("[sub-webhook] unhandled:", event.type);
+        // Recorded, but explicitly NOT counted as applied state, so it can
+        // never be mistaken for lifecycle coverage that does not exist.
+        await finalize("ignored");
     }
 
     return new Response(JSON.stringify({ received: true }), {
