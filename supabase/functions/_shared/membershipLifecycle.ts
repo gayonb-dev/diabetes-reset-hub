@@ -246,8 +246,8 @@ function grant(
     // A blocked member may still READ their own account, billing and export
     // surfaces — withholding those would obstruct payment recovery and would
     // obstruct data rights. Blocking applies to programme content and writes.
-    allowRead: state !== "blocked",
-    allowWrite: state !== "blocked",
+    allowRead: state !== "blocked" && state !== "suspended_dispute",
+    allowWrite: state !== "blocked" && state !== "suspended_dispute",
   };
 }
 
