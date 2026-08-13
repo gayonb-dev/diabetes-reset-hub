@@ -3,6 +3,7 @@ import Stripe from "https://esm.sh/stripe@18.5.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
 import { buildCheckoutMetadata } from "./metadata.ts";
 import { corsFor, preflight, requireAllowedOrigin } from "../_shared/cors.ts";
+import { canonicalUrl } from "../_shared/canonicalUrl.ts";
 
 
 // P1 legacy retirement: no browser-supplied identifier is accepted here, and
@@ -111,7 +112,6 @@ serve(async (req) => {
       customerId = customers.data[0].id;
     }
 
-    const origin = req.headers.get("origin") || "https://lovable.dev";
 
     // Determine amount and checkout mode
     const isInstallment = paymentPlan === "installment" && product.installmentAmount;
@@ -121,8 +121,11 @@ serve(async (req) => {
       : product.name;
 
     // Set redirect based on product
-    const successUrl = `${origin}/payment-success`;
-    const cancelUrl = `${origin}/payment-cancelled`;
+    // B3: redirects come from the server-held canonical domain, never the
+    // request Origin, so an approved www/preview caller still lands on the
+    // canonical site after Stripe.
+    const successUrl = canonicalUrl("/payment-success");
+    const cancelUrl = canonicalUrl("/payment-cancelled");
 
     const session = await stripe.checkout.sessions.create({
       customer: customerId,

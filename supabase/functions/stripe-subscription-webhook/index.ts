@@ -4,6 +4,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
 
 import { corsFor } from "../_shared/cors.ts";
 import { sendEmail as sendGatedEmail } from "../_shared/email.ts";
+import { findUserByEmail, type AdminListUsersClient } from "../_shared/findUserByEmail.ts";
 
 const ADMIN_EMAIL = "support@diabetesresetmethod.com";
 const FROM_EMAIL = "The Diabetes Reset Method <hello@diabetesresetmethod.com>";
@@ -131,11 +132,11 @@ serve(async (req) => {
 
         // 2. Create or fetch user (auth)
         let userId: string | null = null;
-        // Try find existing user via listUsers (paginate via email filter not available; use get by email pattern)
-        const { data: existingList } = await sb.auth.admin.listUsers({ page: 1, perPage: 200 });
-        const existing = existingList.users.find((u) => u.email?.toLowerCase() === email);
+        // B2: resolve the account beyond the first 200 users. A member whose
+        // account sits past page one must never be treated as a new signup.
+        const existing = await findUserByEmail(sb as unknown as AdminListUsersClient, email);
         if (existing) {
-          userId = existing.id;
+          userId = existing.userId;
         } else {
           const { data: created, error: createErr } = await sb.auth.admin.createUser({
             email,

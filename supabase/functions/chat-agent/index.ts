@@ -18,7 +18,7 @@ import { corsFor, preflight, requireAllowedOrigin } from "../_shared/cors.ts";
 import { consumeRateLimit } from "../_shared/ratelimit.ts";
 import { readSessionToken, resolveVisitorSession } from "../_shared/session.ts";
 import { aiHealthEnabled } from "../_shared/config.ts";
-import { AI_HEALTH_UNAVAILABLE, EMERGENCY_LINE, isPossibleEmergency, isHealthRelated } from "../_shared/copy.ts";
+import { AI_HEALTH_UNAVAILABLE, EMERGENCY_LINE, isPossibleEmergency, isHealthRelated, matchFaq } from "../_shared/copy.ts";
 
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
@@ -254,6 +254,30 @@ Deno.serve(async (req) => {
 
     // ---- P2: AI-health gate. Closed by default, server-controlled. ----
     const healthGateOpen = await aiHealthEnabled(supabase);
+
+    // ---- Deterministic membership FAQ (price / login / cancel) ----
+    // While the health gate is closed the public chat answers these three
+    // questions from approved server-held copy: no model call, no processor,
+    // no stored content. Health wording never reaches this branch.
+    if (!healthGateOpen) {
+      const faq = matchFaq(body.message);
+      if (faq) {
+        return new Response(
+          JSON.stringify({
+            conversation_id: body.conversation_id ?? null,
+            assistant_message: faq.body,
+            deterministic: true,
+            stored: false,
+            cta: faq.cta
+              ? { type: "checkout", label: faq.cta.label, url: `${origin}${faq.cta.path}` }
+              : null,
+            intent: `faq_${faq.key}`,
+            health_related: false,
+          }),
+          { headers: { ...corsFor(req), "Content-Type": "application/json" } },
+        );
+      }
+    }
     if (!healthGateOpen && isHealthRelated(body.message)) {
       return new Response(
         JSON.stringify({

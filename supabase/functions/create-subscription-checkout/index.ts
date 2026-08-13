@@ -2,6 +2,7 @@ import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@18.5.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
 import { corsFor, preflight } from "../_shared/cors.ts";
+import { canonicalUrl } from "../_shared/canonicalUrl.ts";
 
 
 // Prompt 4 §7.2 — checkout collects name and email only. A phone number is not
@@ -38,8 +39,6 @@ serve(async (req) => {
     const email = customerEmail.trim().toLowerCase();
     const priceId = Deno.env.get("STRIPE_PRICE_ID_MONTHLY")!;
     const productId = Deno.env.get("STRIPE_PRODUCT_ID")!;
-    const origin =
-      req.headers.get("origin") || Deno.env.get("APP_URL") || "https://diabetesresetmethod.com";
 
     const customers = await stripe.customers.list({ email, limit: 1 });
     const customerId = customers.data.length > 0 ? customers.data[0].id : undefined;
@@ -75,8 +74,8 @@ serve(async (req) => {
       payment_method_collection: "always",
       payment_method_types: ["card"],
       allow_promotion_codes: true,
-      success_url: `${origin}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${origin}/payment-cancelled`,
+      success_url: canonicalUrl("/payment-success?session_id={CHECKOUT_SESSION_ID}"),
+      cancel_url: canonicalUrl("/payment-cancelled"),
       metadata: {
         source: "landing_page",
         customer_name: customerName.trim(),
