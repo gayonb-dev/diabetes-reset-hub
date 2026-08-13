@@ -32,7 +32,17 @@ Verify across Privacy, Consumer Health Data Privacy, AI Use, Terms, Refund Terms
 
 ## Part 1 — Stage 0 preflight and gap inventory
 
-Confirm the connected project ref, record code SHA and migration head, and read (never write) `stripe_mode`, `stripe_deletion_enabled`, `ai_health_enabled`, `dexcom_enabled`, `email_delivery_enabled`, `retention_mode`. Divergence from the expected values is reported, not silently corrected.
+Confirm the connected Supabase project is production ref `wqennhjdojjqmmqzjhti`. A different ref is a hard stop. Record code SHA and migration head, then read (never write) the expected configuration:
+
+```text
+stripe_mode=live                          ai_health_enabled=false
+stripe_deletion_enabled=true              dexcom_enabled=false
+email_delivery_enabled=false              retention_mode=report_only
+auth_email_enabled=true                   transactional_automation_enabled=false
+marketing_email_enabled=false
+```
+
+Any differing flag value is reported and investigated, never silently changed.
 
 Both Prompt 4 migrations already exist in source control under their production timestamps (`20260812205011…`, `20260812205044…`) with rollback SQL retained, so this is catalog reconciliation only — no re-execution.
 
