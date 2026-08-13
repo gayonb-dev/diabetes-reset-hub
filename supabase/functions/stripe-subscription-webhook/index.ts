@@ -278,12 +278,20 @@ serve(async (req) => {
           }
           await sendEmail(RESEND, ADMIN_EMAIL, `🎉 New member: ${name}`, adminNotifHtml(name, email, phone));
         }
+        await finalize(appliedState, {
+          orderStatus: "paid",
+          subStatus: canonicalSubscriptionStatus(status),
+          conditions: subscriptionConditions({ status, trialEnd }),
+        });
         break;
       }
 
       case "customer.subscription.updated":
       case "customer.subscription.deleted": {
-        const sub = event.data.object as Stripe.Subscription;
+        // When the decision was `refetch_current`, the payload in hand is
+        // stale and the authoritative object retrieved from Stripe is used
+        // in its place.
+        const sub = subscriptionOverride ?? (event.data.object as Stripe.Subscription);
         await sb
           .from("subscriptions")
           .update({
@@ -296,20 +304,59 @@ serve(async (req) => {
             updated_at: new Date().toISOString(),
           })
           .eq("stripe_subscription_id", sub.id);
+        await finalize(appliedState, {
+          subStatus: canonicalSubscriptionStatus(sub.status),
+          conditions: subscriptionConditions({
+            status: sub.status,
+            cancelAtPeriodEnd: sub.cancel_at_period_end,
+            trialEnd: sub.trial_end,
+          }),
+        });
+        break;
+      }
+
+      // B5. A verified success ends the failure episode: the grace marker is
+      // cleared so a later, unrelated failure starts a fresh seven days
+      // rather than inheriting an exhausted window.
+      case "invoice.payment_succeeded":
+      case "invoice.paid": {
+        const inv = event.data.object as Stripe.Invoice;
+        const subId = inv.subscription as string | null;
+        if (subId) {
+          await sb
+            .from("subscriptions")
+            .update({ grace_started_at: null, updated_at: new Date().toISOString() })
+            .eq("stripe_subscription_id", subId);
+        }
+        await finalize(appliedState, { orderStatus: "paid" });
         break;
       }
 
       case "invoice.payment_failed": {
         const inv = event.data.object as Stripe.Invoice;
         if (inv.subscription) {
-          await sb.from("subscriptions")
-            .update({ status: "past_due", updated_at: new Date().toISOString() })
-            .eq("stripe_subscription_id", inv.subscription as string);
-          const { data: subRow } = await sb
+          const { data: existingRow } = await sb
             .from("subscriptions")
-            .select("user_id")
+            .select("user_id, grace_started_at")
             .eq("stripe_subscription_id", inv.subscription as string)
-            .single();
+            .maybeSingle();
+
+          // B5. Grace starts at the FIRST verified failure of this episode.
+          // Repeated retries do not extend it.
+          const graceStart = nextGraceMarker({
+            event: "payment_failed",
+            existingGraceStartedAt: existingRow?.grace_started_at ?? null,
+            eventAt: (event.created ?? 0) * 1000,
+          });
+
+          await sb.from("subscriptions")
+            .update({
+              status: "past_due",
+              grace_started_at: graceStart,
+              updated_at: new Date().toISOString(),
+            })
+            .eq("stripe_subscription_id", inv.subscription as string);
+          const subRow = existingRow;
           if (subRow?.user_id) {
             await sb.from("dunning_attempts").insert({
               user_id: subRow.user_id,
