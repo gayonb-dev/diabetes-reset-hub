@@ -15,7 +15,12 @@ import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Vita } from "@/components/vita/Vita";
 import { AI_HEALTH_UNAVAILABLE } from "@/lib/consentCopy";
-import { getChatSession, deleteThisChat, clearChatSession } from "@/lib/chatSession";
+import {
+  startChatSession,
+  getChatSession,
+  deleteThisChat,
+  clearChatSession,
+} from "@/lib/chatSession";
 import { useToast } from "@/hooks/use-toast";
 
 type Cta = { type: "checkout"; label: string; url: string } | null;
@@ -52,7 +57,10 @@ export default function ChatWidget() {
   const [conversationId, setConversationId] = useState<string | undefined>(undefined);
   const [bubbleOffset, setBubbleOffset] = useState(24);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const sessionToken = useRef<string | null>(null);
+  // The token itself lives in the shared session manager (src/lib/chatSession).
+  // The widget only tracks whether a session has been established, so that
+  // "Delete this chat" and the widget never hold two different tokens.
+  const sessionReady = useRef(false);
 
   useEffect(() => {
     setMounted(true);
@@ -60,24 +68,15 @@ export default function ChatWidget() {
 
   // Establish the opaque session (and read the server gate) when the chat opens.
   useEffect(() => {
-    if (!open || sessionToken.current || gateLoading) return;
+    if (!open || sessionReady.current || gateLoading) return;
     let cancelled = false;
     setGateLoading(true);
     (async () => {
-      const { data } = await supabase.functions.invoke("visitor-session", {
-        body: { action: "start" },
-      });
+      const start = await startChatSession();
       if (cancelled) return;
-      if (data?.session_token) {
-        // Held in memory for this tab only — never persisted to any browser store.
-        sessionToken.current = data.session_token as string;
-
-        setAiHealthAvailable(data.ai_health_available === true);
-        setNoticeVersion((data.notice_version as string) ?? null);
-      } else {
-        // Cannot determine the gate -> treat health AI as unavailable.
-        setAiHealthAvailable(false);
-      }
+      sessionReady.current = start.token !== null;
+      setAiHealthAvailable(start.aiHealthAvailable);
+      setNoticeVersion(start.noticeVersion);
       setGateLoading(false);
     })();
     return () => {
@@ -146,7 +145,7 @@ export default function ChatWidget() {
 
   /** Open gate only: record purpose-keyed consent server-side, then chat. */
   async function acceptConsent() {
-    const token = sessionToken.current ?? (await getChatSession());
+    const token = await getChatSession();
     if (!token || !noticeVersion) {
       toast({ title: "Couldn't start", description: "Please try again.", variant: "destructive" });
       return;
@@ -193,7 +192,7 @@ export default function ChatWidget() {
       });
       return;
     }
-    sessionToken.current = null;
+    sessionReady.current = false;
     clearChatSession();
     setMessages([]);
     setConversationId(undefined);
@@ -214,9 +213,9 @@ export default function ChatWidget() {
     setInput("");
 
     try {
-      const token = sessionToken.current ?? (await getChatSession());
+      const token = await getChatSession();
       if (!token) throw new Error("no active session");
-      sessionToken.current = token;
+      sessionReady.current = true;
 
       const { data, error } = await supabase.functions.invoke("chat-agent", {
         body: {
