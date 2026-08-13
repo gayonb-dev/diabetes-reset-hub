@@ -4,6 +4,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
 import { buildCheckoutMetadata } from "./metadata.ts";
 import { corsFor, preflight, requireAllowedOrigin } from "../_shared/cors.ts";
 import { canonicalUrl } from "../_shared/canonicalUrl.ts";
+import { guardRequest, LIMITS } from "../_shared/abuseGuard.ts";
 
 
 // P1 legacy retirement: no browser-supplied identifier is accepted here, and
@@ -101,6 +102,20 @@ serve(async (req) => {
       Deno.env.get("SUPABASE_URL") ?? "",
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
     );
+
+    // Part 7. Checkout is unauthenticated by design, so the bucket is the
+    // keyed ingress address. A real buyer checks out once; this only stops a
+    // machine minting Stripe sessions in a loop.
+    const guard = await guardRequest(supabaseAdmin, req, {
+      scope: "create-checkout-session",
+      ...LIMITS.checkout,
+    });
+    if (!guard.allowed) {
+      return new Response(JSON.stringify(guard.body), {
+        status: 429,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
 
     const customers = await stripe.customers.list({
       email: customerEmail.toLowerCase(),

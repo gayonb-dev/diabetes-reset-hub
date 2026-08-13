@@ -3,6 +3,7 @@ import Stripe from "https://esm.sh/stripe@18.5.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
 import { corsFor, preflight } from "../_shared/cors.ts";
 import { canonicalUrl } from "../_shared/canonicalUrl.ts";
+import { guardRequest, LIMITS } from "../_shared/abuseGuard.ts";
 
 
 // Prompt 4 §7.2 — checkout collects name and email only. A phone number is not
@@ -35,6 +36,19 @@ serve(async (req) => {
       Deno.env.get("SUPABASE_URL") ?? "",
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
     );
+
+    // Part 7. Same bound as the one-off checkout path: session creation is
+    // the point where an automated caller could generate unbounded Stripe work.
+    const guard = await guardRequest(supabaseAdmin, req, {
+      scope: "create-subscription-checkout",
+      ...LIMITS.checkout,
+    });
+    if (!guard.allowed) {
+      return new Response(JSON.stringify(guard.body), {
+        status: 429,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
 
     const email = customerEmail.trim().toLowerCase();
     const priceId = Deno.env.get("STRIPE_PRICE_ID_MONTHLY")!;
