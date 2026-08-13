@@ -18,7 +18,7 @@ import { corsFor, preflight, requireAllowedOrigin } from "../_shared/cors.ts";
 import { consumeRateLimit } from "../_shared/ratelimit.ts";
 import { readSessionToken, resolveVisitorSession } from "../_shared/session.ts";
 import { aiHealthEnabled } from "../_shared/config.ts";
-import { AI_HEALTH_UNAVAILABLE, EMERGENCY_LINE, isPossibleEmergency, isHealthRelated } from "../_shared/copy.ts";
+import { AI_HEALTH_UNAVAILABLE, EMERGENCY_LINE, isPossibleEmergency, isHealthRelated, matchFaq } from "../_shared/copy.ts";
 
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
