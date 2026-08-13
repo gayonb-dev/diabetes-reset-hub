@@ -20,7 +20,6 @@ serve(async (req) => {
     const customers = await stripe.customers.list({ email: user.email, limit: 1 });
     if (!customers.data.length) throw new Error("No Stripe customer");
 
-    const origin = req.headers.get("origin") || Deno.env.get("APP_URL") || "https://diabetesresetmethod.com";
     const portal = await stripe.billingPortal.sessions.create({
       customer: customers.data[0].id,
       return_url: canonicalUrl("/app/billing"),

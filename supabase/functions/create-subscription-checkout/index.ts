@@ -39,8 +39,6 @@ serve(async (req) => {
     const email = customerEmail.trim().toLowerCase();
     const priceId = Deno.env.get("STRIPE_PRICE_ID_MONTHLY")!;
     const productId = Deno.env.get("STRIPE_PRODUCT_ID")!;
-    const origin =
-      req.headers.get("origin") || Deno.env.get("APP_URL") || "https://diabetesresetmethod.com";
 
     const customers = await stripe.customers.list({ email, limit: 1 });
     const customerId = customers.data.length > 0 ? customers.data[0].id : undefined;

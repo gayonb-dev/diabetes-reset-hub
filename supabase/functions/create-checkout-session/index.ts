@@ -112,7 +112,6 @@ serve(async (req) => {
       customerId = customers.data[0].id;
     }
 
-    const origin = req.headers.get("origin") || "https://lovable.dev";
 
     // Determine amount and checkout mode
     const isInstallment = paymentPlan === "installment" && product.installmentAmount;
