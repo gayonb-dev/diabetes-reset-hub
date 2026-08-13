@@ -112,6 +112,80 @@ serve(async (req) => {
 
     console.log("[sub-webhook] event:", event.type);
 
+    // -----------------------------------------------------------------
+    // B4. Idempotency and ordering, before any state is touched.
+    //
+    // Stripe retries, and Stripe does not promise delivery order. Claiming
+    // the event ID makes a redelivery a no-op, and comparing timestamps
+    // stops an older event from rolling newer state backwards.
+    // -----------------------------------------------------------------
+    const rawObject = event.data.object as unknown as Record<string, unknown>;
+    const objectId = eventObjectId(event.type, rawObject);
+    const objectType = String((rawObject?.object as string) ?? "unknown");
+
+    const { data: claimRows, error: claimErr } = await sb.rpc("claim_billing_event", {
+      p_event_id: event.id,
+      p_event_type: event.type,
+      p_created: new Date((event.created ?? 0) * 1000).toISOString(),
+      p_object_id: objectId,
+      p_object_type: objectType,
+      p_livemode: event.livemode ?? null,
+      p_synthetic: false,
+    });
+    if (claimErr) {
+      // Never process without the ledger: that is how double-charging and
+      // duplicate provisioning happen. Return 500 so Stripe retries.
+      console.error("[sub-webhook] ledger claim failed:", claimErr.message);
+      return new Response(JSON.stringify({ error: "ledger_unavailable" }), {
+        status: 500,
+        headers: { ...corsFor(req), "Content-Type": "application/json" },
+      });
+    }
+    const claim = Array.isArray(claimRows) ? claimRows[0] : claimRows;
+    const decision = decideEventApplication({
+      eventId: event.id,
+      eventCreated: event.created ?? null,
+      objectId,
+      alreadyClaimed: claim?.claimed !== true,
+      lastAppliedCreated: claim?.last_applied_created ?? null,
+    });
+    console.log("[sub-webhook] decision:", decision.action, decision.reason);
+
+    if (decision.action === "skip_duplicate") {
+      await sb.rpc("finalize_billing_event", {
+        p_event_id: event.id,
+        p_state: "skipped_duplicate",
+        p_reason: decision.reason,
+      });
+      return new Response(JSON.stringify({ received: true, duplicate: true }), {
+        headers: { ...corsFor(req), "Content-Type": "application/json" },
+        status: 200,
+      });
+    }
+
+    // The payload in hand is stale or ambiguous. Its contents must not be
+    // written. Re-retrieve the authoritative object from Stripe instead.
+    let subscriptionOverride: Stripe.Subscription | null = null;
+    if (decision.action === "refetch_current" && objectId?.startsWith("sub_")) {
+      try {
+        subscriptionOverride = await stripe.subscriptions.retrieve(objectId);
+      } catch (e) {
+        console.error("[sub-webhook] refetch failed:", (e as Error).message);
+      }
+    }
+
+    const finalize = async (state: string, extra: Record<string, unknown> = {}) => {
+      await sb.rpc("finalize_billing_event", {
+        p_event_id: event.id,
+        p_state: state,
+        p_reason: decision.reason,
+        p_order_status: (extra.orderStatus as string) ?? null,
+        p_sub_status: (extra.subStatus as string) ?? null,
+        p_conditions: (extra.conditions as Record<string, unknown>) ?? {},
+      });
+    };
+    const appliedState = decision.action === "refetch_current" ? "refetched_current" : "applied";
+
     switch (event.type) {
       case "checkout.session.completed": {
         const session = event.data.object as Stripe.Checkout.Session;
