@@ -35,6 +35,8 @@ export type AccessState =
   | "full"
   /** Payment failed; inside the seven-day window; access preserved. */
   | "grace"
+  /** A formal card dispute is open against the entitlement funding access. */
+  | "suspended_dispute"
   /** Access withheld pending payment or re-subscription. */
   | "blocked";
 
@@ -47,7 +49,28 @@ export type AccessReason =
   | "period_ended"
   | "never_started"
   | "incomplete"
-  | "no_subscription";
+  | "no_subscription"
+  | "dispute_hold"
+  | "payment_refunded";
+
+/**
+ * One paid period. `status` is the canonical order status, so a fully refunded
+ * payment stops qualifying while a partially refunded one keeps qualifying.
+ */
+export interface PaidPeriod {
+  status: unknown;
+  periodStart?: string | number | Date | null;
+  periodEnd?: string | number | Date | null;
+}
+
+export interface DisputeHoldFacts {
+  /** An unresolved hold exists. */
+  open: boolean;
+  /** Inquiry/early warning only: raises review, never suspends access. */
+  reviewOnly?: boolean;
+  /** End of the entitlement the disputed payment funded, when known. */
+  entitlementEnd?: string | number | Date | null;
+}
 
 export interface MembershipFacts {
   /** Raw Stripe status from the local row. */
@@ -57,7 +80,39 @@ export interface MembershipFacts {
   trialEnd?: string | number | Date | null;
   /** First verified payment failure for the CURRENT failure episode. */
   graceStartedAt?: string | number | Date | null;
+  /** Unresolved dispute hold, when one exists. */
+  disputeHold?: DisputeHoldFacts | null;
+  /**
+   * Every paid period known for this member. Used to recompute entitlement
+   * after a refund: a refunded payment only revokes the entitlement IT funded,
+   * and only when no other valid paid period covers the moment.
+   */
+  paidPeriods?: PaidPeriod[] | null;
 }
+
+/** True when a fully refunded period covers `nowMs` and nothing else does. */
+export function refundRevokesEntitlement(
+  periods: PaidPeriod[] | null | undefined,
+  nowMs: number,
+): boolean {
+  if (!periods || periods.length === 0) return false;
+  const covers = (p: PaidPeriod) => {
+    const start = toMs(p.periodStart ?? null);
+    const end = toMs(p.periodEnd ?? null);
+    if (start === null || end === null) return false;
+    return nowMs >= start && nowMs < end;
+  };
+  const covering = periods.filter(covers);
+  if (covering.length === 0) return false;
+  const status = (p: PaidPeriod) => String(p.status ?? "").trim().toLowerCase();
+  const anyRefunded = covering.some((p) => status(p) === "refunded");
+  if (!anyRefunded) return false;
+  const anyValid = covering.some(
+    (p) => status(p) === "paid" || status(p) === "partially_refunded",
+  );
+  return !anyValid;
+}
+
 
 export interface MembershipEvaluation {
   state: AccessState;
@@ -103,6 +158,22 @@ export function evaluateMembership(
     graceDaysRemaining:
       graceEndsAt === null ? 0 : Math.max(0, Math.ceil((graceEndsAt - nowMs) / 86_400_000)),
   };
+
+  // A formal, unresolved dispute against the entitlement funding access
+  // suspends the programme. Inquiries and early warnings never do.
+  const hold = facts.disputeHold;
+  if (hold?.open && hold.reviewOnly !== true) {
+    const entEnd = toMs(hold.entitlementEnd ?? null);
+    if (entEnd === null || nowMs < entEnd) {
+      return grant("suspended_dispute", "dispute_hold", base);
+    }
+  }
+
+  // A fully refunded payment revokes only the entitlement it funded.
+  if (refundRevokesEntitlement(facts.paidPeriods, nowMs)) {
+    return grant("blocked", "payment_refunded", base);
+  }
+
 
   switch (status) {
     case "trialing":
@@ -175,8 +246,8 @@ function grant(
     // A blocked member may still READ their own account, billing and export
     // surfaces — withholding those would obstruct payment recovery and would
     // obstruct data rights. Blocking applies to programme content and writes.
-    allowRead: state !== "blocked",
-    allowWrite: state !== "blocked",
+    allowRead: state !== "blocked" && state !== "suspended_dispute",
+    allowWrite: state !== "blocked" && state !== "suspended_dispute",
   };
 }
 

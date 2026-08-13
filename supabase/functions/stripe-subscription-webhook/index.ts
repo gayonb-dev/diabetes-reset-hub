@@ -6,12 +6,15 @@ import { corsFor } from "../_shared/cors.ts";
 import { sendEmail as sendGatedEmail } from "../_shared/email.ts";
 import { findUserByEmail, type AdminListUsersClient } from "../_shared/findUserByEmail.ts";
 import {
+  canonicalDisputeOutcome,
+  canonicalRefundOutcome,
   canonicalSubscriptionStatus,
   decideEventApplication,
   eventObjectId,
   subscriptionConditions,
 } from "../_shared/billingCanonical.ts";
 import { nextGraceMarker } from "../_shared/membershipLifecycle.ts";
+
 
 const ADMIN_EMAIL = "support@diabetesresetmethod.com";
 const FROM_EMAIL = "The Diabetes Reset Method <hello@diabetesresetmethod.com>";
@@ -185,6 +188,119 @@ serve(async (req) => {
       });
     };
     const appliedState = decision.action === "refetch_current" ? "refetched_current" : "applied";
+
+    // -----------------------------------------------------------------
+    // Refund and dispute resolution.
+    //
+    // The chain is always followed in full — refund -> charge ->
+    // payment_intent -> order -> member — and never guessed. A refund or a
+    // dispute touches ONLY the order it resolves to; unrelated orders,
+    // subscriptions and members are never written.
+    // -----------------------------------------------------------------
+    const ORDER_COLS = "id, user_id, amount, customer_email, period_end";
+    type OrderRow = {
+      id: string;
+      user_id: string | null;
+      amount: number | null;
+      customer_email: string | null;
+      period_end: string | null;
+    };
+
+    const chargeId = (c: unknown): string | null =>
+      typeof c === "string" ? c : ((c as { id?: string } | null)?.id ?? null);
+
+    const resolveOrderForCharge = async (charge: Stripe.Charge): Promise<OrderRow | null> => {
+      const pi = chargeId(charge.payment_intent);
+      const byCharge = await sb
+        .from("orders").select(ORDER_COLS).eq("stripe_charge_id", charge.id).maybeSingle();
+      if (byCharge.data) return byCharge.data as OrderRow;
+      if (pi) {
+        const byPi = await sb
+          .from("orders").select(ORDER_COLS).eq("stripe_payment_intent_id", pi).maybeSingle();
+        if (byPi.data) return byPi.data as OrderRow;
+      }
+      return null;
+    };
+
+    const orderUserId = async (order: OrderRow): Promise<string | null> => {
+      if (order.user_id) return order.user_id;
+      const email = (order.customer_email ?? "").toLowerCase().trim();
+      if (!email) return null;
+      const found = await findUserByEmail(sb as unknown as AdminListUsersClient, email);
+      return found?.userId ?? null;
+    };
+
+    const applyRefund = async (charge: Stripe.Charge, refundStatus?: unknown) => {
+      const outcome = canonicalRefundOutcome({
+        refundStatus,
+        amount: charge.amount ?? null,
+        amountRefunded: charge.amount_refunded ?? null,
+        chargeRefunded: charge.refunded ?? null,
+      });
+      console.log("[sub-webhook] refund outcome:", outcome.disposition, outcome.reason);
+
+      const order = await resolveOrderForCharge(charge);
+      if (!order) {
+        // No local binding: record the decision, mutate nothing.
+        await finalize(appliedState, { orderStatus: outcome.orderStatus ?? undefined });
+        return;
+      }
+
+      const update: Record<string, unknown> = {
+        stripe_charge_id: charge.id,
+        amount_refunded: outcome.amountRefunded,
+        raw_refund_status: String(refundStatus ?? (charge.refunded ? "succeeded" : "")) || null,
+        updated_at: new Date().toISOString(),
+      };
+      if (outcome.orderStatus) update.status = outcome.orderStatus;
+      if (outcome.reviewRequired) update.refund_review_required = true;
+
+      await sb.from("orders").update(update).eq("id", order.id);
+      // Entitlement is not written here: `membership_access_state` recomputes
+      // it from the current set of paid periods, so a refunded payment revokes
+      // only what it funded and a later valid payment still qualifies.
+      await finalize(appliedState, { orderStatus: outcome.orderStatus ?? undefined });
+    };
+
+    const applyDispute = async (dispute: Stripe.Dispute) => {
+      const outcome = canonicalDisputeOutcome(dispute.status);
+      console.log("[sub-webhook] dispute outcome:", outcome.kind, outcome.reason);
+
+      const chId = chargeId(dispute.charge);
+      let order: OrderRow | null = null;
+      if (chId) {
+        try {
+          const charge = await stripe.charges.retrieve(chId);
+          order = await resolveOrderForCharge(charge);
+        } catch (e) {
+          console.error("[sub-webhook] dispute charge lookup failed:", (e as Error).message);
+        }
+      }
+      const userId = order ? await orderUserId(order) : null;
+
+      const row = {
+        user_id: userId,
+        order_id: order?.id ?? null,
+        hold_type: "dispute",
+        stripe_dispute_id: dispute.id,
+        stripe_charge_id: chId,
+        dispute_status: outcome.kind,
+        raw_status: String(dispute.status ?? ""),
+        review_only: !outcome.suspendAccess,
+        resolved_at: outcome.resolveHold ? new Date().toISOString() : null,
+        updated_at: new Date().toISOString(),
+      };
+      await sb.from("billing_holds").upsert(row, { onConflict: "stripe_dispute_id" });
+
+      if (order && outcome.reviewRequired) {
+        await sb.from("orders")
+          .update({ refund_review_required: true, updated_at: new Date().toISOString() })
+          .eq("id", order.id);
+      }
+      await finalize(appliedState);
+    };
+
+
 
     switch (event.type) {
       case "checkout.session.completed": {
@@ -399,7 +515,63 @@ serve(async (req) => {
       }
 
 
+      // Refunds. Full-vs-partial is decided from Stripe's CURRENT aggregate
+      // on the charge, so several partials that add up to the total are
+      // correctly a full refund. The webhook never issues a refund.
+      case "charge.refunded": {
+        let charge = event.data.object as Stripe.Charge;
+        if (decision.action === "refetch_current") {
+          try {
+            charge = await stripe.charges.retrieve(charge.id);
+          } catch (e) {
+            console.error("[sub-webhook] charge refetch failed:", (e as Error).message);
+          }
+        }
+        await applyRefund(charge);
+        break;
+      }
+
+      case "refund.updated": {
+        const refund = event.data.object as Stripe.Refund;
+        const chId = chargeId(refund.charge);
+        if (!chId) {
+          await finalize("ignored");
+          break;
+        }
+        try {
+          // The charge carries the authoritative aggregate; a single refund
+          // object never decides full-vs-partial on its own.
+          const charge = await stripe.charges.retrieve(chId);
+          await applyRefund(charge, refund.status);
+        } catch (e) {
+          console.error("[sub-webhook] refund charge retrieve failed:", (e as Error).message);
+          return new Response(JSON.stringify({ error: "charge_unavailable" }), {
+            status: 500,
+            headers: { ...corsFor(req), "Content-Type": "application/json" },
+          });
+        }
+        break;
+      }
+
+      // Disputes. Formal disputes suspend the associated entitlement only;
+      // inquiries raise owner review without touching access. The webhook
+      // never submits evidence and never accepts a dispute.
+      case "charge.dispute.created":
+      case "charge.dispute.closed": {
+        let dispute = event.data.object as Stripe.Dispute;
+        if (decision.action === "refetch_current") {
+          try {
+            dispute = await stripe.disputes.retrieve(dispute.id);
+          } catch (e) {
+            console.error("[sub-webhook] dispute refetch failed:", (e as Error).message);
+          }
+        }
+        await applyDispute(dispute);
+        break;
+      }
+
       default:
+
         console.log("[sub-webhook] unhandled:", event.type);
         // Recorded, but explicitly NOT counted as applied state, so it can
         // never be mistaken for lifecycle coverage that does not exist.

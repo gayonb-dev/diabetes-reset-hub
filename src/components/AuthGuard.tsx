@@ -23,9 +23,10 @@ export default function AuthGuard({ children, requireAdmin, requireActiveSub = t
   // B5. One evaluator, shared with the server. The previous status allow-list
   // could not express grace at all: a member whose card failed was either
   // waved through indefinitely (because `past_due` was listed) or shut out
-  // immediately. The evaluator distinguishes full / grace / blocked, and only
-  // `blocked` withholds programme access.
-  const inactive = needSubCheck && evaluateSubscriptionRow(subscription).state === "blocked";
+  // immediately. The evaluator distinguishes full / grace / suspended_dispute /
+  // blocked, and only the states that withhold reads withhold programme access.
+  const inactive = needSubCheck && !evaluateSubscriptionRow(subscription).allowRead;
+
 
   useEffect(() => {
     if (!inactive || !user) return;

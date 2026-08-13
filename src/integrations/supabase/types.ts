@@ -202,6 +202,69 @@ export type Database = {
         }
         Relationships: []
       }
+      billing_holds: {
+        Row: {
+          created_at: string
+          dispute_status: string | null
+          hold_type: string
+          id: string
+          opened_at: string
+          order_id: string | null
+          raw_status: string | null
+          resolved_at: string | null
+          review_only: boolean
+          stripe_charge_id: string | null
+          stripe_dispute_id: string | null
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          dispute_status?: string | null
+          hold_type?: string
+          id?: string
+          opened_at?: string
+          order_id?: string | null
+          raw_status?: string | null
+          resolved_at?: string | null
+          review_only?: boolean
+          stripe_charge_id?: string | null
+          stripe_dispute_id?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          dispute_status?: string | null
+          hold_type?: string
+          id?: string
+          opened_at?: string
+          order_id?: string | null
+          raw_status?: string | null
+          resolved_at?: string | null
+          review_only?: boolean
+          stripe_charge_id?: string | null
+          stripe_dispute_id?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "billing_holds_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "billing_holds_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "v_canonical_orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       blood_sugar_readings: {
         Row: {
           created_at: string
@@ -1625,48 +1688,72 @@ export type Database = {
       orders: {
         Row: {
           amount: number
+          amount_refunded: number
           created_at: string
           currency: string
           customer_email: string
           customer_name: string
           customer_phone: string | null
           id: string
+          period_end: string | null
+          period_start: string | null
           product_id: string
           product_name: string
+          raw_refund_status: string | null
+          refund_review_required: boolean
           status: string
+          stripe_charge_id: string | null
+          stripe_invoice_id: string | null
           stripe_payment_intent_id: string | null
           stripe_session_id: string | null
           updated_at: string
+          user_id: string | null
         }
         Insert: {
           amount: number
+          amount_refunded?: number
           created_at?: string
           currency?: string
           customer_email: string
           customer_name: string
           customer_phone?: string | null
           id?: string
+          period_end?: string | null
+          period_start?: string | null
           product_id: string
           product_name: string
+          raw_refund_status?: string | null
+          refund_review_required?: boolean
           status?: string
+          stripe_charge_id?: string | null
+          stripe_invoice_id?: string | null
           stripe_payment_intent_id?: string | null
           stripe_session_id?: string | null
           updated_at?: string
+          user_id?: string | null
         }
         Update: {
           amount?: number
+          amount_refunded?: number
           created_at?: string
           currency?: string
           customer_email?: string
           customer_name?: string
           customer_phone?: string | null
           id?: string
+          period_end?: string | null
+          period_start?: string | null
           product_id?: string
           product_name?: string
+          raw_refund_status?: string | null
+          refund_review_required?: boolean
           status?: string
+          stripe_charge_id?: string | null
+          stripe_invoice_id?: string | null
           stripe_payment_intent_id?: string | null
           stripe_session_id?: string | null
           updated_at?: string
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -2741,6 +2828,60 @@ export type Database = {
       }
     }
     Views: {
+      admin_billing_holds: {
+        Row: {
+          created_at: string | null
+          dispute_status: string | null
+          hold_type: string | null
+          id: string | null
+          opened_at: string | null
+          order_id: string | null
+          resolved_at: string | null
+          review_only: boolean | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          dispute_status?: string | null
+          hold_type?: string | null
+          id?: string | null
+          opened_at?: string | null
+          order_id?: string | null
+          resolved_at?: string | null
+          review_only?: boolean | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          dispute_status?: string | null
+          hold_type?: string | null
+          id?: string | null
+          opened_at?: string | null
+          order_id?: string | null
+          resolved_at?: string | null
+          review_only?: boolean | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "billing_holds_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "billing_holds_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "v_canonical_orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       v_canonical_orders: {
         Row: {
           amount: number | null

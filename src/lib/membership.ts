@@ -93,6 +93,21 @@ export function membershipNotice(
         title: "Your membership isn't set up yet",
         body: "The first payment hasn't completed. Finish checkout to unlock your programme.",
       };
+    case "dispute_hold":
+      return {
+        tone: "blocked",
+        title: "Your membership is on hold",
+        body:
+          "Your bank has raised a formal dispute on a payment, so your programme is paused while it's resolved. Your billing, account settings, data export and support are all still available — contact us and we'll help sort it out.",
+      };
+    case "payment_refunded":
+      return {
+        tone: "blocked",
+        title: "Your membership is paused",
+        body:
+          "The payment covering this period was refunded, so your programme is on hold. Nothing has been deleted — restart any time and pick up where you left off.",
+      };
+
     default:
       return null;
   }
