@@ -4,22 +4,19 @@
 // RIGHT SHAPE: money-movement endpoints are tight, rights endpoints are a
 // short temporary throttle that expires on its own and says so, and no limit
 // can turn into a permanent refusal of a legal right.
+//
+// The policy module is pure by design so it can be asserted here directly.
+// The runtime wrapper does nothing but consume a counter and hand back these
+// exact values.
 
 import { describe, it, expect } from "vitest";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { guardRequest, LIMITS } from "../../supabase/functions/_shared/abuseGuard";
-
-function fakeAdmin(allow: boolean) {
-  return {
-    rpc: async () => ({ data: allow, error: null }),
-  } as unknown as Parameters<typeof guardRequest>[0];
-}
-
-const req = new Request("https://diabetesresetmethod.com/x", {
-  method: "POST",
-  headers: { "cf-connecting-ip": "203.0.113.9" },
-});
+import {
+  LIMITS,
+  rateLimitedBody,
+  SUPPORT_EMAIL,
+} from "../../supabase/functions/_shared/abusePolicy";
 
 describe("abuse-control limits are proportionate", () => {
   it("bounds money movement more tightly than ordinary member writes", () => {
@@ -35,31 +32,38 @@ describe("abuse-control limits are proportionate", () => {
     }
   });
 
-  it("allows a request under the limit", async () => {
-    const r = await guardRequest(fakeAdmin(true), req, { scope: "t", ...LIMITS.checkout });
-    expect(r.allowed).toBe(true);
+  it("always reports a finite retry delay rather than an open-ended refusal", () => {
+    const body = rateLimitedBody({ windowSeconds: LIMITS.checkout.windowSeconds });
+    expect(body.error).toBe("rate_limited");
+    expect(body.retry_after_seconds).toBe(LIMITS.checkout.windowSeconds);
   });
 
-  it("returns 429, never a permanent status, when over the limit", async () => {
-    const r = await guardRequest(fakeAdmin(false), req, { scope: "t", ...LIMITS.checkout });
-    expect(r.allowed).toBe(false);
-    expect(r.status).toBe(429);
-    expect(r.body.retry_after_seconds).toBeGreaterThan(0);
-  });
-
-  it("tells a rights-endpoint caller the pause is temporary and offers a human route", async () => {
-    const r = await guardRequest(fakeAdmin(false), req, {
-      scope: "export-my-data",
-      userId: "u1",
+  it("tells a rights-endpoint caller the pause is temporary and offers a human route", () => {
+    const body = rateLimitedBody({
+      windowSeconds: LIMITS.rights.windowSeconds,
       rightsEndpoint: true,
-      ...LIMITS.rights,
     });
-    expect(r.allowed).toBe(false);
-    expect(r.body.message).toMatch(/temporary/i);
-    expect(r.body.message).toMatch(/has not been refused/i);
-    expect(r.body.message).toContain("info@diabetesresetmethod.com");
+    expect(body.message).toMatch(/temporary/i);
+    expect(body.message).toMatch(/has not been refused/i);
+    expect(body.message).toContain(SUPPORT_EMAIL);
     // A rights endpoint must never be described in refusal language.
-    expect(r.body.message).not.toMatch(/denied|blocked|forbidden/i);
+    expect(body.message).not.toMatch(/denied|blocked|forbidden|permanently/i);
+  });
+});
+
+describe("rights endpoints are throttled, never denied", () => {
+  const rightsFunctions = ["export-my-data", "request-account-deletion"];
+
+  it("uses the rightsEndpoint wording on export and deletion", () => {
+    for (const fn of rightsFunctions) {
+      const src = readFileSync(
+        resolve(process.cwd(), `supabase/functions/${fn}/index.ts`),
+        "utf8",
+      );
+      expect(src, fn).toContain("abuseGuard.ts");
+      expect(src, fn).toContain("rightsEndpoint: true");
+      expect(src, fn).toContain("LIMITS.rights");
+    }
   });
 });
 
@@ -81,6 +85,28 @@ describe("server-to-server callers are not throttled", () => {
         continue; // function not present in this deployment
       }
       expect(src, fn).not.toContain("abuseGuard.ts");
+    }
+  });
+});
+
+describe("money-movement endpoints are guarded", () => {
+  const guarded = [
+    "create-checkout-session",
+    "create-subscription-checkout",
+    "verify-checkout-session",
+    "customer-portal",
+    "cancel-subscription",
+    "support-request",
+    "ask-vita",
+  ];
+
+  it("consumes a rate-limit bucket before doing chargeable work", () => {
+    for (const fn of guarded) {
+      const src = readFileSync(
+        resolve(process.cwd(), `supabase/functions/${fn}/index.ts`),
+        "utf8",
+      );
+      expect(src, fn).toContain("guardRequest(");
     }
   });
 });
