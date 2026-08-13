@@ -30,6 +30,19 @@ Verify across Privacy, Consumer Health Data Privacy, AI Use, Terms, Refund Terms
 - Server failure preserves the token and reports failure. Repeat deletion is idempotent and cannot delete another chat. Outside-processor deletion is claimed only when verified.
 - Tests: synthetic chat deleted from VITA; synthetic chat deleted from Privacy after same-tab SPA navigation; reload/new tab shows no-active-chat; server failure; cross-session and forged token; repeated deletion; exact-ID cleanup proving zero residue.
 
+### Public-chat diagnosis and restoration
+
+The live website chat is reported as down. Diagnose and restore the safe public-chat experience in this run. Intended behaviour: the VITA widget opens on the public site, an anonymous opaque session can be created, deterministic answers work for membership, price, cancellation, login, membership status and site navigation without any external AI call, a personal health question receives the approved safe/unavailable response while `ai_health_enabled=false`, the interface never implies personalized health AI, and the privacy/deletion controls stay available.
+
+Diagnose in order: widget renders → production origin/CORS admits `https://diabetesresetmethod.com` → `visitor-session` creates a session → whether an applicable `public_chat_enabled` flag exists and its effective value (do not invent one unless the architecture genuinely requires it) → deterministic FAQ routing before consent → consent fails safely → only the external AI/health path is disabled → whether a rate limit or deletion-state check is wrongly disabling the whole widget. Fix the actual failing stage using the existing Prompt 3 architecture.
+
+Never: enable `ai_health_enabled`; send health or unrestricted free text to an external provider; restore browser-UUID authorization; store the opaque token in browser storage; weaken exact-origin CORS; fake an AI response; or make the whole chat depend on the external model.
+
+Tests and smoke proof: widget opens on the production origin; visitor-session creation succeeds; a price question returns `$27 for the first 14 days, then $67 per month until canceled`; login and cancellation questions return deterministic answers; a health question reaches no external AI endpoint and returns the approved safe response; disallowed and lookalike origins fail; rate limiting causes no global outage for unrelated visitors; "Delete this chat" uses the same active in-memory token and succeeds only after server confirmation; no health-AI flag is enabled; no real visitor's chat is read, changed or deleted.
+
+Client corrections land in preview only, unpublished. Only a changed Edge Function is deployed, after focused tests. The report states separately whether the live published widget currently works, whether the corrected behaviour exists only in preview pending publication, the exact failing stage found, whether deterministic FAQs work, and confirmation that health AI remains disabled.
+
+
 ## Part 1 — Stage 0 preflight and gap inventory
 
 Confirm the connected Supabase project is production ref `wqennhjdojjqmmqzjhti`. A different ref is a hard stop. Record code SHA and migration head, then read (never write) the expected configuration:
