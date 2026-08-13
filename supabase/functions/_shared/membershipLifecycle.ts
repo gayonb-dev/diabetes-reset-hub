@@ -159,6 +159,22 @@ export function evaluateMembership(
       graceEndsAt === null ? 0 : Math.max(0, Math.ceil((graceEndsAt - nowMs) / 86_400_000)),
   };
 
+  // A formal, unresolved dispute against the entitlement funding access
+  // suspends the programme. Inquiries and early warnings never do.
+  const hold = facts.disputeHold;
+  if (hold?.open && hold.reviewOnly !== true) {
+    const entEnd = toMs(hold.entitlementEnd ?? null);
+    if (entEnd === null || nowMs < entEnd) {
+      return grant("suspended_dispute", "dispute_hold", base);
+    }
+  }
+
+  // A fully refunded payment revokes only the entitlement it funded.
+  if (refundRevokesEntitlement(facts.paidPeriods, nowMs)) {
+    return grant("blocked", "payment_refunded", base);
+  }
+
+
   switch (status) {
     case "trialing":
       return grant("full", "trialing", base);
