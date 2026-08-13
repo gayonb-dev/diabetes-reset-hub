@@ -5,6 +5,13 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
 import { corsFor } from "../_shared/cors.ts";
 import { sendEmail as sendGatedEmail } from "../_shared/email.ts";
 import { findUserByEmail, type AdminListUsersClient } from "../_shared/findUserByEmail.ts";
+import {
+  canonicalSubscriptionStatus,
+  decideEventApplication,
+  eventObjectId,
+  subscriptionConditions,
+} from "../_shared/billingCanonical.ts";
+import { nextGraceMarker } from "../_shared/membershipLifecycle.ts";
 
 const ADMIN_EMAIL = "support@diabetesresetmethod.com";
 const FROM_EMAIL = "The Diabetes Reset Method <hello@diabetesresetmethod.com>";
