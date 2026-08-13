@@ -38,9 +38,11 @@ describe("B4 canonical vocabulary", () => {
     expect(conditions.in_trial).toBe(false);
   });
 
-  it("maps unknown or missing values to an explicit canonical value, never a guess", () => {
+  it("maps unknown or missing values to no entitlement, never to a live status", () => {
+    // A status Stripe introduces later must degrade to "no proven
+    // entitlement", not to something that happens to sort as access.
     expect(canonicalSubscriptionStatus(undefined)).toBe("none");
-    expect(canonicalSubscriptionStatus("something_new_from_stripe")).toBe("unknown");
+    expect(canonicalSubscriptionStatus("something_new_from_stripe")).toBe("none");
     expect(canonicalOrderStatus(undefined)).toBe("pending");
     expect(canonicalOrderStatus("refunded")).toBe("refunded");
   });
@@ -190,9 +192,30 @@ describe("B5 seven-day grace lifecycle", () => {
     ).toBeNull();
   });
 
-  it("does not grant grace to a past_due row that has no recorded failure", () => {
-    // Grace is earned by a verified failure event, not by a bare status string.
-    const ev = evaluateMembership({ status: "past_due", graceStartedAt: null }, NOW);
+  it("falls back to the period end when past_due has no recorded failure", () => {
+    // Older rows, and rows set past_due by a subscription event rather than an
+    // invoice failure, have no marker. The member is not dropped on the first
+    // webhook: the clock runs from the end of the period they paid for.
+    const inWindow = evaluateMembership(
+      { status: "past_due", graceStartedAt: null, currentPeriodEnd: NOW - DAY },
+      NOW,
+    );
+    expect(inWindow.state).toBe("grace");
+
+    const outOfWindow = evaluateMembership(
+      { status: "past_due", graceStartedAt: null, currentPeriodEnd: NOW - 8 * DAY },
+      NOW,
+    );
+    expect(outOfWindow.state).toBe("blocked");
+  });
+
+  it("never grants an unbounded grace window when there is no clock at all", () => {
+    // No failure marker and no period end means an open window cannot be
+    // demonstrated. Granting one would be an entitlement that never expires.
+    const ev = evaluateMembership(
+      { status: "past_due", graceStartedAt: null, currentPeriodEnd: null },
+      NOW,
+    );
     expect(ev.state).toBe("blocked");
   });
 });
