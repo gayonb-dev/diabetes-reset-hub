@@ -54,3 +54,63 @@ export function isHealthRelated(text: string): boolean {
   }
   return HEALTH_PATTERNS.some((re) => re.test(text));
 }
+
+// ---------------------------------------------------------------------------
+// Deterministic membership FAQ.
+//
+// While the AI-health gate is closed the public chat must still be genuinely
+// useful for the three questions visitors actually ask: price, login and
+// cancellation. These answers are produced by the server with no processor
+// call, no model call and no stored health content. Wording is approved and
+// must not be paraphrased.
+// ---------------------------------------------------------------------------
+
+export type FaqKey = "price" | "login" | "cancel";
+
+export interface FaqAnswer {
+  key: FaqKey;
+  body: string;
+  /** Relative path the widget turns into a button, or null. */
+  cta: { label: string; path: string } | null;
+}
+
+const FAQ_ANSWERS: Record<FaqKey, FaqAnswer> = {
+  price: {
+    key: "price",
+    body:
+      "It's US$27 today, which unlocks the membership and the 7-Day Reset Sprint with 14 days of full access. After that it's US$67 a month, and you can cancel in one click at any time. Cancel inside the first 14 days and there's no monthly charge — you keep the 7-Day Reset.",
+    cta: { label: "See the plan", path: "/#pricing" },
+  },
+  login: {
+    key: "login",
+    body:
+      "Sign in from the Login page. Enter the email address on your membership and we send a secure one-time sign-in link — there's no password to remember. If the link doesn't arrive, check your spam folder.",
+    cta: { label: "Go to Login", path: "/login" },
+  },
+  cancel: {
+    key: "cancel",
+    body:
+      "You can cancel in one click from Billing inside your account. Cancelling stops the next charge and you keep access until the end of the period you've paid for. Refunds are handled under the Refund Terms page.",
+    cta: { label: "Refund Terms", path: "/refund-terms" },
+  },
+};
+
+const FAQ_PATTERNS: Array<{ key: FaqKey; re: RegExp }> = [
+  { key: "cancel", re: /\b(cancel|cancelling|canceling|unsubscribe|stop (my )?(sub|subscription|membership|billing)|end my membership)\b/i },
+  { key: "login", re: /\b(log ?in|logging in|sign ?in|signing in|can'?t get in|forgot my password|password|magic link|access my account)\b/i },
+  { key: "price", re: /\b(price|pricing|cost|costs|how much|what do you charge|fee|\$\s?\d|27|67)\b/i },
+];
+
+/**
+ * Returns the approved deterministic answer for a membership FAQ, or null.
+ * Health wording always wins: a message that also reads as health-related is
+ * left to the health gate rather than answered here.
+ */
+export function matchFaq(text: string): FaqAnswer | null {
+  if (!text || isPossibleEmergency(text)) return null;
+  if (HEALTH_PATTERNS.some((re) => re.test(text))) return null;
+  for (const { key, re } of FAQ_PATTERNS) {
+    if (re.test(text)) return FAQ_ANSWERS[key];
+  }
+  return null;
+}
