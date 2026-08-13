@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
@@ -15,6 +15,7 @@ import { Loader2, AlertCircle, CreditCard, ExternalLink, RotateCcw } from "lucid
 import { toast } from "@/hooks/use-toast";
 import EmptyState from "@/components/ui/empty-state";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { evaluateSubscriptionRow, membershipNotice } from "@/lib/membership";
 
 interface Invoice {
   id: string;
@@ -59,17 +60,48 @@ export default function Billing() {
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | null>(null);
   const [invLoading, setInvLoading] = useState(true);
+  const [invError, setInvError] = useState(false);
+
+  // B1. Hook stability.
+  //
+  // The previous version fired one unguarded request on mount and wrote the
+  // result into state whenever it happened to arrive. Three consequences:
+  // a slow response could overwrite a newer one, an unmounted component was
+  // still written to, and a failure was indistinguishable from "no invoices"
+  // — a member with a real billing history saw an empty state and no way to
+  // retry. Each request now carries a sequence number, and only the newest
+  // one is allowed to land.
+  const reqSeq = useRef(0);
+  const subscriptionId = subscription?.id ?? null;
+
+  const loadInvoices = useCallback(async () => {
+    const seq = ++reqSeq.current;
+    setInvLoading(true);
+    setInvError(false);
+    try {
+      const { data, error } = await supabase.functions.invoke("list-invoices", {});
+      if (seq !== reqSeq.current) return; // a newer request superseded this one
+      if (error || !data) {
+        setInvError(true);
+        return;
+      }
+      setInvoices(Array.isArray(data.invoices) ? data.invoices : []);
+      setPaymentMethod(data.payment_method ?? null);
+    } catch {
+      if (seq === reqSeq.current) setInvError(true);
+    } finally {
+      if (seq === reqSeq.current) setInvLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
-    (async () => {
-      const { data, error } = await supabase.functions.invoke("list-invoices", {});
-      if (!error && data) {
-        setInvoices(data.invoices || []);
-        setPaymentMethod(data.payment_method || null);
-      }
-      setInvLoading(false);
-    })();
-  }, []);
+    void loadInvoices();
+    // Refetch when the subscription identity changes, so the history shown
+    // always belongs to the subscription currently on screen.
+  }, [loadInvoices, subscriptionId]);
+
+  // Invalidate any in-flight response on unmount: nothing may land afterwards.
+  useEffect(() => () => { reqSeq.current++; }, []);
 
   const openPortal = async () => {
     setLoading(true);
