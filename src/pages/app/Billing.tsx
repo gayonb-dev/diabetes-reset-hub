@@ -122,6 +122,9 @@ export default function Billing() {
   };
 
   const invokeCancel = async (cancel: boolean) => {
+    // B1. A double tap (or a tap on each button in quick succession) must not
+    // produce two lifecycle calls racing each other to a different result.
+    if (cancelling || reactivating) return;
     const setter = cancel ? setCancelling : setReactivating;
     setter(true);
     try {
@@ -170,6 +173,10 @@ export default function Billing() {
 
   // Must stay above the early return: hooks run in the same order every render.
   const visibleInvoices = useMemo(() => (isMobile ? invoices.slice(0, 6) : invoices), [invoices, isMobile]);
+
+  // B5. Same evaluator the server uses, for presentation only.
+  const evaluation = useMemo(() => evaluateSubscriptionRow(subscription), [subscription]);
+  const notice = useMemo(() => membershipNotice(evaluation), [evaluation]);
 
   if (!subscription) {
     return (
