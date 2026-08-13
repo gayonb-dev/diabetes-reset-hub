@@ -515,7 +515,63 @@ serve(async (req) => {
       }
 
 
+      // Refunds. Full-vs-partial is decided from Stripe's CURRENT aggregate
+      // on the charge, so several partials that add up to the total are
+      // correctly a full refund. The webhook never issues a refund.
+      case "charge.refunded": {
+        let charge = event.data.object as Stripe.Charge;
+        if (decision.action === "refetch_current") {
+          try {
+            charge = await stripe.charges.retrieve(charge.id);
+          } catch (e) {
+            console.error("[sub-webhook] charge refetch failed:", (e as Error).message);
+          }
+        }
+        await applyRefund(charge);
+        break;
+      }
+
+      case "refund.updated": {
+        const refund = event.data.object as Stripe.Refund;
+        const chId = chargeId(refund.charge);
+        if (!chId) {
+          await finalize("ignored");
+          break;
+        }
+        try {
+          // The charge carries the authoritative aggregate; a single refund
+          // object never decides full-vs-partial on its own.
+          const charge = await stripe.charges.retrieve(chId);
+          await applyRefund(charge, refund.status);
+        } catch (e) {
+          console.error("[sub-webhook] refund charge retrieve failed:", (e as Error).message);
+          return new Response(JSON.stringify({ error: "charge_unavailable" }), {
+            status: 500,
+            headers: { ...corsFor(req), "Content-Type": "application/json" },
+          });
+        }
+        break;
+      }
+
+      // Disputes. Formal disputes suspend the associated entitlement only;
+      // inquiries raise owner review without touching access. The webhook
+      // never submits evidence and never accepts a dispute.
+      case "charge.dispute.created":
+      case "charge.dispute.closed": {
+        let dispute = event.data.object as Stripe.Dispute;
+        if (decision.action === "refetch_current") {
+          try {
+            dispute = await stripe.disputes.retrieve(dispute.id);
+          } catch (e) {
+            console.error("[sub-webhook] dispute refetch failed:", (e as Error).message);
+          }
+        }
+        await applyDispute(dispute);
+        break;
+      }
+
       default:
+
         console.log("[sub-webhook] unhandled:", event.type);
         // Recorded, but explicitly NOT counted as applied state, so it can
         // never be mistaken for lifecycle coverage that does not exist.
