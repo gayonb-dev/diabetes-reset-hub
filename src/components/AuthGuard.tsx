@@ -3,6 +3,7 @@ import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2 } from "lucide-react";
+import { evaluateSubscriptionRow } from "@/lib/membership";
 
 interface Props {
   children: ReactNode;
@@ -19,9 +20,12 @@ export default function AuthGuard({ children, requireAdmin, requireActiveSub = t
   // a new user with no onboarded_at gets routed to onboarding instead of login.
   const [onboardState, setOnboardState] = useState<"unknown" | "needs" | "done">("unknown");
   const needSubCheck = !loading && !!user && !!requireActiveSub && !isAdmin;
-  const inactive =
-    needSubCheck &&
-    !(subscription && ["trialing", "active", "past_due"].includes(subscription.status));
+  // B5. One evaluator, shared with the server. The previous status allow-list
+  // could not express grace at all: a member whose card failed was either
+  // waved through indefinitely (because `past_due` was listed) or shut out
+  // immediately. The evaluator distinguishes full / grace / blocked, and only
+  // `blocked` withholds programme access.
+  const inactive = needSubCheck && evaluateSubscriptionRow(subscription).state === "blocked";
 
   useEffect(() => {
     if (!inactive || !user) return;
