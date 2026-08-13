@@ -1,75 +1,88 @@
-# Prompt 5 closeout — refund and dispute lifecycle
+# Prompt 5 final correction — account access, trusted refund linkage, missing proofs
 
-Scope: add refund and dispute handling to the existing subscription webhook and lifecycle. Nothing else in Prompt 5 is reopened.
+Four corrections only. No publication, no Stripe event enablement, no real Stripe object or real member touched. Backend deploys limited to the changed webhook and shared modules; client route changes stay in preview.
 
-## What gets added
+## 1. Account controls stay reachable when billing is restricted
 
-Four events handled inside the existing `stripe-subscription-webhook`, reusing the current signature verification, `claim_billing_event` ledger, ordering decision and current-object retrieval:
+Today `AuthGuard` collapses two separate questions into one: a signed-in member whose entitlement is withheld is sent to `/login?inactive=1`, which locks them out of the very pages they need to fix it.
 
-- `charge.refunded`
-- `refund.updated`
-- `charge.dispute.created`
-- `charge.dispute.closed`
+Split the decisions:
 
-No second event system, no new endpoint.
+- **Authentication** — is there a valid session? No session, any route: go to Login (unchanged).
+- **Entitlement** — what surfaces does the shared evaluator permit?
 
-## Refund mapping
+The shared evaluator gains a single source of truth, `allowed_surfaces`, derived from the access state. Route components consume that list; no component re-derives status arrays.
 
-Resolution keeps the full trusted chain, never a guess: `refund -> charge -> payment_intent -> invoice/order -> subscription -> entitlement period`. Current charge/refund state is retrieved from Stripe whenever the event is stale, tied, or lacks aggregate amounts.
+| State | Surfaces permitted |
+|---|---|
+| allowed / grace | all programme + account surfaces |
+| restricted_billing | billing, settings, support, profile |
+| suspended_dispute | billing, settings, support, profile |
+| restricted_deletion | only what the deletion lifecycle already permits (unchanged, and never widened) |
 
-| Current Stripe state | Order status | Entitlement |
-| --- | --- | --- |
-| Refund `succeeded`, `amount_refunded >= amount` | `refunded` | recompute entitlement across all independently valid payments/subscriptions |
-| Refund `succeeded`, `0 < amount_refunded < amount` | `partially_refunded` | unchanged, owner-review flag raised |
-| Refund `pending` / `requires_action` | unchanged | unchanged |
-| Refund `failed` / `canceled` | unchanged (never `refunded`) | unchanged |
+Behaviour:
 
-A full refund does **not** assume the refunded charge is the payment currently supporting access. After marking the order, entitlement is recomputed from the current set of paid periods:
+- Signed-in member on a permitted surface: renders normally, with the existing calm notice.
+- Signed-in member on a paid programme route while restricted: redirect to `/app/billing` carrying explanatory router state — never to Login.
+- Anonymous: Login, as now.
+- No Stripe identifier and no internal reason code is rendered or placed in the URL.
 
-- Refunding the $27 introductory payment revokes introductory access only while that payment is still the one supporting the current entitlement.
-- Refunding an older renewal never revokes access supported by a later valid paid renewal.
-- Refunding the currently qualifying renewal revokes only that entitlement, unless another independently valid entitlement covers the period.
-- A live subscription row alone is not sufficient: if its current qualifying payment has been fully refunded, entitlement fails.
-- A historical refunded payment never overrides a later verified paid period.
+Deletion restrictions from Prompt 3 keep priority: when a deletion lock is active, the deletion lifecycle's surface list wins over any billing-derived list.
 
-Full-vs-partial is decided from Stripe's **current aggregate** `amount_refunded`, so several partials that add up to the full amount correctly become `refunded`. The raw Stripe status is stored alongside the canonical status for reconciliation. The webhook never issues a refund.
+## 2. Canonical vocabulary reconciliation
 
-## Dispute mapping
+The approved vocabulary is `allowed`, `grace`, `restricted_billing`, `restricted_deletion`, `suspended_dispute`. The internal `blocked` value disappears as a canonical result:
 
-Resolution path: dispute -> `charge` -> `payment_intent` -> order/subscription. There is one access-state vocabulary; the dispute state is the existing canonical `suspended_dispute`, used identically by the SQL functions, the shared evaluator and presentation copy. No new value is introduced.
+- Shared evaluator returns the approved names; refund revocation returns `restricted_billing`, not `blocked`.
+- SQL `membership_access_state()` returns the same names; `membership_write_allowed()` denies programme writes for `restricted_billing`, `restricted_deletion` and `suspended_dispute`.
+- Any historical `blocked` string read from stored rows is mapped at the read boundary only; nothing writes it again.
+- Client presentation, route guards, edge functions and tests are updated to the same names in the same pass.
 
-| Current verified dispute status | Effect |
-| --- | --- |
-| `needs_response`, `under_review` | formal dispute: active hold; `suspended_dispute` for only the associated entitlement |
-| `warning_needs_response`, `warning_under_review` | inquiry/early warning: owner-review flag only, paid access **not** suspended |
-| `warning_closed` | inquiry closed without becoming a formal dispute: resolve hold/review, reevaluate from current independent payment and subscription state |
-| `prevented` | dispute prevented: resolve hold/review, reevaluate independent entitlement |
-| `won` | resolve the hold, then restore access only if current payment/subscription state independently qualifies |
-| `lost` | no automatic restore of the associated entitlement |
-| unknown/unmapped | fail closed into owner review: no guess, no new access granted, no permanent revocation of unrelated access |
+## 3. Trusted refund relationship
 
-While `suspended_dispute` applies, Billing, Settings, support, cancellation, authenticated export and account deletion all remain available. The dispute ID and verified state are stored server-side only; no Stripe identifier reaches the browser. The webhook never submits evidence or accepts a dispute. The Prompt 3 deletion restriction continues to override every billing outcome.
+Refund entitlement decisions must walk the full chain: refund → charge → PaymentIntent → invoice/order → subscription → entitlement period → member.
 
+Additive schema:
 
-## Technical changes
+- `orders.stripe_subscription_id` plus an immutable local `subscriptions` foreign key on the order. The local FK is the authoritative link; the Stripe ID is retained for reconciliation. This relationship is documented in the migration and in the webhook module header.
+- An owner-review marker on the order (reusing the existing review flag) and a review reason recorded on the ledger event — no raw personal data.
 
-**Migration (additive only, no rewrite of existing rows):**
-- `orders`: `stripe_charge_id`, `stripe_invoice_id`, `amount_refunded` (default 0), `raw_refund_status`, `period_start`/`period_end` (the entitlement period the payment funds), `refund_review_required` (bool) — all nullable/defaulted so existing rows are untouched.
-- New `public.billing_holds` (user_id, order_id, hold_type `dispute`, stripe_dispute_id, dispute_status, raw_status, review_only bool, opened_at, resolved_at) with RLS: no client read of Stripe IDs, service_role full, admin read.
-- `membership_access_state(uuid)` extended with the existing canonical `suspended_dispute` state: an unresolved, non-review-only dispute hold on the entitlement backing the current qualifying payment returns `suspended_dispute`; a fully refunded qualifying payment with no other valid paid period falls through to the existing blocked path. Billing/settings/support/export/deletion surfaces are already outside the membership gate, so neither state touches them.
+Webhook behaviour on refund events:
 
-**Shared modules:**
-- `_shared/billingCanonical.ts`: add `canonicalRefundOutcome()` and `canonicalDisputeOutcome()` pure mappers (aggregate-refund helper included), with the exact dispute-status table above and an explicit fail-closed owner-review branch for unknown statuses.
-- `_shared/membershipLifecycle.ts`: add `suspended_dispute` to `AccessState` and accept `disputeHold` plus the set of qualifying paid periods, so server, SQL and client presentation share one vocabulary and one entitlement recomputation.
+1. Retrieve the current charge and invoice from Stripe (never trust the stale payload).
+2. Confirm the invoice belongs to the expected subscription.
+3. Confirm order and subscription belong to the same member.
+4. Confirm the payment funds the DRM membership product/price and the identified entitlement period.
+5. Only then apply the existing full-vs-partial refund logic.
 
-**Webhook:** four new `case` branches following the existing pattern (`decision` -> optional refetch -> mutate -> `finalize(...)`). Unsupported events keep falling through to `finalize("ignored")`.
+If the chain is missing, contradictory or ambiguous: record an owner-review item, leave entitlement untouched, do not guess the member, do not resolve by email, do not create or link an account. One-off, unrelated or retired product payments never move membership.
 
-## Verification (synthetic only)
+Existing introductory, older-renewal, current-renewal and independent-entitlement behaviour is preserved. The seven existing orders are **not** backfilled in this task; the plan reports their count only and proposes a separate reconciliation.
 
-New `src/test/billingRefundDispute.test.ts` plus Deno-level fixture tests covering: full refund; partial refund; multiple partials summing to full; pending/failed/canceled refunds; full refund of the introductory payment during the first 14 days; refund of the introductory payment after a later renewal has independently paid; refund of an older renewal while a newer renewal is valid; refund of the currently qualifying renewal; two independent qualifying entitlements where only one is refunded; live subscription whose qualifying payment was fully refunded; dispute created (`needs_response`, `under_review`); `warning_needs_response` and `warning_under_review` raising review without suspension; `warning_closed`; `prevented`; dispute won with and without independently valid access; dispute lost; unknown dispute status failing closed to owner review; duplicate delivery; concurrent delivery; reverse ordering; same-second events; stale payload corrected by retrieval; wrong endpoint secret, forged signature, missing signature; unknown event; and no mutation of unrelated orders/subscriptions/members.
+## 4. Missing executable proofs
 
-Then rerun the existing subscription, lifecycle, checkout, deletion-cancellation and magic-link regressions, TypeScript, lint on touched files, and build. Deploy only `stripe-subscription-webhook`. No client publish, no real Stripe object touched, no real member row mutated; synthetic rows are removed and residue re-checked.
+New function-level tests exercising the real webhook entry path (not just the pure mappers):
 
-## Owner action after deployment
+**Signature isolation** — correct subscription secret accepts a correctly signed synthetic event; payment-webhook secret, forged signature and missing signature are each rejected before any database or Stripe call, with zero mutation calls observed and nothing sensitive logged.
 
-Enable exactly these four events on `https://wqennhjdojjqmmqzjhti.supabase.co/functions/v1/stripe-subscription-webhook`: `charge.refunded`, `refund.updated`, `charge.dispute.created`, `charge.dispute.closed`. Until a genuine event arrives, live delivery remains unobserved.
+**Concurrent delivery** — two simultaneous claims for the same synthetic event ID against the real ledger claim function: exactly one applies the lifecycle mutation, the other is a successful idempotent no-op, with no duplicate hold, order transition or access transition.
+
+Synthetic rows (ledger, hold, order, subscription) are removed by exact ID and residue is proven to be zero.
+
+Reruns: reverse-order and same-second delivery, stale-object retrieval, refund/dispute mappers, subscription and lifecycle, checkout, deletion-cancellation, magic-link, TypeScript, Deno tests, lint on touched files, production build.
+
+## Technical notes
+
+- `supabase/functions/_shared/membershipLifecycle.ts` — rename states, add `allowedSurfaces`.
+- `src/lib/membership.ts` — re-export and notice copy follow the new names (member-facing wording unchanged in tone).
+- `src/components/AuthGuard.tsx` — split auth vs entitlement; new surface check; redirect target `/app/billing`.
+- `src/App.tsx` — account routes declare their surface; paid routes stay behind the entitlement check.
+- Migration (additive): order → subscription linkage columns/FK + index, and updated `membership_access_state` / `membership_write_allowed`.
+- `supabase/functions/stripe-subscription-webhook/index.ts` — chain verification and safe-failure path.
+- New tests: route-access matrix (anonymous, allowed, grace, restricted_billing, suspended_dispute, restricted_deletion across allowed and paid routes, direct entry, SPA navigation, refresh, sign-out) and the two webhook proofs.
+
+## Completion report
+
+PASS/FAIL will be reported for: route access per state, vocabulary reconciliation, invoice/order/subscription/member linkage, safe failure on ambiguity, the four signature cases, the real simultaneous ledger claim, exact synthetic cleanup, every gate, backend deployed, client not published, no real member or Stripe object changed, and live refund/dispute delivery still unobserved.
+
+The four Stripe events stay disabled. They may be enabled only after these corrections pass and the route correction ships in a controlled client publication.
