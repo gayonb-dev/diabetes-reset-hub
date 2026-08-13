@@ -20,6 +20,9 @@ function write(token: string) {
 
 export function clearChatSession() {
   memoryToken = null;
+  // Drop the cached start metadata too, so a later open issues a fresh session
+  // rather than reusing a revoked one.
+  lastStart = null;
 }
 
 export function peekChatSession(): string | null {
