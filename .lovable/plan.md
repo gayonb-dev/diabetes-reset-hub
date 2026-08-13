@@ -111,7 +111,8 @@ Complete the outstanding Prompt 4.5 no-cost abuse work by reusing the existing P
 - Reject unsupported methods, content types, malformed input and oversized bodies before any database, Stripe, email or AI work.
 - Temporary limits only, answered with 429 plus `Retry-After`. No automatic permanent bans.
 - No raw IP, email, token, authorization header or health content in logs.
-- Abuse controls never block cancellation, refund requests, support, export, deletion or privacy appeals.
+- Cancellation, refund requests, support, authenticated export, deletion and privacy appeals remain available, but their endpoints may use proportionate temporary rate limits to prevent abuse. A rate-limited person receives a clear retry time and, where applicable, the monitored contact `info@diabetesresetmethod.com`. Temporary automated limits must not become a permanent denial of these rights or account controls.
+- Server-to-server behaviour is preserved: Stripe webhooks keep accepting correctly signed requests with no browser `Origin`, and cron/internal functions keep their existing secret authentication. Browser-origin requirements are never applied to legitimate Stripe, cron or internal service calls. Authentication and signature verification remain mandatory.
 
 ## Verification
 
