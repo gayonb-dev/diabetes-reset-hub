@@ -35,6 +35,15 @@ Short affirmatives and link requests — `yes`, `yes how?`, `how?`, `where do I 
 
 with the same structured CTA and plain-text fallback. Matched deterministically before any model call, so there is no sales-script restart and no readiness loop.
 
+### 3a. Context-aware matching (approved correction)
+
+- **Standalone affirmatives** (`yes`, `ok`, `yes how?`, `how?`, `sure`) return the signup CTA **only** when the immediately preceding server response was classified `about`, `price`, or another explicit signup-intent response.
+- **Explicit requests** (`send me the link`, `how do I join`, `where do I start`, `sign me up`, `I'm ready`) return the signup CTA with no prior context required.
+- A standalone affirmative after a login, cancellation, privacy, health-boundary, support or navigation answer never infers signup intent — it falls through to normal handling.
+- Context carried is a single non-sensitive key only (e.g. `last_intent: "faq_about"`), returned by the server and echoed back by the widget. No message text, no health content, nothing stored beyond the existing conversation record.
+- Tests prove: `yes` after the About answer → pricing CTA; `yes` after login, cancellation, privacy and health-boundary answers → no pricing CTA.
+
+
 ## 4. Safe link implementation
 
 - Server returns `action: { label, path, href }` where `path` comes from a fixed allow-list: `/#pricing`, `/login`, `/refunds`, `/privacy`. Anything else is dropped server-side.
@@ -61,3 +70,14 @@ New `src/test/vitaMembershipAnswers.test.ts` plus additions to the existing chat
 Then: TypeScript, focused chat tests, lint on touched files, production build. Deploy `chat-agent` and the shared copy module, publish the minimal client change, verify on the live domain with one labelled synthetic session, then delete that session and all derived rows by exact ID and confirm zero residue.
 
 The broader Prompt 6 redesign does not start until this is verified live.
+
+## 7. Completion confirmations required
+
+Before reporting done, confirm explicitly that:
+
+1. Every offending active source in Section 1 is actually rewritten — `SYSTEM_PROMPT`, `buildCta()`, the memory/objection block, `_shared/copy.ts`, `src/pages/LLMInfo.tsx` and `public/llms.txt`.
+2. Database-managed or administrator-editable public-chat templates/content rows are scanned for Sprint or reversal wording so stored copy cannot override the corrected defaults; any hits are corrected.
+3. Live verification reproduces the exact three-turn transcript, the pricing link works, there is no repeated sales loop, and no external model request is made for the deterministic About/signup answers.
+4. The published update includes the corrected machine-readable files (`llms.txt`, LLM info page) alongside the chat function and client CTA.
+5. No broader Prompt 6 redesign work is started during Stage 0.
+
