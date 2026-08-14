@@ -35,6 +35,15 @@ Short affirmatives and link requests — `yes`, `yes how?`, `how?`, `where do I 
 
 with the same structured CTA and plain-text fallback. Matched deterministically before any model call, so there is no sales-script restart and no readiness loop.
 
+### 3a. Context-aware matching (approved correction)
+
+- **Standalone affirmatives** (`yes`, `ok`, `yes how?`, `how?`, `sure`) return the signup CTA **only** when the immediately preceding server response was classified `about`, `price`, or another explicit signup-intent response.
+- **Explicit requests** (`send me the link`, `how do I join`, `where do I start`, `sign me up`, `I'm ready`) return the signup CTA with no prior context required.
+- A standalone affirmative after a login, cancellation, privacy, health-boundary, support or navigation answer never infers signup intent — it falls through to normal handling.
+- Context carried is a single non-sensitive key only (e.g. `last_intent: "faq_about"`), returned by the server and echoed back by the widget. No message text, no health content, nothing stored beyond the existing conversation record.
+- Tests prove: `yes` after the About answer → pricing CTA; `yes` after login, cancellation, privacy and health-boundary answers → no pricing CTA.
+
+
 ## 4. Safe link implementation
 
 - Server returns `action: { label, path, href }` where `path` comes from a fixed allow-list: `/#pricing`, `/login`, `/refunds`, `/privacy`. Anything else is dropped server-side.
