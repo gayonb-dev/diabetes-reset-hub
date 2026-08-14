@@ -70,3 +70,14 @@ New `src/test/vitaMembershipAnswers.test.ts` plus additions to the existing chat
 Then: TypeScript, focused chat tests, lint on touched files, production build. Deploy `chat-agent` and the shared copy module, publish the minimal client change, verify on the live domain with one labelled synthetic session, then delete that session and all derived rows by exact ID and confirm zero residue.
 
 The broader Prompt 6 redesign does not start until this is verified live.
+
+## 7. Completion confirmations required
+
+Before reporting done, confirm explicitly that:
+
+1. Every offending active source in Section 1 is actually rewritten — `SYSTEM_PROMPT`, `buildCta()`, the memory/objection block, `_shared/copy.ts`, `src/pages/LLMInfo.tsx` and `public/llms.txt`.
+2. Database-managed or administrator-editable public-chat templates/content rows are scanned for Sprint or reversal wording so stored copy cannot override the corrected defaults; any hits are corrected.
+3. Live verification reproduces the exact three-turn transcript, the pricing link works, there is no repeated sales loop, and no external model request is made for the deterministic About/signup answers.
+4. The published update includes the corrected machine-readable files (`llms.txt`, LLM info page) alongside the chat function and client CTA.
+5. No broader Prompt 6 redesign work is started during Stage 0.
+
