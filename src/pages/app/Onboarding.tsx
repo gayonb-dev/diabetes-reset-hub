@@ -207,16 +207,22 @@ export default function Onboarding() {
   return (
     <div className="min-h-dvh bg-background pt-10 px-4 pb-28 lg:pb-10 font-sans">
       <div className="max-w-xl mx-auto">
-        {/* 3-dot progress */}
-        <div className="flex items-center justify-center gap-2 mb-6">
-          {[1, 2, 3].map((n) => (
-            <span
-              key={n}
-              className={`h-2 w-2 rounded-full transition-all ${
-                step >= n ? "bg-primary w-6" : "bg-muted"
-              }`}
-            />
-          ))}
+        {/* Prompt 6 A4 — explicit step count alongside the dots so members always
+            know how much is left and can never lose their place. */}
+        <div className="flex flex-col items-center gap-2 mb-6">
+          <div className="flex items-center justify-center gap-2" aria-hidden>
+            {[1, 2, 3].map((n) => (
+              <span
+                key={n}
+                className={`h-2 w-2 rounded-full transition-all ${
+                  step >= n ? "bg-primary w-6" : "bg-muted"
+                }`}
+              />
+            ))}
+          </div>
+          <p className="text-[12px] text-muted-foreground tabular-nums" aria-live="polite">
+            Step {step} of 3
+          </p>
         </div>
 
         <Card className="p-8 border-border/60 shadow-sm rounded-2xl bg-card">
