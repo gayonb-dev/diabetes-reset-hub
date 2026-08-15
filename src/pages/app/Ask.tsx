@@ -80,6 +80,18 @@ function timeAgo(iso: string): string {
   return `${Math.floor(h / 24)}d ago`;
 }
 
+interface VitaResponse {
+  kind: "verified" | "vita";
+  answer?: string | null;
+  question_id?: string | null;
+  similarity?: number | null;
+  is_medical_question?: boolean;
+  needs_clarification?: boolean;
+  clarification_question?: string | null;
+  related_content_slug?: string | null;
+  suggest_community_post?: boolean;
+}
+
 export default function Ask() {
   const { user } = useAuth();
   const navigate = useNavigate();

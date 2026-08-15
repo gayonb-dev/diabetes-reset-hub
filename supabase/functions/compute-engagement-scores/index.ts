@@ -20,7 +20,13 @@ function logNorm(x: number, cap = 2000) {
   return Math.min(1, Math.log10(1 + x) / Math.log10(1 + cap));
 }
 
-Deno.serve(async (req) => {
+Deno.interface MessageRow {
+  content: string;
+  created_at: string;
+  classifier: { intent?: string; topic?: string } | null;
+}
+
+serve(async (req) => {
   const pre = preflight(req);
   if (pre) return pre;
   const corsHeaders = corsFor(req);

@@ -29,6 +29,17 @@ interface ScoreRow {
   refreshed_at: string;
 }
 
+interface PhiMessageRow {
+  id: string;
+  role: string;
+  content: string;
+  created_at: string;
+}
+
+interface PhiPayload {
+  rows?: PhiMessageRow[];
+}
+
 export default function AdminTopCustomers() {
   const [rows, setRows] = useState<ScoreRow[]>([]);
   const [loading, setLoading] = useState(true);
