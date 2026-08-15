@@ -152,6 +152,18 @@ const FAQ_ANSWERS: Record<FaqKey, FaqAnswer> = {
       "You can cancel in one click from Billing inside your account. Cancelling stops the next charge and you keep access until the end of the period you've paid for. Refunds are handled under the Refund Terms page.",
     action: { label: "Refund Terms", path: "/refunds" },
   },
+  features: {
+    key: "features",
+    body:
+      "The membership includes a clear daily action, meal ideas and recipes, tracking for blood glucose, A1C, weight, measurements and habits, progress trends, educational content, and a printable report for health visits. You can also use the currently available member Ask and community support tools.\n\nDRM helps you organize information and practice daily habits. It does not interpret your results, recommend treatment or replace your healthcare professional.",
+    action: PRICING_ACTION,
+  },
+  tracking: {
+    key: "tracking",
+    body:
+      "Yes. Members can record A1C results and weight under Progress, view changes over time, and include them in a printable report for health visits. You can also track blood-glucose readings, measurements and daily habits.\n\nDRM helps you organize the information you enter; it does not interpret your results or recommend treatment.",
+    action: PRICING_ACTION,
+  },
 };
 
 /**
