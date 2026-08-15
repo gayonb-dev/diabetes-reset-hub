@@ -99,7 +99,14 @@ export function fallbackUrl(path: PublicChatPath): string {
   return `${PUBLIC_SITE_ORIGIN}${path}`;
 }
 
-export type FaqKey = "about" | "signup" | "price" | "login" | "cancel";
+export type FaqKey =
+  | "about"
+  | "signup"
+  | "price"
+  | "login"
+  | "cancel"
+  | "features"
+  | "tracking";
 
 export interface FaqAction {
   label: string;
