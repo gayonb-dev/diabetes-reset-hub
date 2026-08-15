@@ -175,10 +175,12 @@ export default function MealSetupTransition() {
 
   // Auto-advance only when all 4 are complete. On 90s timeout, show VitaErrorCard
   // with a retry button instead of forcing a navigation away.
+  // Prompt 6 A4 — onboarding always finishes on Today, the single starting screen.
   useEffect(() => {
     if (completedCount >= TOTAL_WEEKS) {
-      navigate("/app/meals", { replace: true });
+      navigate("/app", { replace: true });
     }
+
   }, [completedCount, navigate]);
 
   // Hooks MUST run before any early return. Keep useMemo above the forcedAdvance branch.

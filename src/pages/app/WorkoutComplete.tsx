@@ -80,13 +80,13 @@ export default function WorkoutComplete() {
         .update({ cool_down_checks: checks })
         .eq("id", sessionId);
       if (error) throw error;
-      // Award Reset Points (XP) via existing function
+      // Award Activity Score (XP) via existing function
       await supabase.rpc("award_xp", { p_user_id: user.id, p_amount: 25 });
       setLogged(true);
       if (typeof window !== "undefined") {
         window.dispatchEvent(new CustomEvent("drm:habits-changed"));
       }
-      toast({ title: "Workout logged", description: "+25 Reset Points. Exercise ring closed." });
+      toast({ title: "Workout logged", description: "+25 Activity Score. Exercise ring closed." });
     } catch (e) {
       toast({ title: "Couldn't save", description: (e as Error).message, variant: "destructive" });
     } finally {

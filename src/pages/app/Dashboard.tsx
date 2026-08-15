@@ -3,7 +3,15 @@ import { Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, CheckCircle2, Lock } from "lucide-react";
+import {
+  ArrowRight,
+  CheckCircle2,
+  ChevronDown,
+  Lock,
+  Droplet,
+  UtensilsCrossed,
+  Activity,
+} from "lucide-react";
 import HabitRing from "@/components/dashboard/HabitRing";
 import JourneyTrack from "@/components/dashboard/JourneyTrack";
 import QuickStats from "@/components/dashboard/QuickStats";
@@ -362,39 +370,30 @@ export default function Dashboard() {
           enabled={!gam.phase_1_extension_active}
         />
 
-        {/* Row 1 — Greeting */}
-        <div className="flex flex-col gap-2 lg:flex-row lg:items-start lg:justify-between lg:gap-4">
-          <div>
-            <p className="text-sm text-secondary-fg">{greeting},</p>
-            <h1 className="font-heading text-3xl md:text-[32px] font-bold text-foreground leading-tight">
-              {firstName}.
-            </h1>
-            <div className="flex items-center gap-2 mt-1.5 lg:hidden min-h-[44px]">
-              <StreakBadge
-                streak={gam.streak_count}
-                freezeAvailable={gam.streak_freeze_available}
-                onClick={() => setShowStreakHistory(true)}
-              />
-              <span className="text-tertiary-fg" aria-hidden>
-                •
-              </span>
-              <LevelBadge level={gam.level} />
-            </div>
-          </div>
-          <div className="hidden lg:flex flex-col items-end gap-1.5">
+        {/* Prompt 6 A3 — calm greeting with one combined streak/level line.
+            Desktop and mobile now show the same single summary instead of two
+            competing copies of the same numbers. */}
+        <div>
+          <p className="text-sm text-secondary-fg">{greeting},</p>
+          <h1 className="font-heading text-3xl md:text-[32px] font-bold text-foreground leading-tight">
+            {firstName}.
+          </h1>
+          <div className="flex flex-wrap items-center gap-2 mt-1.5 min-h-11">
             <StreakBadge
               streak={gam.streak_count}
               freezeAvailable={gam.streak_freeze_available}
               onClick={() => setShowStreakHistory(true)}
             />
             <span className="text-[11px] text-secondary-fg">
-              {gam.streak_count === 1
-                ? "1-day Daily Action Streak"
-                : `${gam.streak_count}-day Daily Action Streak`}
+              {gam.streak_count === 1 ? "1-day" : `${gam.streak_count}-day`} Daily Action Streak
+            </span>
+            <span className="text-tertiary-fg" aria-hidden>
+              •
             </span>
             <LevelBadge level={gam.level} />
           </div>
         </div>
+
 
         <StreakHistoryModal
           open={showStreakHistory}
@@ -406,27 +405,6 @@ export default function Dashboard() {
           history={gam.streak_history}
         />
 
-        {/* Row 2 — Habit rings (hero treatment) */}
-        <div className="flex gap-[10px] lg:gap-4">
-          {(
-            [
-              ["water", habitData.water],
-              ["food", habitData.food],
-              ["exercise", habitData.exercise],
-              ["mindset", habitData.mindset],
-            ] as const
-          ).map(([habit, d], i) => (
-            <div key={habit} className="flex-1 flex justify-center min-w-0">
-              {/* Mobile (<1024): 88 — Desktop (lg+): 112 */}
-              <div className="lg:hidden">
-                <HabitRing habit={habit} {...d} size={88} delayMs={i * 100} />
-              </div>
-              <div className="hidden lg:block">
-                <HabitRing habit={habit} {...d} size={112} delayMs={i * 100} />
-              </div>
-            </div>
-          ))}
-        </div>
 
         {/* Row 3 — Today's action card */}
         {action ? (
@@ -479,14 +457,63 @@ export default function Dashboard() {
           </div>
         )}
 
-        {/* Catch up — incomplete days before today */}
+        {/* Prompt 6 A3 — logging shortcuts. Links only: these reuse the existing
+            blood-glucose, meal and habit surfaces and add no new data fields. */}
+        <nav aria-label="Logging shortcuts" className="grid grid-cols-3 gap-2">
+          {[
+            { to: "/app/progress", icon: Droplet, label: "Log blood sugar" },
+            { to: "/app/meals", icon: UtensilsCrossed, label: "Log a meal" },
+            { to: "#daily-habits", icon: Activity, label: "Log habits" },
+          ].map((s) => (
+            <Link
+              key={s.label}
+              to={s.to}
+              className="flex flex-col items-center justify-center gap-1 min-h-[64px] rounded-lg border border-border bg-card px-2 py-3 text-center text-[12px] font-medium text-secondary-fg hover:bg-muted/50 transition-colors"
+            >
+              <s.icon className="h-4 w-4 text-primary" aria-hidden />
+              {s.label}
+            </Link>
+          ))}
+        </nav>
+
+        {/* Prompt 6 A3 — one compact progress summary. The rings stay as
+            supporting detail below Today's Action rather than competing with it. */}
+        <section aria-label="Today's habit rings" className="flex gap-[10px] lg:gap-4">
+          {(
+            [
+              ["water", habitData.water],
+              ["food", habitData.food],
+              ["exercise", habitData.exercise],
+              ["mindset", habitData.mindset],
+            ] as const
+          ).map(([habit, d], i) => (
+            <div key={habit} className="flex-1 flex justify-center min-w-0">
+              <div className="lg:hidden">
+                <HabitRing habit={habit} {...d} size={72} delayMs={i * 100} />
+              </div>
+              <div className="hidden lg:block">
+                <HabitRing habit={habit} {...d} size={88} delayMs={i * 100} />
+              </div>
+            </div>
+          ))}
+        </section>
+
+        {/* Catch up — Prompt 6 A3: collapsed by default, neutral count, never
+            competes with or blocks Today's Action, no shame or urgency wording. */}
         {catchUp.length > 0 && (
-          <div className="bg-card border border-border rounded-xl p-4 lg:p-6 shadow-warm">
-            <p className="label-caps text-tertiary-fg mb-1">Catch up</p>
-            <p className="text-[13px] text-muted-foreground mb-3">
-              You can pick these up anytime — nothing expires.
-            </p>
-            <div className="space-y-2">
+          <details className="bg-card border border-border rounded-xl shadow-warm group">
+            <summary className="flex items-center justify-between gap-3 min-h-11 px-4 lg:px-6 py-3 cursor-pointer list-none rounded-xl">
+              <span className="text-sm text-secondary-fg">
+                <span className="tabular-nums font-medium text-foreground">{catchUp.length}</span>{" "}
+                earlier {catchUp.length === 1 ? "day is" : "days are"} still open — pick them up
+                whenever you like.
+              </span>
+              <ChevronDown
+                className="h-4 w-4 text-tertiary-fg shrink-0 transition-transform group-open:rotate-180"
+                aria-hidden
+              />
+            </summary>
+            <div className="space-y-2 px-4 lg:px-6 pb-4">
               {catchUp.map((a) => (
                 <Link
                   key={a.id}
@@ -499,12 +526,13 @@ export default function Dashboard() {
                     </span>
                     <span className="text-sm text-foreground truncate">{a.action_title}</span>
                   </span>
-                  <ArrowRight className="h-4 w-4 text-tertiary-fg shrink-0" />
+                  <ArrowRight className="h-4 w-4 text-tertiary-fg shrink-0" aria-hidden />
                 </Link>
               ))}
             </div>
-          </div>
+          </details>
         )}
+
 
         {/* Row 4 — Journey track */}
         <JourneyTrack
@@ -518,20 +546,18 @@ export default function Dashboard() {
         {/* Row 5 — Quick stats */}
         <QuickStats stats={stats} />
 
-        {/* Row 6 — Right-rail content (in-column below lg; moves to right rail at lg) */}
+        {/* Row 6 — Right-rail content (in-column below lg; moves to right rail at lg).
+            Prompt 6 A3: the streak mini-widget is gone from here — the streak is
+            already summarised once at the top and its history opens from there. */}
         <div className="lg:hidden space-y-4">
           <VitaQuoteCard quotes={quoteItems} />
-          <StreakMiniWidget
-            streak={gam.streak_count}
-            history={gam.streak_history}
-            freezeAvailable={gam.streak_freeze_available}
-            onOpen={() => setShowStreakHistory(true)}
-          />
           <UpcomingActions actions={upcoming} />
         </div>
 
         {/* Daily habit logging (Section 9) */}
-        <HabitLogging currentProgramDay={currentProgramDay} />
+        <div id="daily-habits" className="scroll-mt-4">
+          <HabitLogging currentProgramDay={currentProgramDay} />
+        </div>
 
         {/* Getting Started checklist (Days 1–29 only) */}
         <GettingStartedChecklist currentProgramDay={currentProgramDay} />
@@ -545,67 +571,10 @@ export default function Dashboard() {
       <aside className="hidden lg:block">
         <div className="sticky top-6 space-y-4">
           <VitaQuoteCard quotes={quoteItems} />
-          <StreakMiniWidget
-            streak={gam.streak_count}
-            history={gam.streak_history}
-            freezeAvailable={gam.streak_freeze_available}
-            onOpen={() => setShowStreakHistory(true)}
-          />
           <UpcomingActions actions={upcoming} />
         </div>
       </aside>
     </div>
-  );
-}
-
-function StreakMiniWidget({
-  streak,
-  history,
-  freezeAvailable,
-  onOpen,
-}: {
-  streak: number;
-  history: { start: string; end: string; length: number }[];
-  freezeAvailable: boolean;
-  onOpen: () => void;
-}) {
-  const recent = history.slice(0, 5);
-  const best = history.reduce((m, h) => Math.max(m, h.length), streak);
-  return (
-    <button
-      onClick={onOpen}
-      className="w-full text-left bg-card border border-border rounded-xl p-4 shadow-warm hover:shadow-md transition-shadow"
-    >
-      <div className="flex items-center justify-between mb-2">
-        <p className="label-caps text-tertiary-fg">Streak</p>
-        {freezeAvailable && (
-          <span className="text-[10px] px-2 py-0.5 rounded-full bg-accent/15 text-accent border border-accent/30">
-            Freeze ready
-          </span>
-        )}
-      </div>
-      <p className="font-heading text-2xl font-bold text-foreground">🔥 {streak}</p>
-      <p className="text-[11px] text-secondary-fg mt-1">Best: {best} days</p>
-      {recent.length > 0 && (
-        <div className="mt-3 space-y-1">
-          {recent.map((h, i) => (
-            <div key={i} className="flex items-center justify-between text-[11px] text-secondary-fg">
-              <span>
-                {new Date(h.start).toLocaleDateString(undefined, { month: "short", day: "numeric" })}
-                {" – "}
-                {new Date(h.end).toLocaleDateString(undefined, { month: "short", day: "numeric" })}
-              </span>
-              <span className="font-medium">{h.length}d</span>
-            </div>
-          ))}
-        </div>
-      )}
-      {recent.length === 0 && (
-        <p className="text-[11px] text-tertiary-fg mt-3">
-          Your streak history builds as you close daily rings.
-        </p>
-      )}
-    </button>
   );
 }
 
