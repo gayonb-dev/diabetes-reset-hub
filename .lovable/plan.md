@@ -13,16 +13,19 @@ Synthetic authenticated fixture — Playwright-only. The signed-in state comes e
 
 Screenshots captured at 1280px desktop and 390px mobile in `/tmp/browser/prompt6/shots/`: Today (raw, overlay-dismissed, catch-up expanded), Meals, Progress, Ask, Support, Billing, Settings, Learn, Profile, Onboarding, More navigation sheet, billing-restricted, grace, suspended-dispute, deletion-restricted, landing hero, pricing, Terms, login, public VITA signup CTA, public VITA feature/tracking answer. Also `vp320/390/768/1280`, `zoom200`, `reducedmotion`.
 
-Route and state matrix (destination observed, no redirect loops, zero page errors on any run):
+Route and state matrix, using only the canonical state names (destination observed, no redirect loops, zero page errors on any run). No billing state ever returns an authenticated member to Login:
 
 ```text
-state              requested   destination     notes
-allowed            /app        /app            full app reachable
-grace              /app        /app            app usable, billing notice shown
-restricted         /app        /app/billing    recovery controls on billing page
-suspended_dispute  /app        /app/billing    lockout to billing, account surfaces reachable
-deletion           /app        /app/settings   deletion status surface, no loop
+state                requested   destination     notes
+allowed              /app        /app            full app reachable
+grace                /app        /app            app usable, billing notice shown
+restricted_billing   /app        /app/billing    billing, settings, support, profile, export, cancellation reachable
+suspended_dispute    /app        /app/billing    programme paused, account surfaces reachable
+restricted_deletion  /app        /app/settings   deletion status surface, settings + support reachable
 ```
+
+Re-confirm each row against the shared lifecycle evaluator (`surfaceAllowed`) so the observed destinations and the evaluator agree.
+
 
 Accessibility/responsive results: single `<main>`, single H1, skip link present, `lang="en"`, no positive tabindex, no unlabelled icon buttons, no images missing alt, visible 2px focus ring, one live region, no horizontal scroll at 320/390/768/1280 or at 200% zoom, reduced-motion renders cleanly.
 
