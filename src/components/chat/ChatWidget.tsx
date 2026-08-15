@@ -491,12 +491,14 @@ export default function ChatWidget() {
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   placeholder="Type a message…"
+                  aria-label="Type a message"
                   className="flex-1 bg-background border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
                   disabled={sending}
                   autoFocus
                 />
                 <button
                   type="submit"
+                  aria-label="Send message"
                   disabled={sending || !input.trim()}
                   className="h-10 w-10 rounded-lg bg-primary text-primary-foreground flex items-center justify-center disabled:opacity-50 hover:bg-primary/90 transition-colors"
                 >
