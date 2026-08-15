@@ -758,39 +758,8 @@ export default function Settings() {
 
 
 
-      {/* WhatsApp */}
-      <Card className="p-5 border-border rounded-xl shadow-warm">
-        <div className="flex items-start justify-between gap-3 mb-3">
-          <div>
-            <h2 className="font-heading font-semibold text-base max-lg:sticky max-lg:top-0 max-lg:z-10 max-lg:bg-card max-lg:py-1">WhatsApp updates</h2>
-            <p className="text-xs text-muted-foreground mt-0.5">
-              Weekly Reset Brief — recipes, tips, a nudge.
-            </p>
-          </div>
-          <Switch
-            checked={waOptedIn}
-            onCheckedChange={setWaOptedIn}
-            className="max-lg:h-8 max-lg:w-[52px] max-lg:[&>span]:h-7 max-lg:[&>span]:w-7"
-          />
-        </div>
-        {waOptedIn && (
-          <div className="space-y-2">
-            <Label htmlFor="wa" className="text-xs">Number</Label>
-            <Input
-              id="wa"
-              type="tel"
-              placeholder="+1 555 123 4567"
-              value={waPhone}
-              onChange={(e) => setWaPhone(e.target.value)}
-            />
-            <p className="text-xs text-muted-foreground">Optional — used only for WhatsApp accountability messages if you opt in. Never for calls or marketing.</p>
-          </div>
-        )}
-        <Button onClick={saveWhatsapp} disabled={waSaving} variant="outline" size="sm" className="mt-3">
-          {waSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          Save preferences
-        </Button>
-      </Card>
+      {/* Prompt 6 A6 — WhatsApp broadcast opt-in removed: no WhatsApp delivery
+          channel is enabled in production, so the app must not promise one. */}
 
       {/* Notifications */}
       <Card className="p-5 border-border rounded-xl shadow-warm">
