@@ -1,5 +1,5 @@
 // /app/settings — full member settings (units, notifications, account, data, sign out)
-// Spec sections 19/21 highlights: unit toggles, WhatsApp opt-in/out, data export & delete,
+// Spec sections 19/21 highlights: unit toggles, data export & delete,
 // destructive sign-out at bottom of page (green, not red), confirmation dialog.
 
 import { useEffect, useState } from "react";
