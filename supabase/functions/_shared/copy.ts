@@ -27,8 +27,23 @@ const EMERGENCY_PATTERNS: RegExp[] = [
   /\bemergency\b/i, /\b911\b/, /\bambulance\b/i,
 ];
 
+/**
+ * A stated blood-glucose value outside the safe band is always urgent, whatever
+ * else the sentence contains. This runs before every capability matcher.
+ */
+const GLUCOSE_VALUE_RE =
+  /\b(blood\s*sugar|blood\s*glucose|glucose|sugar|bg)\b[^.\d]{0,24}?(\d{2,3})\b/i;
+
+function statedGlucoseIsDangerous(text: string): boolean {
+  const m = GLUCOSE_VALUE_RE.exec(text);
+  if (!m) return false;
+  const v = Number(m[2]);
+  if (!Number.isFinite(v)) return false;
+  return v < 70 || v > 300;
+}
+
 export function isPossibleEmergency(text: string): boolean {
-  return EMERGENCY_PATTERNS.some((re) => re.test(text));
+  return EMERGENCY_PATTERNS.some((re) => re.test(text)) || statedGlucoseIsDangerous(text);
 }
 
 /** Topics the closed-gate assistant may still answer. */
@@ -45,7 +60,10 @@ const HEALTH_PATTERNS: RegExp[] = [
   /\bmetformin\b/i, /\bmedication|meds\b/i, /\bdos(e|age)\b/i,
   /\bsymptom|neuropathy|retinopathy|numb|tingl/i,
   /\bmy (results?|labs?|numbers?)\b/i, /\bdiagnos/i,
-  /\bshould i (take|stop|change)\b/i, /\bis it safe\b/i,
+  /\bshould i (take|stop|change|start|switch|adjust|lose|eat)\b/i, /\bis it safe\b/i,
+  /\bhow much (weight|sugar|carbs?) should i\b/i,
+  /\bhow (can|do) i (lower|reduce|raise|bring down)\b/i,
+  /\b(hba1c|ac1|aic)\b/i,
 ];
 
 export function isHealthRelated(text: string): boolean {
@@ -84,7 +102,14 @@ export function fallbackUrl(path: PublicChatPath): string {
   return `${PUBLIC_SITE_ORIGIN}${path}`;
 }
 
-export type FaqKey = "about" | "signup" | "price" | "login" | "cancel";
+export type FaqKey =
+  | "about"
+  | "signup"
+  | "price"
+  | "login"
+  | "cancel"
+  | "features"
+  | "tracking";
 
 export interface FaqAction {
   label: string;
@@ -130,6 +155,18 @@ const FAQ_ANSWERS: Record<FaqKey, FaqAnswer> = {
       "You can cancel in one click from Billing inside your account. Cancelling stops the next charge and you keep access until the end of the period you've paid for. Refunds are handled under the Refund Terms page.",
     action: { label: "Refund Terms", path: "/refunds" },
   },
+  features: {
+    key: "features",
+    body:
+      "The membership includes a clear daily action, meal ideas and recipes, tracking for blood glucose, A1C, weight, measurements and habits, progress trends, educational content, and a printable report for health visits. You can also use the currently available member Ask and community support tools.\n\nDRM helps you organize information and practice daily habits. It does not interpret your results, recommend treatment or replace your healthcare professional.",
+    action: PRICING_ACTION,
+  },
+  tracking: {
+    key: "tracking",
+    body:
+      "Yes. Members can record A1C results and weight under Progress, view changes over time, and include them in a printable report for health visits. You can also track blood-glucose readings, measurements and daily habits.\n\nDRM helps you organize the information you enter; it does not interpret your results or recommend treatment.",
+    action: PRICING_ACTION,
+  },
 };
 
 /**
@@ -152,6 +189,48 @@ const EXPLICIT_SIGNUP_RE =
 const ABOUT_RE =
   /\b(what is (this|it|drm|the (program|programme|app|membership|diabetes reset)))|what'?s (this|it) (all )?about|tell me (more )?about (this|the (program|programme|membership))|what do you (offer|do)|how does (this|it|the program(me)?) work\b/i;
 
+// ---------------------------------------------------------------------------
+// Product capability vs personal health.
+//
+// A diabetes-related word on its own is NOT a health question. "Can I track my
+// A1C?" is a product question; "My A1C is 11, what should I do?" is not. The
+// personal-health signals below always win, and a dangerous stated glucose
+// value is caught earlier by isPossibleEmergency().
+// ---------------------------------------------------------------------------
+
+/** Anything asking for interpretation, treatment, targets or symptom help. */
+const PERSONAL_HEALTH_RE: RegExp[] = [
+  /\bmy\s+(a1c|a1c|hba1c|ac1|aic|blood\s*sugar|blood\s*glucose|glucose|sugar|weight|results?|labs?|numbers?|readings?)\b[^?]{0,40}\b(is|was|are|were|of|came back|reads?)\b/i,
+  /\b(is|was)\s+(my|an?)\s+(a1c|hba1c|ac1|aic|blood\s*sugar|glucose|weight)\b/i,
+  /\bhow (can|do) i (lower|reduce|raise|bring down|improve|fix)\b/i,
+  /\bhow much (weight|sugar|carbs?) should i\b/i,
+  /\bwhat should i (do|eat|take)\b/i,
+  /\bshould i (take|stop|change|start|switch|adjust|lose|reduce)\b/i,
+  /\bis (it|this) safe\b/i,
+  /\bwhat (does|do) (my|this|these|that)\b.*\bmean\b/i,
+  /\b(medication|medications|meds|metformin|insulin|dos(e|age)|prescription)\b/i,
+  /\b(symptom|symptoms|neuropathy|retinopathy|dizzy|dizziness|numb|numbness|tingl|nausea|blurred)\b/i,
+  /\b(target|goal|normal|healthy)\s+(a1c|hba1c|range|level|number)\b/i,
+  /\bdiagnos/i,
+  /\b(cure|treat|treatment|reverse)\s+(my|the)?\s*(diabetes|a1c)\b/i,
+];
+
+function isPersonalHealthRequest(text: string): boolean {
+  return PERSONAL_HEALTH_RE.some((re) => re.test(text));
+}
+
+/** "What are the features / what does the app include" style questions. */
+const FEATURES_RE =
+  /\b(what (are|r) the features|what features|features (of|in|for)\b|what(?:'s| is| does)? (this|the|it|your)? ?(app|membership|program|programme|subscription)? ?(include|includes|come with|offer|offers)|what do i get|what'?s included|what can i do (in|with) (the|this|your) (app|membership|program|programme)|what does the membership (do|include|offer)|how does the membership help)/i;
+
+/** Subjects DRM can track. Includes common A1C mistypes. */
+const TRACK_SUBJECT_RE =
+  /\b(a1c|a1_c|hba1c|hb a1c|ac1|aic|weight|blood\s*sugar|blood\s*glucose|glucose|sugar levels?|measurements?|waist|habits?|readings?)\b/i;
+
+/** Capability / navigation phrasing. */
+const TRACK_VERB_RE =
+  /\b(can (i|it|the app|you)\s+(track|log|record|enter|add|store|see|chart|graph)|does (the|this|your) app\s+(track|record|log|support|have|store)|do you (track|support|have)|where (do|can) i (log|enter|record|add|find|see|put)|how (do|can) i (log|enter|record|add|track)|track(ing)? my|log(ging)? my|is there (a|any) (way to )?(track|log|record)|track and|support(s)? tracking)\b/i;
+
 const FAQ_PATTERNS: Array<{ key: FaqKey; re: RegExp }> = [
   { key: "cancel", re: /\b(cancel|cancelling|canceling|unsubscribe|stop (my )?(sub|subscription|membership|billing)|end my membership)\b/i },
   { key: "login", re: /\b(log ?in|logging in|sign ?in|signing in|can'?t get in|forgot my password|password|magic link|access my account)\b/i },
@@ -172,10 +251,24 @@ const FAQ_PATTERNS: Array<{ key: FaqKey; re: RegExp }> = [
  * resolves to the signup action instead of restarting a sales script.
  */
 export function matchFaq(text: string, lastIntent?: string | null): FaqAnswer | null {
+  // 1. Emergency / dangerous stated value always outranks everything.
   if (!text || isPossibleEmergency(text)) return null;
-  if (HEALTH_PATTERNS.some((re) => re.test(text))) return null;
 
   const trimmed = text.trim();
+
+  // 2. Requests for interpretation, treatment, targets or symptom help stay
+  //    with the health boundary even when they mention "track" or "app".
+  if (isPersonalHealthRequest(trimmed)) return null;
+
+  // 3. Strict product-capability and navigation questions are answered here,
+  //    even when they name diabetes, A1C or weight.
+  if (FEATURES_RE.test(trimmed)) return FAQ_ANSWERS.features;
+  if (TRACK_VERB_RE.test(trimmed) && TRACK_SUBJECT_RE.test(trimmed)) {
+    return FAQ_ANSWERS.tracking;
+  }
+
+  // 4. Anything else that reads health-related fails safely to the gate.
+  if (HEALTH_PATTERNS.some((re) => re.test(text))) return null;
 
   // Explicit signup requests need no prior context.
   if (EXPLICIT_SIGNUP_RE.test(trimmed) && !ABOUT_RE.test(trimmed)) {
