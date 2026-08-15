@@ -166,41 +166,59 @@ export default function AppLayout() {
 
 
 
-          <nav className="flex-1 space-y-0.5">
+          {/* Prompt 6 A2 — one hierarchy on desktop and mobile.
+              Primary: Today, Meals, Progress, Ask. Everything else is grouped
+              exactly as the mobile "More" sheet groups it, so the two surfaces
+              share a single mental model and identical naming. */}
+          <nav className="flex-1 space-y-0.5" aria-label="Member navigation">
             <NavLink to="/app" end className={navClass}>
-              <Home className="h-4 w-4" /> Today
-            </NavLink>
-            <NavLink to="/app/progress" className={navClass}>
-              <LineChart className="h-4 w-4" /> Progress
-            </NavLink>
-            <NavLink to="/app/learn" className={navClass}>
-              <BookOpen className="h-4 w-4" /> Learn
-            </NavLink>
-            <NavLink to="/app/workouts" className={navClass}>
-              <Activity className="h-4 w-4" /> Workouts
+              <Home className="h-4 w-4" aria-hidden /> Today
             </NavLink>
             <NavLink to="/app/meals" className={navClass}>
-              <UtensilsCrossed className="h-4 w-4" /> Meals
+              <UtensilsCrossed className="h-4 w-4" aria-hidden /> Meals
+            </NavLink>
+            <NavLink to="/app/progress" className={navClass}>
+              <LineChart className="h-4 w-4" aria-hidden /> Progress
+            </NavLink>
+            <NavLink to="/app/ask" className={navClass}>
+              <MessageCircleQuestion className="h-4 w-4" aria-hidden /> Ask
             </NavLink>
 
-            <NavLink to="/app/ask" className={navClass}>
-              <MessageCircleQuestion className="h-4 w-4" /> Ask
+            <p className="label-caps text-white/30 px-[10px] pt-4 pb-1" id="nav-group-learn">
+              Learn &amp; tools
+            </p>
+            <NavLink to="/app/learn" className={navClass}>
+              <BookOpen className="h-4 w-4" aria-hidden /> Learn
             </NavLink>
+            <NavLink to="/app/library" className={navClass}>
+              <Library className="h-4 w-4" aria-hidden /> Library
+            </NavLink>
+            <NavLink to="/app/workouts" className={navClass}>
+              <Activity className="h-4 w-4" aria-hidden /> Workouts
+            </NavLink>
+
+            <p className="label-caps text-white/30 px-[10px] pt-4 pb-1" id="nav-group-account">
+              Account &amp; help
+            </p>
             <NavLink to="/app/profile" className={navClass}>
-              <User className="h-4 w-4" /> Profile
+              <User className="h-4 w-4" aria-hidden /> Profile
+            </NavLink>
+            <NavLink to="/app/billing" className={navClass}>
+              <CreditCard className="h-4 w-4" aria-hidden /> Billing
             </NavLink>
             <NavLink to="/app/settings" className={navClass}>
-              <Menu className="h-4 w-4" /> Settings
+              <SettingsIcon className="h-4 w-4" aria-hidden /> Settings
             </NavLink>
             <NavLink to="/app/support" className={navClass}>
-              <LifeBuoy className="h-4 w-4" /> Get Support
+              <LifeBuoy className="h-4 w-4" aria-hidden /> Support
             </NavLink>
             {isAdmin && (
               <NavLink to="/admin" className={navClass}>
-                <Shield className="h-4 w-4" /> Admin
+                <Shield className="h-4 w-4" aria-hidden /> Admin
               </NavLink>
             )}
           </nav>
+
 
           <div className="border-t border-white/10 pt-3 mt-3 space-y-2">
             <p className="text-[10px] text-white/40 truncate">{user?.email}</p>
