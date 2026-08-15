@@ -21,8 +21,9 @@ export default defineConfig(({ mode }) => ({
     },
   },
   build: {
-    // Emit source maps so production stack traces and Lighthouse can map back to source.
-    sourcemap: true,
+    // Prompt 6 D2 — production builds ship no source maps (they expose full
+    // application source). Development/preview builds keep them.
+    sourcemap: mode !== "production",
     rollupOptions: {
       output: {
         // Split heavy vendor chunks so the landing page doesn't pay for everything up-front.

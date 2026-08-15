@@ -36,7 +36,7 @@ const Ask = lazy(() => import("./pages/app/Ask"));
 const Billing = lazy(() => import("./pages/app/Billing"));
 const Onboarding = lazy(() => import("./pages/app/Onboarding"));
 const MealSetupTransition = lazy(() => import("./pages/app/MealSetupTransition"));
-const CoachingWaitlist = lazy(() => import("./pages/app/CoachingWaitlist"));
+
 const AppProgress = lazy(() => import("./pages/app/Progress"));
 const ProgressReport = lazy(() => import("./pages/app/ProgressReport"));
 const DexcomCallback = lazy(() => import("./pages/app/DexcomCallback"));
@@ -213,7 +213,8 @@ const App = () => (
                 <Route path="cheat-meal" element={<Navigate to="/app/meals?tab=cheat-meal" replace />} />
                 <Route path="support" element={<Support />} />
                 <Route path="settings/billing" element={<Billing />} />
-                <Route path="coaching-waitlist" element={<CoachingWaitlist />} />
+                {/* Prompt 6 A6 — /app/coaching-waitlist retired: one-to-one coaching
+                    is not part of the membership, so the surface is not routed. */}
                 <Route path="*" element={<AppNotFound />} />
               </Route>
 
