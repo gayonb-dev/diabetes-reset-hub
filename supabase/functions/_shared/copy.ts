@@ -59,58 +59,137 @@ export function isHealthRelated(text: string): boolean {
 // Deterministic membership FAQ.
 //
 // While the AI-health gate is closed the public chat must still be genuinely
-// useful for the three questions visitors actually ask: price, login and
-// cancellation. These answers are produced by the server with no processor
-// call, no model call and no stored health content. Wording is approved and
-// must not be paraphrased.
+// useful for the questions visitors actually ask: what this is, how to join,
+// price, login and cancellation. These answers are produced by the server with
+// no processor call, no model call and no stored health content. Wording is
+// approved and must not be paraphrased.
+//
+// Prompt 6 Stage 0: no reversal/cure claim and no "7-Day Reset" language may
+// appear here, and every destination must come from PUBLIC_CHAT_DESTINATIONS.
 // ---------------------------------------------------------------------------
 
-export type FaqKey = "price" | "login" | "cancel";
+/** The only destinations the public chat may ever link to. */
+export const PUBLIC_CHAT_DESTINATIONS = ["/#pricing", "/login", "/refunds", "/privacy"] as const;
+export type PublicChatPath = (typeof PUBLIC_CHAT_DESTINATIONS)[number];
+
+export function isApprovedChatPath(path: unknown): path is PublicChatPath {
+  return typeof path === "string" &&
+    (PUBLIC_CHAT_DESTINATIONS as readonly string[]).includes(path);
+}
+
+export const PUBLIC_SITE_ORIGIN = "https://diabetesresetmethod.com";
+
+/** Plain-text fallback shown under the structured action. */
+export function fallbackUrl(path: PublicChatPath): string {
+  return `${PUBLIC_SITE_ORIGIN}${path}`;
+}
+
+export type FaqKey = "about" | "signup" | "price" | "login" | "cancel";
+
+export interface FaqAction {
+  label: string;
+  path: PublicChatPath;
+}
 
 export interface FaqAnswer {
   key: FaqKey;
   body: string;
-  /** Relative path the widget turns into a button, or null. */
-  cta: { label: string; path: string } | null;
+  /** Server-approved structured action the widget renders as a link/button. */
+  action: FaqAction | null;
 }
 
+const PRICING_ACTION: FaqAction = { label: "View membership and pricing", path: "/#pricing" };
+
 const FAQ_ANSWERS: Record<FaqKey, FaqAnswer> = {
+  about: {
+    key: "about",
+    body:
+      "Diabetes Reset Method is a self-guided educational membership for adults managing Type 2 diabetes or prediabetes. It offers small daily actions, meal ideas, tracking tools, educational membership support and printable reports for health visits. It does not diagnose, treat or promise to reverse diabetes.\n\nYour first 14 days cost US$27. After that, membership is US$67 per month until canceled. You can review the membership and get started below.",
+    action: PRICING_ACTION,
+  },
+  signup: {
+    key: "signup",
+    body: "You can review the membership and start here:",
+    action: PRICING_ACTION,
+  },
   price: {
     key: "price",
     body:
-      "It's US$27 today, which unlocks the membership and the 7-Day Reset Sprint with 14 days of full access. After that it's US$67 a month, and you can cancel in one click at any time. Cancel inside the first 14 days and there's no monthly charge — you keep the 7-Day Reset.",
-    cta: { label: "See the plan", path: "/#pricing" },
+      "Your first 14 days cost US$27. After that, membership is US$67 per month until canceled, and you can cancel at any time from Billing inside your account.",
+    action: PRICING_ACTION,
   },
   login: {
     key: "login",
     body:
       "Sign in from the Login page. Enter the email address on your membership and we send a secure one-time sign-in link — there's no password to remember. If the link doesn't arrive, check your spam folder.",
-    cta: { label: "Go to Login", path: "/login" },
+    action: { label: "Go to Login", path: "/login" },
   },
   cancel: {
     key: "cancel",
     body:
       "You can cancel in one click from Billing inside your account. Cancelling stops the next charge and you keep access until the end of the period you've paid for. Refunds are handled under the Refund Terms page.",
-    cta: { label: "Refund Terms", path: "/refund-terms" },
+    action: { label: "Refund Terms", path: "/refunds" },
   },
 };
+
+/**
+ * Intent keys after which a bare affirmative ("yes", "ok", "how?") may be read
+ * as signup intent. Nothing else qualifies: an affirmative after login,
+ * cancellation, privacy, health-boundary, support or navigation answers is not
+ * a signup signal.
+ */
+const SIGNUP_CONTEXT_INTENTS = new Set(["faq_about", "faq_price", "faq_signup", "purchase_intent"]);
+
+/** Bare affirmatives / "how?" — only meaningful with signup context. */
+const AFFIRMATIVE_RE =
+  /^(yes|yeah|yep|yup|ok|okay|sure|please|go on|yes please|how|how\?|yes how|yes how\?|yes,? how( do i)?\??|ok how\??)[.!?]*$/i;
+
+/** Explicit signup requests — always safe to answer with the pricing action. */
+const EXPLICIT_SIGNUP_RE =
+  /\b(send me the link|the link|how do i (join|sign ?up|start|get started|enroll)|where do i start|sign me up|i'?m ready|i am ready|how do i become a member|join now|get started)\b/i;
+
+/** "What is this / what's it all about" style questions. */
+const ABOUT_RE =
+  /\b(what is (this|it|drm|the (program|programme|app|membership|diabetes reset)))|what'?s (this|it) (all )?about|tell me (more )?about (this|the (program|programme|membership))|what do you (offer|do)|how does (this|it|the program(me)?) work\b/i;
 
 const FAQ_PATTERNS: Array<{ key: FaqKey; re: RegExp }> = [
   { key: "cancel", re: /\b(cancel|cancelling|canceling|unsubscribe|stop (my )?(sub|subscription|membership|billing)|end my membership)\b/i },
   { key: "login", re: /\b(log ?in|logging in|sign ?in|signing in|can'?t get in|forgot my password|password|magic link|access my account)\b/i },
+  { key: "about", re: ABOUT_RE },
+  { key: "signup", re: EXPLICIT_SIGNUP_RE },
   { key: "price", re: /\b(price|pricing|cost|costs|how much|what do you charge|fee|\$\s?\d|27|67)\b/i },
 ];
 
 /**
  * Returns the approved deterministic answer for a membership FAQ, or null.
+ *
  * Health wording always wins: a message that also reads as health-related is
  * left to the health gate rather than answered here.
+ *
+ * `lastIntent` is the non-sensitive intent key of the immediately preceding
+ * server response (e.g. "faq_about"). It carries no message text and no health
+ * content, and is used only so a bare "yes" after the About or price answer
+ * resolves to the signup action instead of restarting a sales script.
  */
-export function matchFaq(text: string): FaqAnswer | null {
+export function matchFaq(text: string, lastIntent?: string | null): FaqAnswer | null {
   if (!text || isPossibleEmergency(text)) return null;
   if (HEALTH_PATTERNS.some((re) => re.test(text))) return null;
+
+  const trimmed = text.trim();
+
+  // Explicit signup requests need no prior context.
+  if (EXPLICIT_SIGNUP_RE.test(trimmed) && !ABOUT_RE.test(trimmed)) {
+    return FAQ_ANSWERS.signup;
+  }
+
+  // Bare affirmatives only count when the previous answer invited signup.
+  if (AFFIRMATIVE_RE.test(trimmed)) {
+    return lastIntent && SIGNUP_CONTEXT_INTENTS.has(lastIntent) ? FAQ_ANSWERS.signup : null;
+  }
+
   for (const { key, re } of FAQ_PATTERNS) {
-    if (re.test(text)) return FAQ_ANSWERS[key];
+    if (re.test(trimmed)) return FAQ_ANSWERS[key];
   }
   return null;
 }
+
