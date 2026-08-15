@@ -393,29 +393,6 @@ export default function Settings() {
     toast({ title: "Units updated" });
   };
 
-  const saveWhatsapp = async () => {
-    if (!user) return;
-    setWaSaving(true);
-    if (waOptedIn && waPhone.trim()) {
-      await supabase.from("whatsapp_consent").upsert(
-
-        {
-          user_id: user.id,
-          phone_number: waPhone.trim(),
-          opted_in_at: new Date().toISOString(),
-          revoked_at: null,
-        } as never,
-        { onConflict: "user_id" },
-      );
-    } else {
-      await supabase
-        .from("whatsapp_consent")
-        .update({ revoked_at: new Date().toISOString(), revoke_reason: "user_settings_toggle" } as never)
-        .eq("user_id", user.id);
-    }
-    setWaSaving(false);
-    toast({ title: "WhatsApp preferences saved" });
-  };
 
   const exportData = async () => {
     if (!user) return;
