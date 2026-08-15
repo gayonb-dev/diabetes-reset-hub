@@ -60,7 +60,10 @@ const HEALTH_PATTERNS: RegExp[] = [
   /\bmetformin\b/i, /\bmedication|meds\b/i, /\bdos(e|age)\b/i,
   /\bsymptom|neuropathy|retinopathy|numb|tingl/i,
   /\bmy (results?|labs?|numbers?)\b/i, /\bdiagnos/i,
-  /\bshould i (take|stop|change)\b/i, /\bis it safe\b/i,
+  /\bshould i (take|stop|change|start|switch|adjust|lose|eat)\b/i, /\bis it safe\b/i,
+  /\bhow much (weight|sugar|carbs?) should i\b/i,
+  /\bhow (can|do) i (lower|reduce|raise|bring down)\b/i,
+  /\b(hba1c|ac1|aic)\b/i,
 ];
 
 export function isHealthRelated(text: string): boolean {
