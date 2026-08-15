@@ -41,16 +41,34 @@ Measured violations, all outside the WCAG inline-link exception:
 
 Desktop sidebar rows are 36px tall; that is a fine-pointer surface and meets the 24px minimum, so no change.
 
-## 2. Remaining gates to execute and report separately
+## 2. Named regression evidence (not a bare test total)
 
-- Vitest suite (including `src/test/publicChatFeatures.test.ts` and `productionBundle.test.ts`).
-- Update `src/test/productionBundle.test.ts` to assert the built bundle contains no fixture marker, bypass query parameter or synthetic member string, then run it against a fresh production build.
+For each area below, name the test or check that proves it, and add the smallest focused regression test where one is missing. No real payments, refunds, disputes, emails, deletions or health-AI requests — mocks and synthetic fixtures only.
+
+Public routes; authenticated member routes; retired-route redirects; safe `next` handling; payment truth; webhook idempotency and refund/dispute linkage; billing-restricted account access; magic-link access; public-chat authorization and consent; deterministic VITA About/signup/pricing/features/tracking answers; health-boundary precedence; zero external model calls for deterministic VITA answers; chat deletion; member export and account deletion; glucose safety boundaries; fasting scheduling disabled and unreachable; legal-page gates; safe-claims and banned-content scans.
+
+## 3. Remaining gates to execute and report separately
+
+- Update `src/test/productionBundle.test.ts` to assert the built bundle contains no fixture marker, mock-auth or synthetic-member marker, bypass query parameter, or any trace of the Playwright authenticated fixture, and that no test mechanism can authenticate a production build.
 - Deno tests for Edge Functions, plus a boot/CORS smoke where existing tooling allows it without deploying or mutating.
-- Read-only production RLS drift check.
+- Read-only production RLS drift check (section 4).
 - Full safe-claims scan with dispositions over active public/member/admin copy, `public/llms.txt`, `LLMInfo.tsx`, structured product data and public feature lists.
 - Dependency audit: retry production-only and full audits against the official registry. If the endpoint stays unreachable, record both as BLOCKED, make no vulnerability claim, and complete the reachability table from lockfile plus official advisory evidence (React Router, Supabase, ws and every package previously tied to a high advisory).
-- Bundle-size comparison against the pre-Prompt-6 baseline; confirm production source maps stay off.
+- Bundle-size comparison against the pre-Prompt-6 baseline; confirm zero production `.map` files.
 - Header compatibility: exercise `public/_headers` policy locally against mocked login, Stripe return, VITA, backend requests, downloads, printing and navigation. Live enforcement stays a post-publication item.
+
+## 4. RLS drift check (read-only, no users or rows created)
+
+Compare the current production catalog against the previously verified baseline and current migrations across: RLS enabled and forced status; table and column grants; every USING and WITH CHECK policy; views and `security_invoker`; security-definer functions and execute grants; Storage buckets and policies; Realtime publications; deletion-restriction policies; protected profile safety fields; and the server-owned `win_posts` reaction and milestone fields. Report actual drift, accepted intentional differences, and anything unverifiable.
+
+## 5. Final gates, run after every correction
+
+Complete TypeScript check; complete Vitest suite; complete Playwright/browser suite; Deno tests; Edge Function boot/CORS smoke where safely available; repository-wide ESLint with active source separated from duplicated evidence files; and a fresh final production build. No affected-file-only runs and no reuse of an earlier build.
+
+## 6. Owner-viewable screenshot delivery
+
+Export every final screenshot from `/tmp` to `/mnt/documents/prompt6-evidence/` and reference them as viewable artifacts in the report — desktop and mobile, covering the authenticated routes, all five states, navigation, catch-up collapsed/expanded, legal/public pages and the responsive/zoom/reduced-motion checks. The owner is never asked to sign into preview.
+
 
 ## 3. Ten usability tasks
 
