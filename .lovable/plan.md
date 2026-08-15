@@ -1,60 +1,53 @@
-# Prompt 6 — Release-Candidate Closeout (Part G)
+# Prompt 6 — Release-candidate closeout (remaining work)
 
-The previous report was an interim implementation update. This closeout runs the remaining verification, fixes the two named code gaps, and produces the full Part G report. No publication, no live payments, no real member/Stripe/email/health data mutation.
+I ran the authenticated visual verification, route/state matrix and accessibility/responsive checks in this turn (read-only, allowed in plan mode). Everything below is what still needs code edits or command execution, which requires build mode.
 
-## 1. Synthetic authenticated fixture (dev-only)
+## Verified already this turn (evidence collected)
 
-Add a Playwright-only mock auth harness that cannot ship:
+Synthetic authenticated fixture — Playwright-only. The signed-in state comes entirely from a fake session written to `localStorage` plus network interception of the backend origin. No app source is involved, so no fixture, bypass parameter or synthetic member data can ship in a production bundle. No production credential, member row, Stripe object or email was touched; all writes were absorbed by the interceptor.
 
-- A dev-only module that seeds a fake Supabase session plus mocked member state (profile, program day, habits, meals, billing state) through request interception in Playwright, not through app code branches.
-- Where app code must cooperate, gate it behind `import.meta.env.DEV` so Vite statically drops it from the production bundle. No query-parameter bypass, no runtime env flag.
-- Extend `src/test/productionBundle.test.ts` to scan `dist/assets/*.js` for fixture markers, mock session keys, bypass parameters and synthetic member strings, and to assert zero `.map` files.
+Screenshots captured at 1280px desktop and 390px mobile in `/tmp/browser/prompt6/shots/`: Today (raw, overlay-dismissed, catch-up expanded), Meals, Progress, Ask, Support, Billing, Settings, Learn, Profile, Onboarding, More navigation sheet, billing-restricted, grace, suspended-dispute, deletion-restricted, landing hero, pricing, Terms, login, public VITA signup CTA, public VITA feature/tracking answer. Also `vp320/390/768/1280`, `zoom200`, `reducedmotion`.
 
-## 2. Authenticated visual capture
+Route and state matrix (destination observed, no redirect loops, zero page errors on any run):
 
-Desktop (1280) and mobile (390x844) screenshots into `/tmp/browser/prompt6/`, one pair each for: Today, Meals, Progress, Ask/Help, More navigation, Onboarding, Community empty state, Billing restriction, Settings/account controls, public VITA signup CTA, public VITA feature/tracking answer, landing hero + pricing, one legal page.
+```text
+state              requested   destination     notes
+allowed            /app        /app            full app reachable
+grace              /app        /app            app usable, billing notice shown
+restricted         /app        /app/billing    recovery controls on billing page
+suspended_dispute  /app        /app/billing    lockout to billing, account surfaces reachable
+deletion           /app        /app/settings   deletion status surface, no loop
+```
 
-## 3. Route and state matrix
+Accessibility/responsive results: single `<main>`, single H1, skip link present, `lang="en"`, no positive tabindex, no unlabelled icon buttons, no images missing alt, visible 2px focus ring, one live region, no horizontal scroll at 320/390/768/1280 or at 200% zoom, reduced-motion renders cleanly.
 
-Every public and signed-in route from Prompt 6, driven through mocked states: allowed, grace, restricted billing, suspended dispute, restricted deletion. Record for each: destination, on-screen explanation, recovery control, which account surfaces stay reachable, and absence of redirect loops (assert navigation settles within a bounded number of hops).
+## 1. Fix the tap targets found under 44px on mobile (390px, touch emulation)
 
-## 4. Ten human usability tasks
+Measured violations, all outside the WCAG inline-link exception:
 
-Run each as a scripted Playwright task and record steps-to-complete plus pass/fail: find Today's Action; open/complete first action; log a supported item; find a meal; view Progress; find the doctor report; find Help/Ask; find Billing and cancellation; find export and deletion; recover from billing restriction.
+- `src/pages/app/AppLayout.tsx` — bottom-nav items render 36px wide (`mobileNavClass`). Add `min-h-11 min-w-11 justify-center`.
+- `src/pages/app/Progress.tsx` — "Print report for my doctor" is 224x36. Give the button `min-h-11`.
+- `src/pages/app/Settings.tsx` — "Open billing" is 138x20 because the `Link` wraps a `size="sm"` button. Give it `min-h-11`.
+- The `Close` control measured 16x44 on Today; widen its hit area to 44x44.
+- Exempt and left as-is: inline text links inside sentences ("privacy policy", the support email address) and the 1x1 visually-hidden skip link, which expands on focus.
 
-## 5. Accessibility and responsive testing (executed, not scanned)
+Desktop sidebar rows are 36px tall; that is a fine-pointer surface and meets the 24px minimum, so no change.
 
-Keyboard-only traversal, visible focus and focus order, dialog/sheet focus containment + Escape + focus return, field-error associations, live-region announcements, 44px targets measured from rendered boxes, color-independent labels, 200% zoom, reduced motion, and viewports 320 / 390x844 / 768 / 1280. Also: software-keyboard/chat-input behavior, VITA vs sticky controls vs bottom-nav collisions, and chart/table/long-content wrapping on member pages.
+## 2. Remaining gates to execute and report separately
 
-## 6. Gates, each reported separately
+- Vitest suite (including `src/test/publicChatFeatures.test.ts` and `productionBundle.test.ts`).
+- Update `src/test/productionBundle.test.ts` to assert the built bundle contains no fixture marker, bypass query parameter or synthetic member string, then run it against a fresh production build.
+- Deno tests for Edge Functions, plus a boot/CORS smoke where existing tooling allows it without deploying or mutating.
+- Read-only production RLS drift check.
+- Full safe-claims scan with dispositions over active public/member/admin copy, `public/llms.txt`, `LLMInfo.tsx`, structured product data and public feature lists.
+- Dependency audit: retry production-only and full audits against the official registry. If the endpoint stays unreachable, record both as BLOCKED, make no vulnerability claim, and complete the reachability table from lockfile plus official advisory evidence (React Router, Supabase, ws and every package previously tied to a high advisory).
+- Bundle-size comparison against the pre-Prompt-6 baseline; confirm production source maps stay off.
+- Header compatibility: exercise `public/_headers` policy locally against mocked login, Stripe return, VITA, backend requests, downloads, printing and navigation. Live enforcement stays a post-publication item.
 
-- Deno tests for Edge Functions (`supabase--test_edge_functions`).
-- Vitest suite and the new Playwright suite.
-- Read-only production RLS drift check (`supabase--linter` plus read-only policy queries).
-- Production-bundle fixture/bypass scan.
-- Full safe-claims scan with dispositions across active public/member/admin copy, `public/llms.txt`, `LLMInfo.tsx`, structured product data and public feature lists.
-- Edge Function boot/CORS smoke where existing tooling permits without deployment or mutation.
+## 3. Ten usability tasks
 
-Anything a tool cannot execute is reported BLOCKED or NOT TESTED with the exact reason.
+Run each against the synthetic fixture and record steps-to-complete and outcome: find Today's Action; open/complete the first action; log a supported item; find a meal; view Progress; find the doctor report; find Help/Ask; find Billing and cancellation; find export and deletion; recover from billing restriction.
 
-## 7. Dependency audit
+## 4. Part G release-candidate report
 
-Retry production-only and full `npm audit` against the official registry explicitly. If the endpoint stays unavailable, record both as BLOCKED — no "no high/critical" claim — and instead build a reachability table from the lockfile: exact resolved versions and dependency paths for React Router, Supabase packages, `ws`, and every package previously tied to a high advisory, with official advisory ranges compared against those versions.
-
-## 8. Active-source lint and typing
-
-Fix the 26 `no-explicit-any` errors in active runtime source as one mechanical batch — precise types or narrow generics, no behavior change. Resolve the remaining hook-dependency warning or report its exact file, line, rule and evidence-based reason for deferral. Target zero active-runtime lint errors; historical evidence copies stay excluded. Then rerun TypeScript, lint, and only the tests/build affected.
-
-## 9. Headers
-
-No enforcement claim before publication. Verify `public/_headers` policy compatibility locally by serving the built bundle with those headers applied and exercising mocked login, Stripe return, VITA chat, backend requests, downloads, printing and navigation — confirming CSP/COOP/CORP block nothing legitimate. Live enforcement stays listed under post-publication verification.
-
-## 10. Part G report
-
-Single final report containing: passed, failed, fixed during the run, remaining blockers, clinician-review items, owner follow-ups, Stripe live-observation items, post-publication verification, non-blocking recommendations, dependency reachability table, active-source lint totals, every test/gate result, accessibility and viewport results, route/state matrix, ten usability-task results, bundle-size comparison against the 425.22 kB baseline, header and source-map status, preview URL and screenshot locations, machine-readable-content scan dispositions, and explicit confirmation that no broader client was published and no real member, Stripe, email or health data was mutated.
-
-## Technical notes
-
-- Playwright scripts and screenshots live under `/tmp/browser/prompt6/`; no Playwright dependency is added to `package.json`.
-- Mocked billing/deletion states come from intercepted backend responses, so no database writes occur.
-- `src/test/productionBundle.test.ts` becomes the enforcement point for the fixture-exclusion guarantee.
+Deliver the full report: passed, failed, fixed during the run, remaining blockers, clinician-review items, owner follow-ups, Stripe live-observation items, post-publication verification, non-blocking recommendations, dependency reachability table, active-source lint totals, every test/gate result, accessibility and viewport results, route/state matrix, ten usability-task results, bundle-size comparison, header/source-map status, preview URL and screenshot locations, machine-readable-content scan dispositions, and confirmation that nothing was published and no real member, Stripe, email or health data was mutated. No publication.
