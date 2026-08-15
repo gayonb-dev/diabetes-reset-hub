@@ -203,7 +203,12 @@ export default function Support() {
             placeholder="Ask about the app…"
             disabled={chatSending}
           />
-          <Button onClick={askAssistant} disabled={chatSending || !chatInput.trim()} size="icon">
+          <Button
+            onClick={askAssistant}
+            disabled={chatSending || !chatInput.trim()}
+            size="icon"
+            aria-label="Send question"
+          >
             <Send className="h-4 w-4" />
           </Button>
         </div>
