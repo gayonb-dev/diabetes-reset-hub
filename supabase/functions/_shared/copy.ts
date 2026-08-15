@@ -27,8 +27,23 @@ const EMERGENCY_PATTERNS: RegExp[] = [
   /\bemergency\b/i, /\b911\b/, /\bambulance\b/i,
 ];
 
+/**
+ * A stated blood-glucose value outside the safe band is always urgent, whatever
+ * else the sentence contains. This runs before every capability matcher.
+ */
+const GLUCOSE_VALUE_RE =
+  /\b(blood\s*sugar|blood\s*glucose|glucose|sugar|bg)\b[^.\d]{0,24}?(\d{2,3})\b/i;
+
+function statedGlucoseIsDangerous(text: string): boolean {
+  const m = GLUCOSE_VALUE_RE.exec(text);
+  if (!m) return false;
+  const v = Number(m[2]);
+  if (!Number.isFinite(v)) return false;
+  return v < 70 || v > 300;
+}
+
 export function isPossibleEmergency(text: string): boolean {
-  return EMERGENCY_PATTERNS.some((re) => re.test(text));
+  return EMERGENCY_PATTERNS.some((re) => re.test(text)) || statedGlucoseIsDangerous(text);
 }
 
 /** Topics the closed-gate assistant may still answer. */
