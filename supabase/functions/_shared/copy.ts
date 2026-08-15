@@ -248,10 +248,24 @@ const FAQ_PATTERNS: Array<{ key: FaqKey; re: RegExp }> = [
  * resolves to the signup action instead of restarting a sales script.
  */
 export function matchFaq(text: string, lastIntent?: string | null): FaqAnswer | null {
+  // 1. Emergency / dangerous stated value always outranks everything.
   if (!text || isPossibleEmergency(text)) return null;
-  if (HEALTH_PATTERNS.some((re) => re.test(text))) return null;
 
   const trimmed = text.trim();
+
+  // 2. Requests for interpretation, treatment, targets or symptom help stay
+  //    with the health boundary even when they mention "track" or "app".
+  if (isPersonalHealthRequest(trimmed)) return null;
+
+  // 3. Strict product-capability and navigation questions are answered here,
+  //    even when they name diabetes, A1C or weight.
+  if (FEATURES_RE.test(trimmed)) return FAQ_ANSWERS.features;
+  if (TRACK_VERB_RE.test(trimmed) && TRACK_SUBJECT_RE.test(trimmed)) {
+    return FAQ_ANSWERS.tracking;
+  }
+
+  // 4. Anything else that reads health-related fails safely to the gate.
+  if (HEALTH_PATTERNS.some((re) => re.test(text))) return null;
 
   // Explicit signup requests need no prior context.
   if (EXPLICIT_SIGNUP_RE.test(trimmed) && !ABOUT_RE.test(trimmed)) {
