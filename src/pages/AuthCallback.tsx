@@ -44,7 +44,9 @@ export default function AuthCallback() {
     const markCallbackComplete = () => {
       try {
         window.sessionStorage.setItem("drm_auth_callback_completed_at", String(Date.now()));
-      } catch {}
+      } catch {
+        /* sessionStorage unavailable (private browsing) — non-fatal. */
+      }
     };
 
     const waitForVerifiedSession = async (timeoutMs = 8000) => {

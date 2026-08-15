@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { useGamificationProfile } from "@/hooks/useGamificationProfile";
 import { useProgramDay } from "@/hooks/useProgramDay";
 import BadgeGallery from "@/components/gamification/BadgeGallery";
@@ -10,6 +11,12 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { Sparkles, Heart, Flame, CalendarCheck } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
+
+interface CommunityRow {
+  id: string;
+  content: string;
+  created_at: string;
+}
 
 function initialsOf(email?: string) {
   if (!email) return "U";
@@ -36,7 +43,7 @@ export default function Profile() {
 
   useEffect(() => {
     if (!user) return;
-    const sb: any = supabase;
+    const sb = supabase as unknown as SupabaseClient;
     (async () => {
       const workoutRes = await sb
         .from("workout_sessions")
@@ -78,8 +85,8 @@ export default function Profile() {
         answersGiven: aRes.count ?? 0,
       });
       const recents = [
-        ...((qRes.data || []) as any[]).map((r) => ({ id: r.id, kind: "q" as const, content: r.content, at: r.created_at })),
-        ...((aRes.data || []) as any[]).map((r) => ({ id: r.id, kind: "a" as const, content: r.content, at: r.created_at })),
+        ...((qRes.data || []) as CommunityRow[]).map((r) => ({ id: r.id, kind: "q" as const, content: r.content, at: r.created_at })),
+        ...((aRes.data || []) as CommunityRow[]).map((r) => ({ id: r.id, kind: "a" as const, content: r.content, at: r.created_at })),
       ]
         .sort((a, b) => b.at.localeCompare(a.at))
         .slice(0, 5);

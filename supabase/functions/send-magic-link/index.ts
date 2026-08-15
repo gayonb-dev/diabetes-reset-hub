@@ -154,10 +154,11 @@ serve(async (req) => {
     // /verify GET endpoint that email prefetchers/scanners (Gmail, Outlook
     // safe links) consume before the user clicks: verifyOtp runs as a client
     // POST, so a scanner cannot burn the one-time, short-lived token.
-    const tokenHash = (linkData as any)?.properties?.hashed_token;
+    const linkProps = (linkData as { properties?: { hashed_token?: string; action_link?: string } } | null)?.properties;
+    const tokenHash = linkProps?.hashed_token;
     const loginUrl = tokenHash
       ? `${APP_URL}/auth/callback?token_hash=${encodeURIComponent(tokenHash)}&type=magiclink&next=${nextParam}`
-      : (linkData as any)?.properties?.action_link;
+      : linkProps?.action_link;
 
     if (!error && loginUrl) {
       const result = await sendAuthEmail(sb, {

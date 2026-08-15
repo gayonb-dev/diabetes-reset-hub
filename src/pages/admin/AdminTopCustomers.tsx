@@ -36,7 +36,7 @@ export default function AdminTopCustomers() {
   const [selected, setSelected] = useState<ScoreRow | null>(null);
   const [reason, setReason] = useState("");
   const [phiOpen, setPhiOpen] = useState(false);
-  const [phiData, setPhiData] = useState<any>(null);
+  const [phiData, setPhiData] = useState<PhiPayload | null>(null);
 
   const load = async () => {
     setLoading(true);
@@ -190,7 +190,7 @@ export default function AdminTopCustomers() {
             </div>
           ) : (
             <div className="space-y-2 max-h-[60vh] overflow-y-auto">
-              {(phiData.rows ?? []).map((m: any) => (
+              {(phiData.rows ?? []).map((m: PhiMessageRow) => (
                 <div key={m.id} className="text-sm border-l-2 border-primary/30 pl-3">
                   <div className="text-xs text-muted-foreground">
                     {m.role} · {new Date(m.created_at).toLocaleString()}

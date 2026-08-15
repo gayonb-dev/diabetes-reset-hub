@@ -96,7 +96,7 @@ export default function Ask() {
   // VITA bar
   const [vitaQ, setVitaQ] = useState("");
   const [vitaLoading, setVitaLoading] = useState(false);
-  const [vitaResponse, setVitaResponse] = useState<any>(null);
+  const [vitaResponse, setVitaResponse] = useState<VitaResponse | null>(null);
 
   // Compose
   const [composeOpen, setComposeOpen] = useState(false);
@@ -171,8 +171,9 @@ export default function Ask() {
       } else {
         setVitaResponse({ kind: "vita", ...data });
       }
-    } catch (e: any) {
-      toast({ title: "VITA couldn't answer", description: e?.message ?? "Try again", variant: "destructive" });
+    } catch (e) {
+      const message = e instanceof Error ? e.message : "Try again";
+      toast({ title: "VITA couldn't answer", description: message, variant: "destructive" });
     } finally {
       setVitaLoading(false);
     }

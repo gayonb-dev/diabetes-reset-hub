@@ -114,7 +114,7 @@ export function useVitaQuotes(memberId: string | undefined, programDay: number) 
         .gte("day_range_end", programDay);
       if (cancelled) return;
       setAll(
-        (data ?? []).map((r: any) => ({
+        (data ?? []).map((r) => ({
           id: r.id,
           text: r.quote_text,
           category: r.category as VitaQuoteCategory,

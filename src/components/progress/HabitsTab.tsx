@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { Card } from "@/components/ui/card";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from "recharts";
 import EmptyState from "@/components/ui/empty-state";
@@ -40,7 +41,7 @@ export default function HabitsTab() {
       since.setDate(since.getDate() - 90);
       const sinceISO = since.toISOString();
 
-      const sb: any = supabase;
+      const sb = supabase as unknown as SupabaseClient;
       const waterRes = await sb.from("water_logs").select("logged_at").eq("user_id", user.id).gte("logged_at", sinceISO);
       const mealRes = await sb.from("meal_logs").select("logged_at").eq("member_id", user.id).gte("logged_at", sinceISO);
       const workoutRes = await sb
@@ -57,10 +58,10 @@ export default function HabitsTab() {
         if (!map.has(k)) map.set(k, { water: false, food: false, exercise: false, mindset: false });
         return map.get(k)!;
       };
-      (waterRes.data || []).forEach((r: any) => { ensure(r.logged_at.slice(0, 10)).water = true; });
-      (mealRes.data || []).forEach((r: any) => { ensure(r.logged_at.slice(0, 10)).food = true; });
-      (workoutRes.data || []).forEach((r: any) => { if (r.completed_at) ensure(r.completed_at.slice(0, 10)).exercise = true; });
-      (mindsetRes.data || []).forEach((r: any) => { if (r.read_at) ensure(r.read_at.slice(0, 10)).mindset = true; });
+      (waterRes.data || []).forEach((r: { logged_at: string }) => { ensure(r.logged_at.slice(0, 10)).water = true; });
+      (mealRes.data || []).forEach((r: { logged_at: string }) => { ensure(r.logged_at.slice(0, 10)).food = true; });
+      (workoutRes.data || []).forEach((r: { completed_at: string | null }) => { if (r.completed_at) ensure(r.completed_at.slice(0, 10)).exercise = true; });
+      (mindsetRes.data || []).forEach((r: { read_at: string | null }) => { if (r.read_at) ensure(r.read_at.slice(0, 10)).mindset = true; });
 
       setDays(map);
       setStreak({

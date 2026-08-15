@@ -145,7 +145,7 @@ Deno.serve(async (req) => {
 
   // Cancellation is enabled and ids are outstanding: cancel FIRST, and only
   // continue to destructive deletion once each exact id is confirmed.
-  let preCancelled: string[] = [];
+  const preCancelled: string[] = [];
   let preCancelError: string | null = null;
   if (preOutstanding.length && !dryRun) {
     const mode0 = await stripeMode(admin);

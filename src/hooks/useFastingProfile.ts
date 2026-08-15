@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { useAuth } from "@/hooks/useAuth";
 import {
   canFast as canFastFn,
@@ -39,7 +40,7 @@ export function useFastingProfile() {
       setLoading(false);
       return;
     }
-    const sb: any = supabase;
+    const sb = supabase as unknown as SupabaseClient;
     const { data } = await sb
       .from("profiles")
       .select(
@@ -58,7 +59,7 @@ export function useFastingProfile() {
   const save = useCallback(
     async (patch: Partial<FastingProfile>) => {
       if (!user) return { error: new Error("Not signed in") };
-      const sb: any = supabase;
+      const sb = supabase as unknown as SupabaseClient;
       const { error } = await sb.from("profiles").update(patch).eq("user_id", user.id);
       if (!error) setProfile((p) => ({ ...(p || DEFAULTS), ...patch }) as FastingProfile);
       return { error };

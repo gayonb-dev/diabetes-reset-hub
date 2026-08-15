@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { useProgramDay } from "@/hooks/useProgramDay";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -49,7 +50,7 @@ export default function CheatMeal() {
 
   const refresh = async () => {
     if (!user) return;
-    const sb: any = supabase;
+    const sb = supabase as unknown as SupabaseClient;
     const { data } = await sb
       .from("cheat_meals")
       .select("*")
@@ -80,7 +81,7 @@ export default function CheatMeal() {
     if (!user) return;
     setBusy(true);
     const now = new Date();
-    const sb: any = supabase;
+    const sb = supabase as unknown as SupabaseClient;
     const { error } = await sb.from("cheat_meals").insert({
       member_id: user.id,
       logged_at: now.toISOString(),
