@@ -186,6 +186,48 @@ const EXPLICIT_SIGNUP_RE =
 const ABOUT_RE =
   /\b(what is (this|it|drm|the (program|programme|app|membership|diabetes reset)))|what'?s (this|it) (all )?about|tell me (more )?about (this|the (program|programme|membership))|what do you (offer|do)|how does (this|it|the program(me)?) work\b/i;
 
+// ---------------------------------------------------------------------------
+// Product capability vs personal health.
+//
+// A diabetes-related word on its own is NOT a health question. "Can I track my
+// A1C?" is a product question; "My A1C is 11, what should I do?" is not. The
+// personal-health signals below always win, and a dangerous stated glucose
+// value is caught earlier by isPossibleEmergency().
+// ---------------------------------------------------------------------------
+
+/** Anything asking for interpretation, treatment, targets or symptom help. */
+const PERSONAL_HEALTH_RE: RegExp[] = [
+  /\bmy\s+(a1c|a1c|hba1c|ac1|aic|blood\s*sugar|blood\s*glucose|glucose|sugar|weight|results?|labs?|numbers?|readings?)\b[^?]{0,40}\b(is|was|are|were|of|came back|reads?)\b/i,
+  /\b(is|was)\s+(my|an?)\s+(a1c|hba1c|ac1|aic|blood\s*sugar|glucose|weight)\b/i,
+  /\bhow (can|do) i (lower|reduce|raise|bring down|improve|fix)\b/i,
+  /\bhow much (weight|sugar|carbs?) should i\b/i,
+  /\bwhat should i (do|eat|take)\b/i,
+  /\bshould i (take|stop|change|start|switch|adjust|lose|reduce)\b/i,
+  /\bis (it|this) safe\b/i,
+  /\bwhat (does|do) (my|this|these|that)\b.*\bmean\b/i,
+  /\b(medication|medications|meds|metformin|insulin|dos(e|age)|prescription)\b/i,
+  /\b(symptom|symptoms|neuropathy|retinopathy|dizzy|dizziness|numb|numbness|tingl|nausea|blurred)\b/i,
+  /\b(target|goal|normal|healthy)\s+(a1c|hba1c|range|level|number)\b/i,
+  /\bdiagnos/i,
+  /\b(cure|treat|treatment|reverse)\s+(my|the)?\s*(diabetes|a1c)\b/i,
+];
+
+function isPersonalHealthRequest(text: string): boolean {
+  return PERSONAL_HEALTH_RE.some((re) => re.test(text));
+}
+
+/** "What are the features / what does the app include" style questions. */
+const FEATURES_RE =
+  /\b(what (are|r) the features|what features|features (of|in|for)\b|what(?:'s| is| does)? (this|the|it|your)? ?(app|membership|program|programme|subscription)? ?(include|includes|come with|offer|offers)|what do i get|what'?s included|what can i do (in|with) (the|this|your) (app|membership|program|programme)|what does the membership (do|include|offer)|how does the membership help)/i;
+
+/** Subjects DRM can track. Includes common A1C mistypes. */
+const TRACK_SUBJECT_RE =
+  /\b(a1c|a1_c|hba1c|hb a1c|ac1|aic|weight|blood\s*sugar|blood\s*glucose|glucose|sugar levels?|measurements?|waist|habits?|readings?)\b/i;
+
+/** Capability / navigation phrasing. */
+const TRACK_VERB_RE =
+  /\b(can (i|it|the app|you)\s+(track|log|record|enter|add|store|see|chart|graph)|does (the|this|your) app\s+(track|record|log|support|have|store)|do you (track|support|have)|where (do|can) i (log|enter|record|add|find|see|put)|how (do|can) i (log|enter|record|add|track)|track(ing)? my|log(ging)? my|is there (a|any) (way to )?(track|log|record)|track and|support(s)? tracking)\b/i;
+
 const FAQ_PATTERNS: Array<{ key: FaqKey; re: RegExp }> = [
   { key: "cancel", re: /\b(cancel|cancelling|canceling|unsubscribe|stop (my )?(sub|subscription|membership|billing)|end my membership)\b/i },
   { key: "login", re: /\b(log ?in|logging in|sign ?in|signing in|can'?t get in|forgot my password|password|magic link|access my account)\b/i },
