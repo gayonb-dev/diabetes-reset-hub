@@ -571,12 +571,6 @@ export default function Dashboard() {
       <aside className="hidden lg:block">
         <div className="sticky top-6 space-y-4">
           <VitaQuoteCard quotes={quoteItems} />
-          <StreakMiniWidget
-            streak={gam.streak_count}
-            history={gam.streak_history}
-            freezeAvailable={gam.streak_freeze_available}
-            onOpen={() => setShowStreakHistory(true)}
-          />
           <UpcomingActions actions={upcoming} />
         </div>
       </aside>
