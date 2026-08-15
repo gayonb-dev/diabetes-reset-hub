@@ -487,6 +487,47 @@ export default function Dashboard() {
           </div>
         )}
 
+        {/* Prompt 6 A3 — logging shortcuts. Links only: these reuse the existing
+            blood-glucose, meal and habit surfaces and add no new data fields. */}
+        <nav aria-label="Logging shortcuts" className="grid grid-cols-3 gap-2">
+          {[
+            { to: "/app/progress", icon: Droplet, label: "Log blood sugar" },
+            { to: "/app/meals", icon: UtensilsCrossed, label: "Log a meal" },
+            { to: "#daily-habits", icon: Activity, label: "Log habits" },
+          ].map((s) => (
+            <Link
+              key={s.label}
+              to={s.to}
+              className="flex flex-col items-center justify-center gap-1 min-h-[64px] rounded-lg border border-border bg-card px-2 py-3 text-center text-[12px] font-medium text-secondary-fg hover:bg-muted/50 transition-colors"
+            >
+              <s.icon className="h-4 w-4 text-primary" aria-hidden />
+              {s.label}
+            </Link>
+          ))}
+        </nav>
+
+        {/* Prompt 6 A3 — one compact progress summary. The rings stay as
+            supporting detail below Today's Action rather than competing with it. */}
+        <section aria-label="Today's habit rings" className="flex gap-[10px] lg:gap-4">
+          {(
+            [
+              ["water", habitData.water],
+              ["food", habitData.food],
+              ["exercise", habitData.exercise],
+              ["mindset", habitData.mindset],
+            ] as const
+          ).map(([habit, d], i) => (
+            <div key={habit} className="flex-1 flex justify-center min-w-0">
+              <div className="lg:hidden">
+                <HabitRing habit={habit} {...d} size={72} delayMs={i * 100} />
+              </div>
+              <div className="hidden lg:block">
+                <HabitRing habit={habit} {...d} size={88} delayMs={i * 100} />
+              </div>
+            </div>
+          ))}
+        </section>
+
         {/* Catch up — Prompt 6 A3: collapsed by default, neutral count, never
             competes with or blocks Today's Action, no shame or urgency wording. */}
         {catchUp.length > 0 && (
