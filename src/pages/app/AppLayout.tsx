@@ -181,6 +181,13 @@ export default function AppLayout() {
 
   return (
     <div className="min-h-dvh bg-background flex flex-col">
+      {/* Prompt 6 B1 — keyboard users can jump straight past the navigation. */}
+      <a
+        href="#app-main"
+        className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:m-2 focus:rounded-lg focus:bg-card focus:px-4 focus:py-2 focus:text-sm focus:ring-2 focus:ring-primary"
+      >
+        Skip to main content
+      </a>
       <OfflineBanner />
       {trialBanner}
 
@@ -346,7 +353,7 @@ export default function AppLayout() {
 
 
         {/* Main */}
-        <main className="flex-1 px-4 lg:px-8 py-6 lg:py-8 pb-[calc(env(safe-area-inset-bottom)+5.5rem)] lg:pb-10 max-w-3xl lg:max-w-6xl xl:max-w-7xl mx-auto w-full safe-x">
+        <main id="app-main" tabIndex={-1} className="flex-1 px-4 lg:px-8 py-6 lg:py-8 pb-[calc(env(safe-area-inset-bottom)+5.5rem)] lg:pb-10 max-w-3xl lg:max-w-6xl xl:max-w-7xl mx-auto w-full safe-x">
           <Outlet />
         </main>
       </div>
