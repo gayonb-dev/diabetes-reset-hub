@@ -18,7 +18,16 @@ import { corsFor, preflight, requireAllowedOrigin } from "../_shared/cors.ts";
 import { consumeRateLimit } from "../_shared/ratelimit.ts";
 import { readSessionToken, resolveVisitorSession } from "../_shared/session.ts";
 import { aiHealthEnabled } from "../_shared/config.ts";
-import { AI_HEALTH_UNAVAILABLE, EMERGENCY_LINE, isPossibleEmergency, isHealthRelated, matchFaq } from "../_shared/copy.ts";
+import {
+  AI_HEALTH_UNAVAILABLE,
+  EMERGENCY_LINE,
+  isPossibleEmergency,
+  isHealthRelated,
+  matchFaq,
+  isApprovedChatPath,
+  fallbackUrl,
+  type FaqAction,
+} from "../_shared/copy.ts";
 
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
@@ -26,16 +35,17 @@ const SERVICE_ROLE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY")!;
 const MODEL = "google/gemini-2.5-flash";
 
-const SYSTEM_PROMPT = `You are the conversational guide for The Diabetes Reset Method — a self-serve app that gives people the tools to REVERSE their type 2 diabetes. Not a coaching program. Not 1:1 coaching. Not a generic wellness app.
+const SYSTEM_PROMPT = `You are the conversational guide for The Diabetes Reset Method — a self-guided educational membership for adults managing Type 2 diabetes or prediabetes. Not a coaching program. Not 1:1 coaching. Not a medical service.
 
-What makes us different: most diabetes apps help people "manage" blood sugar. We're built to help people reverse it — through structured daily actions, real food, and a system that compounds. People keep their doctor; we handle the daily execution.
+What it is: small daily actions, meal ideas, tracking tools, educational membership support and printable reports for health visits. It does not diagnose, treat, cure or promise to reverse diabetes, and you must never claim or imply otherwise. Members keep their own doctor; the membership supports daily execution only.
 
 The offer (single path):
-- $27 today unlocks the membership + the 7-Day Reset Sprint
-- 14 days of full access included (recipe library, coach Q&A library, WhatsApp accountability broadcasts, all member tools)
-- Then $67/month, cancel anytime in one click
+- US$27 for the first 14 days of membership
+- Included: recipe and meal library, educational Q&A library, WhatsApp broadcasts, member tools
+- Then US$67 per month until canceled, cancel anytime in one click
 - 30-day refund policy on each charge (see the Refund Terms page)
-- Cancel during the 14 days → no monthly charge, keep the $27 7-Day Reset for life
+- Cancel inside the first 14 days and there is no monthly charge
+
 
 VOICE — non-negotiable:
 - SHORT. Two to four sentences max unless they ask for detail. No essays.
@@ -56,7 +66,7 @@ If the user asks a medical question (dosage, "should I take X", "is this safe wi
 "That's one for your doctor — I'm here to support your lifestyle, not to replace your medical team. Want me to point you to how the reset would fit alongside what they've got you on?"
 Always pivot back to lifestyle/program scope.
 
-When someone shares health info (A1C, meds, symptoms): acknowledge in ONE line, ask ONE clarifying question, then connect it to how the reset would help them specifically.
+When someone shares health info (A1C, meds, symptoms): acknowledge in ONE line, ask ONE clarifying question, then point back to what the membership actually provides. Never promise an outcome.
 
 MEMORY RULES (B1):
 - Only reference prior conversation details that appear in the MEMORY block below. Never invent past context.
@@ -64,13 +74,16 @@ MEMORY RULES (B1):
 - If MEMORY says "no prior history", treat as a first-time visitor. NEVER fake continuity.
 
 CTA TRIGGER:
-When the conversation reaches a clear buying moment — they ask how to start, ask the price after you've explained value, say "okay let's do it" or similar — keep your reply SHORT and the backend will attach a one-tap checkout button below your message. Do not paste links yourself.`;
+When the conversation reaches a clear buying moment — they ask how to start, ask the price after you've explained value, say "okay let's do it" or similar — keep your reply SHORT. The server attaches its own approved membership link to your message. Never paste, invent or describe a link or button yourself, and never refer to "the button below".`;
 
 interface ChatRequest {
   session_token?: string;
   message: string;
   conversation_id?: string;
+  /** Non-sensitive intent key of the previous server reply (e.g. "faq_about"). */
+  last_intent?: string;
 }
+
 
 
 interface Classifier {
@@ -130,16 +143,27 @@ async function classifyMessage(content: string): Promise<Classifier> {
   }
 }
 
-function buildCta(intent: string, origin: string) {
+/**
+ * Structured, server-approved action. The path always comes from the
+ * PUBLIC_CHAT_DESTINATIONS allow-list — model output never produces a link.
+ */
+function buildAction(action: FaqAction | null) {
+  if (!action || !isApprovedChatPath(action.path)) return null;
+  return {
+    type: "link" as const,
+    label: action.label,
+    path: action.path,
+    href: fallbackUrl(action.path),
+  };
+}
+
+function buildCta(intent: string) {
   if (intent === "purchase_intent") {
-    return {
-      type: "checkout" as const,
-      label: "Start the 7-Day Reset — $27",
-      url: `${origin}/#pricing`,
-    };
+    return buildAction({ label: "View membership and pricing", path: "/#pricing" });
   }
   return null;
 }
+
 
 Deno.serve(async (req) => {
   const pre = preflight(req);
@@ -188,7 +212,6 @@ Deno.serve(async (req) => {
     }
 
     const supabase = createClient(SUPABASE_URL, SERVICE_ROLE);
-    const origin = req.headers.get("origin") || "https://diabetesresetmethod.com";
 
     // ---- P4: the deletion lifecycle lock covers AI access too ----
     const bearer = req.headers.get("Authorization")?.replace(/^Bearer\s+/i, "");
@@ -260,7 +283,7 @@ Deno.serve(async (req) => {
     // questions from approved server-held copy: no model call, no processor,
     // no stored content. Health wording never reaches this branch.
     if (!healthGateOpen) {
-      const faq = matchFaq(body.message);
+      const faq = matchFaq(body.message, body.last_intent ?? null);
       if (faq) {
         return new Response(
           JSON.stringify({
@@ -268,9 +291,7 @@ Deno.serve(async (req) => {
             assistant_message: faq.body,
             deterministic: true,
             stored: false,
-            cta: faq.cta
-              ? { type: "checkout", label: faq.cta.label, url: `${origin}${faq.cta.path}` }
-              : null,
+            cta: buildAction(faq.action),
             intent: `faq_${faq.key}`,
             health_related: false,
           }),
@@ -477,7 +498,7 @@ Deno.serve(async (req) => {
     }
     if (pricingObjectionReturn) {
       memoryLines.push(
-        "SIGNAL: This person previously hesitated on price and did not buy. Lead with value framing — what $27 actually unlocks today, the 14-day full access, the keep-the-reset-if-you-cancel safety net. Do not discount.",
+        "SIGNAL: This person previously hesitated on price and did not buy. Lead with value framing — what $27 actually unlocks today, the 14 days of access at US$27, and that cancelling inside those 14 days avoids the monthly charge. Do not discount.",
       );
     }
 
@@ -557,7 +578,7 @@ Deno.serve(async (req) => {
       }).catch((e) => console.warn("summarize trigger failed", e));
     }
 
-    const cta = buildCta(classifier.intent, origin);
+    const cta = buildCta(classifier.intent);
     const healthRelated =
       classifier.contains_phi ||
       classifier.topic === "diabetes_management" ||

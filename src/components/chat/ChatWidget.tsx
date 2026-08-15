@@ -22,8 +22,9 @@ import {
   clearChatSession,
 } from "@/lib/chatSession";
 import { useToast } from "@/hooks/use-toast";
+import { safeCta, type ChatCta } from "@/lib/chatCta";
 
-type Cta = { type: "checkout"; label: string; url: string } | null;
+type Cta = ChatCta;
 type Msg = {
   role: "user" | "assistant";
   content: string;
@@ -71,6 +72,8 @@ export default function ChatWidget() {
   // the dependency list re-ran this effect as soon as it was set, and the first
   // run's cleanup then discarded the result, leaving the panel on "One moment…".
   const gateStarted = useRef(false);
+  /** Non-sensitive intent key of the last server reply (context for "yes"). */
+  const lastIntent = useRef<string | null>(null);
   useEffect(() => {
     if (!open || gateStarted.current) return;
     gateStarted.current = true;
@@ -124,10 +127,12 @@ export default function ChatWidget() {
     });
   }, [messages, sending]);
 
+  /** Navigates only to server-approved, same-origin destinations. */
   function handleCtaClick(cta: Cta) {
-    if (!cta) return;
-    if (cta.url.includes("#") && !cta.url.startsWith("http")) {
-      const hash = cta.url.split("#")[1];
+    const safe = safeCta(cta);
+    if (!safe) return;
+    const [pathname, hash] = safe.path.split("#");
+    if (hash && (window.location.pathname === "/" || pathname === "")) {
       const el = document.getElementById(hash);
       if (el) {
         setOpen(false);
@@ -135,7 +140,8 @@ export default function ChatWidget() {
         return;
       }
     }
-    window.open(cta.url, "_blank", "noopener,noreferrer");
+    setOpen(false);
+    window.location.assign(safe.path);
   }
 
   /** Closed gate: continue, membership questions only. No consent is recorded. */
@@ -195,6 +201,7 @@ export default function ChatWidget() {
     }
     sessionReady.current = false;
     gateStarted.current = false;
+    lastIntent.current = null;
 
     clearChatSession();
     setMessages([]);
@@ -225,10 +232,12 @@ export default function ChatWidget() {
           session_token: token,
           message: text,
           conversation_id: conversationId,
+          last_intent: lastIntent.current,
         },
       });
       if (error) throw error;
       if (data?.conversation_id) setConversationId(data.conversation_id);
+      lastIntent.current = typeof data?.intent === "string" ? data.intent : null;
 
       if (data?.ai_health_available === false) {
         setMessages((m) => [
@@ -272,9 +281,6 @@ export default function ChatWidget() {
     }
   }
 
-
-  const showPurchaseCard = (m: Msg) =>
-    m.role === "assistant" && (m.intent === "purchase_intent" || m.cta);
 
   return (
     <>
@@ -409,29 +415,24 @@ export default function ChatWidget() {
                       </p>
                     )}
 
-                    {/* Purchase intent CTA card */}
-                    {showPurchaseCard(m) && (
+                    {/* Server-approved action (allow-listed destinations only) */}
+                    {safeCta(m.cta) && (
                       <div className="mt-3 w-full max-w-[85%] rounded-xl border border-accent bg-accent-muted p-3 space-y-1.5">
                         <p className="text-[15px] font-semibold text-primary">
-                          Start the 7-Day Reset — $27
+                          Membership — US$27 for your first 14 days
                         </p>
                         <p className="text-[12px] text-muted-foreground">
-                          Then $67/month. Cancel anytime.
+                          Then US$67/month until canceled. Cancel anytime.
                         </p>
                         <button
-                          onClick={() =>
-                            handleCtaClick(
-                              m.cta ?? {
-                                type: "checkout",
-                                label: "Begin now",
-                                url: `${window.location.origin}/#pricing`,
-                              },
-                            )
-                          }
-                          className="w-full h-10 rounded-lg bg-primary text-primary-foreground text-[13px] font-semibold flex items-center justify-center gap-1.5 hover:bg-primary/90 transition-colors"
+                          onClick={() => handleCtaClick(m.cta ?? null)}
+                          className="w-full h-11 rounded-lg bg-primary text-primary-foreground text-[13px] font-semibold flex items-center justify-center gap-1.5 hover:bg-primary/90 transition-colors"
                         >
-                          Begin now <ArrowRight className="h-4 w-4" />
+                          {safeCta(m.cta)!.label} <ArrowRight className="h-4 w-4" />
                         </button>
+                        <p className="text-[11px] text-muted-foreground break-all">
+                          Or open: https://diabetesresetmethod.com{safeCta(m.cta)!.path}
+                        </p>
                       </div>
                     )}
                   </div>
