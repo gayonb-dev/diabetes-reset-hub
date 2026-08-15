@@ -11,12 +11,13 @@ import {
   LineChart,
   Activity,
   UtensilsCrossed,
-  Menu,
   LogOut,
   Shield,
   LifeBuoy,
   User,
-  
+  Library,
+  CreditCard,
+  Users,
   MoreHorizontal,
   Settings as SettingsIcon,
 } from "lucide-react";
