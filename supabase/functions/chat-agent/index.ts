@@ -41,7 +41,7 @@ What it is: small daily actions, meal ideas, tracking tools, educational members
 
 The offer (single path):
 - US$27 for the first 14 days of membership
-- Included: recipe and meal library, educational Q&A library, WhatsApp broadcasts, member tools
+- Included: a clear daily action, meal ideas and recipes, tracking for blood glucose, A1C, weight, measurements and habits, progress trends, educational content, a printable report for health visits, and the member Ask and community support tools
 - Then US$67 per month until canceled, cancel anytime in one click
 - 30-day refund policy on each charge (see the Refund Terms page)
 - Cancel inside the first 14 days and there is no monthly charge
