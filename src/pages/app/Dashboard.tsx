@@ -370,39 +370,30 @@ export default function Dashboard() {
           enabled={!gam.phase_1_extension_active}
         />
 
-        {/* Row 1 — Greeting */}
-        <div className="flex flex-col gap-2 lg:flex-row lg:items-start lg:justify-between lg:gap-4">
-          <div>
-            <p className="text-sm text-secondary-fg">{greeting},</p>
-            <h1 className="font-heading text-3xl md:text-[32px] font-bold text-foreground leading-tight">
-              {firstName}.
-            </h1>
-            <div className="flex items-center gap-2 mt-1.5 lg:hidden min-h-[44px]">
-              <StreakBadge
-                streak={gam.streak_count}
-                freezeAvailable={gam.streak_freeze_available}
-                onClick={() => setShowStreakHistory(true)}
-              />
-              <span className="text-tertiary-fg" aria-hidden>
-                •
-              </span>
-              <LevelBadge level={gam.level} />
-            </div>
-          </div>
-          <div className="hidden lg:flex flex-col items-end gap-1.5">
+        {/* Prompt 6 A3 — calm greeting with one combined streak/level line.
+            Desktop and mobile now show the same single summary instead of two
+            competing copies of the same numbers. */}
+        <div>
+          <p className="text-sm text-secondary-fg">{greeting},</p>
+          <h1 className="font-heading text-3xl md:text-[32px] font-bold text-foreground leading-tight">
+            {firstName}.
+          </h1>
+          <div className="flex flex-wrap items-center gap-2 mt-1.5 min-h-11">
             <StreakBadge
               streak={gam.streak_count}
               freezeAvailable={gam.streak_freeze_available}
               onClick={() => setShowStreakHistory(true)}
             />
             <span className="text-[11px] text-secondary-fg">
-              {gam.streak_count === 1
-                ? "1-day Daily Action Streak"
-                : `${gam.streak_count}-day Daily Action Streak`}
+              {gam.streak_count === 1 ? "1-day" : `${gam.streak_count}-day`} Daily Action Streak
+            </span>
+            <span className="text-tertiary-fg" aria-hidden>
+              •
             </span>
             <LevelBadge level={gam.level} />
           </div>
         </div>
+
 
         <StreakHistoryModal
           open={showStreakHistory}
