@@ -84,9 +84,6 @@ export default function Settings() {
   const [weightUnit, setWeightUnit] = useState<WeightUnit>(u.weight);
   const [glucoseUnit, setGlucoseUnit] = useState<GlucoseUnit>(u.glucose);
 
-  const [waPhone, setWaPhone] = useState("");
-  const [waOptedIn, setWaOptedIn] = useState(false);
-  const [waSaving, setWaSaving] = useState(false);
 
   const [signOutOpen, setSignOutOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
