@@ -1,6 +1,11 @@
 # Prompt 6 — Release-candidate closeout (remaining work)
 
-I ran the authenticated visual verification, route/state matrix and accessibility/responsive checks in this turn (read-only, allowed in plan mode). Everything below is what still needs code edits or command execution, which requires build mode.
+Approving this card is what unlocks execution: the tap-target fixes, the added regression tests and the final gates are all code/command work, which the current mode blocks. Nothing here publishes anything.
+
+## 0. Production target confirmation (verification only)
+
+Confirm before executing: backend project `wqennhjdojjqmmqzjhti`, production domain `https://diabetesresetmethod.com`, and that the staging project is not the connected target. Verification only — no publication, no production-data mutation.
+
 
 ## Verified already this turn (evidence collected)
 
