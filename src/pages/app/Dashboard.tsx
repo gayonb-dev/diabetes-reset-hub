@@ -546,20 +546,18 @@ export default function Dashboard() {
         {/* Row 5 — Quick stats */}
         <QuickStats stats={stats} />
 
-        {/* Row 6 — Right-rail content (in-column below lg; moves to right rail at lg) */}
+        {/* Row 6 — Right-rail content (in-column below lg; moves to right rail at lg).
+            Prompt 6 A3: the streak mini-widget is gone from here — the streak is
+            already summarised once at the top and its history opens from there. */}
         <div className="lg:hidden space-y-4">
           <VitaQuoteCard quotes={quoteItems} />
-          <StreakMiniWidget
-            streak={gam.streak_count}
-            history={gam.streak_history}
-            freezeAvailable={gam.streak_freeze_available}
-            onOpen={() => setShowStreakHistory(true)}
-          />
           <UpcomingActions actions={upcoming} />
         </div>
 
         {/* Daily habit logging (Section 9) */}
-        <HabitLogging currentProgramDay={currentProgramDay} />
+        <div id="daily-habits" className="scroll-mt-4">
+          <HabitLogging currentProgramDay={currentProgramDay} />
+        </div>
 
         {/* Getting Started checklist (Days 1–29 only) */}
         <GettingStartedChecklist currentProgramDay={currentProgramDay} />
