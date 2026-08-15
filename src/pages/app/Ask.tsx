@@ -80,6 +80,18 @@ function timeAgo(iso: string): string {
   return `${Math.floor(h / 24)}d ago`;
 }
 
+interface VitaResponse {
+  kind: "verified" | "vita";
+  answer?: string | null;
+  question_id?: string | null;
+  similarity?: number | null;
+  is_medical_question?: boolean;
+  needs_clarification?: boolean;
+  clarification_question?: string | null;
+  related_content_slug?: string | null;
+  suggest_community_post?: boolean;
+}
+
 export default function Ask() {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -96,7 +108,7 @@ export default function Ask() {
   // VITA bar
   const [vitaQ, setVitaQ] = useState("");
   const [vitaLoading, setVitaLoading] = useState(false);
-  const [vitaResponse, setVitaResponse] = useState<any>(null);
+  const [vitaResponse, setVitaResponse] = useState<VitaResponse | null>(null);
 
   // Compose
   const [composeOpen, setComposeOpen] = useState(false);
@@ -171,8 +183,9 @@ export default function Ask() {
       } else {
         setVitaResponse({ kind: "vita", ...data });
       }
-    } catch (e: any) {
-      toast({ title: "VITA couldn't answer", description: e?.message ?? "Try again", variant: "destructive" });
+    } catch (e) {
+      const message = e instanceof Error ? e.message : "Try again";
+      toast({ title: "VITA couldn't answer", description: message, variant: "destructive" });
     } finally {
       setVitaLoading(false);
     }

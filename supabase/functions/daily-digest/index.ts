@@ -18,7 +18,18 @@ const DIGEST_TO = Deno.env.get("DIGEST_RECIPIENT") ?? "hello@diabetesresetmethod
 
 const MODEL = "google/gemini-2.5-flash";
 
-async function llm(messages: any[], jsonMode = false) {
+interface ChatMessage {
+  role: "system" | "user" | "assistant";
+  content: string;
+}
+
+interface DigestReduction {
+  actions_today: string[];
+  what_agent_heard: string;
+  anomalies: string[];
+}
+
+async function llm(messages: ChatMessage[], jsonMode = false) {
   const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
     method: "POST",
     headers: {
@@ -77,7 +88,7 @@ Deno.serve(async (req) => {
         .order("created_at", { ascending: true })
         .limit(40);
       const transcript = (msgs ?? [])
-        .map((m: any) => `${m.role.toUpperCase()}: ${m.content}`)
+        .map((m: { role: string; content: string }) => `${m.role.toUpperCase()}: ${m.content}`)
         .join("\n")
         .slice(0, 6000);
       try {
@@ -126,7 +137,7 @@ Deno.serve(async (req) => {
       `- actions_today: exactly 3 short imperative actions Gayon should do today, drawn from the data.\n` +
       `- what_agent_heard: 2-3 sentence theme summary, plainspoken.\n` +
       `- anomalies: list of unusual patterns or zero if none (e.g. spike in price objections, sudden drop in chats).`;
-    let reduced: any = { actions_today: [], what_agent_heard: "", anomalies: [] };
+    let reduced: DigestReduction = { actions_today: [], what_agent_heard: "", anomalies: [] };
     try {
       const raw = await llm(
         [{ role: "system", content: "Output only valid JSON." }, { role: "user", content: reducePrompt }],

@@ -20,6 +20,12 @@ function logNorm(x: number, cap = 2000) {
   return Math.min(1, Math.log10(1 + x) / Math.log10(1 + cap));
 }
 
+interface MessageRow {
+  content: string;
+  created_at: string;
+  classifier: { intent?: string; topic?: string } | null;
+}
+
 Deno.serve(async (req) => {
   const pre = preflight(req);
   if (pre) return pre;
@@ -109,7 +115,7 @@ Deno.serve(async (req) => {
         .order("created_at", { ascending: false })
         .limit(1)
         .maybeSingle();
-      const theme = (lastMsg?.classifier as any)?.topic ?? null;
+      const theme = (lastMsg?.classifier as { topic?: string } | null)?.topic ?? null;
 
       // Open questions — last 5 user turns with intent=question and no assistant follow-up
       const { data: openQ } = await supabase
@@ -120,8 +126,8 @@ Deno.serve(async (req) => {
         .order("created_at", { ascending: false })
         .limit(5);
       const openQuestions = (openQ ?? [])
-        .filter((m: any) => (m.classifier?.intent ?? "").includes("question"))
-        .map((m: any) => ({ q: m.content.slice(0, 200), at: m.created_at }));
+        .filter((m: MessageRow) => (m.classifier?.intent ?? "").includes("question"))
+        .map((m: MessageRow) => ({ q: m.content.slice(0, 200), at: m.created_at }));
 
       const talkingPoints: string[] = [];
       if (theme) talkingPoints.push(`Last talked about: ${theme}`);

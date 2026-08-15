@@ -40,6 +40,7 @@ export function safeNextServer(raw: unknown, fallback: string = DEFAULT_NEXT): s
   if (!normalised.startsWith("/")) return fallback;
   if (normalised.startsWith("//")) return fallback;
   // deno-lint-ignore no-control-regex
+  // eslint-disable-next-line no-control-regex -- control characters are exactly what we reject here
   if (/[\u0000-\u001f\u007f]/.test(normalised)) return fallback;
   if (/^\/[a-z][a-z0-9+.-]*:/i.test(normalised)) return fallback;
 

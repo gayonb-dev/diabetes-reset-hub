@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import type { Tables } from "@/integrations/supabase/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -9,17 +10,23 @@ import { toast } from "sonner";
 
 type Tab = "orders" | "leads" | "intakes" | "progress";
 
+type OrderRow = Tables<"orders">;
+type LeadRow = Tables<"leads">;
+type IntakeRow = Tables<"intake_submissions">;
+type ProgressRow = Tables<"challenge_progress">;
+type AdminRow = OrderRow | LeadRow | IntakeRow | ProgressRow;
+
 const AdminDashboard = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<Tab>("orders");
-  const [orders, setOrders] = useState<any[]>([]);
-  const [leads, setLeads] = useState<any[]>([]);
-  const [intakes, setIntakes] = useState<any[]>([]);
-  const [progress, setProgress] = useState<any[]>([]);
+  const [orders, setOrders] = useState<OrderRow[]>([]);
+  const [leads, setLeads] = useState<LeadRow[]>([]);
+  const [intakes, setIntakes] = useState<IntakeRow[]>([]);
+  const [progress, setProgress] = useState<ProgressRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
-  const [selectedItem, setSelectedItem] = useState<any>(null);
+  const [selectedItem, setSelectedItem] = useState<AdminRow | null>(null);
 
   const fetchData = async () => {
     setLoading(true);
@@ -55,11 +62,12 @@ const AdminDashboard = () => {
     fetchData();
   }, []);
 
-  const filterItems = (items: any[]) => {
+  const filterItems = <T extends AdminRow>(items: T[]): T[] => {
     return items.filter((item) => {
       const matchesSearch = searchTerm === "" ||
         JSON.stringify(item).toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesStatus = statusFilter === "all" || item.status === statusFilter;
+      const matchesStatus =
+        statusFilter === "all" || (item as { status?: string }).status === statusFilter;
       return matchesSearch && matchesStatus;
     });
   };

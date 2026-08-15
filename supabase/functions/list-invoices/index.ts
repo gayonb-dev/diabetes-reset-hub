@@ -53,7 +53,10 @@ serve(async (req) => {
     }));
 
     let paymentMethod: null | { brand: string; last4: string; exp_month: number; exp_year: number } = null;
-    const pm = (customer as any).invoice_settings?.default_payment_method;
+    const pm = (customer as { invoice_settings?: { default_payment_method?: unknown } })
+      .invoice_settings?.default_payment_method as
+      | { card?: { brand: string; last4: string; exp_month: number; exp_year: number } }
+      | undefined;
     if (pm && typeof pm === "object" && pm.card) {
       paymentMethod = {
         brand: pm.card.brand,
