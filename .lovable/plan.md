@@ -70,10 +70,17 @@ Complete TypeScript check; complete Vitest suite; complete Playwright/browser su
 Export every final screenshot from `/tmp` to `/mnt/documents/prompt6-evidence/` and reference them as viewable artifacts in the report — desktop and mobile, covering the authenticated routes, all five states, navigation, catch-up collapsed/expanded, legal/public pages and the responsive/zoom/reduced-motion checks. The owner is never asked to sign into preview.
 
 
-## 3. Ten usability tasks
+## 7. Ten usability tasks
 
 Run each against the synthetic fixture and record steps-to-complete and outcome: find Today's Action; open/complete the first action; log a supported item; find a meal; view Progress; find the doctor report; find Help/Ask; find Billing and cancellation; find export and deletion; recover from billing restriction.
 
-## 4. Part G release-candidate report
+## 8. Part G release-candidate report
 
-Deliver the full report: passed, failed, fixed during the run, remaining blockers, clinician-review items, owner follow-ups, Stripe live-observation items, post-publication verification, non-blocking recommendations, dependency reachability table, active-source lint totals, every test/gate result, accessibility and viewport results, route/state matrix, ten usability-task results, bundle-size comparison, header/source-map status, preview URL and screenshot locations, machine-readable-content scan dispositions, and confirmation that nothing was published and no real member, Stripe, email or health data was mutated. No publication.
+Every result classified as PASS, FAIL, BLOCKED, NOT TESTED, OWNER FOLLOW-UP, CLINICIAN REVIEW or POST-PUBLICATION VERIFICATION. A blocked independent item does not stop the rest of the closeout.
+
+Contents: passed, failed, fixed during the run, remaining blockers, clinician-review items, owner follow-ups, Stripe live-observation items, post-publication verification, non-blocking recommendations, dependency reachability table, active-source lint totals, every named regression check from section 2, accessibility and viewport results, route/state matrix, ten usability-task results, bundle-size comparison, header and source-map status, screenshot artifact links, and machine-readable-content scan dispositions.
+
+The report must state explicitly: legal pages were owner-reviewed on 12 August 2026; no counsel-approval or unpublished-release gate remains; pending UK company details are owner follow-up items, not a hidden build gate; clinician review remains required for the low-glucose thresholds/messages and the future urgent-high decision; fasting scheduling remains disabled and unreachable; health AI and Dexcom remain disabled unless separately approved; no refund or dispute event was manufactured for verification; genuine live Stripe refund/dispute delivery is NOT YET OBSERVED if none has occurred; an unavailable dependency-audit endpoint is BLOCKED, not passed; header enforcement and live source-map absence remain post-publication checks; and nothing was published and no real member, Stripe, email or health record was mutated.
+
+No publication, no ZIP, no further approval request.
+
