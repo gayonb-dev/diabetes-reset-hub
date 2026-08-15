@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { MORE_GROUPS } from "@/pages/app/AppLayout";
+import { MORE_GROUPS } from "@/lib/appNav";
 
 /**
  * Prompt 6 A1/A2 — the member app keeps one hierarchy. Primary navigation is
