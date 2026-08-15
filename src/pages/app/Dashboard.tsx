@@ -578,57 +578,6 @@ export default function Dashboard() {
   );
 }
 
-function StreakMiniWidget({
-  streak,
-  history,
-  freezeAvailable,
-  onOpen,
-}: {
-  streak: number;
-  history: { start: string; end: string; length: number }[];
-  freezeAvailable: boolean;
-  onOpen: () => void;
-}) {
-  const recent = history.slice(0, 5);
-  const best = history.reduce((m, h) => Math.max(m, h.length), streak);
-  return (
-    <button
-      onClick={onOpen}
-      className="w-full text-left bg-card border border-border rounded-xl p-4 shadow-warm hover:shadow-md transition-shadow"
-    >
-      <div className="flex items-center justify-between mb-2">
-        <p className="label-caps text-tertiary-fg">Streak</p>
-        {freezeAvailable && (
-          <span className="text-[10px] px-2 py-0.5 rounded-full bg-accent/15 text-accent border border-accent/30">
-            Freeze ready
-          </span>
-        )}
-      </div>
-      <p className="font-heading text-2xl font-bold text-foreground">🔥 {streak}</p>
-      <p className="text-[11px] text-secondary-fg mt-1">Best: {best} days</p>
-      {recent.length > 0 && (
-        <div className="mt-3 space-y-1">
-          {recent.map((h, i) => (
-            <div key={i} className="flex items-center justify-between text-[11px] text-secondary-fg">
-              <span>
-                {new Date(h.start).toLocaleDateString(undefined, { month: "short", day: "numeric" })}
-                {" – "}
-                {new Date(h.end).toLocaleDateString(undefined, { month: "short", day: "numeric" })}
-              </span>
-              <span className="font-medium">{h.length}d</span>
-            </div>
-          ))}
-        </div>
-      )}
-      {recent.length === 0 && (
-        <p className="text-[11px] text-tertiary-fg mt-3">
-          Your streak history builds as you close daily rings.
-        </p>
-      )}
-    </button>
-  );
-}
-
 function UpcomingActions({ actions }: { actions: DailyAction[] }) {
   if (actions.length === 0) return null;
   return (
