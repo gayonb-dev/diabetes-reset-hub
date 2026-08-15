@@ -479,14 +479,22 @@ export default function Dashboard() {
           </div>
         )}
 
-        {/* Catch up — incomplete days before today */}
+        {/* Catch up — Prompt 6 A3: collapsed by default, neutral count, never
+            competes with or blocks Today's Action, no shame or urgency wording. */}
         {catchUp.length > 0 && (
-          <div className="bg-card border border-border rounded-xl p-4 lg:p-6 shadow-warm">
-            <p className="label-caps text-tertiary-fg mb-1">Catch up</p>
-            <p className="text-[13px] text-muted-foreground mb-3">
-              You can pick these up anytime — nothing expires.
-            </p>
-            <div className="space-y-2">
+          <details className="bg-card border border-border rounded-xl shadow-warm group">
+            <summary className="flex items-center justify-between gap-3 min-h-11 px-4 lg:px-6 py-3 cursor-pointer list-none rounded-xl">
+              <span className="text-sm text-secondary-fg">
+                <span className="tabular-nums font-medium text-foreground">{catchUp.length}</span>{" "}
+                earlier {catchUp.length === 1 ? "day is" : "days are"} still open — pick them up
+                whenever you like.
+              </span>
+              <ChevronDown
+                className="h-4 w-4 text-tertiary-fg shrink-0 transition-transform group-open:rotate-180"
+                aria-hidden
+              />
+            </summary>
+            <div className="space-y-2 px-4 lg:px-6 pb-4">
               {catchUp.map((a) => (
                 <Link
                   key={a.id}
@@ -499,12 +507,13 @@ export default function Dashboard() {
                     </span>
                     <span className="text-sm text-foreground truncate">{a.action_title}</span>
                   </span>
-                  <ArrowRight className="h-4 w-4 text-tertiary-fg shrink-0" />
+                  <ArrowRight className="h-4 w-4 text-tertiary-fg shrink-0" aria-hidden />
                 </Link>
               ))}
             </div>
-          </div>
+          </details>
         )}
+
 
         {/* Row 4 — Journey track */}
         <JourneyTrack
