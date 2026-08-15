@@ -414,27 +414,6 @@ export default function Dashboard() {
           history={gam.streak_history}
         />
 
-        {/* Row 2 — Habit rings (hero treatment) */}
-        <div className="flex gap-[10px] lg:gap-4">
-          {(
-            [
-              ["water", habitData.water],
-              ["food", habitData.food],
-              ["exercise", habitData.exercise],
-              ["mindset", habitData.mindset],
-            ] as const
-          ).map(([habit, d], i) => (
-            <div key={habit} className="flex-1 flex justify-center min-w-0">
-              {/* Mobile (<1024): 88 — Desktop (lg+): 112 */}
-              <div className="lg:hidden">
-                <HabitRing habit={habit} {...d} size={88} delayMs={i * 100} />
-              </div>
-              <div className="hidden lg:block">
-                <HabitRing habit={habit} {...d} size={112} delayMs={i * 100} />
-              </div>
-            </div>
-          ))}
-        </div>
 
         {/* Row 3 — Today's action card */}
         {action ? (
