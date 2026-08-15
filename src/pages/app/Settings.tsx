@@ -152,19 +152,7 @@ export default function Settings() {
 
   useEffect(() => {
     if (!user) return;
-    supabase
-      .from("whatsapp_consent")
-      .select("phone_number, revoked_at")
-      .eq("user_id", user.id)
-      .order("opted_in_at", { ascending: false })
-      .limit(1)
-      .maybeSingle()
-      .then(({ data }) => {
-        if (data) {
-          setWaPhone(data.phone_number ?? "");
-          setWaOptedIn(!data.revoked_at);
-        }
-      });
+
 
     // Load profile (display name, first name, notification prefs, meal prefs, timezone) — single source of truth.
     supabase
