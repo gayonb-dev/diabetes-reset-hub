@@ -237,64 +237,72 @@ export default function AppLayout() {
           </div>
         </aside>
 
-        {/* Mobile bottom nav */}
-        <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-card border-t border-border z-40 flex justify-around py-1.5 pb-[calc(env(safe-area-inset-bottom)+0.375rem)] px-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)] keyboard-hide">
+        <nav
+          aria-label="Primary"
+          className="lg:hidden fixed bottom-0 left-0 right-0 bg-card border-t border-border z-40 flex justify-around py-1.5 pb-[calc(env(safe-area-inset-bottom)+0.375rem)] px-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)] keyboard-hide"
+        >
           <NavLink to="/app" end className={mobileNavClass}>
-            <Home className="h-5 w-5" /> Today
-          </NavLink>
-          <NavLink to="/app/progress" className={mobileNavClass}>
-            <LineChart className="h-5 w-5" /> Progress
+            <Home className="h-5 w-5" aria-hidden /> Today
           </NavLink>
           <NavLink to="/app/meals" className={mobileNavClass}>
-            <UtensilsCrossed className="h-5 w-5" /> Meals
+            <UtensilsCrossed className="h-5 w-5" aria-hidden /> Meals
+          </NavLink>
+          <NavLink to="/app/progress" className={mobileNavClass}>
+            <LineChart className="h-5 w-5" aria-hidden /> Progress
           </NavLink>
           <NavLink to="/app/ask" className={mobileNavClass}>
-            <MessageCircleQuestion className="h-5 w-5" /> Ask
+            <MessageCircleQuestion className="h-5 w-5" aria-hidden /> Ask
           </NavLink>
           <Sheet open={moreOpen} onOpenChange={setMoreOpen}>
-            <SheetTrigger className={`${mobileNavClass({ isActive: false })} focus:outline-none`}>
-              <MoreHorizontal className="h-5 w-5" /> More
+            <SheetTrigger
+              aria-label="More destinations"
+              className={`${mobileNavClass({ isActive: false })} min-h-11 min-w-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-lg`}
+            >
+              <MoreHorizontal className="h-5 w-5" aria-hidden /> More
             </SheetTrigger>
-            <SheetContent side="bottom" className="rounded-t-2xl max-h-[75vh]">
+            <SheetContent side="bottom" className="rounded-t-2xl max-h-[80dvh] overflow-y-auto">
               <SheetHeader className="text-left">
                 <SheetTitle>More</SheetTitle>
               </SheetHeader>
-              <nav className="grid grid-cols-3 gap-2 pt-4 pb-6">
-                {[
-                  { to: "/app/learn", icon: BookOpen, label: "Learn" },
-                  { to: "/app/workouts", icon: Activity, label: "Workouts" },
-                  { to: "/app/profile", icon: User, label: "Profile" },
-                  { to: "/app/settings", icon: SettingsIcon, label: "Settings" },
-                  { to: "/app/support", icon: LifeBuoy, label: "Support" },
-                  ...(isAdmin ? [{ to: "/admin", icon: Shield, label: "Admin" }] : []),
-                ].map((item) => (
-                  <SheetClose asChild key={item.to}>
-                    <NavLink
-                      to={item.to}
-                      className={({ isActive }) =>
-                        `flex flex-col items-center gap-1 rounded-xl p-3 text-[12px] transition-colors ${
-                          isActive
-                            ? "bg-primary-muted text-primary"
-                            : "bg-muted/40 text-secondary-fg hover:bg-muted"
-                        }`
-                      }
-                    >
-                      <item.icon className="h-5 w-5" />
-                      <span className="font-medium">{item.label}</span>
-                    </NavLink>
-                  </SheetClose>
-                ))}
-              </nav>
+              {/* Prompt 6 A2 — same groups, same names as the desktop sidebar. */}
+              {MORE_GROUPS.map((group) => (
+                <div key={group.title} className="pt-4">
+                  <p className="label-caps text-tertiary-fg mb-2">{group.title}</p>
+                  <nav aria-label={group.title} className="grid grid-cols-3 gap-2">
+                    {group.items
+                      .filter((item) => item.adminOnly !== true || isAdmin)
+                      .map((item) => (
+                        <SheetClose asChild key={item.to + item.label}>
+                          <NavLink
+                            to={item.to}
+                            end={item.end}
+                            className={({ isActive }) =>
+                              `flex flex-col items-center justify-center gap-1 rounded-xl p-3 min-h-[64px] text-[12px] text-center transition-colors ${
+                                isActive
+                                  ? "bg-primary-muted text-primary"
+                                  : "bg-muted/40 text-secondary-fg hover:bg-muted"
+                              }`
+                            }
+                          >
+                            <item.icon className="h-5 w-5" aria-hidden />
+                            <span className="font-medium">{item.label}</span>
+                          </NavLink>
+                        </SheetClose>
+                      ))}
+                  </nav>
+                </div>
+              ))}
               <Button
                 variant="ghost"
                 onClick={handleSignOut}
-                className="w-full text-secondary-fg"
+                className="w-full text-secondary-fg mt-5 mb-6 min-h-11"
               >
-                <LogOut className="h-4 w-4 mr-2" /> Sign out
+                <LogOut className="h-4 w-4 mr-2" aria-hidden /> Sign out
               </Button>
             </SheetContent>
           </Sheet>
-        </div>
+        </nav>
+
 
         {/* Main */}
         <main className="flex-1 px-4 lg:px-8 py-6 lg:py-8 pb-[calc(env(safe-area-inset-bottom)+5.5rem)] lg:pb-10 max-w-3xl lg:max-w-6xl xl:max-w-7xl mx-auto w-full safe-x">
