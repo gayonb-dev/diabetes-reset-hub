@@ -53,7 +53,7 @@ If a member cancels during the first 14 days, no monthly charges are made.
 - **Daily-action programme** — daily 10-minute food, movement, and mindset actions designed for adults managing Type 2 Diabetes.
 - **Recipe & Plate-Method Library** — real-food recipes and grocery lists, unlocked after Day 6.
 - **Safe Movement Plans** — joint-friendly routines, no gym or equipment required.
-- **Expert Q&A Library** — submit questions and get expert-reviewed answers added to the library.
+- **Expert Q&A Library** — submit questions and get answers added to the library.
 - **Printable progress report** — a summary of your logged days you can print or share with your clinician.
 
 ---
