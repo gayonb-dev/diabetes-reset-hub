@@ -467,7 +467,6 @@ export default function Dashboard() {
           {[
             { to: "/app/progress", icon: Droplet, label: "Log blood sugar" },
             { to: "/app/meals", icon: UtensilsCrossed, label: "Log a meal" },
-            { to: "#daily-habits", icon: Activity, label: "Log habits" },
           ].map((s) => (
             <Link
               key={s.label}
@@ -478,6 +477,21 @@ export default function Dashboard() {
               {s.label}
             </Link>
           ))}
+          {/* Same-page shortcut: scrolls the habit section in and moves focus
+              to its heading so keyboard and screen-reader users land there. */}
+          <button
+            type="button"
+            onClick={() => {
+              const section = document.getElementById("daily-habits");
+              const heading = document.getElementById("daily-habits-heading");
+              section?.scrollIntoView({ behavior: "smooth", block: "start" });
+              heading?.focus({ preventScroll: true });
+            }}
+            className="flex flex-col items-center justify-center gap-1 min-h-[64px] rounded-lg border border-border bg-card px-2 py-3 text-center text-[12px] font-medium text-secondary-fg hover:bg-muted/50 transition-colors"
+          >
+            <Activity className="h-4 w-4 text-primary" aria-hidden />
+            Log habits
+          </button>
         </nav>
 
         {/* Prompt 6 A3 — one compact progress summary. The rings stay as

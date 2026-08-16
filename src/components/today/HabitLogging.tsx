@@ -243,7 +243,13 @@ export default function HabitLogging({ currentProgramDay }: Props) {
 
   return (
     <div className="space-y-3">
-      <h2 className="font-heading text-lg font-semibold text-foreground">Today's logging</h2>
+      <h2
+        id="daily-habits-heading"
+        tabIndex={-1}
+        className="font-heading text-lg font-semibold text-foreground outline-none"
+      >
+        Today's logging
+      </h2>
 
       {/* WATER */}
       <div id="water-logging" className="scroll-mt-20">
