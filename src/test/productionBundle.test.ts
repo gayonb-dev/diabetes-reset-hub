@@ -53,4 +53,62 @@ describe("production bundle has no payment bypass", () => {
       }
     }
   });
+
+  it("no built asset contains a synthetic auth fixture or mock session marker", () => {
+    const files = walk(resolve(root, "dist"));
+    if (files.length === 0) {
+      console.warn("[bundle-scan] dist/ not built — skipping fixture scan");
+      return;
+    }
+    // Markers used by the Prompt 6 verification harness, which lives entirely
+    // outside the repository and must never be compiled into a release.
+    const forbidden = [
+      "prompt6-mockauth",
+      "__MOCK_AUTH__",
+      "mockAuthSession",
+      "synthetic_member",
+      "PLAYWRIGHT_FIXTURE",
+    ];
+    for (const file of files) {
+      const text = readFileSync(file, "utf8");
+      for (const token of forbidden) {
+        expect(text.includes(token), `${token} found in ${file.replace(`${root}/`, "")}`).toBe(
+          false,
+        );
+      }
+    }
+  });
+
+  it("no source map is emitted alongside the production bundle", () => {
+    const dist = resolve(root, "dist");
+    if (!existsSync(dist)) return;
+    const maps = walk(dist).length === 0 ? [] : [];
+    const all: string[] = [];
+    (function collect(dir: string) {
+      for (const e of readdirSync(dir)) {
+        const full = join(dir, e);
+        if (statSync(full).isDirectory()) collect(full);
+        else all.push(full);
+      }
+    })(dist);
+    expect(maps).toEqual([]);
+    expect(all.filter((f) => f.endsWith(".map"))).toEqual([]);
+  });
+
+  it("the repository contains no synthetic-auth source file", () => {
+    const src: string[] = [];
+    (function collect(dir: string) {
+      for (const e of readdirSync(dir)) {
+        const full = join(dir, e);
+        if (statSync(full).isDirectory()) collect(full);
+        else if (/\.tsx?$/.test(full)) src.push(full);
+      }
+    })(resolve(root, "src"));
+    const offenders = src.filter((f) => {
+      if (/\/test\//.test(f)) return false;
+      const t = readFileSync(f, "utf8");
+      return t.includes("__MOCK_AUTH__") || t.includes("prompt6-mockauth");
+    });
+    expect(offenders).toEqual([]);
+  });
 });

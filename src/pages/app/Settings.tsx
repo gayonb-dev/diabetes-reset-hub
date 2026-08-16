@@ -911,8 +911,8 @@ export default function Settings() {
           <CreditCard className="h-4 w-4 text-primary" /> Billing
         </h2>
         <p className="text-xs text-muted-foreground mb-3">Manage subscription, update card, cancel.</p>
-        <Link to="/app/billing">
-          <Button variant="outline" size="sm">
+        <Link to="/app/billing" className="inline-flex">
+          <Button variant="outline" size="sm" className="min-h-11">
             Open billing <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
           </Button>
         </Link>

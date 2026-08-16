@@ -41,7 +41,8 @@ function navClass({ isActive }: { isActive: boolean }) {
 }
 
 function mobileNavClass({ isActive }: { isActive: boolean }) {
-  return `flex flex-col items-center text-[10px] gap-0.5 p-2 ${
+  // Prompt 6 B — every bottom-nav destination is a 44x44 touch target.
+  return `flex flex-col items-center justify-center text-[10px] gap-0.5 p-2 min-h-11 min-w-11 ${
     isActive ? "text-primary" : "text-tertiary-fg"
   }`;
 }

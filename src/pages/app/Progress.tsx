@@ -28,7 +28,7 @@ export default function ProgressPage() {
           <h1 className="font-heading font-semibold text-2xl text-foreground">Progress</h1>
           <p className="text-sm text-muted-foreground">Log your numbers. The trend is what matters.</p>
         </div>
-        <Button asChild variant="outline" size="sm">
+        <Button asChild variant="outline" size="sm" className="min-h-11">
           <Link to="/app/progress/report">
             <Printer className="h-4 w-4 mr-1.5" />
             Print report for my doctor
