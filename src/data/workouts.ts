@@ -70,7 +70,7 @@ const TRACK_A: Workout[] = [
   {
     slug: "cardio-circuit-a",
     name: "Cardio Circuit",
-    focus: "Heart rate • Blood-sugar clearance",
+    focus: "Heart rate • Steady pace",
     durationMin: 20,
     difficulty: 3,
     track: "A",
