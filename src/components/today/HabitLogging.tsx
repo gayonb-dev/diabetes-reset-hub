@@ -66,6 +66,8 @@ function Section({
       <button
         type="button"
         onClick={onToggle}
+        aria-expanded={open}
+        aria-label={`${open ? "Collapse" : "Expand"} ${title}`}
         className="w-full min-h-[52px] flex items-center justify-between gap-3 px-4 py-3 text-left"
       >
         <div className="flex items-center gap-3">
