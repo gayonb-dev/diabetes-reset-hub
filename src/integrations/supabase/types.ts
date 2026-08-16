@@ -687,6 +687,39 @@ export type Database = {
           },
         ]
       }
+      content_containment_log: {
+        Row: {
+          after_copy: string | null
+          applied_at: string
+          before_copy: string | null
+          field: string
+          id: string
+          reason: string
+          record_id: string
+          table_name: string
+        }
+        Insert: {
+          after_copy?: string | null
+          applied_at?: string
+          before_copy?: string | null
+          field: string
+          id?: string
+          reason: string
+          record_id: string
+          table_name: string
+        }
+        Update: {
+          after_copy?: string | null
+          applied_at?: string
+          before_copy?: string | null
+          field?: string
+          id?: string
+          reason?: string
+          record_id?: string
+          table_name?: string
+        }
+        Relationships: []
+      }
       content_items: {
         Row: {
           body: string | null
@@ -786,6 +819,7 @@ export type Database = {
           day_name: string
           day_number: number
           id: string
+          is_active: boolean
           is_extension_day: boolean
           learning_objective: string | null
           phase_number: number
@@ -801,6 +835,7 @@ export type Database = {
           day_name: string
           day_number: number
           id?: string
+          is_active?: boolean
           is_extension_day?: boolean
           learning_objective?: string | null
           phase_number: number
@@ -816,6 +851,7 @@ export type Database = {
           day_name?: string
           day_number?: number
           id?: string
+          is_active?: boolean
           is_extension_day?: boolean
           learning_objective?: string | null
           phase_number?: number
