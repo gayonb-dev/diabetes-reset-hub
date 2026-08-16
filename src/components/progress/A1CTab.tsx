@@ -149,7 +149,7 @@ export default function A1CTab() {
           <div className="flex justify-between text-[10px] text-tertiary-fg mt-1">
             <span>Non-diabetic &lt;5.7%</span>
             <span>Pre 5.7–6.4%</span>
-            <span>Diabetic ≥6.5%</span>
+            <span>High ≥6.5%</span>
           </div>
         </div>
 
@@ -194,7 +194,7 @@ export default function A1CTab() {
                       labelFormatter={(l) => `Date: ${l}`}
                     />
                     <ReferenceLine y={5.7} stroke="hsl(var(--status-normal))" strokeDasharray="4 4" label={{ value: "5.7% Pre-diabetic", fill: "hsl(var(--status-normal))", fontSize: 10, position: "insideTopRight" }} />
-                    <ReferenceLine y={6.5} stroke="hsl(var(--status-danger))" strokeDasharray="4 4" label={{ value: "6.5% Diabetic", fill: "hsl(var(--status-danger))", fontSize: 10, position: "insideTopRight" }} />
+                    <ReferenceLine y={6.5} stroke="hsl(var(--status-danger))" strokeDasharray="4 4" label={{ value: "6.5% High", fill: "hsl(var(--status-danger))", fontSize: 10, position: "insideTopRight" }} />
                     <Line type="monotone" dataKey="value" stroke="hsl(var(--primary))" strokeWidth={2} isAnimationActive={true} animationDuration={800} dot={{ r: 3, fill: "hsl(var(--primary))" }} activeDot={{ r: 5 }} />
                   </LineChart>
                 </ResponsiveContainer>
