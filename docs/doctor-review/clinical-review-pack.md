@@ -5,7 +5,7 @@ copy only. Proposed exact replacement copy will be added after the separate
 owner-approved content appendix is supplied. The only replacement wording present today
 is the single approved temporary fallback already applied to contained records.
 
-Items requiring a decision: **213** of 1953 inventoried strings.
+Items requiring a decision: **211** of 1963 inventoried strings.
 
 Evidence principles used for context (ADA, ADA international consensus on remission,
 ADA/NIDDK activity guidance, NIDDK plate method and fasting risks, NCCIH/FDA supplement
@@ -148,7 +148,7 @@ definition of remission stated as education) are classified
   - Record state: stays active pending exact replacement copy
   - Question: what wording states the same member action without the flagged claim?
 
-## A1C and testing instructions (21 items)
+## A1C and testing instructions (20 items)
 
 - `daily_actions:039f96ab-6e3c-49c5-a4c1-151639681c97#action_description` — REWRITE — CLINICIAN REVIEW; tags: promised_outcomes, treatment_or_testing_instruction
   - Surface: /app/day/42 — active
@@ -245,18 +245,13 @@ definition of remission stated as education) are classified
   - Current: "Time-restricted eating (intermittent fasting) has been shown to reduce HbA1c independently of caloric intake. The fasting window itself — separate from what you eat — improves metabolic function."
   - Record state: becomes inactive / unreachable
   - Question: what wording states the same member action without the flagged claim?
-- `supabase/functions/daily-digest/index.ts:100` — REWRITE — OWNER APPROVAL; tags: uncited_absolute
-  - Surface: edge function: daily-digest — active
-  - Current: "Redact ALL PHI: never mention medications, A1C numbers, conditions, names, emails, or symptoms."
-  - Record state: stays active pending exact replacement copy
-  - Question: what wording states the same member action without the flagged claim?
 - `supabase/functions/send-notification/index.ts:87` — REWRITE — CLINICIAN REVIEW; tags: treatment_or_testing_instruction
   - Surface: edge function: send-notification — active
   - Current: "VITA says: {first_name}, if an A1C test is already part of your care plan, this may be a good time to check the date with your healthcare team."
   - Record state: stays active pending exact replacement copy
   - Question: what wording states the same member action without the flagged claim?
 
-## Medication and clearance (7 items)
+## Medication and clearance (6 items)
 
 - `daily_actions:2ac62423-19ef-4ae3-a041-2b71918438a9#action_description` — HISTORICAL — UNREACHABLE; tags: medical_clearance, shame_food_language
   - Surface: (no member route — historical record) — historical
@@ -286,11 +281,6 @@ definition of remission stated as education) are classified
 - `src/components/landing/HeroSection.tsx:75` — REWRITE — CLINICIAN REVIEW; tags: treatment_or_testing_instruction
   - Surface: component: landing — active
   - Current: "An adult preparing a plate of vegetables and lean protein in a home kitchen"
-  - Record state: stays active pending exact replacement copy
-  - Question: what wording states the same member action without the flagged claim?
-- `src/data/workouts.ts:73` — REWRITE — CLINICIAN REVIEW; tags: medical_clearance
-  - Surface: src/data/workouts.ts — active
-  - Current: "Heart rate • Blood-sugar clearance"
   - Record state: stays active pending exact replacement copy
   - Question: what wording states the same member action without the flagged claim?
 

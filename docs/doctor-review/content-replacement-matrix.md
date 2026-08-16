@@ -5,7 +5,7 @@ single approved temporary fallback already applied in the database.
 
 ## Reconciliation
 
-- Inventory items: **1953** (active 1925, member-reachable 1912)
+- Inventory items: **1963** (active 1935, member-reachable 1922)
 - `public.daily_actions` records: **187** — 180 active guided days + 7 historical duplicates (E1–E7, days 15–21)
 - Live member queries (`Dashboard.tsx`, `DayDetail.tsx`, MCP `get-today-action`, edge `mcp`)
   all filter `is_extension_day = false`, so the duplicates were never selected for a member.
@@ -17,13 +17,13 @@ single approved temporary fallback already applied in the database.
 - admin editable: 159
 - database: 870
 - seed/default: 13
-- source: 911
+- source: 921
 
 ### Items by disposition
 
-- `KEEP — APPROVED EDUCATION`: 1740
-- `REWRITE — OWNER APPROVAL`: 37
-- `REWRITE — CLINICIAN REVIEW`: 94
+- `KEEP — APPROVED EDUCATION`: 1752
+- `REWRITE — OWNER APPROVAL`: 36
+- `REWRITE — CLINICIAN REVIEW`: 93
 - `RETIRE — OBSOLETE FEATURE`: 23
 - `RETIRE — OUTCOME/GAMIFICATION`: 6
 - `FIX INTERACTION — NONFUNCTIONAL`: 0
@@ -39,14 +39,14 @@ single approved temporary fallback already applied in the database.
 - `promised_outcomes`: 16
 - `diagnostic_label`: 9
 - `treatment_or_testing_instruction`: 17
-- `medical_clearance`: 2
+- `medical_clearance`: 1
 - `shame_food_language`: 9
-- `uncited_absolute`: 23
+- `uncited_absolute`: 22
 - `obsolete_feature`: 2
 - `nonfunctional_promise`: 0
 - `insulin_sensitivity_claim`: 20
 - `individualised_health_formula`: 3
-- `safe_no_change_required`: 1786
+- `safe_no_change_required`: 1798
 
 ## Coverage manifest
 
@@ -57,13 +57,28 @@ single approved temporary fallback already applied in the database.
 | public.badges (badge names, descriptions, unlock hints) | database | 81 | — |
 | public.daily_actions (187 records: 180 active guided days + 7 historical duplicates) | database | 749 | — |
 | public.snack_library (snack names, notes, timing) | database | 40 | — |
+| public.blood_sugar_readings (EXCLUDED — member personal data) | excluded | 0 | Not authored content. Member glucose data. Never read or exported by the doctor-review inventory. |
+| public.community_answers (EXCLUDED — member personal data) | excluded | 0 | Not authored content. Member-authored community replies. Never read or exported by the doctor-review inventory. |
+| public.community_questions (EXCLUDED — member personal data) | excluded | 0 | Not authored content. Member-authored community posts. Never read or exported by the doctor-review inventory. |
+| public.conversations (EXCLUDED — member personal data) | excluded | 0 | Not authored content. Member chat metadata. Never read or exported by the doctor-review inventory. |
+| public.health_logs (EXCLUDED — member personal data) | excluded | 0 | Not authored content. Member health measurements. Never read or exported by the doctor-review inventory. |
+| public.intake_submissions (EXCLUDED — member personal data) | excluded | 0 | Not authored content. Member intake responses. Never read or exported by the doctor-review inventory. |
+| public.member_measurements (EXCLUDED — member personal data) | excluded | 0 | Not authored content. Member body measurements. Never read or exported by the doctor-review inventory. |
+| public.messages (EXCLUDED — member personal data) | excluded | 0 | Not authored content. Member chat transcripts. Never read or exported by the doctor-review inventory. |
+| public.points_ledger (EXCLUDED — member personal data) | excluded | 0 | Not authored content. Per-member participation ledger. Never read or exported by the doctor-review inventory. |
+| public.profiles (EXCLUDED — member personal data) | excluded | 0 | Not authored content. Member identity and account fields. Never read or exported by the doctor-review inventory. |
+| public.qa_submissions (EXCLUDED — member personal data) | excluded | 0 | Not authored content. Member-submitted questions. Never read or exported by the doctor-review inventory. |
+| public.support_ticket_notes (EXCLUDED — member personal data) | excluded | 0 | Not authored content. Internal notes about an identifiable member. Never read or exported by the doctor-review inventory. |
+| public.support_tickets (EXCLUDED — member personal data) | excluded | 0 | Not authored content. Member-written support messages. Never read or exported by the doctor-review inventory. |
+| public.visitor_profiles (EXCLUDED — member personal data) | excluded | 0 | Not authored content. Member progress/gamification state tied to a person. Never read or exported by the doctor-review inventory. |
+| public.win_posts (EXCLUDED — member personal data) | excluded | 0 | Not authored content. Member-authored community posts. Never read or exported by the doctor-review inventory. |
 | public.app_config (seed defaults) | seed/default | 13 | — |
-| src/components (member and public UI) | source | 134 | — |
+| src/components (member and public UI) | source | 135 | — |
 | src/data (source content packs (Learn guides, mindset weeks, workouts)) | source | 123 | — |
 | src/hooks (stateful member copy) | source | 8 | — |
-| src/lib (labels, classifiers, copy helpers) | source | 56 | — |
-| src/pages (member and public routes) | source | 221 | — |
-| supabase/functions (edge prompts, deterministic chat copy, notification templates) | source | 369 | — |
+| src/lib (labels, classifiers, copy helpers) | source | 66 | — |
+| src/pages (member and public routes) | source | 227 | — |
+| supabase/functions (edge prompts, deterministic chat copy, notification templates) | source | 362 | — |
 
 ## Dispositioned items
 
@@ -270,7 +285,6 @@ single approved temporary fallback already applied in the database.
 | `src/data/learnGuides.ts:87` | src/data/learnGuides.ts | yes | supplements — "NCCIH: Diabetes and Dietary Supplements" | stays active pending exact replacement copy | Clinician supplies or approves exact replacement copy in the appendix; record stays active meanwhile. | awaiting owner-approved appendix | REWRITE — CLINICIAN REVIEW |
 | `src/data/learnGuides.ts:140` | src/data/learnGuides.ts | yes | supplements, diagnostic_label — "Fasting blood sugar under 100 mg/dL (5.6 mmol/L) is normal. 100–125 mg/dL (5.6–6.9 mmol/L) is pre-diabetic. 126 mg/dL (7.0 mmol/L) and above" | stays active pending exact replacement copy | Clinician supplies or approves exact replacement copy in the appendix; record stays active meanwhile. | awaiting owner-approved appendix | REWRITE — CLINICIAN REVIEW |
 | `src/data/learnGuides.ts:145` | src/data/learnGuides.ts | yes | uncited_absolute — "Snacks bridge the gap between meals so your blood sugar never crashes into cravings. Pair protein with fiber: a boiled egg and cucumber, Gre" | stays active pending exact replacement copy | Owner supplies exact replacement copy in the approval appendix; record stays active meanwhile. | awaiting owner-approved appendix | REWRITE — OWNER APPROVAL |
-| `src/data/workouts.ts:73` | src/data/workouts.ts | yes | medical_clearance — "Heart rate • Blood-sugar clearance" | stays active pending exact replacement copy | Clinician supplies or approves exact replacement copy in the appendix; record stays active meanwhile. | awaiting owner-approved appendix | REWRITE — CLINICIAN REVIEW |
 | `src/lib/glucose.ts:137` | src/lib/glucose.ts | yes | uncited_absolute — "Never change medication based on this app alone." | stays active pending exact replacement copy | Owner supplies exact replacement copy in the approval appendix; record stays active meanwhile. | awaiting owner-approved appendix | REWRITE — OWNER APPROVAL |
 | `src/lib/mcp/tools/log-blood-sugar.ts:19` | src/lib/mcp/tools/log-blood-sugar.ts | yes | supplements — "Blood glucose in mg/dL." | stays active pending exact replacement copy | Clinician supplies or approves exact replacement copy in the appendix; record stays active meanwhile. | awaiting owner-approved appendix | REWRITE — CLINICIAN REVIEW |
 | `supabase/functions/_shared/billingCanonical.ts:103` | edge function: _shared | yes | uncited_absolute — "(no proven entitlement), never to" | stays active pending exact replacement copy | Owner supplies exact replacement copy in the approval appendix; record stays active meanwhile. | awaiting owner-approved appendix | REWRITE — OWNER APPROVAL |
@@ -279,6 +293,5 @@ single approved temporary fallback already applied in the database.
 | `supabase/functions/ask-vita/index.ts:103` | edge function: ask-vita | yes | supplements — "Supplements and diabetes: questions to ask first" | stays active pending exact replacement copy | Clinician supplies or approves exact replacement copy in the appendix; record stays active meanwhile. | awaiting owner-approved appendix | REWRITE — CLINICIAN REVIEW |
 | `supabase/functions/chat-agent/index.ts:79` | edge function: chat-agent | yes | uncited_absolute — "or similar — keep your reply SHORT. The server attaches its own approved membership link to your message. Never paste, invent or describe a " | stays active pending exact replacement copy | Owner supplies exact replacement copy in the approval appendix; record stays active meanwhile. | awaiting owner-approved appendix | REWRITE — OWNER APPROVAL |
 | `supabase/functions/create-checkout-session/index.ts:41` | edge function: create-checkout-session | yes | promised_outcomes — "Quick wins that lower sugar, jumpstart weight loss, and restore your energy in just 5 days." | stays active pending exact replacement copy | Owner supplies exact replacement copy in the approval appendix; record stays active meanwhile. | awaiting owner-approved appendix | REWRITE — OWNER APPROVAL |
-| `supabase/functions/daily-digest/index.ts:100` | edge function: daily-digest | yes | uncited_absolute — "Redact ALL PHI: never mention medications, A1C numbers, conditions, names, emails, or symptoms." | stays active pending exact replacement copy | Owner supplies exact replacement copy in the approval appendix; record stays active meanwhile. | awaiting owner-approved appendix | REWRITE — OWNER APPROVAL |
 | `supabase/functions/mcp/index.ts:180` | edge function: mcp | yes | supplements — "Blood glucose in mg/dL." | stays active pending exact replacement copy | Clinician supplies or approves exact replacement copy in the appendix; record stays active meanwhile. | awaiting owner-approved appendix | REWRITE — CLINICIAN REVIEW |
 | `supabase/functions/send-notification/index.ts:87` | edge function: send-notification | yes | treatment_or_testing_instruction — "VITA says: {first_name}, if an A1C test is already part of your care plan, this may be a good time to check the date with your healthcare te" | stays active pending exact replacement copy | Clinician supplies or approves exact replacement copy in the appendix; record stays active meanwhile. | awaiting owner-approved appendix | REWRITE — CLINICIAN REVIEW |

@@ -4,12 +4,14 @@
   "gates": {
     "classifier_fixtures": "PASS",
     "coverage_manifest": "PASS",
-    "duplicate_day_reconciliation": "PASS"
+    "duplicate_day_reconciliation": "PASS",
+    "no_personal_data": "PASS"
   },
+  "personal_data_policy": "Authored content only. Member-owned tables are listed as EXCLUDED in the coverage manifest and are never read, sampled or exported by this generator.",
   "totals": {
-    "items": 1953,
-    "active_items": 1925,
-    "member_reachable_items": 1912,
+    "items": 1963,
+    "active_items": 1935,
+    "member_reachable_items": 1922,
     "daily_action_records_total": 187,
     "daily_action_records_active": 180,
     "daily_action_records_historical": 7,
@@ -17,12 +19,12 @@
       "database": 870,
       "admin editable": 159,
       "seed/default": 13,
-      "source": 911
+      "source": 921
     },
     "by_disposition": {
-      "KEEP \u2014 APPROVED EDUCATION": 1740,
-      "REWRITE \u2014 OWNER APPROVAL": 37,
-      "REWRITE \u2014 CLINICIAN REVIEW": 94,
+      "KEEP \u2014 APPROVED EDUCATION": 1752,
+      "REWRITE \u2014 OWNER APPROVAL": 36,
+      "REWRITE \u2014 CLINICIAN REVIEW": 93,
       "RETIRE \u2014 OBSOLETE FEATURE": 23,
       "RETIRE \u2014 OUTCOME/GAMIFICATION": 6,
       "FIX INTERACTION \u2014 NONFUNCTIONAL": 0,
@@ -37,14 +39,14 @@
       "promised_outcomes": 16,
       "diagnostic_label": 9,
       "treatment_or_testing_instruction": 17,
-      "medical_clearance": 2,
+      "medical_clearance": 1,
       "shame_food_language": 9,
-      "uncited_absolute": 23,
+      "uncited_absolute": 22,
       "obsolete_feature": 2,
       "nonfunctional_promise": 0,
       "insulin_sensitivity_claim": 20,
       "individualised_health_formula": 3,
-      "safe_no_change_required": 1786
+      "safe_no_change_required": 1798
     }
   },
   "coverage_manifest": [
@@ -87,13 +89,13 @@
     {
       "surface": "src/pages (member and public routes)",
       "kind": "source",
-      "items": 221,
+      "items": 227,
       "reason": ""
     },
     {
       "surface": "src/components (member and public UI)",
       "kind": "source",
-      "items": 134,
+      "items": 135,
       "reason": ""
     },
     {
@@ -105,7 +107,7 @@
     {
       "surface": "src/lib (labels, classifiers, copy helpers)",
       "kind": "source",
-      "items": 56,
+      "items": 66,
       "reason": ""
     },
     {
@@ -117,8 +119,98 @@
     {
       "surface": "supabase/functions (edge prompts, deterministic chat copy, notification templates)",
       "kind": "source",
-      "items": 369,
+      "items": 362,
       "reason": ""
+    },
+    {
+      "surface": "public.profiles (EXCLUDED \u2014 member personal data)",
+      "kind": "excluded",
+      "items": 0,
+      "reason": "Not authored content. Member identity and account fields. Never read or exported by the doctor-review inventory."
+    },
+    {
+      "surface": "public.visitor_profiles (EXCLUDED \u2014 member personal data)",
+      "kind": "excluded",
+      "items": 0,
+      "reason": "Not authored content. Member progress/gamification state tied to a person. Never read or exported by the doctor-review inventory."
+    },
+    {
+      "surface": "public.support_tickets (EXCLUDED \u2014 member personal data)",
+      "kind": "excluded",
+      "items": 0,
+      "reason": "Not authored content. Member-written support messages. Never read or exported by the doctor-review inventory."
+    },
+    {
+      "surface": "public.support_ticket_notes (EXCLUDED \u2014 member personal data)",
+      "kind": "excluded",
+      "items": 0,
+      "reason": "Not authored content. Internal notes about an identifiable member. Never read or exported by the doctor-review inventory."
+    },
+    {
+      "surface": "public.points_ledger (EXCLUDED \u2014 member personal data)",
+      "kind": "excluded",
+      "items": 0,
+      "reason": "Not authored content. Per-member participation ledger. Never read or exported by the doctor-review inventory."
+    },
+    {
+      "surface": "public.community_questions (EXCLUDED \u2014 member personal data)",
+      "kind": "excluded",
+      "items": 0,
+      "reason": "Not authored content. Member-authored community posts. Never read or exported by the doctor-review inventory."
+    },
+    {
+      "surface": "public.community_answers (EXCLUDED \u2014 member personal data)",
+      "kind": "excluded",
+      "items": 0,
+      "reason": "Not authored content. Member-authored community replies. Never read or exported by the doctor-review inventory."
+    },
+    {
+      "surface": "public.win_posts (EXCLUDED \u2014 member personal data)",
+      "kind": "excluded",
+      "items": 0,
+      "reason": "Not authored content. Member-authored community posts. Never read or exported by the doctor-review inventory."
+    },
+    {
+      "surface": "public.qa_submissions (EXCLUDED \u2014 member personal data)",
+      "kind": "excluded",
+      "items": 0,
+      "reason": "Not authored content. Member-submitted questions. Never read or exported by the doctor-review inventory."
+    },
+    {
+      "surface": "public.messages (EXCLUDED \u2014 member personal data)",
+      "kind": "excluded",
+      "items": 0,
+      "reason": "Not authored content. Member chat transcripts. Never read or exported by the doctor-review inventory."
+    },
+    {
+      "surface": "public.conversations (EXCLUDED \u2014 member personal data)",
+      "kind": "excluded",
+      "items": 0,
+      "reason": "Not authored content. Member chat metadata. Never read or exported by the doctor-review inventory."
+    },
+    {
+      "surface": "public.health_logs (EXCLUDED \u2014 member personal data)",
+      "kind": "excluded",
+      "items": 0,
+      "reason": "Not authored content. Member health measurements. Never read or exported by the doctor-review inventory."
+    },
+    {
+      "surface": "public.blood_sugar_readings (EXCLUDED \u2014 member personal data)",
+      "kind": "excluded",
+      "items": 0,
+      "reason": "Not authored content. Member glucose data. Never read or exported by the doctor-review inventory."
+    },
+    {
+      "surface": "public.member_measurements (EXCLUDED \u2014 member personal data)",
+      "kind": "excluded",
+      "items": 0,
+      "reason": "Not authored content. Member body measurements. Never read or exported by the doctor-review inventory."
+    },
+    {
+      "surface": "public.intake_submissions (EXCLUDED \u2014 member personal data)",
+      "kind": "excluded",
+      "items": 0,
+      "reason": "Not authored content. Member intake responses. Never read or exported by the doctor-review inventory."
     }
   ],
   "disposition_vocabulary": [
@@ -27115,6 +27207,66 @@
       "notes": ""
     },
     {
+      "id": "src/pages/admin/AdminSupport.tsx:57",
+      "source_type": "source",
+      "location": "src/pages/admin/AdminSupport.tsx",
+      "field": "string literal",
+      "surface": "/admin (admin previews)",
+      "copy": "Couldn't load tickets",
+      "active": true,
+      "reachable_by_member": true,
+      "linked_records": [],
+      "risk_tags": [
+        "safe_no_change_required"
+      ],
+      "approved_education": false,
+      "disposition": "KEEP \u2014 APPROVED EDUCATION",
+      "record_state": "stays active",
+      "proposed_action": "No change. Retain as approved, non-prescriptive education.",
+      "replacement_copy": null,
+      "notes": ""
+    },
+    {
+      "id": "src/pages/admin/AdminSupport.tsx:131",
+      "source_type": "source",
+      "location": "src/pages/admin/AdminSupport.tsx",
+      "field": "string literal",
+      "surface": "/admin (admin previews)",
+      "copy": "font-medium tabular-nums",
+      "active": true,
+      "reachable_by_member": true,
+      "linked_records": [],
+      "risk_tags": [
+        "safe_no_change_required"
+      ],
+      "approved_education": false,
+      "disposition": "KEEP \u2014 APPROVED EDUCATION",
+      "record_state": "stays active",
+      "proposed_action": "No change. Retain as approved, non-prescriptive education.",
+      "replacement_copy": null,
+      "notes": ""
+    },
+    {
+      "id": "src/pages/admin/AdminSupport.tsx:163",
+      "source_type": "source",
+      "location": "src/pages/admin/AdminSupport.tsx",
+      "field": "string literal",
+      "surface": "/admin (admin previews)",
+      "copy": "Internal reply / note\u2026",
+      "active": true,
+      "reachable_by_member": true,
+      "linked_records": [],
+      "risk_tags": [
+        "safe_no_change_required"
+      ],
+      "approved_education": false,
+      "disposition": "KEEP \u2014 APPROVED EDUCATION",
+      "record_state": "stays active",
+      "proposed_action": "No change. Retain as approved, non-prescriptive education.",
+      "replacement_copy": null,
+      "notes": ""
+    },
+    {
       "id": "src/pages/admin/AdminTopCustomers.tsx:85",
       "source_type": "source",
       "location": "src/pages/admin/AdminTopCustomers.tsx",
@@ -28761,6 +28913,46 @@
       "location": "src/pages/app/Profile.tsx",
       "field": "string literal",
       "surface": "/app/profile",
+      "copy": "Your Activity Score is being migrated to a new record of everything you've logged. It will appear here once it is complete.",
+      "active": true,
+      "reachable_by_member": true,
+      "linked_records": [],
+      "risk_tags": [
+        "safe_no_change_required"
+      ],
+      "approved_education": false,
+      "disposition": "KEEP \u2014 APPROVED EDUCATION",
+      "record_state": "stays active",
+      "proposed_action": "No change. Retain as approved, non-prescriptive education.",
+      "replacement_copy": null,
+      "notes": ""
+    },
+    {
+      "id": "src/pages/app/Profile.tsx:152",
+      "source_type": "source",
+      "location": "src/pages/app/Profile.tsx",
+      "field": "string literal",
+      "surface": "/app/profile",
+      "copy": "Activity Score: a running total of everything you've logged.",
+      "active": true,
+      "reachable_by_member": true,
+      "linked_records": [],
+      "risk_tags": [
+        "safe_no_change_required"
+      ],
+      "approved_education": false,
+      "disposition": "KEEP \u2014 APPROVED EDUCATION",
+      "record_state": "stays active",
+      "proposed_action": "No change. Retain as approved, non-prescriptive education.",
+      "replacement_copy": null,
+      "notes": ""
+    },
+    {
+      "id": "src/pages/app/Profile.tsx:163",
+      "source_type": "source",
+      "location": "src/pages/app/Profile.tsx",
+      "field": "string literal",
+      "surface": "/app/profile",
       "copy": "Blood sugar readings",
       "active": true,
       "reachable_by_member": true,
@@ -28776,7 +28968,7 @@
       "notes": ""
     },
     {
-      "id": "src/pages/app/Profile.tsx:153",
+      "id": "src/pages/app/Profile.tsx:165",
       "source_type": "source",
       "location": "src/pages/app/Profile.tsx",
       "field": "string literal",
@@ -28796,7 +28988,7 @@
       "notes": ""
     },
     {
-      "id": "src/pages/app/Profile.tsx:154",
+      "id": "src/pages/app/Profile.tsx:166",
       "source_type": "source",
       "location": "src/pages/app/Profile.tsx",
       "field": "string literal",
@@ -29776,7 +29968,7 @@
       "notes": ""
     },
     {
-      "id": "src/pages/app/Support.tsx:68",
+      "id": "src/pages/app/Support.tsx:82",
       "source_type": "source",
       "location": "src/pages/app/Support.tsx",
       "field": "string literal",
@@ -29796,7 +29988,7 @@
       "notes": ""
     },
     {
-      "id": "src/pages/app/Support.tsx:76",
+      "id": "src/pages/app/Support.tsx:90",
       "source_type": "source",
       "location": "src/pages/app/Support.tsx",
       "field": "string literal",
@@ -29816,7 +30008,7 @@
       "notes": ""
     },
     {
-      "id": "src/pages/app/Support.tsx:80",
+      "id": "src/pages/app/Support.tsx:94",
       "source_type": "source",
       "location": "src/pages/app/Support.tsx",
       "field": "string literal",
@@ -29836,7 +30028,7 @@
       "notes": ""
     },
     {
-      "id": "src/pages/app/Support.tsx:102",
+      "id": "src/pages/app/Support.tsx:117",
       "source_type": "source",
       "location": "src/pages/app/Support.tsx",
       "field": "string literal",
@@ -29856,7 +30048,7 @@
       "notes": ""
     },
     {
-      "id": "src/pages/app/Support.tsx:103",
+      "id": "src/pages/app/Support.tsx:118",
       "source_type": "source",
       "location": "src/pages/app/Support.tsx",
       "field": "string literal",
@@ -29876,7 +30068,27 @@
       "notes": ""
     },
     {
-      "id": "src/pages/app/Support.tsx:134",
+      "id": "src/pages/app/Support.tsx:152",
+      "source_type": "source",
+      "location": "src/pages/app/Support.tsx",
+      "field": "string literal",
+      "surface": "/app/support",
+      "copy": "We couldn't save your ticket. Please try again.",
+      "active": true,
+      "reachable_by_member": true,
+      "linked_records": [],
+      "risk_tags": [
+        "safe_no_change_required"
+      ],
+      "approved_education": false,
+      "disposition": "KEEP \u2014 APPROVED EDUCATION",
+      "record_state": "stays active",
+      "proposed_action": "No change. Retain as approved, non-prescriptive education.",
+      "replacement_copy": null,
+      "notes": ""
+    },
+    {
+      "id": "src/pages/app/Support.tsx:158",
       "source_type": "source",
       "location": "src/pages/app/Support.tsx",
       "field": "string literal",
@@ -29896,27 +30108,7 @@
       "notes": ""
     },
     {
-      "id": "src/pages/app/Support.tsx:171",
-      "source_type": "source",
-      "location": "src/pages/app/Support.tsx",
-      "field": "string literal",
-      "surface": "/app/support",
-      "copy": "Where do I regenerate my meal plan?",
-      "active": true,
-      "reachable_by_member": true,
-      "linked_records": [],
-      "risk_tags": [
-        "safe_no_change_required"
-      ],
-      "approved_education": false,
-      "disposition": "KEEP \u2014 APPROVED EDUCATION",
-      "record_state": "stays active",
-      "proposed_action": "No change. Retain as approved, non-prescriptive education.",
-      "replacement_copy": null,
-      "notes": ""
-    },
-    {
-      "id": "src/pages/app/Support.tsx:294",
+      "id": "src/pages/app/Support.tsx:317",
       "source_type": "source",
       "location": "src/pages/app/Support.tsx",
       "field": "string literal",
@@ -29936,12 +30128,12 @@
       "notes": ""
     },
     {
-      "id": "src/pages/app/WorkoutComplete.tsx:89",
+      "id": "src/pages/app/WorkoutComplete.tsx:80",
       "source_type": "source",
       "location": "src/pages/app/WorkoutComplete.tsx",
       "field": "string literal",
       "surface": "/app/workoutcomplete",
-      "copy": "+25 Activity Score. Exercise ring closed.",
+      "copy": "Exercise ring closed.",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [],
@@ -29956,7 +30148,7 @@
       "notes": ""
     },
     {
-      "id": "src/pages/app/WorkoutLibrary.tsx:184",
+      "id": "src/pages/app/WorkoutLibrary.tsx:199",
       "source_type": "source",
       "location": "src/pages/app/WorkoutLibrary.tsx",
       "field": "string literal",
@@ -29976,12 +30168,32 @@
       "notes": ""
     },
     {
-      "id": "src/pages/app/WorkoutLibrary.tsx:185",
+      "id": "src/pages/app/WorkoutLibrary.tsx:200",
       "source_type": "source",
       "location": "src/pages/app/WorkoutLibrary.tsx",
       "field": "string literal",
       "surface": "/app/workoutlibrary",
       "copy": "Standard track \u2014 based on your profile, no knee modifications needed. Switch to Knee-Friendly anytime.",
+      "active": true,
+      "reachable_by_member": true,
+      "linked_records": [],
+      "risk_tags": [
+        "safe_no_change_required"
+      ],
+      "approved_education": false,
+      "disposition": "KEEP \u2014 APPROVED EDUCATION",
+      "record_state": "stays active",
+      "proposed_action": "No change. Retain as approved, non-prescriptive education.",
+      "replacement_copy": null,
+      "notes": ""
+    },
+    {
+      "id": "src/pages/app/WorkoutSession.tsx:188",
+      "source_type": "source",
+      "location": "src/pages/app/WorkoutSession.tsx",
+      "field": "string literal",
+      "surface": "/app/workoutsession",
+      "copy": "We couldn't record this workout. Try again.",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [],
@@ -30542,6 +30754,26 @@
       "field": "string literal",
       "surface": "component: dashboard",
       "copy": "For cardio when structured workouts begin.",
+      "active": true,
+      "reachable_by_member": true,
+      "linked_records": [],
+      "risk_tags": [
+        "safe_no_change_required"
+      ],
+      "approved_education": false,
+      "disposition": "KEEP \u2014 APPROVED EDUCATION",
+      "record_state": "stays active",
+      "proposed_action": "No change. Retain as approved, non-prescriptive education.",
+      "replacement_copy": null,
+      "notes": ""
+    },
+    {
+      "id": "src/components/gamification/ActivityScoreCard.tsx:7",
+      "source_type": "source",
+      "location": "src/components/gamification/ActivityScoreCard.tsx",
+      "field": "string literal",
+      "surface": "component: gamification",
+      "copy": "Daily action completed",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [],
@@ -34464,17 +34696,17 @@
       "location": "src/data/workouts.ts",
       "field": "string literal",
       "surface": "src/data/workouts.ts",
-      "copy": "Heart rate \u2022 Blood-sugar clearance",
+      "copy": "Heart rate \u2022 Steady pace",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [],
       "risk_tags": [
-        "medical_clearance"
+        "safe_no_change_required"
       ],
       "approved_education": false,
-      "disposition": "REWRITE \u2014 CLINICIAN REVIEW",
-      "record_state": "stays active pending exact replacement copy",
-      "proposed_action": "Clinician supplies or approves exact replacement copy in the appendix; record stays active meanwhile.",
+      "disposition": "KEEP \u2014 APPROVED EDUCATION",
+      "record_state": "stays active",
+      "proposed_action": "No change. Retain as approved, non-prescriptive education.",
       "replacement_copy": null,
       "notes": ""
     },
@@ -36365,6 +36597,206 @@
       "field": "string literal",
       "surface": "src/lib/membership.ts",
       "copy": "The payment covering this period was refunded, so your programme is on hold. Nothing has been deleted \u2014 restart any time and pick up where you left off.",
+      "active": true,
+      "reachable_by_member": true,
+      "linked_records": [],
+      "risk_tags": [
+        "safe_no_change_required"
+      ],
+      "approved_education": false,
+      "disposition": "KEEP \u2014 APPROVED EDUCATION",
+      "record_state": "stays active",
+      "proposed_action": "No change. Retain as approved, non-prescriptive education.",
+      "replacement_copy": null,
+      "notes": ""
+    },
+    {
+      "id": "src/lib/supportFaq.ts:26",
+      "source_type": "source",
+      "location": "src/lib/supportFaq.ts",
+      "field": "string literal",
+      "surface": "src/lib/supportFaq.ts",
+      "copy": "Your meal plan lives on the **Meals** tab. Open Meals from the bottom bar (or the sidebar on desktop) \u2014 your current week's plan, swaps and shopping list are all there.",
+      "active": true,
+      "reachable_by_member": true,
+      "linked_records": [],
+      "risk_tags": [
+        "safe_no_change_required"
+      ],
+      "approved_education": false,
+      "disposition": "KEEP \u2014 APPROVED EDUCATION",
+      "record_state": "stays active",
+      "proposed_action": "No change. Retain as approved, non-prescriptive education.",
+      "replacement_copy": null,
+      "notes": ""
+    },
+    {
+      "id": "src/lib/supportFaq.ts:32",
+      "source_type": "source",
+      "location": "src/lib/supportFaq.ts",
+      "field": "string literal",
+      "surface": "src/lib/supportFaq.ts",
+      "copy": "Log water on **Today**. In the daily habits section, tap the water control to add a glass \u2014 it saves as you tap.",
+      "active": true,
+      "reachable_by_member": true,
+      "linked_records": [],
+      "risk_tags": [
+        "safe_no_change_required"
+      ],
+      "approved_education": false,
+      "disposition": "KEEP \u2014 APPROVED EDUCATION",
+      "record_state": "stays active",
+      "proposed_action": "No change. Retain as approved, non-prescriptive education.",
+      "replacement_copy": null,
+      "notes": ""
+    },
+    {
+      "id": "src/lib/supportFaq.ts:38",
+      "source_type": "source",
+      "location": "src/lib/supportFaq.ts",
+      "field": "string literal",
+      "surface": "src/lib/supportFaq.ts",
+      "copy": "Go to **Progress \u2192 Blood sugar** and use *Add reading*. Choose the reading type (fasting, pre-meal, post-meal) so the range shown matches the reading.",
+      "active": true,
+      "reachable_by_member": true,
+      "linked_records": [],
+      "risk_tags": [
+        "safe_no_change_required"
+      ],
+      "approved_education": false,
+      "disposition": "KEEP \u2014 APPROVED EDUCATION",
+      "record_state": "stays active",
+      "proposed_action": "No change. Retain as approved, non-prescriptive education.",
+      "replacement_copy": null,
+      "notes": ""
+    },
+    {
+      "id": "src/lib/supportFaq.ts:43",
+      "source_type": "source",
+      "location": "src/lib/supportFaq.ts",
+      "field": "string literal",
+      "surface": "src/lib/supportFaq.ts",
+      "copy": "Go to **Progress \u2192 Weight** and use *Add weight*.",
+      "active": true,
+      "reachable_by_member": true,
+      "linked_records": [],
+      "risk_tags": [
+        "safe_no_change_required"
+      ],
+      "approved_education": false,
+      "disposition": "KEEP \u2014 APPROVED EDUCATION",
+      "record_state": "stays active",
+      "proposed_action": "No change. Retain as approved, non-prescriptive education.",
+      "replacement_copy": null,
+      "notes": ""
+    },
+    {
+      "id": "src/lib/supportFaq.ts:49",
+      "source_type": "source",
+      "location": "src/lib/supportFaq.ts",
+      "field": "string literal",
+      "surface": "src/lib/supportFaq.ts",
+      "copy": "Workouts unlock on Day 29 and live on the **Workouts** page. Before then, Days 1\u201314 focus on food and Days 15\u201328 add post-meal walks.",
+      "active": true,
+      "reachable_by_member": true,
+      "linked_records": [],
+      "risk_tags": [
+        "safe_no_change_required"
+      ],
+      "approved_education": false,
+      "disposition": "KEEP \u2014 APPROVED EDUCATION",
+      "record_state": "stays active",
+      "proposed_action": "No change. Retain as approved, non-prescriptive education.",
+      "replacement_copy": null,
+      "notes": ""
+    },
+    {
+      "id": "src/lib/supportFaq.ts:55",
+      "source_type": "source",
+      "location": "src/lib/supportFaq.ts",
+      "field": "string literal",
+      "surface": "src/lib/supportFaq.ts",
+      "copy": "Open **Billing** from More \u2192 Billing. You can view your plan, update your payment method, download invoices and cancel there.",
+      "active": true,
+      "reachable_by_member": true,
+      "linked_records": [],
+      "risk_tags": [
+        "safe_no_change_required"
+      ],
+      "approved_education": false,
+      "disposition": "KEEP \u2014 APPROVED EDUCATION",
+      "record_state": "stays active",
+      "proposed_action": "No change. Retain as approved, non-prescriptive education.",
+      "replacement_copy": null,
+      "notes": ""
+    },
+    {
+      "id": "src/lib/supportFaq.ts:61",
+      "source_type": "source",
+      "location": "src/lib/supportFaq.ts",
+      "field": "string literal",
+      "surface": "src/lib/supportFaq.ts",
+      "copy": "Go to **Settings \u2192 Your data** and choose *Export my data*. We'll prepare a downloadable copy of your records.",
+      "active": true,
+      "reachable_by_member": true,
+      "linked_records": [],
+      "risk_tags": [
+        "safe_no_change_required"
+      ],
+      "approved_education": false,
+      "disposition": "KEEP \u2014 APPROVED EDUCATION",
+      "record_state": "stays active",
+      "proposed_action": "No change. Retain as approved, non-prescriptive education.",
+      "replacement_copy": null,
+      "notes": ""
+    },
+    {
+      "id": "src/lib/supportFaq.ts:67",
+      "source_type": "source",
+      "location": "src/lib/supportFaq.ts",
+      "field": "string literal",
+      "surface": "src/lib/supportFaq.ts",
+      "copy": "Go to **Settings \u2192 Your data** and choose *Delete my account*. We'll confirm before anything is removed.",
+      "active": true,
+      "reachable_by_member": true,
+      "linked_records": [],
+      "risk_tags": [
+        "safe_no_change_required"
+      ],
+      "approved_education": false,
+      "disposition": "KEEP \u2014 APPROVED EDUCATION",
+      "record_state": "stays active",
+      "proposed_action": "No change. Retain as approved, non-prescriptive education.",
+      "replacement_copy": null,
+      "notes": ""
+    },
+    {
+      "id": "src/lib/supportFaq.ts:73",
+      "source_type": "source",
+      "location": "src/lib/supportFaq.ts",
+      "field": "string literal",
+      "surface": "src/lib/supportFaq.ts",
+      "copy": "Your day rolls over at midnight in your own timezone. Update it in **Settings \u2192 Preferences**, then use *Sync now* to refresh today's view.",
+      "active": true,
+      "reachable_by_member": true,
+      "linked_records": [],
+      "risk_tags": [
+        "safe_no_change_required"
+      ],
+      "approved_education": false,
+      "disposition": "KEEP \u2014 APPROVED EDUCATION",
+      "record_state": "stays active",
+      "proposed_action": "No change. Retain as approved, non-prescriptive education.",
+      "replacement_copy": null,
+      "notes": ""
+    },
+    {
+      "id": "src/lib/supportFaq.ts:79",
+      "source_type": "source",
+      "location": "src/lib/supportFaq.ts",
+      "field": "string literal",
+      "surface": "src/lib/supportFaq.ts",
+      "copy": "Your program day advances at local midnight. If you missed days, open **Today** \u2014 the catch-up section lists days still open so you can complete them in order.",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [],
@@ -39079,52 +39511,12 @@
       "notes": ""
     },
     {
-      "id": "supabase/functions/daily-digest/index.ts:99",
-      "source_type": "source",
-      "location": "supabase/functions/daily-digest/index.ts",
-      "field": "string literal",
-      "surface": "edge function: daily-digest",
-      "copy": "You are an analyst for a diabetes coaching business. Summarize this conversation in ONE plainspoken sentence (max 25 words).",
-      "active": true,
-      "reachable_by_member": true,
-      "linked_records": [],
-      "risk_tags": [
-        "safe_no_change_required"
-      ],
-      "approved_education": false,
-      "disposition": "KEEP \u2014 APPROVED EDUCATION",
-      "record_state": "stays active",
-      "proposed_action": "No change. Retain as approved, non-prescriptive education.",
-      "replacement_copy": null,
-      "notes": ""
-    },
-    {
-      "id": "supabase/functions/daily-digest/index.ts:100",
-      "source_type": "source",
-      "location": "supabase/functions/daily-digest/index.ts",
-      "field": "string literal",
-      "surface": "edge function: daily-digest",
-      "copy": "Redact ALL PHI: never mention medications, A1C numbers, conditions, names, emails, or symptoms.",
-      "active": true,
-      "reachable_by_member": true,
-      "linked_records": [],
-      "risk_tags": [
-        "uncited_absolute"
-      ],
-      "approved_education": false,
-      "disposition": "REWRITE \u2014 OWNER APPROVAL",
-      "record_state": "stays active pending exact replacement copy",
-      "proposed_action": "Owner supplies exact replacement copy in the approval appendix; record stays active meanwhile.",
-      "replacement_copy": null,
-      "notes": ""
-    },
-    {
       "id": "supabase/functions/daily-digest/index.ts:101",
       "source_type": "source",
       "location": "supabase/functions/daily-digest/index.ts",
       "field": "string literal",
       "surface": "edge function: daily-digest",
-      "copy": "Focus on intent (e.g. 'asked about pricing', 'objected to cost', 'wanted to book', 'expressed skepticism').",
+      "copy": "No conversation activity yesterday.",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [],
@@ -39139,87 +39531,7 @@
       "notes": ""
     },
     {
-      "id": "supabase/functions/daily-digest/index.ts:102",
-      "source_type": "source",
-      "location": "supabase/functions/daily-digest/index.ts",
-      "field": "string literal",
-      "surface": "edge function: daily-digest",
-      "copy": "Note the outcome (purchased / didn't / unresolved).",
-      "active": true,
-      "reachable_by_member": true,
-      "linked_records": [],
-      "risk_tags": [
-        "safe_no_change_required"
-      ],
-      "approved_education": false,
-      "disposition": "KEEP \u2014 APPROVED EDUCATION",
-      "record_state": "stays active",
-      "proposed_action": "No change. Retain as approved, non-prescriptive education.",
-      "replacement_copy": null,
-      "notes": ""
-    },
-    {
-      "id": "supabase/functions/daily-digest/index.ts:108",
-      "source_type": "source",
-      "location": "supabase/functions/daily-digest/index.ts",
-      "field": "string literal",
-      "surface": "edge function: daily-digest",
-      "copy": "map summary failed for convo",
-      "active": true,
-      "reachable_by_member": true,
-      "linked_records": [],
-      "risk_tags": [
-        "safe_no_change_required"
-      ],
-      "approved_education": false,
-      "disposition": "KEEP \u2014 APPROVED EDUCATION",
-      "record_state": "stays active",
-      "proposed_action": "No change. Retain as approved, non-prescriptive education.",
-      "replacement_copy": null,
-      "notes": ""
-    },
-    {
-      "id": "supabase/functions/daily-digest/index.ts:139",
-      "source_type": "source",
-      "location": "supabase/functions/daily-digest/index.ts",
-      "field": "string literal",
-      "surface": "edge function: daily-digest",
-      "copy": "- anomalies: list of unusual patterns or zero if none (e.g. spike in price objections, sudden drop in chats).",
-      "active": true,
-      "reachable_by_member": true,
-      "linked_records": [],
-      "risk_tags": [
-        "safe_no_change_required"
-      ],
-      "approved_education": false,
-      "disposition": "KEEP \u2014 APPROVED EDUCATION",
-      "record_state": "stays active",
-      "proposed_action": "No change. Retain as approved, non-prescriptive education.",
-      "replacement_copy": null,
-      "notes": ""
-    },
-    {
-      "id": "supabase/functions/daily-digest/index.ts:143",
-      "source_type": "source",
-      "location": "supabase/functions/daily-digest/index.ts",
-      "field": "string literal",
-      "surface": "edge function: daily-digest",
-      "copy": "Output only valid JSON.",
-      "active": true,
-      "reachable_by_member": true,
-      "linked_records": [],
-      "risk_tags": [
-        "safe_no_change_required"
-      ],
-      "approved_education": false,
-      "disposition": "KEEP \u2014 APPROVED EDUCATION",
-      "record_state": "stays active",
-      "proposed_action": "No change. Retain as approved, non-prescriptive education.",
-      "replacement_copy": null,
-      "notes": ""
-    },
-    {
-      "id": "supabase/functions/daily-digest/index.ts:188",
+      "id": "supabase/functions/daily-digest/index.ts:137",
       "source_type": "source",
       "location": "supabase/functions/daily-digest/index.ts",
       "field": "string literal",
@@ -39239,7 +39551,7 @@
       "notes": ""
     },
     {
-      "id": "supabase/functions/daily-digest/index.ts:212",
+      "id": "supabase/functions/daily-digest/index.ts:161",
       "source_type": "source",
       "location": "supabase/functions/daily-digest/index.ts",
       "field": "string literal",
@@ -39539,7 +39851,7 @@
       "notes": ""
     },
     {
-      "id": "supabase/functions/gamify-action/index.ts:99",
+      "id": "supabase/functions/gamify-action/index.ts:110",
       "source_type": "source",
       "location": "supabase/functions/gamify-action/index.ts",
       "field": "string literal",
@@ -39559,7 +39871,7 @@
       "notes": ""
     },
     {
-      "id": "supabase/functions/gamify-action/index.ts:101",
+      "id": "supabase/functions/gamify-action/index.ts:112",
       "source_type": "source",
       "location": "supabase/functions/gamify-action/index.ts",
       "field": "string literal",
@@ -39579,7 +39891,7 @@
       "notes": ""
     },
     {
-      "id": "supabase/functions/gamify-action/index.ts:102",
+      "id": "supabase/functions/gamify-action/index.ts:113",
       "source_type": "source",
       "location": "supabase/functions/gamify-action/index.ts",
       "field": "string literal",
@@ -39599,7 +39911,7 @@
       "notes": ""
     },
     {
-      "id": "supabase/functions/gamify-action/index.ts:103",
+      "id": "supabase/functions/gamify-action/index.ts:114",
       "source_type": "source",
       "location": "supabase/functions/gamify-action/index.ts",
       "field": "string literal",
@@ -39619,7 +39931,7 @@
       "notes": ""
     },
     {
-      "id": "supabase/functions/gamify-action/index.ts:104",
+      "id": "supabase/functions/gamify-action/index.ts:115",
       "source_type": "source",
       "location": "supabase/functions/gamify-action/index.ts",
       "field": "string literal",
@@ -39639,7 +39951,7 @@
       "notes": ""
     },
     {
-      "id": "supabase/functions/gamify-action/index.ts:105",
+      "id": "supabase/functions/gamify-action/index.ts:116",
       "source_type": "source",
       "location": "supabase/functions/gamify-action/index.ts",
       "field": "string literal",
@@ -39659,7 +39971,7 @@
       "notes": ""
     },
     {
-      "id": "supabase/functions/gamify-action/index.ts:107",
+      "id": "supabase/functions/gamify-action/index.ts:118",
       "source_type": "source",
       "location": "supabase/functions/gamify-action/index.ts",
       "field": "string literal",
@@ -39679,7 +39991,7 @@
       "notes": ""
     },
     {
-      "id": "supabase/functions/gamify-action/index.ts:121",
+      "id": "supabase/functions/gamify-action/index.ts:132",
       "source_type": "source",
       "location": "supabase/functions/gamify-action/index.ts",
       "field": "string literal",
@@ -39699,7 +40011,7 @@
       "notes": ""
     },
     {
-      "id": "supabase/functions/gamify-action/index.ts:178",
+      "id": "supabase/functions/gamify-action/index.ts:189",
       "source_type": "source",
       "location": "supabase/functions/gamify-action/index.ts",
       "field": "string literal",
@@ -39719,7 +40031,7 @@
       "notes": ""
     },
     {
-      "id": "supabase/functions/gamify-action/index.ts:192",
+      "id": "supabase/functions/gamify-action/index.ts:203",
       "source_type": "source",
       "location": "supabase/functions/gamify-action/index.ts",
       "field": "string literal",
@@ -43719,27 +44031,7 @@
       "notes": ""
     },
     {
-      "id": "supabase/functions/support-request/index.ts:103",
-      "source_type": "source",
-      "location": "supabase/functions/support-request/index.ts",
-      "field": "string literal",
-      "surface": "edge function: support-request",
-      "copy": "(cancels at period end)",
-      "active": true,
-      "reachable_by_member": true,
-      "linked_records": [],
-      "risk_tags": [
-        "safe_no_change_required"
-      ],
-      "approved_education": false,
-      "disposition": "KEEP \u2014 APPROVED EDUCATION",
-      "record_state": "stays active",
-      "proposed_action": "No change. Retain as approved, non-prescriptive education.",
-      "replacement_copy": null,
-      "notes": ""
-    },
-    {
-      "id": "supabase/functions/support-request/index.ts:149",
+      "id": "supabase/functions/support-request/index.ts:193",
       "source_type": "source",
       "location": "supabase/functions/support-request/index.ts",
       "field": "string literal",
