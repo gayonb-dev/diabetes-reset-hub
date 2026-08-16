@@ -35,3 +35,14 @@ Run TypeScript, touched-file lint, full Vitest and Deno suites, production build
 - Timezone service lands as a shared module mirrored for edge functions, consuming `profiles.timezone` with the documented fallback.
 - All schema work is additive migrations with GRANTs plus RLS policies written alongside each new table.
 - No existing clinical-safety, privacy, consent, deletion/export, RLS, billing, legal or VITA control is weakened; historical migrations and evidence are untouched.
+
+## Approved additions (Batch 1 amendments)
+
+- **New personal-data surfaces** (`support_tickets`, support responses/admin notes, workout receipt/history, points ledger) are added to the Prompt 3 data-inventory manifest, with tests for export inclusion, deletion handling/reconciliation, deletion write-lock, report-only retention, Member A/B isolation, admin authorization and Storage/Realtime treatment.
+- **Support message confidentiality**: raw message never enters email, logs, URLs or error reports; email carries only reference, category and a secure admin-queue pointer; admin reads of sensitive support content follow the existing protected-data audit approach.
+- **Production migration safety**: record schema/migration baseline and before-counts first; every migration additive, idempotent, with explicit rollback notes; before/after counts prove no real-member row was deleted, reassigned or rewritten; cleanup only by exact synthetic ID (never date-window or pattern deletes).
+- **No real external side effects**: support email, AI, Stripe and other processor calls are mocked or gated during verification; no real owner workout/habit/score/badge/support data mutated.
+- **Preserve safety education**: block supplement promotion/products/doses/onboarding and all fasting scheduling/timers/screening/clearance/modes, but keep approved education-only supplement- and fasting-safety guides, inventoried for clinician review with their tools unavailable.
+- **Timezone parity**: one canonical calendar-day core shared by client and server (or generated parity from one source), documented invalid/missing-timezone fallback, and all required cases executed explicitly.
+- **Complete content classification**: every risk-tag category from the authority, across database rows, admin-editable rows, source files, prompts, notification defaults and seed/default content; Day 64 containment and every fallback recorded by exact ID with before/after copy.
+- **Regression proof**: actual PASS/FAIL/BLOCKED results for magic-link, deterministic VITA/health boundaries, billing/payment verification, restricted Billing/Settings access, export/deletion, chat deletion, fasting and health-AI gates, CORS and RLS ownership.
