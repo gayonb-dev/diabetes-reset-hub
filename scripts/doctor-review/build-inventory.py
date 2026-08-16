@@ -355,6 +355,8 @@ def main() -> int:
     collect_snacks()
     collect_app_config()
     collect_source()
+    cover_personal_data_exclusions()
+
 
     errs = gate_coverage() + gate_duplicates(rows)
     if errs:
