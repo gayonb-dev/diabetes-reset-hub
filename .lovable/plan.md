@@ -2,15 +2,16 @@
 
 Closes Batch 1 with verification evidence only plus the two correction items named below. No publication, no real email, no external AI call, no Stripe change, no real member data mutated.
 
-## 1. Support ticket diagnostics (correction)
+## 1. Support ticket diagnostics (controlled schema removal)
 
-Confirmed by inspection: `public.support_tickets` has a `user_agent text` column, and it currently holds no data (0 non-null values across 0 rows). Export-time redaction is not sufficient, so the column is removed rather than masked.
+Confirmed by inspection: `public.support_tickets` has a `user_agent text` column, and it currently holds no data (0 non-null values across 0 rows). Export-time redaction is not sufficient, so the column is removed. This is treated as a controlled destructive removal, not an additive change.
 
-- Drop `support_tickets.user_agent`.
-- Replace it with minimum non-identifying diagnostics: `client_platform` (`web` / `ios` / `android`, coarse) and `client_viewport` (`mobile` / `desktop`). No version strings, no raw header.
+- The migration fails closed: it aborts unless the column exists **and** a count taken immediately before the drop returns zero non-null values. The observed count is raised as a notice and recorded in the Batch 1 report.
+- Replace it with minimum non-identifying diagnostics: `client_platform` (`web` / `ios` / `android` / `unknown`) and `client_viewport` (`mobile` / `desktop`), both constrained. No version strings, no raw header.
 - Stop sending the raw user agent from `Support.tsx` and stop accepting it in `support-request`; derive the two coarse fields instead.
 - Update the Prompt 3 personal-data manifest entry from "redacted on export" to "not collected".
-- Safe because the column is empty: no member data is lost.
+- Rollback recreates the empty column only; it makes no claim to restore data, because there was none.
+
 
 ## 2. Activity Score canonical source (correction)
 
