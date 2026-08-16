@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { addCalendarDays, calendarDayKey } from "@/lib/calendarDay";
@@ -14,9 +14,8 @@ function emitChanged() {
 
 
 
-function todayISO() {
-  return new Date().toISOString().slice(0, 10);
-}
+// Member calendar day. Resolved through the canonical timezone-aware service
+// so log_date, rings and streaks all roll over at the member's local midnight.
 
 export interface MealLog {
   id?: string;
@@ -67,7 +66,12 @@ const blankMeal = (mt: MealLog["meal_type"]): MealLog => ({
 });
 
 export function useDailyHabits(): DailyHabits {
-  const { user } = useAuth();
+  const { user, timezone } = useAuth();
+  // Held in a ref so the many write callbacks below don't need `timezone` in
+  // their dependency arrays (it changes at most once, on profile load).
+  const tzRef = useRef(timezone);
+  tzRef.current = timezone;
+  const todayISO = () => calendarDayKey(new Date(), tzRef.current);
   const [loading, setLoading] = useState(true);
   const [waterOz, setWaterOz] = useState(0);
   const [waterStreak, setWaterStreak] = useState(0);
@@ -123,10 +127,10 @@ export function useDailyHabits(): DailyHabits {
     // water streak: consecutive days from today backward with any water row
     const days = new Set((wRange.data || []).map((r: { log_date: string }) => r.log_date));
     let streak = 0;
-    const cursor = new Date();
-    while (days.has(cursor.toISOString().slice(0, 10))) {
+    let cursor = todayISO();
+    while (days.has(cursor)) {
       streak++;
-      cursor.setDate(cursor.getDate() - 1);
+      cursor = addCalendarDays(cursor, -1);
     }
     setWaterStreak(streak);
     setLoading(false);
