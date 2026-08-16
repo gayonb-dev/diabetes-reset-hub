@@ -320,6 +320,8 @@ function MindsetReader({
   onClose: () => void;
 }) {
   const { recordAction } = useGamification();
+  const { timezone } = useAuth();
+
   const [idx, setIdx] = useState(0);
   const [openedAt] = useState(Date.now());
   const [now, setNow] = useState(Date.now());
