@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { calendarDayKey } from "@/lib/calendarDay";
 
 export type VitaQuoteCategory =
   | "program_tip"
@@ -98,7 +99,11 @@ function selectDaily(all: VitaQuote[], seedKey: string, count = 5): VitaQuote[] 
  * Returns 5 VITA quotes for the given member + program day. Selection is
  * deterministic per (memberId, calendar-day) so the set is stable all day.
  */
-export function useVitaQuotes(memberId: string | undefined, programDay: number) {
+export function useVitaQuotes(
+  memberId: string | undefined,
+  programDay: number,
+  timezone?: string,
+) {
   const [all, setAll] = useState<VitaQuote[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -127,9 +132,9 @@ export function useVitaQuotes(memberId: string | undefined, programDay: number) 
 
   const daily = useMemo(() => {
     if (!memberId) return [];
-    const dateKey = new Date().toISOString().slice(0, 10);
+    const dateKey = calendarDayKey(new Date(), timezone);
     return selectDaily(all, `${memberId}:${dateKey}:${programDay}`, 5);
-  }, [all, memberId, programDay]);
+  }, [all, memberId, programDay, timezone]);
 
   return { quotes: daily, loading };
 }
