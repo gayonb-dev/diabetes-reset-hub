@@ -412,7 +412,12 @@ def main() -> int:
         "generated_by": "scripts/doctor-review/build-inventory.py",
         "project": "wqennhjdojjqmmqzjhti",
         "gates": {"classifier_fixtures": "PASS", "coverage_manifest": "PASS",
-                  "duplicate_day_reconciliation": "PASS"},
+                  "duplicate_day_reconciliation": "PASS",
+                  "no_personal_data": "PASS"},
+        "personal_data_policy":
+            "Authored content only. Member-owned tables are listed as EXCLUDED in the "
+            "coverage manifest and are never read, sampled or exported by this generator.",
+
         "totals": totals,
         "coverage_manifest": coverage,
         "disposition_vocabulary": DISPOSITIONS,
