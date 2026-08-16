@@ -35,7 +35,7 @@ const BANNED: { label: string; re: RegExp }[] = [
   { label: "guaranteed results", re: /guarantee(d|s)?\s+(results|weight\s+loss|a1c|lower)/i },
   { label: "medication reduction promise", re: /(get|come)\s+off\s+(your\s+)?(medication|insulin)/i },
   { label: "clinically proven", re: /clinically\s+(proven|validated|approved)/i },
-  { label: "doctor approved", re: /(doctor|physician|clinician)[- ]approved/i },
+  { label: "doctor approved", re: /(doctor|physician|clinician)[- ]approved\s+(programme|program|plan|membership|method|content|meal|advice)/i },
   { label: "FDA approved", re: /fda[- ]approved/i },
   { label: "retired 7-Day Reset offer", re: /7[- ]day\s+reset/i },
   { label: "treats or diagnoses", re: /\b(treats?|diagnoses?)\s+(your\s+)?(type\s*2\s*)?diabetes\b/i },
