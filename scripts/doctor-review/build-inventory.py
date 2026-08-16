@@ -357,8 +357,8 @@ def main() -> int:
     collect_source()
     cover_personal_data_exclusions()
 
+    errs = gate_coverage() + gate_duplicates(rows) + gate_no_personal_data()
 
-    errs = gate_coverage() + gate_duplicates(rows)
     if errs:
         for e in errs:
             print("GATE FAIL:", e, file=sys.stderr)
