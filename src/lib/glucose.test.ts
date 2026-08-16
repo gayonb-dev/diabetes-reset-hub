@@ -96,3 +96,55 @@ describe("validation", () => {
     expect(isFutureTimestamp("2026-01-01T11:59:59Z", now)).toBe(false);
   });
 });
+
+// ---- Part C: reference-band and boundary coverage in both units ----------
+describe("glucose reference bands (Part C)", () => {
+  it("post-meal 6.0 mmol/L is In range and inside the post-meal in-range band", () => {
+    const status = classifyGlucoseFromUnit(6.0, "mmoll", "post_meal");
+    expect(status).toBe("in_range");
+    expect(GLUCOSE_STATUS_LABEL[status]).toBe("In range");
+    const band = glucoseBands("post_meal").find((b) => b.status === "in_range")!;
+    const mgdl = mmollToMgdl(6.0);
+    expect(mgdl).toBeGreaterThanOrEqual(band.from);
+    expect(mgdl).toBeLessThan(band.to);
+  });
+
+  it("the same 6.0 mmol/L value is Elevated when logged as fasting", () => {
+    expect(classifyGlucoseFromUnit(6.0, "mmoll", "fasting")).toBe("elevated");
+  });
+
+  it("bands are contiguous and ordered for every reading type", () => {
+    (["fasting", "post_meal", "bedtime", "other", "cgm"] as const).forEach((t) => {
+      const bands = glucoseBands(t);
+      expect(bands.map((b) => b.status)).toEqual([
+        "urgent_low",
+        "low",
+        "in_range",
+        "elevated",
+        "high",
+      ]);
+      bands.slice(1).forEach((b, i) => expect(b.from).toBe(bands[i].to));
+      expect(bands[bands.length - 1].to).toBe(GLUCOSE_AXIS_MAX[t]);
+    });
+  });
+
+  it("band edges classify to the band that owns them (mg/dL)", () => {
+    expect(classifyGlucose(53.9, "fasting")).toBe("urgent_low");
+    expect(classifyGlucose(54, "fasting")).toBe("low");
+    expect(classifyGlucose(69.9, "fasting")).toBe("low");
+    expect(classifyGlucose(70, "fasting")).toBe("in_range");
+    expect(classifyGlucose(99.9, "fasting")).toBe("in_range");
+    expect(classifyGlucose(100, "fasting")).toBe("elevated");
+    expect(classifyGlucose(126, "fasting")).toBe("high");
+    expect(classifyGlucose(139.9, "post_meal")).toBe("in_range");
+    expect(classifyGlucose(140, "post_meal")).toBe("elevated");
+    expect(classifyGlucose(200, "post_meal")).toBe("high");
+  });
+
+  it("no band label uses a person label", () => {
+    Object.values(GLUCOSE_STATUS_LABEL).forEach((l) => {
+      expect(l).not.toMatch(/diabetic/i);
+      expect(l).not.toMatch(/^Normal$/);
+    });
+  });
+});
