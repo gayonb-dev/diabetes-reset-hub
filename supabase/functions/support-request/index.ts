@@ -93,10 +93,10 @@ Deno.serve(async (req) => {
 
     // Fetch program day + subscription
     const [{ data: profile }, { data: sub }] = await Promise.all([
-      supabase.from("profiles").select("program_start_date, first_name").eq("user_id", user.id).maybeSingle(),
+      supabase.from("profiles").select("program_start_date").eq("user_id", user.id).maybeSingle(),
       supabase
         .from("subscriptions")
-        .select("status, current_period_end, cancel_at_period_end, created_at")
+        .select("created_at")
         .eq("user_id", user.id)
         .maybeSingle(),
     ]);
@@ -108,10 +108,6 @@ Deno.serve(async (req) => {
       const diff = Math.floor((Date.now() - start.getTime()) / 86400000);
       programDay = Math.max(1, diff + 1);
     }
-
-    const subLine = sub
-      ? `${sub.status}${sub.cancel_at_period_end ? " (cancels at period end)" : ""} — ends ${sub.current_period_end ?? "n/a"}`
-      : "none";
 
     // E. Persist first. "Ticket received" is only ever said about a row that
     // exists.
