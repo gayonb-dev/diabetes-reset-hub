@@ -10,7 +10,7 @@ const mirror = readFileSync(
   "utf8",
 );
 
-const stripHeader = (src: string) => src.split("\n").slice(2).join("\n");
+const stripHeader = (src: string) => src.slice(src.indexOf("// One implementation"));
 
 describe("calendar-day client/server parity", () => {
   it("mirrors the canonical module body byte-for-byte", () => {
