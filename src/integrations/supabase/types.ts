@@ -113,6 +113,7 @@ export type Database = {
           description: string
           icon: string
           id: string
+          is_retired: boolean
           name: string
           slug: string
           sort_order: number
@@ -126,6 +127,7 @@ export type Database = {
           description: string
           icon: string
           id?: string
+          is_retired?: boolean
           name: string
           slug: string
           sort_order?: number
@@ -139,6 +141,7 @@ export type Database = {
           description?: string
           icon?: string
           id?: string
+          is_retired?: boolean
           name?: string
           slug?: string
           sort_order?: number
@@ -1902,6 +1905,36 @@ export type Database = {
           },
         ]
       }
+      points_ledger: {
+        Row: {
+          created_at: string
+          detail: string | null
+          id: string
+          idempotency_key: string
+          kind: string
+          points: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          detail?: string | null
+          id?: string
+          idempotency_key: string
+          kind: string
+          points: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          detail?: string | null
+          id?: string
+          idempotency_key?: string
+          kind?: string
+          points?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       post_meal_walks: {
         Row: {
           created_at: string
@@ -2339,6 +2372,89 @@ export type Database = {
           tier?: string
           trial_end_date?: string | null
           updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      support_ticket_notes: {
+        Row: {
+          author_id: string
+          body: string
+          created_at: string
+          id: string
+          ticket_id: string
+        }
+        Insert: {
+          author_id: string
+          body: string
+          created_at?: string
+          id?: string
+          ticket_id: string
+        }
+        Update: {
+          author_id?: string
+          body?: string
+          created_at?: string
+          id?: string
+          ticket_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "support_ticket_notes_ticket_id_fkey"
+            columns: ["ticket_id"]
+            isOneToOne: false
+            referencedRelation: "support_tickets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      support_tickets: {
+        Row: {
+          category: string
+          created_at: string
+          email_status: string
+          first_response_at: string | null
+          id: string
+          message: string
+          page_context: string | null
+          program_day: number | null
+          reference: string
+          resolved_at: string | null
+          status: string
+          updated_at: string
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          email_status?: string
+          first_response_at?: string | null
+          id?: string
+          message: string
+          page_context?: string | null
+          program_day?: number | null
+          reference: string
+          resolved_at?: string | null
+          status?: string
+          updated_at?: string
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          email_status?: string
+          first_response_at?: string | null
+          id?: string
+          message?: string
+          page_context?: string | null
+          program_day?: number | null
+          reference?: string
+          resolved_at?: string | null
+          status?: string
+          updated_at?: string
+          user_agent?: string | null
           user_id?: string
         }
         Relationships: []
@@ -2832,6 +2948,53 @@ export type Database = {
         }
         Relationships: []
       }
+      workout_completion_receipts: {
+        Row: {
+          completed_at: string
+          duration_seconds: number | null
+          id: string
+          idempotency_key: string
+          points_awarded: number
+          session_id: string
+          track: string | null
+          user_id: string
+          workout_name: string
+          workout_slug: string
+        }
+        Insert: {
+          completed_at?: string
+          duration_seconds?: number | null
+          id?: string
+          idempotency_key: string
+          points_awarded?: number
+          session_id: string
+          track?: string | null
+          user_id: string
+          workout_name: string
+          workout_slug: string
+        }
+        Update: {
+          completed_at?: string
+          duration_seconds?: number | null
+          id?: string
+          idempotency_key?: string
+          points_awarded?: number
+          session_id?: string
+          track?: string | null
+          user_id?: string
+          workout_name?: string
+          workout_slug?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workout_completion_receipts_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "workout_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       workout_sessions: {
         Row: {
           completed_at: string | null
@@ -3038,6 +3201,16 @@ export type Database = {
         Args: { p_amount: number; p_user_id: string }
         Returns: number
       }
+      award_points: {
+        Args: {
+          p_detail?: string
+          p_idempotency_key: string
+          p_kind: string
+          p_points: number
+          p_user_id: string
+        }
+        Returns: number
+      }
       award_xp: {
         Args: { p_amount: number; p_user_id: string }
         Returns: {
@@ -3071,6 +3244,31 @@ export type Database = {
           claimed: boolean
           last_applied_created: string
         }[]
+      }
+      complete_workout_session: {
+        Args: {
+          p_duration_seconds?: number
+          p_idempotency_key: string
+          p_session_id: string
+        }
+        Returns: {
+          completed_at: string
+          duration_seconds: number | null
+          id: string
+          idempotency_key: string
+          points_awarded: number
+          session_id: string
+          track: string | null
+          user_id: string
+          workout_name: string
+          workout_slug: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "workout_completion_receipts"
+          isOneToOne: true
+          isSetofReturn: false
+        }
       }
       consume_export_artifact: {
         Args: { p_token_hash: string }
