@@ -18,6 +18,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Sparkles, CheckCircle2, Loader2, Bot, Send } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import ReactMarkdown from "react-markdown";
+import { deterministicSupportAnswer } from "@/lib/supportFaq";
 
 type Category = "Bug" | "Question" | "Feedback" | "Billing";
 
@@ -35,6 +36,7 @@ export default function Support() {
   const [message, setMessage] = useState("");
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
+  const [reference, setReference] = useState<string | null>(null);
 
   const [chat, setChat] = useState<ChatTurn[]>([]);
   const [chatInput, setChatInput] = useState("");
@@ -47,6 +49,18 @@ export default function Support() {
     const nextHistory: ChatTurn[] = [...chat, { role: "user", content: q }];
     setChat(nextHistory);
     setChatInput("");
+
+    // E. Navigation and FAQ questions are answered locally. No external model
+    // request is made for these.
+    const deterministic = deterministicSupportAnswer(q);
+    if (deterministic) {
+      setChat((prev) => [...prev, { role: "assistant", content: deterministic.answer }]);
+      requestAnimationFrame(() => {
+        chatScrollRef.current?.scrollTo({ top: chatScrollRef.current.scrollHeight, behavior: "smooth" });
+      });
+      return;
+    }
+
     setChatSending(true);
     try {
       const { data, error } = await supabase.functions.invoke("support-assistant", {
@@ -93,6 +107,7 @@ export default function Support() {
     setCategory(cat);
     setMessage("");
     setSent(false);
+    setReference(null);
     setOpen(true);
   }
 
@@ -107,7 +122,7 @@ export default function Support() {
     }
     setSending(true);
     try {
-      const { error } = await supabase.functions.invoke("support-request", {
+      const { data, error } = await supabase.functions.invoke("support-request", {
         body: {
           category,
           message: message.trim(),
@@ -128,6 +143,11 @@ export default function Support() {
         }
         throw new Error(detail);
       }
+      const ref = (data as { reference?: string } | null)?.reference ?? null;
+      if (!ref) {
+        throw new Error("We couldn't save your ticket. Please try again.");
+      }
+      setReference(ref);
       setSent(true);
     } catch (e) {
       toast({
@@ -166,11 +186,6 @@ export default function Support() {
           ref={chatScrollRef}
           className="min-h-[80px] max-h-[280px] overflow-y-auto rounded-lg border border-border bg-muted/30 p-3 space-y-3"
         >
-          {chat.length === 0 && (
-            <p className="text-xs text-muted-foreground italic">
-              Try: "Where do I regenerate my meal plan?"
-            </p>
-          )}
           {chat.map((turn, i) => (
             <div
               key={i}
@@ -220,7 +235,7 @@ export default function Support() {
         <p className="text-sm text-muted-foreground">
           Report bugs, crashes, billing questions, or anything behaving unexpectedly.
         </p>
-        <p className="text-xs text-accent">⏱ We respond within 24 hours.</p>
+        <p className="text-xs text-accent">We aim to respond within one business day.</p>
         <Button
           className="w-full max-lg:h-[52px] bg-primary hover:bg-primary/90 text-primary-foreground"
           onClick={() => openDialog("Bug")}
@@ -251,7 +266,7 @@ export default function Support() {
       <Dialog open={open} onOpenChange={(v) => !sending && setOpen(v)}>
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
-            <DialogTitle>{sent ? "Message sent ✓" : "Contact support"}</DialogTitle>
+            <DialogTitle>{sent ? "Ticket received" : "Contact support"}</DialogTitle>
           </DialogHeader>
 
           {sent ? (
@@ -260,8 +275,12 @@ export default function Support() {
                 <CheckCircle2 className="h-6 w-6 text-primary" />
               </div>
               <p className="text-sm text-muted-foreground">
-                Thanks — we got it. You'll hear back at{" "}
-                <span className="font-medium text-foreground">{user?.email}</span> within 24 hours.
+                Your ticket is saved. Reference{" "}
+                <span className="font-medium text-foreground select-text">{reference}</span>.
+              </p>
+              <p className="text-sm text-muted-foreground">
+                We aim to respond within one business day at{" "}
+                <span className="font-medium text-foreground">{user?.email}</span>.
               </p>
               <Button onClick={() => setOpen(false)} className="w-full">
                 Close

@@ -63,6 +63,9 @@ export default function WorkoutLibrary() {
   const unlocked = programDay >= 29;
   const [kneeFriendly, setKneeFriendly] = useState<boolean | null>(null);
   const [resuming, setResuming] = useState<{ slug: string; name: string } | null>(null);
+  const [recent, setRecent] = useState<
+    { id: string; workout_name: string; track: string | null; completed_at: string }[]
+  >([]);
 
   useEffect(() => {
     if (!user || !unlocked) return;
@@ -85,6 +88,18 @@ export default function WorkoutLibrary() {
       .then(({ data }) => {
         const row = (data || [])[0];
         if (row) setResuming({ slug: row.workout_slug, name: row.workout_name });
+      });
+
+    // F. Recent Workouts reads the completion receipts — the same records the
+    // completion RPC writes, so history can never disagree with what happened.
+    supabase
+      .from("workout_completion_receipts")
+      .select("id,workout_name,track,completed_at")
+      .eq("user_id", user.id)
+      .order("completed_at", { ascending: false })
+      .limit(10)
+      .then(({ data }) => {
+        if (data) setRecent(data as typeof recent);
       });
   }, [user, unlocked]);
 
@@ -203,6 +218,29 @@ export default function WorkoutLibrary() {
           </div>
         </TabsContent>
       </Tabs>
+
+      <section aria-labelledby="recent-workouts-heading" className="space-y-2">
+        <h2 id="recent-workouts-heading" className="font-heading text-base font-semibold text-foreground">
+          Recent workouts
+        </h2>
+        {recent.length === 0 ? (
+          <p className="text-sm text-muted-foreground">
+            No completed workouts yet. Your finished sessions will appear here.
+          </p>
+        ) : (
+          <ul className="divide-y divide-border rounded-xl border border-border overflow-hidden">
+            {recent.map((r) => (
+              <li key={r.id} className="flex items-center justify-between gap-3 p-3 text-sm">
+                <span className="text-foreground truncate">{r.workout_name}</span>
+                <span className="text-xs text-muted-foreground shrink-0 tabular-nums">
+                  {r.track === "B" ? "Knee-Friendly" : "Standard"} ·{" "}
+                  {new Date(r.completed_at).toLocaleDateString()} · Completed
+                </span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
 
       <Card className="p-4 border-dashed text-xs text-muted-foreground inline-flex items-start gap-2">
         <Lock className="h-3.5 w-3.5 mt-0.5" />

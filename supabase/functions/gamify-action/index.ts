@@ -89,8 +89,19 @@ Deno.serve(async (req) => {
     const newLevel = Math.max(earnedLevel, priorLevel);
 
 
-    // Award XP (Reset Points accumulate) — its returned level is ignored.
+    // Award XP (legacy streak XP) — its returned level is ignored.
     const { data: xpRes } = await supabase.rpc("award_xp", { p_user_id: uid, p_amount: xp });
+
+    // G. The participation ledger is the canonical Activity Score source. One
+    // entry per action per member-day, idempotent on replay.
+    const ledgerDay = new Date().toISOString().slice(0, 10);
+    await supabase.rpc("award_points", {
+      p_user_id: uid,
+      p_kind: action,
+      p_points: xp,
+      p_idempotency_key: `${action}:${ledgerDay}`,
+      p_detail: null,
+    });
 
     // Level names/messages MUST stay in sync with src/lib/levels.ts and
     // src/components/gamification/LevelUpOverlay.tsx.

@@ -1,9 +1,9 @@
-// Phase C1 — Daily digest (map-reduce).
-// MAP: for each conversation with activity yesterday, ask the LLM for ONE
-// PHI-redacted sentence summarizing what the visitor wanted + how it ended.
-// REDUCE: synthesize all those one-liners into a structured digest:
-//   { actions_today, what_agent_heard, numbers, anomalies }
-// Persists into daily_digest and emails Gayon. NEVER includes raw PHI.
+// Daily digest — local, structured counts only.
+//
+// H. This function MUST NOT send conversation transcripts, message content or
+// any member text to an external model. The previous map-reduce design did and
+// has been removed. The digest is now computed entirely in this function from
+// counts and classifier labels that already exist in the database.
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
 import { sendEmail } from "../_shared/email.ts";
@@ -12,39 +12,13 @@ import { corsFor, preflight } from "../_shared/cors.ts";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_ROLE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY")!;
 const FROM_EMAIL = "Diabetes Reset <hello@diabetesresetmethod.com>";
 const DIGEST_TO = Deno.env.get("DIGEST_RECIPIENT") ?? "hello@diabetesresetmethod.com";
-
-const MODEL = "google/gemini-2.5-flash";
-
-interface ChatMessage {
-  role: "system" | "user" | "assistant";
-  content: string;
-}
 
 interface DigestReduction {
   actions_today: string[];
   what_agent_heard: string;
   anomalies: string[];
-}
-
-async function llm(messages: ChatMessage[], jsonMode = false) {
-  const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${LOVABLE_API_KEY}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      model: MODEL,
-      messages,
-      ...(jsonMode ? { response_format: { type: "json_object" } } : {}),
-    }),
-  });
-  if (!res.ok) throw new Error(`LLM ${res.status}: ${await res.text()}`);
-  const j = await res.json();
-  return j.choices?.[0]?.message?.content ?? "";
 }
 
 Deno.serve(async (req) => {
@@ -79,33 +53,21 @@ Deno.serve(async (req) => {
       .gte("last_message_at", yStart)
       .lt("last_message_at", yEnd);
 
-    const summaries: string[] = [];
-    for (const c of convos ?? []) {
+    // H. Structured, local aggregation. Message CONTENT is never read here and
+    // never leaves the database.
+    const conversationIds = (convos ?? []).map((c: { id: string }) => c.id);
+    const classifierCounts: Record<string, number> = {};
+    let messageCount = 0;
+    if (conversationIds.length > 0) {
       const { data: msgs } = await supabase
         .from("messages")
-        .select("role, content, classifier")
-        .eq("conversation_id", c.id)
-        .order("created_at", { ascending: true })
-        .limit(40);
-      const transcript = (msgs ?? [])
-        .map((m: { role: string; content: string }) => `${m.role.toUpperCase()}: ${m.content}`)
-        .join("\n")
-        .slice(0, 6000);
-      try {
-        const one = await llm([
-          {
-            role: "system",
-            content:
-              "You are an analyst for a diabetes coaching business. Summarize this conversation in ONE plainspoken sentence (max 25 words). " +
-              "Redact ALL PHI: never mention medications, A1C numbers, conditions, names, emails, or symptoms. " +
-              "Focus on intent (e.g. 'asked about pricing', 'objected to cost', 'wanted to book', 'expressed skepticism'). " +
-              "Note the outcome (purchased / didn't / unresolved).",
-          },
-          { role: "user", content: transcript },
-        ]);
-        if (one) summaries.push(one.trim());
-      } catch (e) {
-        console.warn("map summary failed for convo", c.id, e);
+        .select("classifier, conversation_id")
+        .in("conversation_id", conversationIds)
+        .limit(5000);
+      for (const m of msgs ?? []) {
+        messageCount += 1;
+        const label = (m as { classifier: string | null }).classifier ?? "unclassified";
+        classifierCounts[label] = (classifierCounts[label] ?? 0) + 1;
       }
     }
 
@@ -127,26 +89,18 @@ Deno.serve(async (req) => {
       new_leads: leadCount ?? 0,
     };
 
-    // REDUCE
-    const reducePrompt =
-      `You are writing today's operator digest for Gayon. Use ONLY the one-line summaries below — no PHI.\n\n` +
-      `DATE: ${digestDate}\nNUMBERS: ${JSON.stringify(numbers)}\n\n` +
-      `CONVERSATION SUMMARIES:\n${summaries.map((s, i) => `${i + 1}. ${s}`).join("\n") || "(none)"}\n\n` +
-      `Return strict JSON with this shape:\n` +
-      `{"actions_today":[string,string,string],"what_agent_heard":string,"anomalies":[string]}\n` +
-      `- actions_today: exactly 3 short imperative actions Gayon should do today, drawn from the data.\n` +
-      `- what_agent_heard: 2-3 sentence theme summary, plainspoken.\n` +
-      `- anomalies: list of unusual patterns or zero if none (e.g. spike in price objections, sudden drop in chats).`;
-    let reduced: DigestReduction = { actions_today: [], what_agent_heard: "", anomalies: [] };
-    try {
-      const raw = await llm(
-        [{ role: "system", content: "Output only valid JSON." }, { role: "user", content: reducePrompt }],
-        true,
-      );
-      reduced = JSON.parse(raw);
-    } catch (e) {
-      console.warn("reduce failed", e);
-    }
+    const topics = Object.entries(classifierCounts)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5)
+      .map(([label, count]) => `${label}: ${count}`);
+
+    const reduced: DigestReduction = {
+      actions_today: [],
+      what_agent_heard: topics.length
+        ? `Message topics by classifier — ${topics.join(", ")}.`
+        : "No conversation activity yesterday.",
+      anomalies: [],
+    };
 
     // Persist
     const { data: row } = await supabase
@@ -155,7 +109,7 @@ Deno.serve(async (req) => {
         digest_date: digestDate,
         actions_today: reduced.actions_today ?? [],
         what_agent_heard: reduced.what_agent_heard ?? "",
-        numbers,
+        numbers: { ...numbers, messages: messageCount, topics: classifierCounts },
         anomalies: reduced.anomalies ?? [],
         conversation_count: convos?.length ?? 0,
       })
@@ -167,12 +121,7 @@ Deno.serve(async (req) => {
         <h1 style="font-family:'Inter',Arial,sans-serif;color:#085041;font-size:24px;margin:0 0 8px;">Daily Digest · ${digestDate}</h1>
         <p style="color:#666;margin:0 0 24px;font-size:13px;">All names and health details redacted.</p>
 
-        <h2 style="font-size:16px;color:#333;border-bottom:2px solid #F4E3B2;padding-bottom:6px;">3 Actions Today</h2>
-        <ol style="font-size:15px;line-height:1.7;">
-          ${(reduced.actions_today ?? []).map((a: string) => `<li>${a}</li>`).join("") || "<li>—</li>"}
-        </ol>
-
-        <h2 style="font-size:16px;color:#333;border-bottom:2px solid #F4E3B2;padding-bottom:6px;margin-top:24px;">What the agent heard</h2>
+        <h2 style="font-size:16px;color:#333;border-bottom:2px solid #F4E3B2;padding-bottom:6px;margin-top:24px;">Topic counts</h2>
         <p style="font-size:15px;line-height:1.7;">${reduced.what_agent_heard || "—"}</p>
 
         <h2 style="font-size:16px;color:#333;border-bottom:2px solid #F4E3B2;padding-bottom:6px;margin-top:24px;">Numbers</h2>

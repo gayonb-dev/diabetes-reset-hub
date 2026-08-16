@@ -15,6 +15,7 @@ import {
   Shield,
   ShieldCheck,
   Monitor,
+  LifeBuoy,
   X,
 } from "lucide-react";
 
@@ -24,6 +25,7 @@ const tabs = [
   { to: "/admin/digest", label: "Daily Digest", icon: FileText },
   { to: "/admin/subscriptions", label: "Subscriptions", icon: CreditCard },
   { to: "/admin/qa-queue", label: "Q&A Queue", icon: MessageSquare },
+  { to: "/admin/support", label: "Support Queue", icon: LifeBuoy },
   { to: "/admin/community", label: "Community", icon: MessageSquare },
   { to: "/admin/content", label: "Content", icon: BookOpen },
   { to: "/admin/broadcasts", label: "Broadcasts", icon: Megaphone },

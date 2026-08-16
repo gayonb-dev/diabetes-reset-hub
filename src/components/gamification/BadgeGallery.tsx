@@ -30,10 +30,13 @@ export default function BadgeGallery({ category, earnedSlugs, title }: BadgeGall
 
   useEffect(() => {
     (async () => {
+      // Retired badges (fasting, cheat-meal, weight/A1C/diagnostic-zone
+      // outcomes) stay in the table for history but are never displayed.
       const { data } = await supabase
         .from("badges")
         .select("slug,name,description,icon,tier,category,unlock_hint")
         .eq("category", category)
+        .eq("is_retired", false)
         .order("sort_order");
       if (data) setRows(data as BadgeRow[]);
     })();

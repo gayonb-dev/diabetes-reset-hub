@@ -53,7 +53,12 @@ export default function WorkoutSession() {
   const [elapsed, setElapsed] = useState(0);
   const [resting, setResting] = useState(false);
   const [restRemaining, setRestRemaining] = useState(0);
+  const [finishing, setFinishing] = useState(false);
+  const [finishError, setFinishError] = useState<string | null>(null);
   const startedAtRef = useRef<number>(Date.now());
+  // F. One stable idempotency key per session. Replays return the same receipt
+  // instead of awarding a second time.
+  const idempotencyKeyRef = useRef<string>("");
 
   // Create or resume session
   useEffect(() => {
@@ -161,25 +166,37 @@ export default function WorkoutSession() {
   const current = workout.exercises[currentIdx];
 
   async function completeExercise() {
-    if (!sessionId) return;
+    if (!sessionId || finishing) return;
+
+    if (isLast) {
+      // F. Completion is one atomic server call. The client only advances
+      // after it holds a receipt.
+      setFinishing(true);
+      setFinishError(null);
+      const seconds = Math.floor((Date.now() - startedAtRef.current) / 1000);
+      if (!idempotencyKeyRef.current) {
+        idempotencyKeyRef.current = `${sessionId}:complete`;
+      }
+      const { data, error } = await supabase.rpc("complete_workout_session", {
+        p_session_id: sessionId,
+        p_idempotency_key: idempotencyKeyRef.current,
+        p_duration_seconds: seconds,
+      });
+      setFinishing(false);
+      if (error || !data) {
+        setFinishError(
+          error?.message ?? "We couldn't record this workout. Try again.",
+        );
+        return;
+      }
+      navigate(`/app/workouts/${workout.slug}/complete?session=${sessionId}`);
+      return;
+    }
+
     await supabase
       .from("workout_sessions")
       .update({ exercises_completed: currentIdx + 1 })
       .eq("id", sessionId);
-
-    if (isLast) {
-      const seconds = Math.floor((Date.now() - startedAtRef.current) / 1000);
-      await supabase
-        .from("workout_sessions")
-        .update({
-          status: "completed",
-          completed_at: new Date().toISOString(),
-          duration_seconds: seconds,
-        })
-        .eq("id", sessionId);
-      navigate(`/app/workouts/${workout.slug}/complete?session=${sessionId}`);
-      return;
-    }
 
     // Start rest
     setRestRemaining(REST_SECONDS[current.rest]);
@@ -293,13 +310,25 @@ export default function WorkoutSession() {
           <Button
             className="w-full bg-primary hover:bg-primary-hover text-primary-foreground"
             onClick={completeExercise}
+            disabled={finishing}
           >
             {isLast ? (
-              <>Finish workout <Check className="h-4 w-4 ml-1" /></>
+              finishing ? (
+                <>Saving…</>
+              ) : finishError ? (
+                <>Try again <Check className="h-4 w-4 ml-1" /></>
+              ) : (
+                <>Finish workout <Check className="h-4 w-4 ml-1" /></>
+              )
             ) : (
               <>Done — next <ChevronRight className="h-4 w-4 ml-1" /></>
             )}
           </Button>
+          {finishError && (
+            <p role="alert" className="text-[13px] text-destructive">
+              {finishError} Your progress is safe — nothing was logged twice.
+            </p>
+          )}
         </Card>
       )}
 

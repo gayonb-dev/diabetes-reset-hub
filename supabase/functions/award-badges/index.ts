@@ -264,7 +264,10 @@ async function awardMissingBadges(admin: SB, uid: string, notify = true) {
   if (eligible.length === 0) return { newly: [] as string[] };
 
   const { data: badges } = await admin
-    .from("badges").select("id, slug, name, description, category, xp_reward").in("slug", eligible);
+    // G. Retired badges (fasting, cheat-meal, weight/A1C/diagnostic-zone
+    // outcomes) are never awarded or announced again. Existing rows are kept.
+    .from("badges").select("id, slug, name, description, category, xp_reward")
+    .in("slug", eligible).eq("is_retired", false);
   if (!badges?.length) return { newly: [] as string[] };
 
   const { data: existing } = await admin

@@ -4,6 +4,9 @@ import { supabase } from "@/integrations/supabase/client";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { useGamificationProfile } from "@/hooks/useGamificationProfile";
 import { useProgramDay } from "@/hooks/useProgramDay";
+import { useActivityScore } from "@/hooks/useActivityScore";
+import ActivityScoreCard from "@/components/gamification/ActivityScoreCard";
+import { phaseFor } from "@/lib/phase";
 import BadgeGallery from "@/components/gamification/BadgeGallery";
 import StreakHistoryModal from "@/components/gamification/StreakHistoryModal";
 import { Card } from "@/components/ui/card";
@@ -26,6 +29,7 @@ function initialsOf(email?: string) {
 export default function Profile() {
   const { user } = useAuth();
   const currentProgramDay = useProgramDay();
+  const { total: ledgerTotal, entries: ledgerEntries } = useActivityScore();
 
   const g = useGamificationProfile(currentProgramDay);
   const [showStreak, setShowStreak] = useState(false);
@@ -134,7 +138,7 @@ export default function Profile() {
       {/* Stats row */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <StatCard icon={<Flame className="h-4 w-4" />} value={g.streak_count} label="day streak" color="text-accent" />
-        <StatCard icon={<Sparkles className="h-4 w-4" />} value={g.reset_points} label="activity score" color="text-primary" />
+        <StatCard icon={<Sparkles className="h-4 w-4" />} value={ledgerTotal ?? g.reset_points} label="activity score" color="text-primary" />
         <StatCard icon={<Heart className="h-4 w-4" />} value={g.helpful_points} label="helpful pts" color="text-accent" />
         <StatCard icon={<CalendarCheck className="h-4 w-4" />} value={compliantDays} label="compliant days" color="text-primary" />
       </div>
@@ -143,6 +147,8 @@ export default function Profile() {
         Activity Score: a running total of everything you've logged.
       </p>
 
+      <ActivityScoreCard entries={ledgerEntries} total={ledgerTotal} />
+
       {/* Activity summary */}
       <Card className="p-5 border border-border rounded-xl shadow-warm">
         <p className="text-sm font-medium text-foreground mb-3">Activity summary</p>
@@ -150,7 +156,7 @@ export default function Profile() {
           <Row label="Workouts completed" value={activity.workouts} />
           <Row label="Blood sugar readings" value={activity.bsReadings} />
           <Row label="Measurements logged" value={activity.measurements} />
-          <Row label="Current program phase" value={g.current_program_phase} />
+          <Row label="Current program phase" value={phaseFor(currentProgramDay || 1).index} />
           <Row label="All-time longest streak" value={
             Math.max(g.longest_streak, g.streak_count, ...g.streak_history.map((s) => s.length || 0), 0)
           } />
