@@ -105,6 +105,36 @@ def cover(name, kind, count, reason=""):
     coverage.append({"surface": name, "kind": kind, "items": count, "reason": reason})
 
 
+# Member-owned tables. The doctor-review inventory reviews AUTHORED CONTENT only.
+# These tables hold member personal data and are NEVER read, sampled or exported
+# by this generator. They are declared here so the coverage manifest proves the
+# exclusion is deliberate rather than an oversight.
+PERSONAL_DATA_EXCLUSIONS = [
+    ("public.profiles", "Member identity and account fields."),
+    ("public.visitor_profiles", "Member progress/gamification state tied to a person."),
+    ("public.support_tickets", "Member-written support messages."),
+    ("public.support_ticket_notes", "Internal notes about an identifiable member."),
+    ("public.points_ledger", "Per-member participation ledger."),
+    ("public.community_questions", "Member-authored community posts."),
+    ("public.community_answers", "Member-authored community replies."),
+    ("public.win_posts", "Member-authored community posts."),
+    ("public.qa_submissions", "Member-submitted questions."),
+    ("public.messages", "Member chat transcripts."),
+    ("public.conversations", "Member chat metadata."),
+    ("public.health_logs", "Member health measurements."),
+    ("public.blood_sugar_readings", "Member glucose data."),
+    ("public.member_measurements", "Member body measurements."),
+    ("public.intake_submissions", "Member intake responses."),
+]
+
+
+def cover_personal_data_exclusions():
+    for table, why in PERSONAL_DATA_EXCLUSIONS:
+        cover(f"{table} (EXCLUDED — member personal data)", "excluded", 0,
+              f"Not authored content. {why} Never read or exported by the doctor-review inventory.")
+
+
+
 # ---------------------------------------------------------------- database
 def collect_database():
     rows = q("select id, day_number, phase_number, day_name, action_title, action_description, "
