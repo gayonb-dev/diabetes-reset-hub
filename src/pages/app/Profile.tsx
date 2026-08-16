@@ -197,7 +197,7 @@ export default function Profile() {
   );
 }
 
-function StatCard({ icon, value, label, color }: { icon: React.ReactNode; value: number; label: string; color: string }) {
+function StatCard({ icon, value, label, color }: { icon: React.ReactNode; value: number | string; label: string; color: string }) {
   return (
     <Card className="p-3 border border-border text-center">
       <div className={`flex items-center justify-center gap-1 ${color}`}>
