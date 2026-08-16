@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { safeNext as safeNextPath } from "@/lib/safeNext";
 
 export default function AuthCallback() {
   const navigate = useNavigate();
@@ -20,7 +21,9 @@ export default function AuthCallback() {
       | "email"
       | null;
 
-    const safeNext = /^\/(?!\/)/.test(next) ? next : "/app";
+    // Strict same-site validator (GHSA-wrjc-x8rr-h8h6 hardening): the local
+    // regex accepted backslash variants such as "/\\evil.com".
+    const safeNext = safeNextPath(next, "/app");
 
     runCountRef.current += 1;
     console.warn("[auth-debug] AuthCallback effect entry", {
