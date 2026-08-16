@@ -50,6 +50,7 @@ const Support = lazy(() => import("./pages/app/Support"));
 const AdminLayout = lazy(() => import("./pages/admin/AdminLayout"));
 const AdminSubscriptions = lazy(() => import("./pages/admin/AdminSubscriptions"));
 const AdminQaQueue = lazy(() => import("./pages/admin/AdminQaQueue"));
+const AdminSupport = lazy(() => import("./pages/admin/AdminSupport"));
 const AdminContent = lazy(() => import("./pages/admin/AdminContent"));
 const AdminBroadcasts = lazy(() => import("./pages/admin/AdminBroadcasts"));
 const AdminWaitlist = lazy(() => import("./pages/admin/AdminWaitlist"));
