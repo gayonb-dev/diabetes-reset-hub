@@ -199,7 +199,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   return (
     <Ctx.Provider
-      value={{ user, session, loading, isAdmin, subscription, refreshAuthState, refreshSubscription, signOut }}
+      value={{ user, session, loading, isAdmin, timezone, subscription, refreshAuthState, refreshSubscription, signOut }}
     >
       {children}
     </Ctx.Provider>
