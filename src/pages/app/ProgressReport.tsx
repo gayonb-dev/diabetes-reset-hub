@@ -11,7 +11,13 @@ import {
   ReferenceArea,
   ResponsiveContainer,
 } from "recharts";
-import { classifyGlucose, GLUCOSE_STATUS_LABEL, GlucoseReadingType } from "@/lib/glucose";
+import {
+  classifyGlucose,
+  GLUCOSE_STATUS_LABEL,
+  GlucoseReadingType,
+  GLUCOSE_LOW_THRESHOLDS,
+  GLUCOSE_RANGES,
+} from "@/lib/glucose";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -211,10 +217,21 @@ export default function ProgressReport() {
                   <XAxis dataKey="date" tick={{ fontSize: 10 }} />
                   <YAxis domain={[40, 300]} tick={{ fontSize: 10 }} />
                   <Tooltip />
-                  {/* In-range fasting band 70–130 */}
-                  <ReferenceArea y1={70} y2={130} strokeOpacity={0} fill="#10b981" fillOpacity={0.08} />
-                  {/* Post-meal target <180 */}
-                  <ReferenceArea y1={130} y2={180} strokeOpacity={0} fill="#f59e0b" fillOpacity={0.06} />
+                  {/* Bands come from the shared S1 classifier (fasting reference). */}
+                  <ReferenceArea
+                    y1={GLUCOSE_LOW_THRESHOLDS.low}
+                    y2={GLUCOSE_RANGES.fasting.inRangeMax}
+                    strokeOpacity={0}
+                    fill="#10b981"
+                    fillOpacity={0.08}
+                  />
+                  <ReferenceArea
+                    y1={GLUCOSE_RANGES.fasting.inRangeMax}
+                    y2={GLUCOSE_RANGES.fasting.elevatedMax}
+                    strokeOpacity={0}
+                    fill="#f59e0b"
+                    fillOpacity={0.06}
+                  />
                   <Line type="monotone" dataKey="value" stroke="#0f172a" strokeWidth={1.5} dot={{ r: 2 }} />
                 </LineChart>
               </ResponsiveContainer>
