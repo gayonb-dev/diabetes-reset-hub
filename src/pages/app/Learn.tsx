@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
+import { calendarDayKey } from "@/lib/calendarDay";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
@@ -339,7 +340,7 @@ function MindsetReader({
   async function markRead() {
     if (!userId || !canMarkRead) return;
     setCompleting(true);
-    const today = new Date().toISOString().slice(0, 10);
+    const today = calendarDayKey(new Date(), timezone);
     const { error } = await supabase.from("mindset_reads").insert({
       member_id: userId,
       log_date: today,

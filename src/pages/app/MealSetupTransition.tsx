@@ -110,7 +110,7 @@ export default function MealSetupTransition() {
           generation_status: "pending",
           generation_trigger: "onboarding",
           valid_from: todayPlus(offset, timezone),
-          valid_until: todayPlus(offset + 6),
+          valid_until: todayPlus(offset + 6, timezone),
           preferences_snapshot: snapshot,
           plan_data: {},
         } as never)
