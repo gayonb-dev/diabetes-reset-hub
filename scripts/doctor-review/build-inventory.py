@@ -342,6 +342,25 @@ def gate_duplicates(rows) -> list[str]:
     return errs
 
 
+def gate_no_personal_data() -> list[str]:
+    """Fail closed if this generator ever queries a member-owned table, or if an
+    emitted item's location points at one. The doctor-review pack must contain
+    authored content only — never member personal data."""
+    errs = []
+    src = Path(__file__).read_text(encoding="utf-8")
+    # Only inspect the SQL actually handed to q(); the exclusion list itself and
+    # this docstring legitimately mention the table names.
+    sql = " ".join(re.findall(r"q\(\s*((?:\"[^\"]*\"\s*)+)\)", src, re.S)).lower()
+    for table, _ in PERSONAL_DATA_EXCLUSIONS:
+        bare = table.split(".")[-1]
+        if re.search(rf"\b(from|join|update|into)\s+(public\.)?{bare}\b", sql):
+            errs.append(f"generator queries excluded personal-data table '{table}'")
+        if any(i["location"].startswith(f"{bare}") or i["id"].startswith(f"{bare}:") for i in items):
+            errs.append(f"inventory emitted an item sourced from personal-data table '{table}'")
+    return errs
+
+
+
 # ------------------------------------------------------------------ output
 def main() -> int:
     if run_fixtures() != 0:
