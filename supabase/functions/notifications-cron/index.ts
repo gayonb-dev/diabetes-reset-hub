@@ -126,7 +126,6 @@ Deno.serve(async (req) => {
     .select("id", { count: "exact", head: true })
     .eq("answer_count", 0);
 
-  const todayUtcStr = now.toISOString().slice(0, 10);
 
   for (const p of profiles) {
     const streak = streakMap.get(p.user_id);
