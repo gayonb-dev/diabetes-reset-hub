@@ -126,7 +126,9 @@ Deno.serve(async (req) => {
         category,
         message,
         page_context: pageContext,
-        user_agent: userAgent,
+        client_platform: clientPlatform,
+        client_viewport: clientViewport,
+
         program_day: programDay,
         email_status: "not_attempted",
       })
