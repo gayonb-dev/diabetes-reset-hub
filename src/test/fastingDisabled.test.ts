@@ -32,11 +32,11 @@ describe("fasting scheduling is disabled", () => {
     for (const profile of [
       null,
       {},
-      { fasting_opt_in: true, doctor_confirmed: true, target_hours: 16 },
-      { fasting_opt_in: true, doctor_confirmed: true, target_hours: 18, medication_class: null },
+      { fasting_eligibility: "eligible", fasting_target: 3 },
+      { fasting_eligibility: "needs_doctor", doctor_confirmed_at: "2026-01-01", fasting_target: 2 },
     ]) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- exercising defensive input shapes
-      expect(fastingHoursFor(profile as any)).toBe(0);
+      expect(canFast(profile)).toBe(false);
+      expect(effectiveTarget(profile)).toBe(0);
     }
   });
 });
