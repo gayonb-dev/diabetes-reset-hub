@@ -1,8 +1,7 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useParams, useSearchParams, useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { useGamification } from "@/hooks/useGamification";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Check, Clock, Activity } from "lucide-react";
@@ -23,7 +22,6 @@ export default function WorkoutComplete() {
   const sessionId = params.get("session");
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { recordAction } = useGamification();
   const workout = useMemo(() => (slug ? getWorkoutBySlug(slug) : undefined), [slug]);
 
   const [checks, setChecks] = useState<Record<string, boolean>>({});
@@ -32,14 +30,9 @@ export default function WorkoutComplete() {
   const [logged, setLogged] = useState(false);
   const [saving, setSaving] = useState(false);
 
-  // Fire complete_workout exactly once per session mount.
-  const workoutAwardedRef = useRef(false);
-  useEffect(() => {
-    if (!sessionId || workoutAwardedRef.current) return;
-    workoutAwardedRef.current = true;
-    recordAction("complete_workout").catch(() => {});
-  }, [sessionId, recordAction]);
-
+  // F. Points and the completion record are awarded by
+  // complete_workout_session() before this screen is reachable. This screen
+  // never awards anything a second time.
   useEffect(() => {
     if (!sessionId) return;
     supabase
@@ -80,13 +73,11 @@ export default function WorkoutComplete() {
         .update({ cool_down_checks: checks })
         .eq("id", sessionId);
       if (error) throw error;
-      // Award Activity Score (XP) via existing function
-      await supabase.rpc("award_xp", { p_user_id: user.id, p_amount: 25 });
       setLogged(true);
       if (typeof window !== "undefined") {
         window.dispatchEvent(new CustomEvent("drm:habits-changed"));
       }
-      toast({ title: "Workout logged", description: "+25 Activity Score. Exercise ring closed." });
+      toast({ title: "Cool-down saved", description: "Exercise ring closed." });
     } catch (e) {
       toast({ title: "Couldn't save", description: (e as Error).message, variant: "destructive" });
     } finally {
