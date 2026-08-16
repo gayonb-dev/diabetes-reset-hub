@@ -28,8 +28,9 @@ Current state confirmed by query: `points_ledger` has 0 rows, `visitor_profiles.
 Regenerate the four artifacts against `DRM_Batch1_Content_Inventory_QA_Findings.md` acceptance criteria, with the fail-closed gates already built into the generator:
 
 - 187 daily records reconciled — 180 active guided days plus 7 historical duplicates, counted and asserted.
-- The seven Day 15–21 duplicate conflicts each dispositioned explicitly as historical/non-display, with proof each is unreachable.
-- Coverage manifest covering database, admin-editable rows, source files, prompts, notification defaults and seed content, with an explicit reason for any surface producing zero items — including the newly added `support_tickets`, `points_ledger` and `workout_completion_receipts` surfaces.
+- The seven Day 15–21 duplicate conflicts each dispositioned explicitly as historical/non-display, with proof each is unreachable. A fail-closed uniqueness safeguard (idempotent partial unique index on `day_number` where the record is active) guarantees only one active guided record per program day; the test proves a second active record for an existing day is rejected while all seven historical records remain present and intact.
+- Coverage manifest covering database, admin-editable rows, source files, prompts, notification defaults and seed content, with an explicit reason for any surface producing zero items. The content inventory never reads or exports member data: `support_tickets`, `support_ticket_notes`, `points_ledger`, `workout_completion_receipts` and all other member-owned tables are listed in the manifest as **excluded from content scanning**, reason "personal operational data—not reusable member-facing copy". Their schema, export/deletion/retention and RLS coverage is verified only in the Part I privacy gates.
+
 - False-negative and false-positive regression fixtures must all pass before artifacts are written.
 - Contextual KEEP / REWRITE / RETIRE dispositions, preserving the approved education-only fasting and supplement safety guides.
 - Exact record IDs and before/after copy for Day 64 and every other temporary fallback, listed in the replacement matrix.
