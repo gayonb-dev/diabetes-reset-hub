@@ -124,6 +124,7 @@ const App = () => (
                 <Route path="digest" element={<AdminDigest />} />
                 <Route path="subscriptions" element={<AdminSubscriptions />} />
                 <Route path="qa-queue" element={<AdminQaQueue />} />
+                <Route path="support" element={<AdminSupport />} />
                 <Route path="content" element={<AdminContent />} />
                 <Route path="broadcasts" element={<AdminBroadcasts />} />
                 <Route path="waitlist" element={<AdminWaitlist />} />
