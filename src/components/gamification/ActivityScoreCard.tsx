@@ -1,15 +1,5 @@
-import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
-import { useAuth } from "@/hooks/useAuth";
-
-interface LedgerEntry {
-  id: string;
-  kind: string;
-  points: number;
-  detail: string | null;
-  created_at: string;
-}
+import type { LedgerEntry } from "@/hooks/useActivityScore";
 
 const KIND_LABEL: Record<string, string> = {
   baseline_carry_in: "Score carried in",
@@ -22,39 +12,17 @@ const KIND_LABEL: Record<string, string> = {
   complete_lesson: "Lesson completed",
 };
 
+interface Props {
+  entries: LedgerEntry[] | null;
+  total: number | null;
+}
+
 /**
  * G. Activity Score is derived from one ledger — the same rows the member can
  * read. Nothing is displayed that the ledger cannot account for.
  */
-export default function ActivityScoreCard() {
-  const { user } = useAuth();
-  const [entries, setEntries] = useState<LedgerEntry[] | null>(null);
-  const [total, setTotal] = useState<number | null>(null);
-
-  useEffect(() => {
-    if (!user) return;
-    let cancelled = false;
-    (async () => {
-      const { data, error } = await supabase
-        .from("points_ledger")
-        .select("id,kind,points,detail,created_at")
-        .eq("user_id", user.id)
-        .order("created_at", { ascending: false })
-        .limit(200);
-      if (cancelled) return;
-      if (error || !data) {
-        setEntries([]);
-        setTotal(null);
-        return;
-      }
-      const rows = data as LedgerEntry[];
-      setEntries(rows.slice(0, 8));
-      setTotal(rows.reduce((sum, r) => sum + (r.points ?? 0), 0));
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [user]);
+export default function ActivityScoreCard({ entries, total }: Props) {
+  const recent = entries ? entries.slice(0, 8) : null;
 
   return (
     <Card className="p-5 border border-border rounded-xl shadow-warm space-y-3">
@@ -82,13 +50,13 @@ export default function ActivityScoreCard() {
 
       <div>
         <p className="text-[12px] text-tertiary-fg mb-1.5">Recent entries</p>
-        {entries == null ? (
+        {recent == null ? (
           <p className="text-[13px] text-tertiary-fg">Loading…</p>
-        ) : entries.length === 0 ? (
+        ) : recent.length === 0 ? (
           <p className="text-[13px] text-tertiary-fg">No points recorded yet.</p>
         ) : (
           <ul className="space-y-1">
-            {entries.map((e) => (
+            {recent.map((e) => (
               <li key={e.id} className="flex items-center justify-between gap-3 text-[13px]">
                 <span className="text-secondary-fg truncate">
                   {e.detail || KIND_LABEL[e.kind] || e.kind}
