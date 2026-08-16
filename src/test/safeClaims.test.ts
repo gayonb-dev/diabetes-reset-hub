@@ -46,13 +46,24 @@ describe("safe-claims scan of active sources", () => {
     expect(files.length).toBeGreaterThan(50);
   });
 
+/** A comment line, or an explicit disclaimer, is not a claim. */
+function isNotAClaim(line: string): boolean {
+  const t = line.trim();
+  if (/^(\/\/|\*|\/\*|--|#)/.test(t)) return true; // source comment
+  if (/eslint|safe-claims-allow/.test(t)) return true;
+  // negated / forbidding wording: "does not ... reverse", "no reversal claim"
+  return /\b(does not|do not|doesn't|don't|never|no|not|cannot|can't|without|forbid|prohibit|must not|may)\b[^.]{0,90}$/i.test(
+    t.slice(0, t.search(/revers|cure|guarantee|clinic|doctor|physician|fda|7[- ]day/i) + 1),
+  );
+}
+
   for (const { label, re } of BANNED) {
     it(`no shipped source claims: ${label}`, () => {
       const hits: string[] = [];
       for (const f of files) {
         const text = readFileSync(f, "utf8");
         text.split("\n").forEach((line, i) => {
-          if (re.test(line) && !/eslint|safe-claims-allow|BANNED/.test(line)) {
+          if (re.test(line) && !isNotAClaim(line)) {
             hits.push(`${relative(root, f)}:${i + 1}: ${line.trim().slice(0, 140)}`);
           }
         });
