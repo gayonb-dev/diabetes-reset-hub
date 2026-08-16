@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useState, ReactNode } from "react";
 import { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
+import { FALLBACK_TIMEZONE, resolveTimeZone } from "@/lib/calendarDay";
 
 interface Subscription {
   id: string;
@@ -21,6 +22,8 @@ interface AuthCtx {
   session: Session | null;
   loading: boolean;
   isAdmin: boolean;
+  /** Member's IANA zone (profiles.timezone), already fallback-resolved. */
+  timezone: string;
   subscription: Subscription | null;
   refreshAuthState: () => Promise<boolean>;
   refreshSubscription: () => Promise<void>;
@@ -35,11 +38,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
   const [subscription, setSubscription] = useState<Subscription | null>(null);
+  const [timezone, setTimezone] = useState<string>(FALLBACK_TIMEZONE);
 
   const loadUserData = useCallback(async (u: User | null) => {
     if (!u) {
       setIsAdmin(false);
       setSubscription(null);
+      setTimezone(FALLBACK_TIMEZONE);
       return;
     }
     const [{ data: roles }, { data: sub }, { data: prof }] = await Promise.all([
@@ -53,8 +58,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Auto-capture IANA timezone on first authenticated load (zero effort).
     try {
       const currentTz = (prof as { timezone?: string | null } | null)?.timezone ?? null;
-      if (!currentTz) {
+      if (currentTz) {
+        setTimezone(resolveTimeZone(currentTz));
+      } else {
         const detected = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        setTimezone(resolveTimeZone(detected));
         if (detected) {
           await supabase.from("profiles").update({ timezone: detected } as never).eq("user_id", u.id);
         }
