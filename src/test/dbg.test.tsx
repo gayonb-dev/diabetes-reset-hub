@@ -4,7 +4,7 @@ vi.mock("@/hooks/useAuth", () => ({ useAuth: () => ({ user: { id: "a" }, timezon
 vi.mock("@/integrations/supabase/client", () => {
   const emptyList = { data: [], error: null };
   const emptyOne = { data: null, error: null };
-  return { supabase: { from: () => ({
+  return { supabase: { from: (t: string) => (console.log("FROM", t), {
     select: () => ({ eq: () => ({ eq: () => ({ maybeSingle: () => Promise.resolve(emptyOne), then: (r: any, j: any) => Promise.resolve(emptyList).then(r, j) }), order: () => ({ limit: () => Promise.resolve(emptyList) }), then: (r: any, j: any) => Promise.resolve(emptyList).then(r, j) }) }),
   }) } };
 });
