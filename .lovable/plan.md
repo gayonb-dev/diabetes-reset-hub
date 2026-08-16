@@ -1,0 +1,37 @@
+# Batch 1 — Doctor-review and data-integrity blockers
+
+Executes the attached Batch 1 prompt in one continuous run, Parts A–I. Authority: `PROJECT_CORNERSTONE.md` + `DRM_Deep_Prelaunch_Audit_2026-08-15.md`. Connected project confirmed as `wqennhjdojjqmmqzjhti`; domain `https://diabetesresetmethod.com`. Additive migrations only, synthetic records by exact ID, no publication, no ZIP, no new paid/AI/health features, no AI-authored clinical rewrites.
+
+## A. Active-content inventory and doctor-review pack
+Scan every active member/public-facing string in both source and database (180 daily actions with subtasks and prompts, badges/levels/criteria, VITA quotes, mindset weeks, Learn guides, Library cards, meals/recipes/shopping guidance, workouts and their benefit/safety copy, deterministic public-chat copy and model prompts, notification templates and admin previews, report/glucose/A1C/weight copy, support templates, community prompts, seed defaults).
+
+Artifacts: `docs/doctor-review/active-content-inventory.json`, `.csv`, `content-replacement-matrix.md`, `clinical-review-pack.md`. Every item carries identifier, source type, table/file+field, route, verbatim copy, active state, links, risk tags and a disposition — no invented clinical wording. Known audit examples (Day 64 cheat-meal, fasting/supplement/reversal titles, Library and workout claims, outcome badges) explicitly captured with proof of active state plus all further occurrences. Review pack lists items and questions, marked `OWNER COPY REQUIRED` / `CLINICIAN REVIEW REQUIRED`, no approved copy until an appendix arrives.
+
+## B. One member-timezone calendar-day service
+Single tested calendar-day module (explicit instant + IANA zone, documented fallback) used by program day, `log_date`, unlocks, streaks, heatmaps, Today labels and member-day notifications, on client and server alike; audit timestamps stay UTC. Remove direct UTC date slicing from member-day paths. Dashboard shows `Day X of 180` plus `Phase N — <name>: day Y of Z`, a plain-language "Recalibration" note, Phase 3 named "Build Your Routine", and a calm post-Day-180 end state that never requests Day 181.
+
+## C. Glucose display consistency
+S1 classifier becomes the only authority for status, tone, labels, reference bands, chart dots/tooltips, latest cards and printable reports, always keyed to the selected reading type. Remove the person-label "Diabetic" (use "High"); keep approved low/urgent-low and medication copy unchanged. Neutral all-time trend wording; add a text/table equivalent for charts. Boundary tests both units, including post-meal 6.0 mmol/L = In range with the post-meal band.
+
+## D. Durable dashboard habit and meal logging
+Local controlled drafts, debounced persistence, functional optimistic updates, stale-response abort/sequencing, changed-field or atomic RPC writes, no global refetch per keystroke, reconcile after settle, honest retry state. Meal yes/no icons become labelled keyboard-operable toggle rows (44px+, exposed checked state) that durably reach 3/3. `Log habits` scrolls `#daily-habits` into view and focuses its heading. Mindset disclosure label matches state; VITA Prev/Next hidden for a single message. Concurrency tests with reversed response order, rapid typing/selection, navigate away/back, failed retry.
+
+## E. Truthful support-ticket persistence
+Additive owner-scoped `support_tickets` (+ protected admin notes) with RLS and grants: member creates/reads only their own, admin via the verified role source. "Ticket received" and a reference only after a successful insert; email to `info@diabetesresetmethod.com` best-effort with honest `not_attempted/sent/suppressed/failed` status. No `gayonb@gmail.com` member-facing. Copy becomes "We aim to respond within one business day"; fake example box removed. Deterministic navigation/FAQ answers before any AI call. Admin Support Queue with status, age, category, reference and reply workflow.
+
+## F. Atomic workout completion and history
+One idempotent server RPC verifying ownership and session, marking completion, recording the event and awarding participation points once per idempotency key in a transaction; replays return the same receipt. Client only shows completion/navigates after the receipt; failures leave a retry state; related queries invalidate. Add Recent Workouts (date, workout, track, state). Remove medical-clearance, insulin-sensitivity, "blood-sugar clearance" and prescribed-escalation copy; replace with selected comfort/modification track, optional goals and stop/pain guidance, clinical items left `CLINICIAN REVIEW REQUIRED`. Tests: start → complete → Back to Today → Workouts shows history, never Resume; plus direct navigation, double click, network failure, replay.
+
+## G. Canonical phase, Activity Score and badges
+Inventory every score/XP/points field and writer; pick one participation ledger and one derived total. Phase derives from the timezone-aware program day, not a stale profile field. Activity Score reconciles with its ledger and shows "How points are earned" plus recent entries; if reconciliation is unsafe, hide score/levels behind the migration report rather than showing contradictory states. Retire and make unreachable fasting, cheat-meal, diagnostic-zone, A1C and weight-outcome badges (Night Faster, Cheat and Fast, Dropping, Pre-Diabetic Zone, Normal Zone, Weight Milestone), preserving history as retired/non-display. Retained badge descriptions must match award rules; notifications and admin previews stop announcing retired badges.
+
+## H. Immediate safe-content containment
+Block any active source/default/seed from reintroducing fasting scheduling, supplements, cheat-meal fasting, reversal/cure, WhatsApp, coaching promises or personalized health AI. Ensure Day 64's cheat-meal/fasting instruction cannot reach a member. For confirmed unsafe rows needed before the appendix, apply the single approved temporary fallback ("Review one routine that helped" / the given description), logged by exact ID in the matrix; never applied to merely diabetes-related safe copy. Disable any Daily Digest path sending raw transcripts to an external AI, keeping the local structured-count design; magic-link, deterministic VITA, billing, support persistence and account controls remain intact.
+
+## I. Verification and completion report
+Run TypeScript, touched-file lint, full Vitest and Deno suites, production build, migration/RLS tests as anonymous / Member A / Member B / admin, timezone boundary, glucose boundary, habit concurrency, support truth, workout atomicity/replay, score/badge reconciliation, banned-content scan across source and database, signed-in desktop and mobile checks (Today, Progress, Workouts, Support, Profile), bundle purity, proof of no external AI call for deterministic support, and exact-ID synthetic cleanup. Deliver one Batch 1 report with all nine required sections, including the explicit statement that no publication occurred and that doctor-review completion still awaits the owner-approved appendix.
+
+## Technical notes
+- Timezone service lands as a shared module mirrored for edge functions, consuming `profiles.timezone` with the documented fallback.
+- All schema work is additive migrations with GRANTs plus RLS policies written alongside each new table.
+- No existing clinical-safety, privacy, consent, deletion/export, RLS, billing, legal or VITA control is weakened; historical migrations and evidence are untouched.
