@@ -75,6 +75,14 @@ export const INVENTORY: InventoryEntry[] = [
   { table: "vita_similarity_log", match: "user_id", column: "user_id", disposition: "export_and_delete", order: 22, category: "derived" },
   { table: "activity_events", match: "user_id", column: "user_id", disposition: "export_and_delete", order: 22, category: "derived" },
 
+  // ---- support (Batch 1 Part E) ----
+  { table: "support_ticket_notes", match: "user_id", column: "ticket_id", disposition: "reference_only", order: 23, category: "support" },
+  { table: "support_tickets", match: "user_id", column: "user_id", disposition: "export_and_delete", order: 24, redact: ["user_agent"], category: "support" },
+
+  // ---- participation ledger and workout receipts (Batch 1 Parts F, G) ----
+  { table: "points_ledger", match: "user_id", column: "user_id", disposition: "export_and_delete", order: 22, category: "gamification" },
+  { table: "workout_completion_receipts", match: "user_id", column: "user_id", disposition: "export_and_delete", order: 20, category: "program" },
+
   // ---- notifications, consent, roles ----
   { table: "notifications", match: "user_id", column: "user_id", disposition: "export_and_delete", order: 24, category: "notifications" },
   { table: "consent_records", match: "user_id", column: "user_id", disposition: "export_and_delete", order: 24, category: "consent" },
