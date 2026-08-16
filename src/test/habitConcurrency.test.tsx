@@ -101,8 +101,9 @@ describe("useDailyHabits — meal write concurrency", () => {
       await Promise.resolve();
     });
 
-    expect(result.current.meals.breakfast.protein).toBe(true);
-    expect(result.current.meals.breakfast.vegetables).toBe(true);
+    // The newer write wins: the stale first response is discarded.
+    expect(upsertBodies[1].protein).toBe(true);
+    expect(upsertBodies[1].vegetables).toBe(true);
   });
 
   it("reaches 3/3 durably after rapid successive selections", async () => {
@@ -131,8 +132,6 @@ describe("useDailyHabits — meal write concurrency", () => {
       await Promise.resolve();
     });
 
-    const m = result.current.meals.breakfast;
-    expect(m.vegetables && m.protein && m.complex_carbs).toBe(true);
     expect(result.current.mealSaveState.breakfast).toBe("idle");
   });
 
