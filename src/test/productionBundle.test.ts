@@ -52,6 +52,7 @@ describe("production bundle has no payment bypass", () => {
         ).toBe(false);
       }
     }
+  });
 
   it("no built asset contains a synthetic auth fixture or mock session marker", () => {
     const files = walk(resolve(root, "dist"));
