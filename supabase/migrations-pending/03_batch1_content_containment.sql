@@ -74,8 +74,8 @@ SET action_title = 'Review one routine that helped',
     action_description = 'Look back at the routines you have used so far and note one that helped you stay consistent. Keep using that routine this week.',
     sub_tasks = '["Review one routine that helped", "Note why it worked for you", "Walks or workout"]'::jsonb,
     action_detail_content = '{}'::jsonb
-WHERE d.id IN (
-  '40dda16e-af13-48f1-b9f1-65b1a844e1cd',
-  '177e9f10-972f-48af-ac68-fc5b59eb59af'
-) OR (d.day_number = 64 AND NOT d.is_extension_day)
+WHERE (d.id IN (
+    '40dda16e-af13-48f1-b9f1-65b1a844e1cd',
+    '177e9f10-972f-48af-ac68-fc5b59eb59af'
+  ) OR (d.day_number = 64 AND NOT d.is_extension_day))
   AND d.action_title <> 'Review one routine that helped';
