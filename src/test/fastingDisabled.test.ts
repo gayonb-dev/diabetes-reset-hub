@@ -11,7 +11,7 @@ import {
   FASTING_SCHEDULING_ENABLED,
   FASTING_SCHEDULING_CLINICAL_APPROVAL,
 } from "@/lib/featureFlags";
-import { fastingHoursFor } from "../../supabase/functions/_shared/fastingTarget";
+import { canFast, effectiveTarget } from "../../supabase/functions/_shared/fastingTarget";
 
 const root = resolve(__dirname, "../..");
 const read = (p: string) => readFileSync(resolve(root, p), "utf8");
