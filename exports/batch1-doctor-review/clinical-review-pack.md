@@ -1,0 +1,1014 @@
+# Clinical review pack — Batch 1 (corrected)
+
+**This pack claims no owner or clinician approval.** It contains questions and current
+copy only. Proposed exact replacement copy will be added after the separate
+owner-approved content appendix is supplied. The only replacement wording present today
+is the single approved temporary fallback already applied to contained records.
+
+Items requiring a decision: **211** of 1963 inventoried strings.
+
+Evidence principles used for context (ADA, ADA international consensus on remission,
+ADA/NIDDK activity guidance, NIDDK plate method and fasting risks, NCCIH/FDA supplement
+evidence, CDC stress/sleep/illness guidance). Exact citations arrive with the appendix.
+
+Approved education-only safety guides (supplement safety, fasting safety, the consensus
+definition of remission stated as education) are classified
+`KEEP — APPROVED EDUCATION` and are **not** treated as promotion.
+
+## Glucose and readings (26 items)
+
+- `daily_actions:af58ac91-0772-4b65-8423-acbc6d98c67c#action_description` — REWRITE — OWNER APPROVAL; tags: promised_outcomes
+  - Surface: /app/day/3 — active
+  - Current: "Eat your protein component before your carbohydrates at every meal today. This single change lowers post-meal glucose spikes — and it works immediately."
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+- `daily_actions:d5b2b857-eae1-4850-9538-961872bfa453#action_description` — REWRITE — CLINICIAN REVIEW; tags: insulin_sensitivity_claim
+  - Surface: /app/day/8 — active
+  - Current: "Ten minutes of walking after each meal today. It moves glucose into your muscles instead of your bloodstream — and it sets up Phase 2."
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+- `daily_actions:2d097ba9-2e83-4ecb-939b-4bb177e1eef0#action_description` — REWRITE — CLINICIAN REVIEW; tags: individualised_health_formula
+  - Surface: /app/day/12 — active
+  - Current: "Eat snack 1 exactly two and a half hours after breakfast today. Right timing keeps blood sugar from dipping into cravings territory."
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+- `daily_actions:ec4ea88d-6773-43c5-8ef9-6248b02e963d#action_description` — REWRITE — OWNER APPROVAL; tags: promised_outcomes
+  - Surface: /app/day/14 — active
+  - Current: "Reflect on the last 14 days and log your weight and fasting blood sugar. Compare them to Day 1. This is your first measurable proof."
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+- `daily_actions:521ce932-0d81-4ec0-8bc3-6b74c4735e92#action_description` — REWRITE — CLINICIAN REVIEW; tags: insulin_sensitivity_claim
+  - Surface: /app/day/15 — active
+  - Current: "Today the second pillar activates. Ten minutes after each meal, walk. Not a workout — blood sugar management. Muscle contractions pull glucose out of your bloodstream without needing insulin's help."
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+- `daily_actions:27e5cc08-3010-47c1-aaac-400841f79974#day_name` — REWRITE — CLINICIAN REVIEW; tags: insulin_sensitivity_claim
+  - Surface: /app/day/31 — active
+  - Current: "Day 31: Muscle Is Your Glucose Sponge"
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+- `daily_actions:27e5cc08-3010-47c1-aaac-400841f79974#action_title` — REWRITE — CLINICIAN REVIEW; tags: insulin_sensitivity_claim
+  - Surface: /app/day/31 — active
+  - Current: "Day 31 — Muscle Is Your Glucose Sponge"
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+- `daily_actions:507f1fde-da03-4d83-a1f5-1e493e2df631#action_description` — REWRITE — CLINICIAN REVIEW; tags: insulin_sensitivity_claim
+  - Surface: /app/day/37 — active
+  - Current: "If the scale has stalled, read this twice: fat loss and glucose repair continue even when weight pauses. Your post-meal readings are the honest metric this week."
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+- `daily_actions:ffda58e6-33e7-42c7-a8a5-e3a1f84ba726#action_description` — REWRITE — CLINICIAN REVIEW; tags: insulin_sensitivity_claim
+  - Surface: /app/day/69 — active
+  - Current: "Stress hormones raise glucose without a bite of food. Ten slow breaths, twice today — it's not soft, it's metabolic."
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+- `daily_actions:1a6d2523-2fbf-4363-930d-c79aa687da17#action_description` — REWRITE — CLINICIAN REVIEW; tags: shame_food_language, individualised_health_formula
+  - Surface: /app/day/99 — active
+  - Current: "Muscle protects glucose control and protects you as you age. Palm-sized protein at every meal, no exceptions today."
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+- `daily_actions:a58c516f-71e6-40f7-a0f6-cc1ed286e120#action_description` — REWRITE — CLINICIAN REVIEW; tags: insulin_sensitivity_claim
+  - Surface: /app/day/116 — active
+  - Current: "Fat loss and glucose repair continue even when the scale pauses. Your post-meal readings are the honest metric this week."
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+- `daily_actions:59c0886c-6dc6-417c-92cb-7073fb69af34#action_description` — REWRITE — CLINICIAN REVIEW; tags: reversal_cure
+  - Surface: /app/day/127 — active
+  - Current: "Remission means an A1C below 6.5% for at least three months without glucose-lowering medication. It is a real, documented outcome — and it is not the only good outcome."
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+- `content_items:6c622229-64e6-4903-9c39-e598cfedc762#summary` — REWRITE — OWNER APPROVAL; tags: promised_outcomes
+  - Surface: /app/learn — active
+  - Current: "Weill Cornell researchers found eating protein and vegetables before carbohydrates cut post-meal glucose by up to 37% — same food, different order. The science behind your 'protein first' days."
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+- `content_items:9de05eda-ecd5-4b10-8660-131a4739d72a#title` — REWRITE — CLINICIAN REVIEW; tags: insulin_sensitivity_claim
+  - Surface: /app/learn — active
+  - Current: "Why Strength Training Is Blood Sugar Medicine"
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+- `content_items:9de05eda-ecd5-4b10-8660-131a4739d72a#summary` — REWRITE — CLINICIAN REVIEW; tags: insulin_sensitivity_claim
+  - Surface: /app/learn — active
+  - Current: "DiaTribe on how resistance work builds glucose-hungry muscle tissue and improves insulin sensitivity — the science behind your workout days."
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+- `content_items:876c3165-7f46-4a85-a7f4-e9d643686465#summary` — REWRITE — CLINICIAN REVIEW; tags: reversal_cure
+  - Surface: /app/learn — active
+  - Current: "An international expert group convened by the American Diabetes Association defines remission as an A1C below 6.5% sustained at least three months after stopping glucose-lowering medication. Here's the criteria in plain terms."
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+- `content_items:371dd455-5f10-487e-a9c1-0c53a60e9678#summary` — REWRITE — OWNER APPROVAL; tags: promised_outcomes
+  - Surface: /app/library — active
+  - Current: "The single most effective thing you can do for blood sugar today."
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+- `content_items:c5784bd4-cf6a-4072-b1d6-9c3c0ffab894#summary` — REWRITE — CLINICIAN REVIEW; tags: insulin_sensitivity_claim
+  - Surface: /app/library — active
+  - Current: "5 moves, no equipment, easy on knees. Builds the muscle that uses glucose."
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+- `vita_quotes:08a3c3fd-dbca-4f20-bad4-003ed2c4d8f5#quote_text` — REWRITE — CLINICIAN REVIEW; tags: promised_outcomes, insulin_sensitivity_claim
+  - Surface: /app (VITA card) — active
+  - Current: "Post-meal walks work because muscle contractions allow glucose uptake independent of insulin. You do not need insulin to be working well for a walk to lower your blood sugar."
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+- `vita_quotes:77bdfb03-a261-4db9-8eaf-c0d736420d85#quote_text` — REWRITE — CLINICIAN REVIEW; tags: supplements
+  - Surface: /app (VITA card) — active
+  - Current: "At Day [N] in the program, most members see their first fasting blood sugar reading below 126 mg/dL. If yours has not arrived yet — it is coming. The mechanism is working even when the number has not moved yet."
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+- `vita_quotes:2fc65f37-39e0-4779-af0f-9e8549e1800d#quote_text` — REWRITE — CLINICIAN REVIEW; tags: supplements, reversal_cure
+  - Surface: /app (VITA card) — active
+  - Current: "Consistent fasting blood sugar below 100 mg/dL for 60 consecutive days is the clinical marker most associated with sustained remission. You are building toward that number every day."
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+- `vita_quotes:d06efe85-1fa8-4542-a563-4e8658485c36#quote_text` — REWRITE — CLINICIAN REVIEW; tags: insulin_sensitivity_claim
+  - Surface: /app (VITA card) — active
+  - Current: "The walking phase is the part people underestimate most. Ten minutes after each meal, three times a day. I know it sounds small. That is exactly why people skip it. Do not. Post-meal walks are not fitness. They are blood sugar medicine. The research on this is not ambiguous. Walk."
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+- `src/data/learnGuides.ts:140` — REWRITE — CLINICIAN REVIEW; tags: supplements, diagnostic_label
+  - Surface: src/data/learnGuides.ts — active
+  - Current: "Fasting blood sugar under 100 mg/dL (5.6 mmol/L) is normal. 100–125 mg/dL (5.6–6.9 mmol/L) is pre-diabetic. 126 mg/dL (7.0 mmol/L) and above is diabetic. Post-meal targets are under 140 mg/dL (7.8 mmol/L) at two hours. Trends matter more than single readings."
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+- `src/data/learnGuides.ts:145` — REWRITE — OWNER APPROVAL; tags: uncited_absolute
+  - Surface: src/data/learnGuides.ts — active
+  - Current: "Snacks bridge the gap between meals so your blood sugar never crashes into cravings. Pair protein with fiber: a boiled egg and cucumber, Greek yogurt and berries, almonds and an apple. Snacks work best 3–4 hours after a main meal, and are mainly for bridging gaps longer than 5 hours."
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+- `src/lib/mcp/tools/log-blood-sugar.ts:19` — REWRITE — CLINICIAN REVIEW; tags: supplements
+  - Surface: src/lib/mcp/tools/log-blood-sugar.ts — active
+  - Current: "Blood glucose in mg/dL."
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+- `supabase/functions/mcp/index.ts:180` — REWRITE — CLINICIAN REVIEW; tags: supplements
+  - Surface: edge function: mcp — active
+  - Current: "Blood glucose in mg/dL."
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+
+## A1C and testing instructions (20 items)
+
+- `daily_actions:039f96ab-6e3c-49c5-a4c1-151639681c97#action_description` — REWRITE — CLINICIAN REVIEW; tags: promised_outcomes, treatment_or_testing_instruction
+  - Surface: /app/day/42 — active
+  - Current: "Six weeks. Your A1C test at Day 90 is now seven weeks away — and every day between now and then is already writing that number. Keep voting."
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+- `daily_actions:7a84e8e4-c664-4a5f-ac6d-637d9e5df793#action_description` — REWRITE — CLINICIAN REVIEW; tags: promised_outcomes, treatment_or_testing_instruction
+  - Surface: /app/day/63 — active
+  - Current: "Thirty days to your A1C test window. Every day between now and Day 90 is already writing that number."
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+- `daily_actions:7a84e8e4-c664-4a5f-ac6d-637d9e5df793#sub_tasks` — REWRITE — CLINICIAN REVIEW; tags: treatment_or_testing_instruction
+  - Surface: /app/day/63 — active
+  - Current: "["All rings today", "Book or plan your Day 90 A1C test (lab, pharmacy, or home kit)", "Mindset card"]"
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+- `daily_actions:dccc9e96-780e-4aaa-aded-12fd80952d10#action_description` — REWRITE — OWNER APPROVAL; tags: promised_outcomes
+  - Surface: /app/day/75 — active
+  - Current: "Three quarters of the way to the test. If your readings have plateaued, hold steady — A1C reflects the average, and your average is transformed."
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+- `daily_actions:6914fdb9-52e2-490b-82fb-d7db4f9e8801#action_description` — REWRITE — OWNER APPROVAL; tags: promised_outcomes
+  - Surface: /app/day/78 — active
+  - Current: "Test-prep week one. Nothing exotic — A1C can't be crammed for. It can only be earned, and you've been earning it for 78 days."
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+- `daily_actions:7239841c-278d-4e2b-bbb9-39c299bcc998#action_description` — REWRITE — CLINICIAN REVIEW; tags: treatment_or_testing_instruction
+  - Surface: /app/day/80 — active
+  - Current: "Ten days. Confirm your A1C test plan: where, when, fasting requirements if any."
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+- `daily_actions:1220d61c-919c-46d0-b268-64ec722220ab#action_description` — REWRITE — CLINICIAN REVIEW; tags: treatment_or_testing_instruction
+  - Surface: /app/day/90 — active
+  - Current: "Level 4. Get the A1C drawn this week if not today, log your Month 3 measurements, and enter the result in Progress the moment you have it. Then come tell the community — someone on Day 3 needs to see what Day 90 looks like."
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+- `daily_actions:1220d61c-919c-46d0-b268-64ec722220ab#sub_tasks` — REWRITE — CLINICIAN REVIEW; tags: treatment_or_testing_instruction
+  - Surface: /app/day/90 — active
+  - Current: "["A1C test done or scheduled this week", "Log Month 3 measurements", "Enter A1C in Progress when received; share the moment in Ask → Wins"]"
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+- `daily_actions:6641907f-86ee-4a77-9c5c-4b548f4ff8de#action_description` — REWRITE — OWNER APPROVAL; tags: promised_outcomes
+  - Surface: /app/day/93 — active
+  - Current: "A falling A1C means your body responded. That response is repeatable — it came from meals, walks, and sleep, and all three are still available to you tomorrow."
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+- `daily_actions:59c0886c-6dc6-417c-92cb-7073fb69af34#sub_tasks` — REWRITE — CLINICIAN REVIEW; tags: reversal_cure
+  - Surface: /app/day/127 — active
+  - Current: "["Read today's blog entry on remission criteria", "Note where your last A1C sits relative to 6.5", "All rings"]"
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+- `daily_actions:ac954255-6291-4af5-8d6d-3649ecd072c7#action_description` — REWRITE — CLINICIAN REVIEW; tags: promised_outcomes, treatment_or_testing_instruction
+  - Surface: /app/day/145 — active
+  - Current: "Your second A1C test is 35 days out. Every day between now and then is already writing that number."
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+- `daily_actions:ac954255-6291-4af5-8d6d-3649ecd072c7#sub_tasks` — REWRITE — CLINICIAN REVIEW; tags: treatment_or_testing_instruction
+  - Surface: /app/day/145 — active
+  - Current: "["Book or plan your Day 180 A1C test", "Note the date in your calendar", "All rings"]"
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+- `daily_actions:f6f762ce-7efc-416c-bf20-750242783f94#action_description` — REWRITE — CLINICIAN REVIEW; tags: treatment_or_testing_instruction
+  - Surface: /app/day/160 — active
+  - Current: "Twenty days to your second A1C. Hold the line — no experiments this close to a test."
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+- `daily_actions:19de3fa4-b8bc-4826-84f7-a84333049162#action_description` — REWRITE — OWNER APPROVAL; tags: promised_outcomes
+  - Surface: /app/day/170 — active
+  - Current: "Ten days. A1C can't be crammed for — it can only be earned, and you've been earning it for 170 days."
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+- `daily_actions:2ffd2a1f-d490-458f-a10b-410386383c00#action_description` — REWRITE — CLINICIAN REVIEW; tags: treatment_or_testing_instruction
+  - Surface: /app/day/180 — active
+  - Current: "One hundred and eighty days. Get your A1C drawn this week, log your Month 6 measurements, and enter the result when you have it. Then come tell the community — someone on Day 3 needs to see what Day 180 looks like. The program ends here. What you built doesn't."
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+- `daily_actions:2ffd2a1f-d490-458f-a10b-410386383c00#sub_tasks` — REWRITE — CLINICIAN REVIEW; tags: treatment_or_testing_instruction
+  - Surface: /app/day/180 — active
+  - Current: "["A1C test done or scheduled this week", "Log Month 6 measurements", "Enter your A1C in Progress and share the moment in Ask → Wins"]"
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+- `badges:467ade61-3680-4375-a86c-c461a37beb4f#unlock_hint` — RETIRE — OUTCOME/GAMIFICATION; tags: promised_outcomes
+  - Surface: /app/progress (badges) — active
+  - Current: "Lower your A1C from any prior reading"
+  - Record state: becomes inactive / unreachable
+  - Question: what wording states the same member action without the flagged claim?
+- `vita_quotes:0952f864-68cf-4204-b00f-040f1daf471c#quote_text` — REWRITE — CLINICIAN REVIEW; tags: diagnostic_label
+  - Surface: /app (VITA card) — active
+  - Current: "The average A1C reduction in the first 90 days for members who maintain 80% or higher compliance is 1.4 percentage points. That is the difference between diabetic and pre-diabetic ranges for many people."
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+- `vita_quotes:a3067118-c32e-4077-ba8b-2333e2cf9a1d#quote_text` — RETIRE — OBSOLETE FEATURE; tags: fasting_scheduling
+  - Surface: /app (VITA card) — active
+  - Current: "Time-restricted eating (intermittent fasting) has been shown to reduce HbA1c independently of caloric intake. The fasting window itself — separate from what you eat — improves metabolic function."
+  - Record state: becomes inactive / unreachable
+  - Question: what wording states the same member action without the flagged claim?
+- `supabase/functions/send-notification/index.ts:87` — REWRITE — CLINICIAN REVIEW; tags: treatment_or_testing_instruction
+  - Surface: edge function: send-notification — active
+  - Current: "VITA says: {first_name}, if an A1C test is already part of your care plan, this may be a good time to check the date with your healthcare team."
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+
+## Medication and clearance (6 items)
+
+- `daily_actions:2ac62423-19ef-4ae3-a041-2b71918438a9#action_description` — HISTORICAL — UNREACHABLE; tags: medical_clearance, shame_food_language
+  - Surface: (no member route — historical record) — historical
+  - Current: "Three fully compliant plates today. No shortcuts. Prove you own this skill."
+  - Record state: retained as history, unreachable by members
+  - Question: what wording states the same member action without the flagged claim?
+- `daily_actions:ed6a151e-d943-40b3-8518-9b46ee12940f#action_description` — REWRITE — CLINICIAN REVIEW; tags: treatment_or_testing_instruction
+  - Surface: /app/day/88 — active
+  - Current: "Two days. Hold the line."
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+- `daily_actions:576353b0-1a19-458d-95ef-31ddd4139622#action_description` — REWRITE — CLINICIAN REVIEW; tags: treatment_or_testing_instruction
+  - Surface: /app/day/95 — active
+  - Current: "If your numbers have improved, your medication needs may have changed. Only your doctor can make that call. Book the conversation and bring your data."
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+- `daily_actions:f75bfa2c-4c14-4636-ae81-5beeadb49e71#action_description` — REWRITE — CLINICIAN REVIEW; tags: treatment_or_testing_instruction
+  - Surface: /app/day/175 — active
+  - Current: "Hold the line. Nothing new, nothing dropped."
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+- `content_items:d245f1d1-73aa-4944-9285-359c3c4ce351#summary` — REWRITE — CLINICIAN REVIEW; tags: supplements, treatment_or_testing_instruction
+  - Surface: /app/library — active
+  - Current: "A word-for-word script for asking about dose reductions as your numbers improve."
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+- `src/components/landing/HeroSection.tsx:75` — REWRITE — CLINICIAN REVIEW; tags: treatment_or_testing_instruction
+  - Surface: component: landing — active
+  - Current: "An adult preparing a plate of vegetables and lean protein in a home kitchen"
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+
+## Fasting and cheat-meal (feature removed) (25 items)
+
+- `daily_actions:33846b14-71ab-45ed-9ace-7ae7195519d4#action_description` — RETIRE — OBSOLETE FEATURE; tags: fasting_scheduling, obsolete_feature
+  - Surface: /app/day/20 — active
+  - Current: "Tomorrow, intermittent fasting unlocks if your foundation is solid. Today, run a clean day: 3 plate-method meals, 3 walks, water target, mindset read. This is the qualifying lap."
+  - Record state: becomes inactive / unreachable
+  - Question: what wording states the same member action without the flagged claim?
+- `daily_actions:40dda16e-af13-48f1-b9f1-65b1a844e1cd#day_name` — TEMPORARY FALLBACK APPLIED; tags: fasting_scheduling, obsolete_feature
+  - Surface: /app/day/21 — active
+  - Current: "Day 21: Intermittent Fasting Unlocks"
+  - Record state: active with approved temporary fallback copy
+  - Question: what wording states the same member action without the flagged claim?
+- `daily_actions:b5fd6d1b-a00a-49fe-8e28-9471adf95a31#day_name` — TEMPORARY FALLBACK APPLIED; tags: cheat_meal
+  - Surface: /app/day/64 — active
+  - Current: "Day 64: The Cheat Meal Check"
+  - Record state: active with approved temporary fallback copy
+  - Question: what wording states the same member action without the flagged claim?
+- `daily_actions:177e9f10-972f-48af-ac68-fc5b59eb59af#day_name` — TEMPORARY FALLBACK APPLIED; tags: fasting_scheduling
+  - Surface: /app/day/114 — active
+  - Current: "Day 114: The Fasting Check-In"
+  - Record state: active with approved temporary fallback copy
+  - Question: what wording states the same member action without the flagged claim?
+- `daily_actions:3ea964e5-b12c-4b7c-8fff-cc9fd7585a9f#day_name` — RETIRE — OBSOLETE FEATURE; tags: fasting_scheduling
+  - Surface: /app/day/124 — active
+  - Current: "Day 124: Movement Before Breakfast"
+  - Record state: becomes inactive / unreachable
+  - Question: what wording states the same member action without the flagged claim?
+- `daily_actions:3ea964e5-b12c-4b7c-8fff-cc9fd7585a9f#action_title` — RETIRE — OBSOLETE FEATURE; tags: fasting_scheduling
+  - Surface: /app/day/124 — active
+  - Current: "Day 124 — Movement Before Breakfast"
+  - Record state: becomes inactive / unreachable
+  - Question: what wording states the same member action without the flagged claim?
+- `daily_actions:3ea964e5-b12c-4b7c-8fff-cc9fd7585a9f#sub_tasks` — RETIRE — OBSOLETE FEATURE; tags: fasting_scheduling
+  - Surface: /app/day/124 — active
+  - Current: "["Walk 10 minutes before breakfast", "Log a post-breakfast reading", "All rings"]"
+  - Record state: becomes inactive / unreachable
+  - Question: what wording states the same member action without the flagged claim?
+- `daily_actions:8dfbdf5c-ffd3-4fe3-8bde-a2fe8e015ca0#action_description` — RETIRE — OBSOLETE FEATURE; tags: fasting_scheduling
+  - Surface: /app/day/139 — active
+  - Current: "Same wake time for the next seven days. It's the strongest single lever on tomorrow's fasting number."
+  - Record state: becomes inactive / unreachable
+  - Question: what wording states the same member action without the flagged claim?
+- `daily_actions:08d974e2-0000-4003-af7d-58cf87ff632c#day_name` — RETIRE — OBSOLETE FEATURE; tags: fasting_scheduling
+  - Surface: /app/day/159 — active
+  - Current: "Day 159: Sleep and the Fasting Number"
+  - Record state: becomes inactive / unreachable
+  - Question: what wording states the same member action without the flagged claim?
+- `daily_actions:08d974e2-0000-4003-af7d-58cf87ff632c#action_title` — RETIRE — OBSOLETE FEATURE; tags: fasting_scheduling
+  - Surface: /app/day/159 — active
+  - Current: "Day 159 — Sleep and the Fasting Number"
+  - Record state: becomes inactive / unreachable
+  - Question: what wording states the same member action without the flagged claim?
+- `daily_actions:4d42d669-e168-4093-a69d-1812354e48bf#day_name` — RETIRE — OBSOLETE FEATURE; tags: fasting_scheduling
+  - Surface: /app/day/166 — active
+  - Current: "Day 166: Movement Before the First Meal"
+  - Record state: becomes inactive / unreachable
+  - Question: what wording states the same member action without the flagged claim?
+- `daily_actions:4d42d669-e168-4093-a69d-1812354e48bf#action_title` — RETIRE — OBSOLETE FEATURE; tags: fasting_scheduling
+  - Surface: /app/day/166 — active
+  - Current: "Day 166 — Movement Before the First Meal"
+  - Record state: becomes inactive / unreachable
+  - Question: what wording states the same member action without the flagged claim?
+- `daily_actions:4d42d669-e168-4093-a69d-1812354e48bf#sub_tasks` — RETIRE — OBSOLETE FEATURE; tags: fasting_scheduling
+  - Surface: /app/day/166 — active
+  - Current: "["Walk 10 minutes before breakfast", "Log a post-breakfast reading", "All rings"]"
+  - Record state: becomes inactive / unreachable
+  - Question: what wording states the same member action without the flagged claim?
+- `badges:2a8f3d0b-a11e-4e27-9943-cea7d6b7373a#name` — RETIRE — OBSOLETE FEATURE; tags: fasting_scheduling
+  - Surface: /app/progress (badges) — active
+  - Current: "Night Faster"
+  - Record state: becomes inactive / unreachable
+  - Question: what wording states the same member action without the flagged claim?
+- `badges:09e1bef8-303d-4d36-9845-6bf7a5fd1548#name` — RETIRE — OBSOLETE FEATURE; tags: cheat_meal
+  - Surface: /app/progress (badges) — active
+  - Current: "Cheat and Fast"
+  - Record state: becomes inactive / unreachable
+  - Question: what wording states the same member action without the flagged claim?
+- `badges:09e1bef8-303d-4d36-9845-6bf7a5fd1548#description` — RETIRE — OBSOLETE FEATURE; tags: cheat_meal
+  - Surface: /app/progress (badges) — active
+  - Current: "First cheat meal + fast logged immediately after."
+  - Record state: becomes inactive / unreachable
+  - Question: what wording states the same member action without the flagged claim?
+- `badges:09e1bef8-303d-4d36-9845-6bf7a5fd1548#unlock_hint` — RETIRE — OBSOLETE FEATURE; tags: cheat_meal
+  - Surface: /app/progress (badges) — active
+  - Current: "Log a cheat meal then an IF window"
+  - Record state: becomes inactive / unreachable
+  - Question: what wording states the same member action without the flagged claim?
+- `vita_quotes:fce73897-c01b-458d-a07d-1ee5c7f8722d#quote_text` — RETIRE — OBSOLETE FEATURE; tags: fasting_scheduling, cheat_meal
+  - Surface: /app (VITA card) — active
+  - Current: "Cheat meal, not cheat day. One meal, last of the day, fast begins immediately after. That is the rule."
+  - Record state: becomes inactive / unreachable
+  - Question: what wording states the same member action without the flagged claim?
+- `vita_quotes:9420d73e-556e-4c2c-9f2d-52ec59eec8f7#quote_text` — RETIRE — OBSOLETE FEATURE; tags: fasting_scheduling
+  - Surface: /app (VITA card) — active
+  - Current: "Intermittent fasting does not begin until Day 21 and only if the compliance gate is met. Patience here is not optional."
+  - Record state: becomes inactive / unreachable
+  - Question: what wording states the same member action without the flagged claim?
+- `vita_quotes:d29a2484-7580-4b24-8a96-e787e47f12d6#quote_text` — RETIRE — OBSOLETE FEATURE; tags: fasting_scheduling
+  - Surface: /app (VITA card) — active
+  - Current: "The fasting window is not punishment. It is giving your body the time it needs to do what it was designed to do when food is not present."
+  - Record state: becomes inactive / unreachable
+  - Question: what wording states the same member action without the flagged claim?
+- `vita_quotes:204b8ff4-0bdb-46bf-81c7-523b02a3f386#quote_text` — RETIRE — OBSOLETE FEATURE; tags: fasting_scheduling
+  - Surface: /app (VITA card) — active
+  - Current: "I designed the intermittent fasting phase to start at Day 21 for a specific reason. Your first three weeks are about building the habit of eating correctly. Layering a fasting window on top of new food habits in Week 1 is how people quit. Day 21 means you are ready. Trust the sequence."
+  - Record state: becomes inactive / unreachable
+  - Question: what wording states the same member action without the flagged claim?
+- `src/pages/app/CheatMeal.tsx:77` — RETIRE — OBSOLETE FEATURE; tags: cheat_meal, uncited_absolute
+  - Surface: /app/cheatmeal — active
+  - Current: "Cheat meal is only available after 5 PM — it's always the last meal of the day."
+  - Record state: becomes inactive / unreachable
+  - Question: what wording states the same member action without the flagged claim?
+- `src/pages/app/CheatMeal.tsx:103` — RETIRE — OBSOLETE FEATURE; tags: cheat_meal
+  - Surface: /app/cheatmeal — active
+  - Current: "Cheat meal recorded."
+  - Record state: becomes inactive / unreachable
+  - Question: what wording states the same member action without the flagged claim?
+- `src/pages/app/CheatMeal.tsx:211` — RETIRE — OBSOLETE FEATURE; tags: cheat_meal
+  - Surface: /app/cheatmeal — active
+  - Current: "No cheat meals logged yet"
+  - Record state: becomes inactive / unreachable
+  - Question: what wording states the same member action without the flagged claim?
+- `src/data/learnGuides.ts:50` — RETIRE — OBSOLETE FEATURE; tags: fasting_scheduling
+  - Surface: src/data/learnGuides.ts — active
+  - Current: "Fasting schedules and timers are not available right now. We are keeping those tools off while the safety screening and instructions are reviewed. The app cannot decide whether fasting is safe for you."
+  - Record state: becomes inactive / unreachable
+  - Question: what wording states the same member action without the flagged claim?
+
+## Supplements (26 items)
+
+- `daily_actions:da7da61c-effb-45d9-b2f6-41a5638172bf#day_name` — REWRITE — CLINICIAN REVIEW; tags: supplements
+  - Surface: /app/day/59 — active
+  - Current: "Day 59: Check Your Supplements"
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+- `daily_actions:da7da61c-effb-45d9-b2f6-41a5638172bf#action_title` — REWRITE — CLINICIAN REVIEW; tags: supplements
+  - Surface: /app/day/59 — active
+  - Current: "Day 59 — Check Your Supplements"
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+- `daily_actions:da7da61c-effb-45d9-b2f6-41a5638172bf#action_description` — REWRITE — CLINICIAN REVIEW; tags: supplements
+  - Surface: /app/day/59 — active
+  - Current: "Month 2 additions may now be unlocked in your Supplements tab. Read before you buy; add one thing at a time."
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+- `daily_actions:da7da61c-effb-45d9-b2f6-41a5638172bf#sub_tasks` — REWRITE — CLINICIAN REVIEW; tags: supplements
+  - Surface: /app/day/59 — active
+  - Current: "["Open the Supplements tab and read what's unlocked", "Confirm your daily pack habit is still daily", "Walks or workout"]"
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+- `badges:ae4ea5cc-5eb4-46d8-8236-5dbf06163f99#unlock_hint` — RETIRE — OUTCOME/GAMIFICATION; tags: supplements
+  - Surface: /app/progress (badges) — active
+  - Current: "Log a fasting reading 100–125 mg/dL"
+  - Record state: becomes inactive / unreachable
+  - Question: what wording states the same member action without the flagged claim?
+- `badges:92831cb0-2db5-456e-84fa-a1f33507cbfa#unlock_hint` — RETIRE — OUTCOME/GAMIFICATION; tags: supplements
+  - Surface: /app/progress (badges) — active
+  - Current: "Log a fasting reading under 100 mg/dL"
+  - Record state: becomes inactive / unreachable
+  - Question: what wording states the same member action without the flagged claim?
+- `vita_quotes:6201d90c-5cf0-4c2f-9e34-a49861f724aa#quote_text` — REWRITE — CLINICIAN REVIEW; tags: supplements, diagnostic_label
+  - Surface: /app (VITA card) — active
+  - Current: "The supplement pack is not optional. It covers what a diabetic diet alone cannot. One packet, largest meal, every day."
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+- `vita_quotes:ac3ed2cb-60af-496d-ba7e-c033413422c5#quote_text` — REWRITE — CLINICIAN REVIEW; tags: supplements
+  - Surface: /app (VITA card) — active
+  - Current: "Chromium helps insulin work more effectively. It is in your Nature Made pack. That is why the pack is the foundation."
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+- `vita_quotes:0821ce0a-4cb2-4286-9475-5c9da98325df#quote_text` — REWRITE — CLINICIAN REVIEW; tags: supplements, diagnostic_label
+  - Surface: /app (VITA card) — active
+  - Current: "R-Alpha Lipoic Acid at 600mg is the therapeutic dose for diabetic neuropathy. Less than that has not demonstrated the same effect in research."
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+- `vita_quotes:af5d1bf9-3365-4763-8d4c-2fd92463dc1a#quote_text` — REWRITE — CLINICIAN REVIEW; tags: supplements
+  - Surface: /app (VITA card) — active
+  - Current: "Benfotiamine — the fat-soluble form of B1 in your DEAL supplement — can actually enter nerve tissue. The regular water-soluble B1 cannot. That is why the specific form matters."
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+- `vita_quotes:c110eac6-17ca-4f2a-a568-ee3121ae5de6#quote_text` — REWRITE — CLINICIAN REVIEW; tags: supplements, insulin_sensitivity_claim
+  - Surface: /app (VITA card) — active
+  - Current: "Magnesium deficiency is present in approximately 48% of people with Type 2 diabetes. The Nature Made pack contains 300mg — the therapeutic dose that has shown improved insulin sensitivity in research."
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+- `vita_quotes:cedd1916-81bb-4aaa-8fc9-022aff73d6a4#quote_text` — REWRITE — CLINICIAN REVIEW; tags: supplements, insulin_sensitivity_claim
+  - Surface: /app (VITA card) — active
+  - Current: "Chromium at 200–1000mcg per day has been shown to improve insulin sensitivity in insulin-resistant individuals. Your supplement pack contains 395mcg — within the effective range."
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+- `vita_quotes:1fa59c57-3bbc-4865-880d-ff8b5ca297b3#quote_text` — REWRITE — CLINICIAN REVIEW; tags: supplements
+  - Surface: /app (VITA card) — active
+  - Current: "The supplement pack is not optional. I know it looks like a sales add-on. It is not. The specific nutrients in that pack — the chromium, the magnesium, the R-ALA, the benfotiamine — address deficiencies that are nearly universal in Type 2 diabetes and that diet alone cannot fix. I researched every i"
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+- `src/pages/app/Ask.tsx:544` — REWRITE — CLINICIAN REVIEW; tags: supplements
+  - Surface: /app/ask — active
+  - Current: "Stat improvement (optional, e.g. 148 → 94 mg/dL)"
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+- `src/pages/app/Onboarding.tsx:483` — REWRITE — CLINICIAN REVIEW; tags: supplements
+  - Surface: /app/onboarding — active
+  - Current: "mg/dL (most common in the US)"
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+- `src/components/landing/FAQSection.tsx:38` — REWRITE — CLINICIAN REVIEW; tags: supplements
+  - Surface: component: landing — active
+  - Current: "Are fasting or supplements required?"
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+- `src/data/learnGuides.ts:58` — REWRITE — CLINICIAN REVIEW; tags: supplements
+  - Surface: src/data/learnGuides.ts — active
+  - Current: "Supplements and diabetes: questions to ask first"
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+- `src/data/learnGuides.ts:61` — REWRITE — CLINICIAN REVIEW; tags: supplements
+  - Surface: src/data/learnGuides.ts — active
+  - Current: "You do not need supplements to use DRM."
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+- `src/data/learnGuides.ts:63` — REWRITE — CLINICIAN REVIEW; tags: supplements
+  - Surface: src/data/learnGuides.ts — active
+  - Current: "Research has tested many supplements for Type 2 diabetes. For most supplements, there is not enough reliable evidence to show that they help manage diabetes or its complications. A result from one product or study may not apply to a different brand, formula, or dose."
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+- `src/data/learnGuides.ts:65` — REWRITE — CLINICIAN REVIEW; tags: supplements, uncited_absolute
+  - Surface: src/data/learnGuides.ts — active
+  - Current: "Supplements can cause side effects. Some can interact with diabetes medicines, affect lab tests, or create extra risk for people with kidney disease or another health condition. “Natural” does not always mean safe."
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+- `src/data/learnGuides.ts:67` — REWRITE — CLINICIAN REVIEW; tags: supplements, uncited_absolute
+  - Surface: src/data/learnGuides.ts — active
+  - Current: "Never use a supplement instead of prescribed diabetes care, and never stop or change medicine because of a supplement claim."
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+- `src/data/learnGuides.ts:71` — REWRITE — CLINICIAN REVIEW; tags: supplements
+  - Surface: src/data/learnGuides.ts — active
+  - Current: "• What am I hoping this supplement will help with?"
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+- `src/data/learnGuides.ts:78` — REWRITE — CLINICIAN REVIEW; tags: supplements
+  - Surface: src/data/learnGuides.ts — active
+  - Current: "Bring a list or photos of every supplement and medicine you use. Include the product name, ingredients, dose, and how often you take it. A prescriber or pharmacist can review the complete list with you."
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+- `src/data/learnGuides.ts:87` — REWRITE — CLINICIAN REVIEW; tags: supplements
+  - Surface: src/data/learnGuides.ts — active
+  - Current: "NCCIH: Diabetes and Dietary Supplements"
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+- `supabase/functions/_shared/medicalSafety.ts:19` — REWRITE — CLINICIAN REVIEW; tags: supplements
+  - Surface: edge function: _shared — active
+  - Current: "I can't tell you to start, stop, skip, or change a medicine, dose, or supplement. Ask a prescriber or pharmacist who can review your medicines and health history. If you may have taken the wrong amount or you feel unwell, contact them promptly; if symptoms are severe, contact emergency services."
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+- `supabase/functions/ask-vita/index.ts:103` — REWRITE — CLINICIAN REVIEW; tags: supplements
+  - Surface: edge function: ask-vita — active
+  - Current: "Supplements and diabetes: questions to ask first"
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+
+## Outcome promises and gamification (13 items)
+
+- `daily_actions:202aa6ac-f058-47cc-964d-e96da0babfe4#day_name` — REWRITE — OWNER APPROVAL; tags: shame_food_language
+  - Surface: /app/day/13 — active
+  - Current: "Day 13: Full Compliance Day"
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+- `daily_actions:202aa6ac-f058-47cc-964d-e96da0babfe4#action_title` — REWRITE — OWNER APPROVAL; tags: shame_food_language
+  - Surface: /app/day/13 — active
+  - Current: "Full Compliance Day"
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+- `daily_actions:202aa6ac-f058-47cc-964d-e96da0babfe4#action_description` — REWRITE — OWNER APPROVAL; tags: shame_food_language
+  - Surface: /app/day/13 — active
+  - Current: "Three fully compliant meals, water goal met, both snacks timed correctly. A complete day — proof that the structure works for you."
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+- `daily_actions:33eb46c2-5fab-4d91-a412-d304b64fa1f0#action_description` — REWRITE — OWNER APPROVAL; tags: shame_food_language
+  - Surface: /app/day/18 — active
+  - Current: "Rain, heat, or a rough day will come. Decide now what your indoor version is — marching on the spot through a song playlist, walking the corridor, stairs. No zero days."
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+- `daily_actions:3943d932-701d-4b7b-ac3d-6f4600787407#action_description` — REWRITE — OWNER APPROVAL; tags: shame_food_language
+  - Surface: /app/day/46 — active
+  - Current: "Protein protects muscle while you lose fat. Palm-sized portion at every meal, no exceptions today."
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+- `daily_actions:d51d41f9-d281-4179-bc31-5d21a5342cf9#sub_tasks` — REWRITE — OWNER APPROVAL; tags: shame_food_language
+  - Surface: /app/day/66 — active
+  - Current: "["Dinner walk, no exceptions today", "Log a bedtime reading if you can", "Protein first at dinner"]"
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+- `badges:2a8ac8f4-5e9a-426d-879a-41c4d3f2e895#unlock_hint` — REWRITE — OWNER APPROVAL; tags: shame_food_language
+  - Surface: /app/progress (badges) — active
+  - Current: "Log one fully compliant plate"
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+- `badges:ae4ea5cc-5eb4-46d8-8236-5dbf06163f99#name` — RETIRE — OUTCOME/GAMIFICATION; tags: diagnostic_label
+  - Surface: /app/progress (badges) — active
+  - Current: "Pre-Diabetic Zone"
+  - Record state: becomes inactive / unreachable
+  - Question: what wording states the same member action without the flagged claim?
+- `badges:ae4ea5cc-5eb4-46d8-8236-5dbf06163f99#description` — RETIRE — OUTCOME/GAMIFICATION; tags: diagnostic_label
+  - Surface: /app/progress (badges) — active
+  - Current: "First fasting reading in pre-diabetic range."
+  - Record state: becomes inactive / unreachable
+  - Question: what wording states the same member action without the flagged claim?
+- `badges:92831cb0-2db5-456e-84fa-a1f33507cbfa#name` — RETIRE — OUTCOME/GAMIFICATION; tags: diagnostic_label
+  - Surface: /app/progress (badges) — active
+  - Current: "Normal Zone"
+  - Record state: becomes inactive / unreachable
+  - Question: what wording states the same member action without the flagged claim?
+- `vita_quotes:d2c31879-ad5f-4d8f-914b-81d37150ff10#quote_text` — REWRITE — CLINICIAN REVIEW; tags: promised_outcomes, insulin_sensitivity_claim
+  - Surface: /app (VITA card) — active
+  - Current: "Sleep affects insulin sensitivity. Poor sleep for one night can reduce insulin response by up to 25%. Protect your sleep."
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+- `src/pages/admin/AdminContent.tsx:732` — REWRITE — OWNER APPROVAL; tags: promised_outcomes
+  - Surface: /admin (admin previews) — active
+  - Current: "Measurement due in 7 days"
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+- `supabase/functions/create-checkout-session/index.ts:41` — REWRITE — OWNER APPROVAL; tags: promised_outcomes
+  - Surface: edge function: create-checkout-session — active
+  - Current: "Quick wins that lower sugar, jumpstart weight loss, and restore your energy in just 5 days."
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+
+## Workouts and movement claims (5 items)
+
+- `daily_actions:fbea7eb7-a1cc-4db4-9673-f25ea57d23bd#action_description` — REWRITE — CLINICIAN REVIEW; tags: insulin_sensitivity_claim
+  - Surface: /app/day/24 — active
+  - Current: "One poor night can measurably blunt insulin sensitivity the next day. Tonight: screens off 30 minutes earlier, bedroom cooler, same wake time tomorrow."
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+- `daily_actions:113f4e55-626c-4f73-9620-5c5adb677d01#action_description` — REWRITE — CLINICIAN REVIEW; tags: insulin_sensitivity_claim
+  - Surface: /app/day/45 — active
+  - Current: "Forty-five days. Your body is producing measurably different insulin responses than it did six weeks ago. That is physiology, not motivation."
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+- `daily_actions:9d1bc757-12c4-4096-9141-f1f9055ffd6e#action_description` — REWRITE — CLINICIAN REVIEW; tags: insulin_sensitivity_claim
+  - Surface: /app/day/52 — active
+  - Current: "Same wake time daily is the strongest lever on sleep quality — and sleep quality moves insulin sensitivity."
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+- `daily_actions:d51d41f9-d281-4179-bc31-5d21a5342cf9#action_description` — REWRITE — CLINICIAN REVIEW; tags: insulin_sensitivity_claim
+  - Surface: /app/day/66 — active
+  - Current: "Dinner is the meal most likely to be followed by sitting. Guard the dinner walk like it's medicine — because it is."
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+- `daily_actions:283fd408-9815-424b-8f1b-8cf5d70d0ea2#action_description` — REWRITE — CLINICIAN REVIEW; tags: insulin_sensitivity_claim
+  - Surface: /app/day/103 — active
+  - Current: "One short night can measurably blunt the next day's insulin sensitivity. Same wake time, cool room, screens off early."
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+
+## Meals, snacks and individualised formulas (3 items)
+
+- `daily_actions:a040d92e-7ee5-4172-bcb8-6667ba489f60#action_description` — REWRITE — CLINICIAN REVIEW; tags: individualised_health_formula
+  - Surface: /app/day/2 — active
+  - Current: "Calculate your personal daily water target (half your body weight in ounces) and hit it for the first time today. A large bottle next to you makes this easy."
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+- `src/pages/app/Meals.tsx:465` — REWRITE — OWNER APPROVAL; tags: uncited_absolute
+  - Surface: /app/meals — active
+  - Current: ").update({ plan_data: data as never }).eq("
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+- `src/pages/app/Meals.tsx:485` — REWRITE — OWNER APPROVAL; tags: uncited_absolute
+  - Surface: /app/meals — active
+  - Current: ").update({ plan_data: data as never }).eq("
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+
+## Diagnostic labels (2 items)
+
+- `vita_quotes:4c222d8e-ca42-4af6-9b02-5ffcf89c8e46#quote_text` — REWRITE — CLINICIAN REVIEW; tags: diagnostic_label
+  - Surface: /app (VITA card) — active
+  - Current: "Dasheen, breadfruit, christophene — these are not exotic. They are diabetic-appropriate foods that belong in your kitchen."
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+- `vita_quotes:62fc589e-1b29-4924-b1fb-62a3a5410472#quote_text` — REWRITE — CLINICIAN REVIEW; tags: diagnostic_label
+  - Surface: /app (VITA card) — active
+  - Current: "You have been in the pre-diabetic range for [X] days. That is not a number to protect — it is a number to push lower."
+  - Record state: stays active pending exact replacement copy
+  - Question: what wording states the same member action without the flagged claim?
+
+## Historical / unreachable records (40 items)
+
+- `daily_actions:ab5dd27f-9529-4ae7-b8e2-5b823f8d5911#day_name` — HISTORICAL — UNREACHABLE; tags: safe_no_change_required
+  - Surface: (no member route — historical record) — historical
+  - Current: "E1"
+  - Record state: retained as history, unreachable by members
+  - Question: what wording states the same member action without the flagged claim?
+- `daily_actions:ab5dd27f-9529-4ae7-b8e2-5b823f8d5911#action_title` — HISTORICAL — UNREACHABLE; tags: safe_no_change_required
+  - Surface: (no member route — historical record) — historical
+  - Current: "Label Reads"
+  - Record state: retained as history, unreachable by members
+  - Question: what wording states the same member action without the flagged claim?
+- `daily_actions:ab5dd27f-9529-4ae7-b8e2-5b823f8d5911#action_description` — HISTORICAL — UNREACHABLE; tags: safe_no_change_required
+  - Surface: (no member route — historical record) — historical
+  - Current: "Read the nutrition label on every packaged food you ate today. What did you find?"
+  - Record state: retained as history, unreachable by members
+  - Question: what wording states the same member action without the flagged claim?
+- `daily_actions:ab5dd27f-9529-4ae7-b8e2-5b823f8d5911#learning_objective` — HISTORICAL — UNREACHABLE; tags: safe_no_change_required
+  - Surface: (no member route — historical record) — historical
+  - Current: "Build awareness of hidden sugars and serving sizes."
+  - Record state: retained as history, unreachable by members
+  - Question: what wording states the same member action without the flagged claim?
+- `daily_actions:04eeaaad-546b-48f2-a9bd-043a6987ec51#day_name` — HISTORICAL — UNREACHABLE; tags: safe_no_change_required
+  - Surface: (no member route — historical record) — historical
+  - Current: "E2"
+  - Record state: retained as history, unreachable by members
+  - Question: what wording states the same member action without the flagged claim?
+- `daily_actions:04eeaaad-546b-48f2-a9bd-043a6987ec51#action_title` — HISTORICAL — UNREACHABLE; tags: safe_no_change_required
+  - Surface: (no member route — historical record) — historical
+  - Current: "Protein Audit"
+  - Record state: retained as history, unreachable by members
+  - Question: what wording states the same member action without the flagged claim?
+- `daily_actions:04eeaaad-546b-48f2-a9bd-043a6987ec51#action_description` — HISTORICAL — UNREACHABLE; tags: safe_no_change_required
+  - Surface: (no member route — historical record) — historical
+  - Current: "Measure your protein portion at every meal. Is it really 25% of the plate?"
+  - Record state: retained as history, unreachable by members
+  - Question: what wording states the same member action without the flagged claim?
+- `daily_actions:04eeaaad-546b-48f2-a9bd-043a6987ec51#learning_objective` — HISTORICAL — UNREACHABLE; tags: safe_no_change_required
+  - Surface: (no member route — historical record) — historical
+  - Current: "Calibrate visual portion sizing for protein."
+  - Record state: retained as history, unreachable by members
+  - Question: what wording states the same member action without the flagged claim?
+- `daily_actions:9a31c48e-b29f-449d-87ec-2f4ac881da1f#day_name` — HISTORICAL — UNREACHABLE; tags: safe_no_change_required
+  - Surface: (no member route — historical record) — historical
+  - Current: "E3"
+  - Record state: retained as history, unreachable by members
+  - Question: what wording states the same member action without the flagged claim?
+- `daily_actions:9a31c48e-b29f-449d-87ec-2f4ac881da1f#action_title` — HISTORICAL — UNREACHABLE; tags: safe_no_change_required
+  - Surface: (no member route — historical record) — historical
+  - Current: "Sugar Hunt"
+  - Record state: retained as history, unreachable by members
+  - Question: what wording states the same member action without the flagged claim?
+- `daily_actions:9a31c48e-b29f-449d-87ec-2f4ac881da1f#action_description` — HISTORICAL — UNREACHABLE; tags: safe_no_change_required
+  - Surface: (no member route — historical record) — historical
+  - Current: "Find and name every source of added sugar in your house. Remove or replace them."
+  - Record state: retained as history, unreachable by members
+  - Question: what wording states the same member action without the flagged claim?
+- `daily_actions:9a31c48e-b29f-449d-87ec-2f4ac881da1f#learning_objective` — HISTORICAL — UNREACHABLE; tags: safe_no_change_required
+  - Surface: (no member route — historical record) — historical
+  - Current: "Eliminate environmental sugar triggers."
+  - Record state: retained as history, unreachable by members
+  - Question: what wording states the same member action without the flagged claim?
+- `daily_actions:2f15e742-419c-4af7-89d0-a01111f8609f#day_name` — HISTORICAL — UNREACHABLE; tags: safe_no_change_required
+  - Surface: (no member route — historical record) — historical
+  - Current: "E4"
+  - Record state: retained as history, unreachable by members
+  - Question: what wording states the same member action without the flagged claim?
+- `daily_actions:2f15e742-419c-4af7-89d0-a01111f8609f#action_title` — HISTORICAL — UNREACHABLE; tags: safe_no_change_required
+  - Surface: (no member route — historical record) — historical
+  - Current: "No-Drink Day"
+  - Record state: retained as history, unreachable by members
+  - Question: what wording states the same member action without the flagged claim?
+- `daily_actions:2f15e742-419c-4af7-89d0-a01111f8609f#action_description` — HISTORICAL — UNREACHABLE; tags: safe_no_change_required
+  - Surface: (no member route — historical record) — historical
+  - Current: "Water only today. No juice, no sodas, no sweetened teas. Just water."
+  - Record state: retained as history, unreachable by members
+  - Question: what wording states the same member action without the flagged claim?
+- `daily_actions:2f15e742-419c-4af7-89d0-a01111f8609f#learning_objective` — HISTORICAL — UNREACHABLE; tags: safe_no_change_required
+  - Surface: (no member route — historical record) — historical
+  - Current: "Reset liquid calorie habits."
+  - Record state: retained as history, unreachable by members
+  - Question: what wording states the same member action without the flagged claim?
+- `daily_actions:f29ee253-cd17-4b94-b2bb-706f8a49c429#day_name` — HISTORICAL — UNREACHABLE; tags: safe_no_change_required
+  - Surface: (no member route — historical record) — historical
+  - Current: "E5"
+  - Record state: retained as history, unreachable by members
+  - Question: what wording states the same member action without the flagged claim?
+- `daily_actions:f29ee253-cd17-4b94-b2bb-706f8a49c429#action_title` — HISTORICAL — UNREACHABLE; tags: safe_no_change_required
+  - Surface: (no member route — historical record) — historical
+  - Current: "Eat Slowly"
+  - Record state: retained as history, unreachable by members
+  - Question: what wording states the same member action without the flagged claim?
+- `daily_actions:f29ee253-cd17-4b94-b2bb-706f8a49c429#action_description` — HISTORICAL — UNREACHABLE; tags: safe_no_change_required
+  - Surface: (no member route — historical record) — historical
+  - Current: "Put your fork down between every bite at every meal today."
+  - Record state: retained as history, unreachable by members
+  - Question: what wording states the same member action without the flagged claim?
+- `daily_actions:f29ee253-cd17-4b94-b2bb-706f8a49c429#learning_objective` — HISTORICAL — UNREACHABLE; tags: safe_no_change_required
+  - Surface: (no member route — historical record) — historical
+  - Current: "Practice satiety awareness."
+  - Record state: retained as history, unreachable by members
+  - Question: what wording states the same member action without the flagged claim?
+- `daily_actions:2ac62423-19ef-4ae3-a041-2b71918438a9#day_name` — HISTORICAL — UNREACHABLE; tags: safe_no_change_required
+  - Surface: (no member route — historical record) — historical
+  - Current: "E6"
+  - Record state: retained as history, unreachable by members
+  - Question: what wording states the same member action without the flagged claim?
+- `daily_actions:2ac62423-19ef-4ae3-a041-2b71918438a9#action_title` — HISTORICAL — UNREACHABLE; tags: safe_no_change_required
+  - Surface: (no member route — historical record) — historical
+  - Current: "Full Plate Every Meal"
+  - Record state: retained as history, unreachable by members
+  - Question: what wording states the same member action without the flagged claim?
+- `daily_actions:2ac62423-19ef-4ae3-a041-2b71918438a9#learning_objective` — HISTORICAL — UNREACHABLE; tags: safe_no_change_required
+  - Surface: (no member route — historical record) — historical
+  - Current: "Demonstrate mastery of the plate method."
+  - Record state: retained as history, unreachable by members
+  - Question: what wording states the same member action without the flagged claim?
+- `daily_actions:50978b95-2dbd-45db-bab1-2351af515616#day_name` — HISTORICAL — UNREACHABLE; tags: safe_no_change_required
+  - Surface: (no member route — historical record) — historical
+  - Current: "E7"
+  - Record state: retained as history, unreachable by members
+  - Question: what wording states the same member action without the flagged claim?
+- `daily_actions:50978b95-2dbd-45db-bab1-2351af515616#action_title` — HISTORICAL — UNREACHABLE; tags: safe_no_change_required
+  - Surface: (no member route — historical record) — historical
+  - Current: "Reflection"
+  - Record state: retained as history, unreachable by members
+  - Question: what wording states the same member action without the flagged claim?
+- `daily_actions:50978b95-2dbd-45db-bab1-2351af515616#action_description` — HISTORICAL — UNREACHABLE; tags: safe_no_change_required
+  - Surface: (no member route — historical record) — historical
+  - Current: "Write 3 things you learned about your eating habits in the past 21 days."
+  - Record state: retained as history, unreachable by members
+  - Question: what wording states the same member action without the flagged claim?
+- `daily_actions:50978b95-2dbd-45db-bab1-2351af515616#learning_objective` — HISTORICAL — UNREACHABLE; tags: safe_no_change_required
+  - Surface: (no member route — historical record) — historical
+  - Current: "Consolidate insights from the extension."
+  - Record state: retained as history, unreachable by members
+  - Question: what wording states the same member action without the flagged claim?
+- `app_config:ai_health_enabled#description` — HISTORICAL — UNREACHABLE; tags: safe_no_change_required
+  - Surface: (configuration defaults) — active
+  - Current: "Server AI-health gate. Defaults false. Requires processor/DPA approval before enabling."
+  - Record state: retained as history, unreachable by members
+  - Question: what wording states the same member action without the flagged claim?
+- `app_config:auth_email_enabled#description` — HISTORICAL — UNREACHABLE; tags: safe_no_change_required
+  - Surface: (configuration defaults) — active
+  - Current: "Magic-link sign-in email. Required core feature: must remain true."
+  - Record state: retained as history, unreachable by members
+  - Question: what wording states the same member action without the flagged claim?
+- `app_config:dexcom_enabled#description` — HISTORICAL — UNREACHABLE; tags: safe_no_change_required
+  - Surface: (configuration defaults) — active
+  - Current: "Dexcom integration. MUST remain false: DEL-25 is BLOCKED and untested."
+  - Record state: retained as history, unreachable by members
+  - Question: what wording states the same member action without the flagged claim?
+- `app_config:email_delivery_enabled#description` — HISTORICAL — UNREACHABLE; tags: safe_no_change_required
+  - Surface: (configuration defaults) — active
+  - Current: "Outbound email. Enable only after Resend production domain verification is confirmed."
+  - Record state: retained as history, unreachable by members
+  - Question: what wording states the same member action without the flagged claim?
+- `app_config:email_test_allowlist#description` — HISTORICAL — UNREACHABLE; tags: safe_no_change_required
+  - Surface: (configuration defaults) — active
+  - Current: "Explicitly approved test recipients. Must stay empty in production."
+  - Record state: retained as history, unreachable by members
+  - Question: what wording states the same member action without the flagged claim?
+- `app_config:marketing_email_enabled#description` — HISTORICAL — UNREACHABLE; tags: safe_no_change_required
+  - Surface: (configuration defaults) — active
+  - Current: "Marketing/campaign email. Off."
+  - Record state: retained as history, unreachable by members
+  - Question: what wording states the same member action without the flagged claim?
+- `app_config:phi_notice_version#description` — HISTORICAL — UNREACHABLE; tags: safe_no_change_required
+  - Surface: (configuration defaults) — active
+  - Current: "Current privacy notice version for consent capture. Bump when the notice changes."
+  - Record state: retained as history, unreachable by members
+  - Question: what wording states the same member action without the flagged claim?
+- `app_config:phi_notice_version#value` — HISTORICAL — UNREACHABLE; tags: safe_no_change_required
+  - Surface: (configuration defaults) — active
+  - Current: ""2026-08-07.1""
+  - Record state: retained as history, unreachable by members
+  - Question: what wording states the same member action without the flagged claim?
+- `app_config:retention_mode#description` — HISTORICAL — UNREACHABLE; tags: safe_no_change_required
+  - Surface: (configuration defaults) — active
+  - Current: "Retention worker reports counts and purges nothing. Report-only until approved."
+  - Record state: retained as history, unreachable by members
+  - Question: what wording states the same member action without the flagged claim?
+- `app_config:retention_mode#value` — HISTORICAL — UNREACHABLE; tags: safe_no_change_required
+  - Surface: (configuration defaults) — active
+  - Current: ""report_only""
+  - Record state: retained as history, unreachable by members
+  - Question: what wording states the same member action without the flagged claim?
+- `app_config:stripe_deletion_enabled#description` — HISTORICAL — UNREACHABLE; tags: safe_no_change_required
+  - Surface: (configuration defaults) — active
+  - Current: "Account-deletion Stripe cancellation. MUST remain false until live-mode Stripe webhook validation passes. Separate owner approval required."
+  - Record state: retained as history, unreachable by members
+  - Question: what wording states the same member action without the flagged claim?
+- `app_config:stripe_mode#description` — HISTORICAL — UNREACHABLE; tags: safe_no_change_required
+  - Surface: (configuration defaults) — active
+  - Current: "Stripe mode for this environment."
+  - Record state: retained as history, unreachable by members
+  - Question: what wording states the same member action without the flagged claim?
+- `app_config:transactional_automation_enabled#description` — HISTORICAL — UNREACHABLE; tags: safe_no_change_required
+  - Surface: (configuration defaults) — active
+  - Current: "Automated member email (reminders, check-ins, digests). Off."
+  - Record state: retained as history, unreachable by members
+  - Question: what wording states the same member action without the flagged claim?
+
+## Other member-facing copy (45 items)
+
+- `daily_actions:d5ebbea0-f306-4c68-8ccd-b5ed95eb0397#action_description` — REWRITE — OWNER APPROVAL; tags: uncited_absolute
+  - Current: "Today, take one post-meal reading 2 hours after a meal you walked after. Compare it to a reading from Phase 1. You're collecting evidence that this works on YOUR body."
+  - Record state: stays active pending exact replacement copy
+- `daily_actions:40dda16e-af13-48f1-b9f1-65b1a844e1cd#action_title` — TEMPORARY FALLBACK APPLIED; tags: safe_no_change_required
+  - Current: "Review one routine that helped"
+  - Record state: active with approved temporary fallback copy
+- `daily_actions:40dda16e-af13-48f1-b9f1-65b1a844e1cd#action_description` — TEMPORARY FALLBACK APPLIED; tags: safe_no_change_required
+  - Current: "Look back at the routines you have used so far and note one that helped you stay consistent. Keep using that routine this week."
+  - Record state: active with approved temporary fallback copy
+- `daily_actions:40dda16e-af13-48f1-b9f1-65b1a844e1cd#sub_tasks` — TEMPORARY FALLBACK APPLIED; tags: safe_no_change_required
+  - Current: "["Review one routine that helped", "Note why it worked for you", "Walks or workout"]"
+  - Record state: active with approved temporary fallback copy
+- `daily_actions:b5fd6d1b-a00a-49fe-8e28-9471adf95a31#action_title` — TEMPORARY FALLBACK APPLIED; tags: safe_no_change_required
+  - Current: "Review one routine that helped"
+  - Record state: active with approved temporary fallback copy
+- `daily_actions:b5fd6d1b-a00a-49fe-8e28-9471adf95a31#action_description` — TEMPORARY FALLBACK APPLIED; tags: safe_no_change_required
+  - Current: "Look back at the routines you have used so far and note one that helped you stay consistent. Keep using that routine this week."
+  - Record state: active with approved temporary fallback copy
+- `daily_actions:b5fd6d1b-a00a-49fe-8e28-9471adf95a31#sub_tasks` — TEMPORARY FALLBACK APPLIED; tags: safe_no_change_required
+  - Current: "["Review one routine that helped", "Note why it worked for you", "Walks or workout"]"
+  - Record state: active with approved temporary fallback copy
+- `daily_actions:d51d41f9-d281-4179-bc31-5d21a5342cf9#day_name` — REWRITE — OWNER APPROVAL; tags: uncited_absolute
+  - Current: "Day 66: Move After Dinner, Always"
+  - Record state: stays active pending exact replacement copy
+- `daily_actions:d51d41f9-d281-4179-bc31-5d21a5342cf9#action_title` — REWRITE — OWNER APPROVAL; tags: uncited_absolute
+  - Current: "Day 66 — Move After Dinner, Always"
+  - Record state: stays active pending exact replacement copy
+- `daily_actions:30cdf68d-d8c1-491f-902e-d03ab82c39cd#action_description` — REWRITE — CLINICIAN REVIEW; tags: reversal_cure
+  - Current: "Keep it boring. Boring is what reversal looks like from the inside."
+  - Record state: stays active pending exact replacement copy
+- `daily_actions:61af589b-61aa-4bac-a2b7-a13ce0b49641#action_description` — REWRITE — CLINICIAN REVIEW; tags: reversal_cure
+  - Current: "Below 6.5% is the remission threshold. Between 5.7 and 6.4 is the pre-diabetes range. Above 6.5 means the work continues. All three are information, not identity."
+  - Record state: stays active pending exact replacement copy
+- `daily_actions:576353b0-1a19-458d-95ef-31ddd4139622#sub_tasks` — REWRITE — OWNER APPROVAL; tags: uncited_absolute
+  - Current: "["Book or plan a doctor appointment", "Print your Progress report to bring with you", "Never adjust any medication on your own"]"
+  - Record state: stays active pending exact replacement copy
+- `daily_actions:5958d7d2-9bdd-4dc7-b860-0e85846c505c#day_name` — REWRITE — OWNER APPROVAL; tags: uncited_absolute
+  - Current: "Day 98: The Meal You Never Get Tired Of"
+  - Record state: stays active pending exact replacement copy
+- `daily_actions:5958d7d2-9bdd-4dc7-b860-0e85846c505c#action_title` — REWRITE — OWNER APPROVAL; tags: uncited_absolute
+  - Current: "Day 98 — The Meal You Never Get Tired Of"
+  - Record state: stays active pending exact replacement copy
+- `daily_actions:177e9f10-972f-48af-ac68-fc5b59eb59af#action_title` — TEMPORARY FALLBACK APPLIED; tags: safe_no_change_required
+  - Current: "Review one routine that helped"
+  - Record state: active with approved temporary fallback copy
+- `daily_actions:177e9f10-972f-48af-ac68-fc5b59eb59af#action_description` — TEMPORARY FALLBACK APPLIED; tags: safe_no_change_required
+  - Current: "Look back at the routines you have used so far and note one that helped you stay consistent. Keep using that routine this week."
+  - Record state: active with approved temporary fallback copy
+- `daily_actions:177e9f10-972f-48af-ac68-fc5b59eb59af#sub_tasks` — TEMPORARY FALLBACK APPLIED; tags: safe_no_change_required
+  - Current: "["Review one routine that helped", "Note why it worked for you", "Walks or workout"]"
+  - Record state: active with approved temporary fallback copy
+- `daily_actions:dedcc140-813c-4a11-9f33-b4956e0a01df#action_description` — REWRITE — CLINICIAN REVIEW; tags: reversal_cure
+  - Current: "Reversal shouldn't be expensive. Look at this week's shopping list — which three ingredients repeat across the most meals? Those are your anchors."
+  - Record state: stays active pending exact replacement copy
+- `daily_actions:7456acbf-3cd4-4d98-8bca-9e9848b5fd8d#sub_tasks` — REWRITE — OWNER APPROVAL; tags: uncited_absolute
+  - Current: "["Book or confirm your next appointment", "Update your printed Progress report", "Never adjust medication on your own"]"
+  - Record state: stays active pending exact replacement copy
+- `daily_actions:59c0886c-6dc6-417c-92cb-7073fb69af34#day_name` — REWRITE — CLINICIAN REVIEW; tags: reversal_cure
+  - Current: "Day 127: What Remission Actually Means"
+  - Record state: stays active pending exact replacement copy
+- `daily_actions:59c0886c-6dc6-417c-92cb-7073fb69af34#action_title` — REWRITE — CLINICIAN REVIEW; tags: reversal_cure
+  - Current: "Day 127 — What Remission Actually Means"
+  - Record state: stays active pending exact replacement copy
+- `daily_actions:c4c917d1-1ac1-487e-b044-60aa999876be#action_description` — REWRITE — CLINICIAN REVIEW; tags: reversal_cure
+  - Current: "Studies following people who reached remission show that keeping the weight off is what keeps remission in place. This isn't a sprint that ends."
+  - Record state: stays active pending exact replacement copy
+- `daily_actions:7dd06aa4-d20c-4ea8-a33b-a8b33a0dc272#action_description` — REWRITE — CLINICIAN REVIEW; tags: reversal_cure
+  - Current: "Boring is what reversal looks like from the inside. Today, be boring on purpose."
+  - Record state: stays active pending exact replacement copy
+- `content_items:e1198e3f-a659-4302-8846-3484957556ae#title` — REWRITE — CLINICIAN REVIEW; tags: reversal_cure
+  - Current: "What Diabetes Remission Programs Get Right (and What They Cost)"
+  - Record state: stays active pending exact replacement copy
+- `content_items:e1198e3f-a659-4302-8846-3484957556ae#summary` — REWRITE — CLINICIAN REVIEW; tags: reversal_cure
+  - Current: "DiaTribe's honest review of Virta, Level2 and clinical remission programs — useful context on what remission requires and why daily execution is the whole game."
+  - Record state: stays active pending exact replacement copy
+- `content_items:876c3165-7f46-4a85-a7f4-e9d643686465#title` — REWRITE — CLINICIAN REVIEW; tags: reversal_cure
+  - Current: "What "Remission" Officially Means"
+  - Record state: stays active pending exact replacement copy
+- `content_items:0b1f9c56-77d6-49c3-be5a-44f2106feb5a#title` — REWRITE — CLINICIAN REVIEW; tags: reversal_cure
+  - Current: "Remission Is More Doable Than You Think"
+  - Record state: stays active pending exact replacement copy
+- `content_items:0b1f9c56-77d6-49c3-be5a-44f2106feb5a#summary` — REWRITE — CLINICIAN REVIEW; tags: reversal_cure
+  - Current: "DiaTribe's look at the DiRECT trial, where 46% of participants reached remission at one year and 36% held it at two years — and what separated those who kept it from those who didn't."
+  - Record state: stays active pending exact replacement copy
+- `content_items:f7bc81cc-1ac6-45dd-9a61-800d04b821cc#title` — REWRITE — CLINICIAN REVIEW; tags: reversal_cure
+  - Current: "Remission at Five Years: The Honest Numbers"
+  - Record state: stays active pending exact replacement copy
+- `content_items:f7bc81cc-1ac6-45dd-9a61-800d04b821cc#summary` — REWRITE — CLINICIAN REVIEW; tags: reversal_cure
+  - Current: "Diabetes UK's report on the DiRECT extension study — what long-term remission actually looks like, why weight regain is the main threat, and why ongoing support matters more than the initial push."
+  - Record state: stays active pending exact replacement copy
+- `content_items:bfd9d9c5-0cbe-4867-bd20-f66e05dd99f3#title` — REWRITE — CLINICIAN REVIEW; tags: reversal_cure
+  - Current: "How Weight Loss Drives Remission"
+  - Record state: stays active pending exact replacement copy
+- `content_items:68e1912c-a486-4a08-bd2a-645d265c222f#title` — REWRITE — CLINICIAN REVIEW; tags: reversal_cure
+  - Current: "Type 2 Remission: What It Is and How It's Done"
+  - Record state: stays active pending exact replacement copy
+- `content_items:68e1912c-a486-4a08-bd2a-645d265c222f#summary` — REWRITE — CLINICIAN REVIEW; tags: reversal_cure
+  - Current: "A plain-language overview of what remission requires, the trials that established it, and why the strategy you can actually maintain beats the one that works fastest."
+  - Record state: stays active pending exact replacement copy
+- `vita_quotes:b27eda5d-2708-4b10-8444-613953b324fa#quote_text` — REWRITE — OWNER APPROVAL; tags: uncited_absolute
+  - Current: "Ackee is not just a Jamaican breakfast. It is a high-protein, low-carb food that most diabetics have never heard of."
+  - Record state: stays active pending exact replacement copy
+- `vita_quotes:04f39c89-721a-49a6-ad76-d7c44580ec9b#quote_text` — REWRITE — CLINICIAN REVIEW; tags: reversal_cure
+  - Current: "A setback is not a reversal of progress. Biology does not work that way. What you built this week does not disappear because of one bad meal."
+  - Record state: stays active pending exact replacement copy
+- `vita_quotes:78cdce7b-fe3b-4bdc-9123-33c567d85f00#quote_text` — REWRITE — CLINICIAN REVIEW; tags: reversal_cure
+  - Current: "The people who reverse this are not the ones who were most motivated at the start. They are the ones who showed up on the days they did not feel like it."
+  - Record state: stays active pending exact replacement copy
+- `vita_quotes:2b80bd4d-9149-4afd-8d0a-11e56539aae4#quote_text` — REWRITE — OWNER APPROVAL; tags: uncited_absolute
+  - Current: "You already know this works. You knew it before you started. The question was never whether it works. It was whether you would do it."
+  - Record state: stays active pending exact replacement copy
+- `vita_quotes:ba3724c4-c1b4-4188-bf18-9c3befce82e2#quote_text` — REWRITE — OWNER APPROVAL; tags: uncited_absolute
+  - Current: "The fact that you are reading this means you have not quit. That puts you in a category most people never enter."
+  - Record state: stays active pending exact replacement copy
+- `vita_quotes:e935fbde-5ea5-4a26-ad59-eef370b04e45#quote_text` — REWRITE — CLINICIAN REVIEW; tags: reversal_cure
+  - Current: "Brown stew chicken, brown rice, and callaloo. That was the test dish I used when I was building the meal plan system. If the plate method works with Caribbean food — food with real flavour, real culture, real history — it works for anyone. You do not have to abandon your cuisine to reverse this. Tha"
+  - Record state: stays active pending exact replacement copy
+- `vita_quotes:c3e99342-db08-435f-ae13-d1e3f227aa4f#quote_text` — REWRITE — OWNER APPROVAL; tags: uncited_absolute
+  - Current: "I did not build this program because I read a study. I built it after helping a friend who lived with Type 2 diabetes for years — and eventually reversed it. The standard advice was never going to get them there; it was designed to manage, maintain, live with. I refused to accept that. Every single "
+  - Record state: stays active pending exact replacement copy
+- `src/components/landing/FAQSection.tsx:35` — REWRITE — OWNER APPROVAL; tags: uncited_absolute
+  - Current: "No. Never start, stop, or change medication based on DRM. Medication decisions belong with your qualified prescriber or pharmacist."
+  - Record state: stays active pending exact replacement copy
+- `src/lib/glucose.ts:137` — REWRITE — OWNER APPROVAL; tags: uncited_absolute
+  - Current: "Never change medication based on this app alone."
+  - Record state: stays active pending exact replacement copy
+- `supabase/functions/_shared/billingCanonical.ts:103` — REWRITE — OWNER APPROVAL; tags: uncited_absolute
+  - Current: "(no proven entitlement), never to"
+  - Record state: stays active pending exact replacement copy
+- `supabase/functions/_shared/exportBuild.ts:97` — REWRITE — OWNER APPROVAL; tags: uncited_absolute
+  - Current: "Payment card data is never held by this service and therefore never appears in an export."
+  - Record state: stays active pending exact replacement copy
+- `supabase/functions/chat-agent/index.ts:79` — REWRITE — OWNER APPROVAL; tags: uncited_absolute
+  - Current: "or similar — keep your reply SHORT. The server attaches its own approved membership link to your message. Never paste, invent or describe a link or button yourself, and never refer to"
+  - Record state: stays active pending exact replacement copy
