@@ -35,7 +35,7 @@ RISK_RULES: list[tuple[str, str]] = [
     ("cheat_meal", r"(cheat meal|cheat day|cheat and fast|treat yourself day)"),
     ("supplements", r"(supplement|berberine|chromium|cinnamon capsule|alpha[- ]lipoic|\bdosage\b|\bdose[sd]?\b|\bmg\b)"),
     ("reversal_cure", r"(revers(e|al|ing)\b|\bcure[ds]?\b|remission)"),
-    ("promised_outcomes", r"(lower(s|ing)? (your )?(a1c|blood sugar|post-?meal|glucose)|drop \d+|lose \d+\s*(lb|pound|kg)|guarantee[ds]?|will (reduce|drop|fall)|points? lower|in (just )?\d+ (days?|weeks?)|works? immediately|measurable proof|your average is transformed|already writing|is repeatable|single most effective|most effective thing)"),
+    ("promised_outcomes", r"(lower(s|ing)? (your )?(a1c|blood sugar|post-?meal|glucose)|drop \d+|lose \d+\s*(lb|pound|kg)|guarantee[ds]?|will (reduce|drop|fall)|points? lower|in (just )?\d+ (days?|weeks?)|works? immediately|measurable proof|your average is transformed|already writing|is repeatable|single most effective|most effective thing|crammed for|can only be earned|by up to \d+ ?%)"),
     ("diagnostic_label", r"(\bdiabetic\b|pre[- ]?diabetic|normal zone|diabetic zone)"),
     ("treatment_or_testing_instruction", r"(insulin dose|adjust(ing)? your (medication|insulin)|stop taking|skip your (dose|medication)|check your a1c every|get the a1c (drawn|done|tested)|a1c (test|draw|retest)|second a1c|lab, pharmacy|home (a1c )?kit|medication (needs|review)|dose reduction|no experiments this close to a test|hold the line)"),
     ("medical_clearance", r"(cleared? (you|your) (knees|joints|back)|safe for your (knees|body|condition)|no need to (see|ask) (your )?doctor|medically safe for you|medical clearance|blood[- ]sugar clearance|prove you own this skill)"),
@@ -43,7 +43,7 @@ RISK_RULES: list[tuple[str, str]] = [
     ("uncited_absolute", r"(\balways\b|\bnever\b|everyone|proven to|scientifically proven|studies show|thirty separate interventions|it works on your body|works on YOUR body)"),
     ("obsolete_feature", r"(whatsapp|coaching call|your coach|personal(ised|ized) (health )?ai|book a call|calendly|1[- ]on[- ]1|fasting unlocks|fasting tab)"),
     ("nonfunctional_promise", r"(printable report coming|read more soon|coming soon|click here to download)"),
-    ("insulin_sensitivity_claim", r"(insulin sensitivity|glucose uptake|burns? (the )?sugar|glucose sponge|moves glucose into your muscles|pulls? glucose out of your bloodstream|without needing insulin|blood sugar medicine|like it'?s medicine|different insulin responses|glucose repair)"),
+    ("insulin_sensitivity_claim", r"(insulin sensitivity|glucose uptake|burns? (the )?sugar|glucose sponge|moves glucose into your muscles|pulls? glucose out of your bloodstream|without needing insulin|blood sugar medicine|like it['’]?s medicine|different insulin responses|glucose repair|raise glucose without|muscle that uses glucose|builds? the muscle)"),
     ("individualised_health_formula", r"(half your body weight in ounces|personal daily water target|palm[- ]sized protein at every meal|exactly two and a half hours|three numbers that matter)"),
 ]
 
