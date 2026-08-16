@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { addCalendarDays, calendarDayKey } from "@/lib/calendarDay";
 
 // Cross-hook-instance realtime signal so Dashboard's rings refresh the
 // instant HabitLogging (a separate useDailyHabits instance) writes.
