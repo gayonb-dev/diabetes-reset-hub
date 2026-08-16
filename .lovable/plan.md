@@ -45,5 +45,6 @@ Export the corrected four doctor-review artifacts plus one complete Parts A–I 
 
 ## Technical notes
 
-- Schema work: one additive migration (drop of the empty `user_agent` column plus two coarse diagnostic columns) with GRANTs and rollback notes.
+- Schema work: one controlled migration — fail-closed drop of the empty `support_tickets.user_agent` column, two coarse diagnostic columns with CHECK constraints, and an idempotent re-affirmation of the one-active-record-per-day unique index. Rollback notes recreate structure only.
 - Verification runs against mocked email/AI/Stripe paths; synthetic records are created and removed by exact ID only.
+
