@@ -1,4 +1,6 @@
 // Single source of truth for a member's current program day (1-indexed).
+// Calendar day comes from the canonical timezone-aware service in
+// `src/lib/calendarDay.ts` (mirrored server-side), keyed to profiles.timezone.
 // Reads profiles.program_start_date, with a fallback chain of:
 //   profiles.program_start_date → subscription.created_at → today.
 // Do NOT recompute program day inline anywhere else — use this hook.
@@ -6,19 +8,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-
-function startOfDay(d: Date) {
-  return new Date(d.getFullYear(), d.getMonth(), d.getDate());
-}
-
-function computeDay(iso: string | null | undefined): number {
-  if (!iso) return 1;
-  const start = new Date(iso);
-  const diff = Math.floor(
-    (startOfDay(new Date()).getTime() - startOfDay(start).getTime()) / 86400000,
-  );
-  return Math.max(1, diff + 1);
-}
+import { programDayFor } from "@/lib/calendarDay";
 
 /**
  * Returns the member's 1-indexed program day, or `0` while still loading.
@@ -29,7 +19,7 @@ function computeDay(iso: string | null | undefined): number {
  * who is actually far past that boundary.
  */
 export function useProgramDay(): number {
-  const { user, subscription } = useAuth();
+  const { user, subscription, timezone } = useAuth();
   const [startDate, setStartDate] = useState<string | null>(null);
   const [loaded, setLoaded] = useState(false);
 
@@ -59,5 +49,5 @@ export function useProgramDay(): number {
   // that would return `1` for members whose subscription row lags the profile
   // read, briefly bouncing Day-29+ users out of gated views (workouts).
   if (!loaded) return 0;
-  return computeDay(startDate ?? subscription?.created_at);
+  return programDayFor(startDate ?? subscription?.created_at, new Date(), timezone);
 }

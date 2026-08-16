@@ -12,6 +12,7 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
 
 import { corsFor } from "../_shared/cors.ts";
+import { calendarDayKey, calendarHour, programDayFor } from "../_shared/calendarDay.ts";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -52,40 +53,9 @@ async function alreadySentTodayUtc(
   return !!data;
 }
 
-// Returns { hour, dateISO } in the given IANA timezone for `now`.
+// Member calendar day + local hour, from the canonical shared service.
 function localParts(now: Date, tz: string): { hour: number; dateISO: string } {
-  try {
-    const fmt = new Intl.DateTimeFormat("en-CA", {
-      timeZone: tz,
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      hour12: false,
-    });
-    const parts = fmt.formatToParts(now);
-    const get = (t: string) => parts.find((p) => p.type === t)?.value ?? "";
-    const y = get("year");
-    const m = get("month");
-    const d = get("day");
-    let h = parseInt(get("hour") || "0", 10);
-    if (h === 24) h = 0;
-    return { hour: h, dateISO: `${y}-${m}-${d}` };
-  } catch {
-    const fallback = new Intl.DateTimeFormat("en-CA", {
-      timeZone: FALLBACK_TZ,
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      hour12: false,
-    });
-    const parts = fallback.formatToParts(now);
-    const get = (t: string) => parts.find((p) => p.type === t)?.value ?? "";
-    let h = parseInt(get("hour") || "0", 10);
-    if (h === 24) h = 0;
-    return { hour: h, dateISO: `${get("year")}-${get("month")}-${get("day")}` };
-  }
+  return { hour: calendarHour(now, tz), dateISO: calendarDayKey(now, tz) };
 }
 
 async function alreadySentOnLocalDate(
@@ -109,10 +79,9 @@ async function alreadySentOnLocalDate(
   });
 }
 
-function daysSince(date: string | null): number {
-  if (!date) return 1;
-  const ms = Date.now() - new Date(date).getTime();
-  return Math.max(1, Math.floor(ms / 86400000) + 1);
+// Program day is a member calendar-day computation — always timezone-aware.
+function programDay(startDate: string | null, now: Date, tz: string): number {
+  return programDayFor(startDate, now, tz);
 }
 
 Deno.serve(async (req) => {
@@ -157,13 +126,12 @@ Deno.serve(async (req) => {
     .select("id", { count: "exact", head: true })
     .eq("answer_count", 0);
 
-  const todayUtcStr = now.toISOString().slice(0, 10);
 
   for (const p of profiles) {
-    const dayInProgram = daysSince(p.program_start_date);
     const streak = streakMap.get(p.user_id);
     const tz = (p as { timezone?: string | null }).timezone || FALLBACK_TZ;
     const local = localParts(now, tz);
+    const dayInProgram = programDay(p.program_start_date, now, tz);
 
     // BIRTHDAY — UTC 00, unchanged
     if (hourUtc === 0 && p.date_of_birth) {
@@ -186,14 +154,9 @@ Deno.serve(async (req) => {
 
     // STREAK AT RISK — per-user local 20:00; evaluate member's local today.
     if (local.hour === 20 && (streak?.current_streak ?? 0) > 0) {
-      // Use UTC "today" for log lookups. This is a small approximation: log
-      // rows are already keyed by log_date at write time in the member's
-      // local view of "today", so scanning today+yesterday is safer.
-      const logDates = [todayUtcStr];
-      // Include yesterday when timezone is west of UTC and its local date
-      // is still one behind UTC.
-      const yesterday = new Date(now.getTime() - 24 * 3600 * 1000).toISOString().slice(0, 10);
-      if (local.dateISO !== todayUtcStr) logDates.push(local.dateISO, yesterday);
+      // Log rows are written with the member's local calendar day, so the
+      // member's local today is the only date we need to read.
+      const logDates = [local.dateISO];
 
       const [water, meals, walks, mindset] = await Promise.all([
         supabase.from("water_logs").select("ounces, log_date").eq("member_id", p.user_id).in("log_date", logDates),

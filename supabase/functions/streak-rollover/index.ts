@@ -10,36 +10,20 @@
 import { createClient } from "npm:@supabase/supabase-js@2.57.2";
 
 import { corsFor } from "../_shared/cors.ts";
+import { addCalendarDays, calendarDayKey, calendarHour } from "../_shared/calendarDay.ts";
 
 const INTERNAL_SECRET = Deno.env.get("INTERNAL_FUNCTION_SECRET")!;
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const FALLBACK_TZ = "America/New_York";
 
-function localHourAndYesterday(now: Date, tz: string): { hour: number; yesterdayISO: string; todayISO: string } {
-  const parts = (zone: string) =>
-    new Intl.DateTimeFormat("en-CA", {
-      timeZone: zone,
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      hour12: false,
-    }).formatToParts(now);
-  let p: Intl.DateTimeFormatPart[];
-  try {
-    p = parts(tz);
-  } catch {
-    p = parts(FALLBACK_TZ);
-  }
-  const get = (t: string) => p.find((x) => x.type === t)?.value ?? "";
-  let h = parseInt(get("hour") || "0", 10);
-  if (h === 24) h = 0;
-  const todayISO = `${get("year")}-${get("month")}-${get("day")}`;
-  const y = new Date(`${todayISO}T00:00:00Z`);
-  y.setUTCDate(y.getUTCDate() - 1);
-  const yesterdayISO = y.toISOString().slice(0, 10);
-  return { hour: h, yesterdayISO, todayISO };
+// Member local hour + calendar days, from the canonical shared service.
+function localHourAndYesterday(
+  now: Date,
+  tz: string,
+): { hour: number; yesterdayISO: string; todayISO: string } {
+  const todayISO = calendarDayKey(now, tz);
+  return { hour: calendarHour(now, tz), todayISO, yesterdayISO: addCalendarDays(todayISO, -1) };
 }
 
 async function sendNotification(userId: string, templateKey: string, vars: Record<string, unknown>) {

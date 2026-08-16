@@ -66,6 +66,8 @@ function Section({
       <button
         type="button"
         onClick={onToggle}
+        aria-expanded={open}
+        aria-label={`${open ? "Collapse" : "Expand"} ${title}`}
         className="w-full min-h-[52px] flex items-center justify-between gap-3 px-4 py-3 text-left"
       >
         <div className="flex items-center gap-3">
@@ -243,7 +245,13 @@ export default function HabitLogging({ currentProgramDay }: Props) {
 
   return (
     <div className="space-y-3">
-      <h2 className="font-heading text-lg font-semibold text-foreground">Today's logging</h2>
+      <h2
+        id="daily-habits-heading"
+        tabIndex={-1}
+        className="font-heading text-lg font-semibold text-foreground outline-none"
+      >
+        Today's logging
+      </h2>
 
       {/* WATER */}
       <div id="water-logging" className="scroll-mt-20">
@@ -299,60 +307,16 @@ export default function HabitLogging({ currentProgramDay }: Props) {
         onToggle={() => toggle("meals")}
       >
         <div className="space-y-3 mt-3">
-          {(["breakfast", "lunch", "dinner"] as const).map((mt) => {
-            const m = h.meals[mt];
-            const all = m.vegetables && m.protein && m.complex_carbs;
-            return (
-              <div
-                key={mt}
-                className={cn(
-                  "rounded-xl border p-3 transition-colors",
-                  all ? "border-primary border-2 bg-primary-muted" : "border-border bg-card",
-                )}
-              >
-                <p className="text-sm font-medium text-foreground mb-2">{MEAL_LABEL[mt]}</p>
-                {[
-                  { k: "vegetables" as const, label: "Half plate: vegetables?" },
-                  { k: "protein" as const, label: "Quarter plate: protein?" },
-                  { k: "complex_carbs" as const, label: "Quarter plate: complex carbs?" },
-                ].map(({ k, label }) => (
-                  <div key={k} className="flex items-center justify-between py-1.5 text-sm">
-                    <span className="text-secondary-fg">{label}</span>
-                    <div className="flex gap-1">
-                      <button
-                        onClick={() => h.saveMeal(mt, { [k]: true } as Partial<typeof m>)}
-                        className={cn(
-                          "h-8 w-8 rounded-md border flex items-center justify-center",
-                          m[k] ? "bg-primary border-primary text-primary-foreground" : "border-border",
-                        )}
-                        aria-label={`${label} yes`}
-                      >
-                        <Check className="h-4 w-4" />
-                      </button>
-                      <button
-                        onClick={() => h.saveMeal(mt, { [k]: false } as Partial<typeof m>)}
-                        className={cn(
-                          "h-8 w-8 rounded-md border flex items-center justify-center",
-                          m[k] === false
-                            ? "bg-destructive/15 border-destructive/40 text-foreground"
-                            : "border-border",
-                        )}
-                        aria-label={`${label} no`}
-                      >
-                        <X className="h-4 w-4" />
-                      </button>
-                    </div>
-                  </div>
-                ))}
-                <Input
-                  placeholder="What did you eat? (optional)"
-                  className="mt-2 text-sm"
-                  value={m.free_text ?? ""}
-                  onChange={(e) => h.saveMeal(mt, { free_text: e.target.value })}
-                />
-              </div>
-            );
-          })}
+          {(["breakfast", "lunch", "dinner"] as const).map((mt) => (
+            <MealCard
+              key={mt}
+              mealType={mt}
+              meal={h.meals[mt]}
+              saveState={h.mealSaveState[mt]}
+              onSave={(patch) => h.saveMeal(mt, patch)}
+              onRetry={() => h.retryMeal(mt)}
+            />
+          ))}
         </div>
       </Section>
 
@@ -596,6 +560,116 @@ function MindsetCard({ read, onRead }: { read: boolean; onRead: () => void }) {
       >
         {read ? "Read ✓" : canRead ? "I read this" : `I read this (${30 - elapsed}s)`}
       </Button>
+    </div>
+  );
+}
+
+
+// Labelled, keyboard-operable meal toggles with an exposed checked state and
+// a debounced free-text field, so 3/3 is reached durably without a write per
+// keystroke.
+function MealCard({
+  mealType,
+  meal,
+  saveState,
+  onSave,
+  onRetry,
+}: {
+  mealType: "breakfast" | "lunch" | "dinner";
+  meal: { vegetables: boolean; protein: boolean; complex_carbs: boolean; free_text: string | null };
+  saveState: "idle" | "saving" | "error";
+  onSave: (patch: Record<string, unknown>) => void;
+  onRetry: () => void;
+}) {
+  const all = meal.vegetables && meal.protein && meal.complex_carbs;
+  const [text, setText] = useState(meal.free_text ?? "");
+  const dirty = useRef(false);
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Adopt server value only while the field is not being edited.
+  useEffect(() => {
+    if (!dirty.current) setText(meal.free_text ?? "");
+  }, [meal.free_text]);
+
+  useEffect(() => () => { if (timer.current) clearTimeout(timer.current); }, []);
+
+  const onText = (v: string) => {
+    dirty.current = true;
+    setText(v);
+    if (timer.current) clearTimeout(timer.current);
+    timer.current = setTimeout(() => {
+      dirty.current = false;
+      onSave({ free_text: v });
+    }, 600);
+  };
+
+  const flush = () => {
+    if (timer.current) clearTimeout(timer.current);
+    if (dirty.current) {
+      dirty.current = false;
+      onSave({ free_text: text });
+    }
+  };
+
+  const rows = [
+    { k: "vegetables" as const, label: "Half plate: vegetables" },
+    { k: "protein" as const, label: "Quarter plate: protein" },
+    { k: "complex_carbs" as const, label: "Quarter plate: complex carbs" },
+  ];
+
+  return (
+    <div
+      className={cn(
+        "rounded-xl border p-3 transition-colors",
+        all ? "border-primary border-2 bg-primary-muted" : "border-border bg-card",
+      )}
+    >
+      <div className="flex items-center justify-between mb-2">
+        <p className="text-sm font-medium text-foreground">{MEAL_LABEL[mealType]}</p>
+        {saveState === "saving" && <span className="text-[11px] text-tertiary-fg">Saving…</span>}
+        {saveState === "error" && (
+          <button
+            onClick={onRetry}
+            className="text-[11px] text-destructive underline min-h-11 px-1"
+          >
+            Not saved — retry
+          </button>
+        )}
+      </div>
+      <ul className="space-y-1">
+        {rows.map(({ k, label }) => (
+          <li key={k}>
+            <button
+              type="button"
+              role="checkbox"
+              aria-checked={meal[k]}
+              onClick={() => onSave({ [k]: !meal[k] })}
+              className={cn(
+                "w-full min-h-11 px-2 rounded-lg border flex items-center justify-between gap-3 text-sm text-left",
+                meal[k] ? "border-primary bg-primary/10" : "border-border",
+              )}
+            >
+              <span className="text-secondary-fg">{label}</span>
+              <span
+                aria-hidden
+                className={cn(
+                  "h-6 w-6 shrink-0 rounded-md border flex items-center justify-center",
+                  meal[k] ? "bg-primary border-primary text-primary-foreground" : "border-border",
+                )}
+              >
+                {meal[k] ? <Check className="h-4 w-4" /> : <X className="h-3.5 w-3.5 text-tertiary-fg" />}
+              </span>
+            </button>
+          </li>
+        ))}
+      </ul>
+      <Input
+        placeholder="What did you eat? (optional)"
+        className="mt-2 text-sm"
+        value={text}
+        onChange={(e) => onText(e.target.value)}
+        onBlur={flush}
+      />
     </div>
   );
 }

@@ -29,6 +29,9 @@ import {
   isLowStatus,
   localDateTimeValue,
   GLUCOSE_LOW_THRESHOLDS,
+  GLUCOSE_AXIS_MAX,
+  GLUCOSE_RANGES,
+  glucoseBands,
   GlucoseStatus,
 
 } from "@/lib/glucose";
@@ -55,15 +58,8 @@ const READING_TYPES: { k: ReadingType; label: string }[] = [
   { k: "other", label: "Other" },
 ];
 
-// Reference bar geometry in mg/dL. Status classification itself comes from
-// src/lib/glucose.ts — the shared source of truth.
-const RANGES = {
-  fasting: { normal: 100, diabetic: 126, max: 200 },
-  post_meal: { normal: 140, diabetic: 200, max: 300 },
-  bedtime: { normal: 120, diabetic: 180, max: 250 },
-  other: { normal: 140, diabetic: 200, max: 300 },
-  cgm: { normal: 140, diabetic: 200, max: 300 },
-};
+// Reference geometry, bands and labels all come from src/lib/glucose.ts —
+// the shared S1 source of truth — keyed to the selected reading type.
 
 
 export default function BloodSugarTab() {
@@ -312,7 +308,7 @@ export default function BloodSugarTab() {
 
       </Card>
 
-      <BloodSugarHistory readings={readings} unit={unit} />
+      <BloodSugarHistory readings={readings} unit={unit} referenceType={type} />
     </div>
   );
 }
@@ -326,31 +322,32 @@ function ReferenceBar({
   unit: GlucoseUnit;
   valueMgdl: number | null;
 }) {
-  const r = RANGES[type];
+  const bands = glucoseBands(type);
+  const max = GLUCOSE_AXIS_MAX[type];
   const fmt = (v: number) => (unit === "mmoll" ? mgdlToMmoll(v).toFixed(1) : String(v));
-  const max = r.max;
   const pct = valueMgdl != null ? Math.min(Math.max(valueMgdl / max, 0), 1) * 100 : null;
-  const lowPct = (GLUCOSE_LOW_THRESHOLDS.low / max) * 100;
-  const normalPct = (r.normal / max) * 100;
-  const diabeticPct = (r.diabetic / max) * 100;
   const status = valueMgdl != null ? classifyGlucose(valueMgdl, type) : null;
+  const readingLabel = READING_TYPES.find((r) => r.k === type)?.label ?? type;
 
   return (
     <div className="mt-4">
       <div className="relative h-3 rounded-full overflow-hidden bg-muted">
-        <div className="absolute inset-y-0 left-0 bg-status-danger" style={{ width: `${lowPct}%` }} />
-        <div
-          className="absolute inset-y-0 bg-status-normal"
-          style={{ left: `${lowPct}%`, width: `${normalPct - lowPct}%` }}
-        />
-        <div
-          className="absolute inset-y-0 bg-status-warning"
-          style={{ left: `${normalPct}%`, width: `${diabeticPct - normalPct}%` }}
-        />
-        <div
-          className="absolute inset-y-0 bg-status-danger"
-          style={{ left: `${diabeticPct}%`, width: `${100 - diabeticPct}%` }}
-        />
+        {bands.map((b) => (
+          <div
+            key={b.status}
+            className={
+              b.status === "in_range"
+                ? "absolute inset-y-0 bg-status-normal"
+                : b.status === "elevated" || b.status === "low"
+                ? "absolute inset-y-0 bg-status-warning"
+                : "absolute inset-y-0 bg-status-danger"
+            }
+            style={{
+              left: `${(b.from / max) * 100}%`,
+              width: `${((Math.min(b.to, max) - b.from) / max) * 100}%`,
+            }}
+          />
+        ))}
         {pct != null && (
           <div
             className="absolute top-1/2 -translate-y-1/2 h-5 w-5 rounded-full border-2 border-white shadow"
@@ -360,16 +357,31 @@ function ReferenceBar({
       </div>
       <div className="flex justify-between text-[10px] text-tertiary-fg mt-1">
         <span>Low &lt; {fmt(GLUCOSE_LOW_THRESHOLDS.low)}</span>
-        <span>In range &lt; {fmt(r.normal)}</span>
-        <span>Diabetic ≥ {fmt(r.diabetic)}</span>
+        <span>In range &lt; {fmt(GLUCOSE_RANGES[type].inRangeMax)}</span>
+        <span>High &ge; {fmt(GLUCOSE_RANGES[type].elevatedMax)}</span>
         <span>{fmt(max)}</span>
       </div>
+      <p className="sr-only">
+        Reference ranges for {readingLabel}:{" "}
+        {bands
+          .map((b) => `${b.label} ${fmt(b.from)} to ${fmt(Math.min(b.to, max))}`)
+          .join("; ")}{" "}
+        {unit === "mmoll" ? "mmol/L" : "mg/dL"}.
+      </p>
     </div>
   );
 
 }
 
-function BloodSugarHistory({ readings, unit }: { readings: Reading[]; unit: GlucoseUnit }) {
+function BloodSugarHistory({
+  readings,
+  unit,
+  referenceType,
+}: {
+  readings: Reading[];
+  unit: GlucoseUnit;
+  referenceType: ReadingType;
+}) {
   if (readings.length === 0)
     return (
       <Card className="p-5 border border-border bg-muted/20">
@@ -388,6 +400,8 @@ function BloodSugarHistory({ readings, unit }: { readings: Reading[]; unit: Gluc
     value: unit === "mmoll" ? Number(mgdlToMmoll(r.value_mgdl).toFixed(1)) : Math.round(r.value_mgdl),
     mgdl: r.value_mgdl,
     status: classifyGlucose(r.value_mgdl, r.reading_type),
+    readingType: r.reading_type,
+    measuredAt: r.measured_at,
   }));
 
   const avg = (arr: number[]) => Math.round(arr.reduce((a, b) => a + b, 0) / arr.length);
@@ -401,12 +415,17 @@ function BloodSugarHistory({ readings, unit }: { readings: Reading[]; unit: Gluc
   })();
 
   const fmt = (mg: number) => (unit === "mmoll" ? mgdlToMmoll(mg).toFixed(1) : String(Math.round(mg)));
-  const normalRef = unit === "mmoll" ? Number(mgdlToMmoll(100).toFixed(1)) : 100;
-  const diabeticRef = unit === "mmoll" ? Number(mgdlToMmoll(126).toFixed(1)) : 126;
+  const conv = (mg: number) => (unit === "mmoll" ? Number(mgdlToMmoll(mg).toFixed(1)) : mg);
+  const inRangeRef = conv(GLUCOSE_RANGES[referenceType].inRangeMax);
+  const highRef = conv(GLUCOSE_RANGES[referenceType].elevatedMax);
+  const referenceLabel = READING_TYPES.find((r) => r.k === referenceType)?.label ?? referenceType;
 
   return (
     <Card className="p-5 border border-border">
       <p className="text-sm font-medium mb-3">Blood sugar trend</p>
+      <p className="text-[11px] text-tertiary-fg mb-2">
+        Reference lines shown for {referenceLabel}. Each point is classified against its own reading type.
+      </p>
       <div className="h-48 w-full">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={data} margin={{ top: 8, right: 12, left: -12, bottom: 0 }}>
@@ -421,13 +440,16 @@ function BloodSugarHistory({ readings, unit }: { readings: Reading[]; unit: Gluc
                 fontSize: 12,
                 color: "hsl(var(--popover-foreground))",
               }}
-              formatter={(v: number) => [`${v} ${unit === "mmoll" ? "mmol/L" : "mg/dL"}`, "Reading"]}
+              formatter={(v: number, _n, item: { payload?: { status?: GlucoseStatus } }) => [
+                `${v} ${unit === "mmoll" ? "mmol/L" : "mg/dL"} · ${GLUCOSE_STATUS_LABEL[item?.payload?.status ?? "in_range"]}`,
+                "Reading",
+              ]}
               labelFormatter={(l) => `Date: ${l}`}
             />
-            {/* Shaded normal range band — below 100 mg/dL / 5.6 mmol/L */}
-            <ReferenceArea y1={0} y2={normalRef} fill="hsl(var(--status-normal))" fillOpacity={0.12} strokeOpacity={0} />
-            <ReferenceLine y={normalRef} stroke="hsl(var(--status-normal))" strokeDasharray="4 4" />
-            <ReferenceLine y={diabeticRef} stroke="hsl(var(--status-warning))" strokeDasharray="4 4" />
+            {/* Shaded in-range band — below 100 mg/dL / 5.6 mmol/L */}
+            <ReferenceArea y1={conv(GLUCOSE_LOW_THRESHOLDS.low)} y2={inRangeRef} fill="hsl(var(--status-normal))" fillOpacity={0.12} strokeOpacity={0} />
+            <ReferenceLine y={inRangeRef} stroke="hsl(var(--status-normal))" strokeDasharray="4 4" />
+            <ReferenceLine y={highRef} stroke="hsl(var(--status-warning))" strokeDasharray="4 4" />
             <Line
               type="monotone"
               dataKey="value"
@@ -454,12 +476,49 @@ function BloodSugarHistory({ readings, unit }: { readings: Reading[]; unit: Gluc
           <p className="text-sm font-semibold">{last30.length ? fmt(avg(last30.map((r) => r.value_mgdl))) : "—"}</p>
         </div>
         <div>
-          <p className="text-[11px] text-tertiary-fg">All-time trend</p>
-          <p className="text-sm font-semibold">
-            {trendDelta == null ? "—" : `${trendDelta > 0 ? "↑" : "↓"} ${Math.abs(trendDelta)}%`}
+          <p className="text-[11px] text-tertiary-fg">Change since first reading</p>
+          <p className="text-sm font-semibold tabular-nums">
+            {trendDelta == null ? "—" : `${trendDelta > 0 ? "+" : "−"}${Math.abs(trendDelta)}%`}
           </p>
         </div>
       </div>
+
+      {/* Text equivalent of the chart — same data, readable without the graph. */}
+      <details className="mt-4">
+        <summary className="text-[12px] text-secondary-fg cursor-pointer min-h-11 flex items-center">
+          View readings as a table
+        </summary>
+        <div className="overflow-x-auto mt-2">
+          <table className="w-full text-[12px]">
+            <caption className="sr-only">
+              Blood sugar readings with date, reading type, value and status
+            </caption>
+            <thead>
+              <tr className="text-tertiary-fg text-left">
+                <th scope="col" className="py-1 pr-3 font-medium">Date</th>
+                <th scope="col" className="py-1 pr-3 font-medium">Type</th>
+                <th scope="col" className="py-1 pr-3 font-medium">Value</th>
+                <th scope="col" className="py-1 font-medium">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {[...data].reverse().map((d) => (
+                <tr key={d.id} className="border-t border-border">
+                  <td className="py-1 pr-3 whitespace-nowrap">{d.label}</td>
+                  <td className="py-1 pr-3">
+                    {READING_TYPES.find((r) => r.k === d.readingType)?.label ??
+                      (d.readingType === "cgm" ? "CGM" : d.readingType)}
+                  </td>
+                  <td className="py-1 pr-3 tabular-nums">
+                    {d.value} {unit === "mmoll" ? "mmol/L" : "mg/dL"}
+                  </td>
+                  <td className="py-1">{GLUCOSE_STATUS_LABEL[d.status]}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </details>
     </Card>
   );
 }

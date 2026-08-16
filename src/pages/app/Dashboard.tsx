@@ -29,7 +29,8 @@ import { useVitaQuotes } from "@/hooks/useVitaQuotes";
 import { useProgramDay } from "@/hooks/useProgramDay";
 import { getUnits, displayGlucose, displayWeight } from "@/lib/units";
 import { bloodSugarTone, classifyGlucose, GLUCOSE_STATUS_LABEL, GlucoseReadingType } from "@/lib/glucose";
-import { phaseFor, dayInPhase, PHASE_TOTAL } from "@/lib/phase";
+import { phaseFor, dayInPhase, PHASE_TOTAL, PROGRAM_TOTAL_DAYS } from "@/lib/phase";
+import { ProgramProgressLine } from "@/components/dashboard/ProgramProgressLine";
 
 type DailyAction = {
   id: string;
@@ -392,6 +393,9 @@ export default function Dashboard() {
             </span>
             <LevelBadge level={gam.level} />
           </div>
+          <div className="mt-2">
+            <ProgramProgressLine currentProgramDay={currentProgramDay} />
+          </div>
         </div>
 
 
@@ -418,7 +422,7 @@ export default function Dashboard() {
             <div className="flex items-center justify-between mb-3">
               <p className="label-caps text-accent">Today's Action</p>
               <span className="flex items-center gap-2 text-[12px] text-tertiary-fg">
-                Day {currentProgramDay} of {phase.end}
+                Day {currentProgramDay} of {PROGRAM_TOTAL_DAYS}
                 {actionDoneToday && <CheckCircle2 className="h-4 w-4 text-primary" />}
               </span>
             </div>
@@ -463,7 +467,6 @@ export default function Dashboard() {
           {[
             { to: "/app/progress", icon: Droplet, label: "Log blood sugar" },
             { to: "/app/meals", icon: UtensilsCrossed, label: "Log a meal" },
-            { to: "#daily-habits", icon: Activity, label: "Log habits" },
           ].map((s) => (
             <Link
               key={s.label}
@@ -474,6 +477,21 @@ export default function Dashboard() {
               {s.label}
             </Link>
           ))}
+          {/* Same-page shortcut: scrolls the habit section in and moves focus
+              to its heading so keyboard and screen-reader users land there. */}
+          <button
+            type="button"
+            onClick={() => {
+              const section = document.getElementById("daily-habits");
+              const heading = document.getElementById("daily-habits-heading");
+              section?.scrollIntoView({ behavior: "smooth", block: "start" });
+              heading?.focus({ preventScroll: true });
+            }}
+            className="flex flex-col items-center justify-center gap-1 min-h-[64px] rounded-lg border border-border bg-card px-2 py-3 text-center text-[12px] font-medium text-secondary-fg hover:bg-muted/50 transition-colors"
+          >
+            <Activity className="h-4 w-4 text-primary" aria-hidden />
+            Log habits
+          </button>
         </nav>
 
         {/* Prompt 6 A3 — one compact progress summary. The rings stay as

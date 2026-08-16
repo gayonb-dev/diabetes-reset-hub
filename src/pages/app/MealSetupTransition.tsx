@@ -10,6 +10,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import { addCalendarDays, calendarDayKey } from "@/lib/calendarDay";
 import { supabase } from "@/integrations/supabase/client";
 import Vita from "@/components/vita/Vita";
 import VitaErrorCard from "@/components/vita/VitaErrorCard";
@@ -41,14 +42,14 @@ type WeekKey = "plan1" | "plan2" | "plan3" | "plan4";
 interface PlanIds { plan1: string | null; plan2: string | null; plan3: string | null; plan4: string | null }
 type GenerationResult = { error?: { message?: string } | null };
 
-function todayPlus(days: number) {
-  const d = new Date();
-  d.setDate(d.getDate() + days);
-  return d.toISOString().slice(0, 10);
+// Week-start dates are member calendar days, resolved through the canonical
+// timezone-aware service.
+function todayPlus(days: number, tz: string) {
+  return addCalendarDays(calendarDayKey(new Date(), tz), days);
 }
 
 export default function MealSetupTransition() {
-  const { user } = useAuth();
+  const { user, timezone } = useAuth();
   const navigate = useNavigate();
 
   const [cuisine, setCuisine] = useState<string>(DEFAULT_CUISINE);
@@ -108,8 +109,8 @@ export default function MealSetupTransition() {
           plan_type: "standard",
           generation_status: "pending",
           generation_trigger: "onboarding",
-          valid_from: todayPlus(offset),
-          valid_until: todayPlus(offset + 6),
+          valid_from: todayPlus(offset, timezone),
+          valid_until: todayPlus(offset + 6, timezone),
           preferences_snapshot: snapshot,
           plan_data: {},
         } as never)
