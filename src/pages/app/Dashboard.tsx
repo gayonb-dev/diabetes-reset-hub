@@ -29,7 +29,8 @@ import { useVitaQuotes } from "@/hooks/useVitaQuotes";
 import { useProgramDay } from "@/hooks/useProgramDay";
 import { getUnits, displayGlucose, displayWeight } from "@/lib/units";
 import { bloodSugarTone, classifyGlucose, GLUCOSE_STATUS_LABEL, GlucoseReadingType } from "@/lib/glucose";
-import { phaseFor, dayInPhase, PHASE_TOTAL } from "@/lib/phase";
+import { phaseFor, dayInPhase, PHASE_TOTAL, PROGRAM_TOTAL_DAYS } from "@/lib/phase";
+import { ProgramProgressLine } from "@/components/dashboard/ProgramProgressLine";
 
 type DailyAction = {
   id: string;
@@ -392,6 +393,9 @@ export default function Dashboard() {
             </span>
             <LevelBadge level={gam.level} />
           </div>
+          <div className="mt-2">
+            <ProgramProgressLine currentProgramDay={currentProgramDay} />
+          </div>
         </div>
 
 
@@ -418,7 +422,7 @@ export default function Dashboard() {
             <div className="flex items-center justify-between mb-3">
               <p className="label-caps text-accent">Today's Action</p>
               <span className="flex items-center gap-2 text-[12px] text-tertiary-fg">
-                Day {currentProgramDay} of {phase.end}
+                Day {currentProgramDay} of {PROGRAM_TOTAL_DAYS}
                 {actionDoneToday && <CheckCircle2 className="h-4 w-4 text-primary" />}
               </span>
             </div>
