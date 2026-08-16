@@ -7,7 +7,10 @@ import {
   isFutureTimestamp,
   GLUCOSE_STATUS_LABEL,
   GlucoseReadingType,
+  glucoseBands,
+  GLUCOSE_AXIS_MAX,
 } from "@/lib/glucose";
+import { mmollToMgdl } from "@/lib/units";
 
 const TYPES: GlucoseReadingType[] = ["fasting", "post_meal", "bedtime", "other", "cgm"];
 
