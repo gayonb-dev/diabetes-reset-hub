@@ -2411,6 +2411,8 @@ export type Database = {
       support_tickets: {
         Row: {
           category: string
+          client_platform: string | null
+          client_viewport: string | null
           created_at: string
           email_status: string
           first_response_at: string | null
@@ -2422,11 +2424,12 @@ export type Database = {
           resolved_at: string | null
           status: string
           updated_at: string
-          user_agent: string | null
           user_id: string
         }
         Insert: {
           category: string
+          client_platform?: string | null
+          client_viewport?: string | null
           created_at?: string
           email_status?: string
           first_response_at?: string | null
@@ -2438,11 +2441,12 @@ export type Database = {
           resolved_at?: string | null
           status?: string
           updated_at?: string
-          user_agent?: string | null
           user_id: string
         }
         Update: {
           category?: string
+          client_platform?: string | null
+          client_viewport?: string | null
           created_at?: string
           email_status?: string
           first_response_at?: string | null
@@ -2454,7 +2458,6 @@ export type Database = {
           resolved_at?: string | null
           status?: string
           updated_at?: string
-          user_agent?: string | null
           user_id?: string
         }
         Relationships: []

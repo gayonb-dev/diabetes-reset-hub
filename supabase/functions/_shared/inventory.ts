@@ -77,7 +77,10 @@ export const INVENTORY: InventoryEntry[] = [
 
   // ---- support (Batch 1 Part E) ----
   { table: "support_ticket_notes", match: "user_id", column: "ticket_id", disposition: "reference_only", order: 23, category: "support" },
-  { table: "support_tickets", match: "user_id", column: "user_id", disposition: "export_and_delete", order: 24, redact: ["user_agent"], category: "support" },
+  // Raw user agent is NOT COLLECTED (column removed 2026-08-16); only coarse
+  // non-identifying client_platform / client_viewport values are stored.
+  { table: "support_tickets", match: "user_id", column: "user_id", disposition: "export_and_delete", order: 24, category: "support" },
+
 
   // ---- participation ledger and workout receipts (Batch 1 Parts F, G) ----
   { table: "points_ledger", match: "user_id", column: "user_id", disposition: "export_and_delete", order: 22, category: "gamification" },

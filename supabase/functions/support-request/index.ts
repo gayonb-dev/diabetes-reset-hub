@@ -76,7 +76,13 @@ Deno.serve(async (req) => {
     const category = String(body.category ?? "Question");
     const message = String(body.message ?? "").trim();
     const pageContext = String(body.pageContext ?? "").slice(0, 500);
-    const userAgent = String(body.userAgent ?? "").slice(0, 500);
+    // Minimum non-identifying diagnostics. The raw user agent is never
+    // accepted, stored or logged.
+    const PLATFORMS = new Set(["web", "ios", "android", "unknown"]);
+    const rawPlatform = String(body.clientPlatform ?? "unknown").toLowerCase();
+    const clientPlatform = PLATFORMS.has(rawPlatform) ? rawPlatform : "unknown";
+    const clientViewport = body.clientViewport === "mobile" ? "mobile" : "desktop";
+
 
     if (!CATEGORIES.has(category)) {
       return new Response(JSON.stringify({ error: "invalid_category" }), {
@@ -120,7 +126,9 @@ Deno.serve(async (req) => {
         category,
         message,
         page_context: pageContext,
-        user_agent: userAgent,
+        client_platform: clientPlatform,
+        client_viewport: clientViewport,
+
         program_day: programDay,
         email_status: "not_attempted",
       })

@@ -105,6 +105,36 @@ def cover(name, kind, count, reason=""):
     coverage.append({"surface": name, "kind": kind, "items": count, "reason": reason})
 
 
+# Member-owned tables. The doctor-review inventory reviews AUTHORED CONTENT only.
+# These tables hold member personal data and are NEVER read, sampled or exported
+# by this generator. They are declared here so the coverage manifest proves the
+# exclusion is deliberate rather than an oversight.
+PERSONAL_DATA_EXCLUSIONS = [
+    ("public.profiles", "Member identity and account fields."),
+    ("public.visitor_profiles", "Member progress/gamification state tied to a person."),
+    ("public.support_tickets", "Member-written support messages."),
+    ("public.support_ticket_notes", "Internal notes about an identifiable member."),
+    ("public.points_ledger", "Per-member participation ledger."),
+    ("public.community_questions", "Member-authored community posts."),
+    ("public.community_answers", "Member-authored community replies."),
+    ("public.win_posts", "Member-authored community posts."),
+    ("public.qa_submissions", "Member-submitted questions."),
+    ("public.messages", "Member chat transcripts."),
+    ("public.conversations", "Member chat metadata."),
+    ("public.health_logs", "Member health measurements."),
+    ("public.blood_sugar_readings", "Member glucose data."),
+    ("public.member_measurements", "Member body measurements."),
+    ("public.intake_submissions", "Member intake responses."),
+]
+
+
+def cover_personal_data_exclusions():
+    for table, why in PERSONAL_DATA_EXCLUSIONS:
+        cover(f"{table} (EXCLUDED — member personal data)", "excluded", 0,
+              f"Not authored content. {why} Never read or exported by the doctor-review inventory.")
+
+
+
 # ---------------------------------------------------------------- database
 def collect_database():
     rows = q("select id, day_number, phase_number, day_name, action_title, action_description, "
@@ -312,6 +342,25 @@ def gate_duplicates(rows) -> list[str]:
     return errs
 
 
+def gate_no_personal_data() -> list[str]:
+    """Fail closed if this generator ever queries a member-owned table, or if an
+    emitted item's location points at one. The doctor-review pack must contain
+    authored content only — never member personal data."""
+    errs = []
+    src = Path(__file__).read_text(encoding="utf-8")
+    # Only inspect the SQL actually handed to q(); the exclusion list itself and
+    # this docstring legitimately mention the table names.
+    sql = " ".join(re.findall(r"q\(\s*((?:\"[^\"]*\"\s*)+)\)", src, re.S)).lower()
+    for table, _ in PERSONAL_DATA_EXCLUSIONS:
+        bare = table.split(".")[-1]
+        if re.search(rf"\b(from|join|update|into)\s+(public\.)?{bare}\b", sql):
+            errs.append(f"generator queries excluded personal-data table '{table}'")
+        if any(i["location"].startswith(f"{bare}") or i["id"].startswith(f"{bare}:") for i in items):
+            errs.append(f"inventory emitted an item sourced from personal-data table '{table}'")
+    return errs
+
+
+
 # ------------------------------------------------------------------ output
 def main() -> int:
     if run_fixtures() != 0:
@@ -325,8 +374,10 @@ def main() -> int:
     collect_snacks()
     collect_app_config()
     collect_source()
+    cover_personal_data_exclusions()
 
-    errs = gate_coverage() + gate_duplicates(rows)
+    errs = gate_coverage() + gate_duplicates(rows) + gate_no_personal_data()
+
     if errs:
         for e in errs:
             print("GATE FAIL:", e, file=sys.stderr)
@@ -361,7 +412,12 @@ def main() -> int:
         "generated_by": "scripts/doctor-review/build-inventory.py",
         "project": "wqennhjdojjqmmqzjhti",
         "gates": {"classifier_fixtures": "PASS", "coverage_manifest": "PASS",
-                  "duplicate_day_reconciliation": "PASS"},
+                  "duplicate_day_reconciliation": "PASS",
+                  "no_personal_data": "PASS"},
+        "personal_data_policy":
+            "Authored content only. Member-owned tables are listed as EXCLUDED in the "
+            "coverage manifest and are never read, sampled or exported by this generator.",
+
         "totals": totals,
         "coverage_manifest": coverage,
         "disposition_vocabulary": DISPOSITIONS,

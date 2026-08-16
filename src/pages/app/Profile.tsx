@@ -138,14 +138,20 @@ export default function Profile() {
       {/* Stats row */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <StatCard icon={<Flame className="h-4 w-4" />} value={g.streak_count} label="day streak" color="text-accent" />
-        <StatCard icon={<Sparkles className="h-4 w-4" />} value={ledgerTotal ?? g.reset_points} label="activity score" color="text-primary" />
+        {/* G. The participation ledger is the only Activity Score authority.
+            When the ledger cannot account for a number we show none rather
+            than a legacy value that contradicts the ledger entries below. */}
+        <StatCard icon={<Sparkles className="h-4 w-4" />} value={ledgerTotal ?? "—"} label="activity score" color="text-primary" />
         <StatCard icon={<Heart className="h-4 w-4" />} value={g.helpful_points} label="helpful pts" color="text-accent" />
         <StatCard icon={<CalendarCheck className="h-4 w-4" />} value={compliantDays} label="compliant days" color="text-primary" />
       </div>
 
       <p className="text-[12px] text-tertiary-fg -mt-1">
-        Activity Score: a running total of everything you've logged.
+        {ledgerTotal == null
+          ? "Your Activity Score is being migrated to a new record of everything you've logged. It will appear here once it is complete."
+          : "Activity Score: a running total of everything you've logged."}
       </p>
+
 
       <ActivityScoreCard entries={ledgerEntries} total={ledgerTotal} />
 
@@ -197,7 +203,7 @@ export default function Profile() {
   );
 }
 
-function StatCard({ icon, value, label, color }: { icon: React.ReactNode; value: number; label: string; color: string }) {
+function StatCard({ icon, value, label, color }: { icon: React.ReactNode; value: number | string; label: string; color: string }) {
   return (
     <Card className="p-3 border border-border text-center">
       <div className={`flex items-center justify-center gap-1 ${color}`}>
