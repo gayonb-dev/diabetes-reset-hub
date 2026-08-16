@@ -19,9 +19,10 @@ function defer(): Deferred {
   return { resolve, promise };
 }
 
-vi.mock("@/hooks/useAuth", () => ({
-  useAuth: () => ({ user: { id: "member-a" }, timezone: "America/Jamaica" }),
-}));
+// Stable identities: the real auth context memoises, so the mock must too or
+// the hook's refresh effect would re-run on every render.
+const AUTH = { user: { id: "member-a" }, timezone: "America/Jamaica" };
+vi.mock("@/hooks/useAuth", () => ({ useAuth: () => AUTH }));
 
 vi.mock("@/integrations/supabase/client", () => {
   const emptyList = { data: [], error: null };
