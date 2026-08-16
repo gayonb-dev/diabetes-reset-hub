@@ -39,6 +39,9 @@ export interface WalkLog {
   slot: "after_breakfast" | "after_lunch" | "after_dinner";
 }
 
+/** Honest per-surface write state — no silent failures. */
+export type SaveState = "idle" | "saving" | "error";
+
 export interface DailyHabits {
   loading: boolean;
   waterOz: number;
@@ -55,6 +58,9 @@ export interface DailyHabits {
   markMindsetRead: () => Promise<void>;
   setMood: (m: number) => Promise<void>;
   refresh: () => Promise<void>;
+  /** Per-meal persistence state, so the UI can show saving / retry honestly. */
+  mealSaveState: Record<MealLog["meal_type"], SaveState>;
+  retryMeal: (mt: MealLog["meal_type"]) => Promise<void>;
 }
 
 const blankMeal = (mt: MealLog["meal_type"]): MealLog => ({
@@ -91,6 +97,22 @@ export function useDailyHabits(): DailyHabits {
   });
   const [mindsetRead, setMindsetRead] = useState(false);
   const [mood, setMoodState] = useState<number | null>(null);
+  const [mealSaveState, setMealSaveState] = useState<Record<MealLog["meal_type"], SaveState>>({
+    breakfast: "idle",
+    lunch: "idle",
+    dinner: "idle",
+  });
+  // Monotonic write sequence per meal. A response is applied only when it is
+  // the newest write for that meal, so out-of-order responses cannot resurrect
+  // stale values during rapid typing or tapping.
+  const mealSeq = useRef<Record<MealLog["meal_type"], number>>({ breakfast: 0, lunch: 0, dinner: 0 });
+  const mealApplied = useRef<Record<MealLog["meal_type"], number>>({ breakfast: 0, lunch: 0, dinner: 0 });
+  // Last locally-intended meal values — the source for a retry.
+  const mealDraft = useRef<Record<MealLog["meal_type"], MealLog>>({
+    breakfast: blankMeal("breakfast"),
+    lunch: blankMeal("lunch"),
+    dinner: blankMeal("dinner"),
+  });
 
   const refresh = useCallback(async () => {
     if (!user) return;
@@ -111,6 +133,11 @@ export function useDailyHabits(): DailyHabits {
 
     const meals2 = { ...{ breakfast: blankMeal("breakfast"), lunch: blankMeal("lunch"), dinner: blankMeal("dinner") } };
     for (const m of ml.data || []) meals2[m.meal_type as MealLog["meal_type"]] = m as MealLog;
+    // Never clobber a meal that still has an in-flight or failed local write.
+    (Object.keys(meals2) as MealLog["meal_type"][]).forEach((mt) => {
+      if (mealSeq.current[mt] !== mealApplied.current[mt]) meals2[mt] = mealDraft.current[mt];
+      else mealDraft.current[mt] = meals2[mt];
+    });
     setMeals(meals2);
 
     const sn2: DailyHabits["snacks"] = { snack_1: null, snack_2: null };
@@ -152,17 +179,30 @@ export function useDailyHabits(): DailyHabits {
   const addWater = useCallback(
     async (oz: number) => {
       if (!user) return;
-      await supabase.from("water_logs").insert({ member_id: user.id, ounces: oz, log_date: todayISO() });
+      // Optimistic — the ring moves immediately, then reconciles.
+      setWaterOz((prev) => prev + oz);
+      const { error } = await supabase
+        .from("water_logs")
+        .insert({ member_id: user.id, ounces: oz, log_date: todayISO() });
+      if (error) setWaterOz((prev) => Math.max(0, prev - oz));
       await refresh();
       emitChanged();
     },
     [user, refresh],
   );
 
-  const saveMeal = useCallback(
+  // Writes only the changed fields, applies the local value immediately and
+  // reconciles once the newest response settles.
+  const writeMeal = useCallback(
     async (mt: MealLog["meal_type"], patch: Partial<MealLog>) => {
       if (!user) return;
-      const merged = { ...meals[mt], ...patch };
+      const merged: MealLog = { ...mealDraft.current[mt], ...patch, meal_type: mt };
+      mealDraft.current[mt] = merged;
+      const seq = ++mealSeq.current[mt];
+
+      setMeals((prev) => ({ ...prev, [mt]: { ...prev[mt], ...patch } }));
+      setMealSaveState((prev) => ({ ...prev, [mt]: "saving" }));
+
       const { data, error } = await supabase
         .from("meal_logs")
         .upsert(
@@ -179,10 +219,37 @@ export function useDailyHabits(): DailyHabits {
         )
         .select()
         .maybeSingle();
-      if (!error && data) setMeals((p) => ({ ...p, [mt]: data as MealLog }));
+
+      // Stale response — a newer write already superseded this one.
+      if (seq !== mealSeq.current[mt]) return;
+      mealApplied.current[mt] = seq;
+
+      if (error) {
+        setMealSaveState((prev) => ({ ...prev, [mt]: "error" }));
+        return;
+      }
+      if (data) {
+        mealDraft.current[mt] = data as MealLog;
+        setMeals((prev) => ({ ...prev, [mt]: data as MealLog }));
+      }
+      setMealSaveState((prev) => ({ ...prev, [mt]: "idle" }));
       emitChanged();
     },
-    [user, meals],
+    [user],
+  );
+
+  const saveMeal = useCallback(
+    async (mt: MealLog["meal_type"], patch: Partial<MealLog>) => {
+      await writeMeal(mt, patch);
+    },
+    [writeMeal],
+  );
+
+  const retryMeal = useCallback(
+    async (mt: MealLog["meal_type"]) => {
+      await writeMeal(mt, {});
+    },
+    [writeMeal],
   );
 
   const setSnack = useCallback(
@@ -220,13 +287,12 @@ export function useDailyHabits(): DailyHabits {
   const toggleWalk = useCallback(
     async (slot: WalkLog["slot"]) => {
       if (!user) return;
-      if (walks[slot]) {
-        await supabase.from("post_meal_walks").delete().eq("member_id", user.id).eq("log_date", todayISO()).eq("slot", slot);
-        setWalks((p) => ({ ...p, [slot]: false }));
-      } else {
-        await supabase.from("post_meal_walks").insert({ member_id: user.id, slot, log_date: todayISO() });
-        setWalks((p) => ({ ...p, [slot]: true }));
-      }
+      const was = walks[slot];
+      setWalks((p) => ({ ...p, [slot]: !was }));
+      const { error } = was
+        ? await supabase.from("post_meal_walks").delete().eq("member_id", user.id).eq("log_date", todayISO()).eq("slot", slot)
+        : await supabase.from("post_meal_walks").insert({ member_id: user.id, slot, log_date: todayISO() });
+      if (error) setWalks((p) => ({ ...p, [slot]: was }));
       emitChanged();
     },
     [user, walks],
@@ -273,5 +339,7 @@ export function useDailyHabits(): DailyHabits {
     markMindsetRead,
     setMood,
     refresh,
+    mealSaveState,
+    retryMeal,
   };
 }
