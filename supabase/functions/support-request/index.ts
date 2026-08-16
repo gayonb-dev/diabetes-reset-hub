@@ -9,6 +9,16 @@ import { guardRequest, LIMITS } from "../_shared/abuseGuard.ts";
 
 
 const SUPPORT_INBOX = "info@diabetesresetmethod.com";
+const ADMIN_QUEUE_URL = "https://diabetesresetmethod.com/admin/support";
+
+/** Short, human-quotable reference: DRM-XXXXXX. */
+function makeReference(): string {
+  const alphabet = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
+  const bytes = crypto.getRandomValues(new Uint8Array(6));
+  let out = "";
+  for (const b of bytes) out += alphabet[b % alphabet.length];
+  return `DRM-${out}`;
+}
 const FROM_EMAIL = "DRM Support <support@diabetesresetmethod.com>";
 
 const CATEGORIES = new Set(["Bug", "Question", "Feedback", "Billing"]);
@@ -103,50 +113,80 @@ Deno.serve(async (req) => {
       ? `${sub.status}${sub.cancel_at_period_end ? " (cancels at period end)" : ""} — ends ${sub.current_period_end ?? "n/a"}`
       : "none";
 
-    const subject = `[DRM ${category}] from ${profile?.first_name ?? user.email}`;
+    // E. Persist first. "Ticket received" is only ever said about a row that
+    // exists.
+    const reference = makeReference();
+    const { data: ticket, error: ticketErr } = await supabase
+      .from("support_tickets")
+      .insert({
+        user_id: user.id,
+        reference,
+        category,
+        message,
+        page_context: pageContext,
+        user_agent: userAgent,
+        program_day: programDay,
+        email_status: "not_attempted",
+      })
+      .select("id, reference")
+      .single();
+
+    if (ticketErr || !ticket) {
+      console.error("support-request: ticket insert failed", ticketErr?.message);
+      return new Response(JSON.stringify({ error: "ticket_not_saved" }), {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // E. The member's words never leave the database. The notification email
+    // carries only the reference, the category and a pointer to the queue.
+    const subject = `[DRM ${category}] new support ticket ${ticket.reference}`;
     const escape = (s: string) =>
       s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
     const html = `
       <div style="font-family:Inter,Arial,sans-serif;max-width:640px;margin:0 auto;padding:24px;">
-        <h2 style="color:#085041;margin:0 0 12px;">Support request — ${escape(category)}</h2>
-        <p style="white-space:pre-wrap;background:#FAF7F2;border-radius:8px;padding:16px;color:#1a1a1a;">${escape(message)}</p>
-        <hr style="border:none;border-top:1px solid #eee;margin:24px 0;" />
+        <h2 style="color:#085041;margin:0 0 12px;">New support ticket</h2>
         <table style="font-size:13px;color:#333;line-height:1.6;">
-          <tr><td><b>Member email</b></td><td>${escape(user.email ?? "")}</td></tr>
-          <tr><td><b>Member ID</b></td><td>${escape(user.id)}</td></tr>
-          <tr><td><b>Program day</b></td><td>${programDay}</td></tr>
-          <tr><td><b>Subscription</b></td><td>${escape(subLine)}</td></tr>
-          <tr><td><b>Page</b></td><td>${escape(pageContext)}</td></tr>
-          <tr><td><b>User agent</b></td><td>${escape(userAgent)}</td></tr>
+          <tr><td><b>Reference</b></td><td>${escape(ticket.reference)}</td></tr>
+          <tr><td><b>Category</b></td><td>${escape(category)}</td></tr>
         </table>
+        <p style="font-size:13px;color:#333;">
+          The member's message is stored securely and is only readable in the admin support queue.
+        </p>
+        <p><a href="${ADMIN_QUEUE_URL}" style="color:#085041;">Open the support queue</a></p>
       </div>`;
 
-    const gateAdmin = createClient(
-      Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
-    );
-    const sendResult = await sendEmail(gateAdmin, {
-      from: FROM_EMAIL,
-      to: SUPPORT_INBOX,
-      reply_to: user.email,
-      subject,
-      html,
-    });
-
-    if (!sendResult.sent && sendResult.reason !== "gate_closed") {
-      return new Response(
-        JSON.stringify({ error: "email_send_failed", reason: sendResult.reason }),
-        { status: 502, headers: { ...corsHeaders, "Content-Type": "application/json" } },
-      );
+    let emailStatus: "sent" | "suppressed" | "failed" = "failed";
+    try {
+      const sendResult = await sendEmail(supabase, {
+        from: FROM_EMAIL,
+        to: SUPPORT_INBOX,
+        subject,
+        html,
+      });
+      if (sendResult.sent) emailStatus = "sent";
+      else if (sendResult.reason === "gate_closed") emailStatus = "suppressed";
+      else emailStatus = "failed";
+    } catch (_e) {
+      emailStatus = "failed";
     }
 
+    await supabase
+      .from("support_tickets")
+      .update({ email_status: emailStatus, updated_at: new Date().toISOString() })
+      .eq("id", ticket.id);
 
-    return new Response(JSON.stringify({ ok: true }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return new Response(
+      JSON.stringify({ ok: true, reference: ticket.reference, email_status: emailStatus }),
+      {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      },
+    );
   } catch (e) {
-    console.error("support-request error", e);
+    // E. Never log the member's message.
+    console.error("support-request error", (e as Error).message);
     return new Response(JSON.stringify({ error: (e as Error).message }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
