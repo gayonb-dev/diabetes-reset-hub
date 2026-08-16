@@ -1,0 +1,260 @@
+# Clinical review pack — Batch 1 (questions only)
+
+No approved member copy is presented here. Every item below awaits the owner-approved content appendix.
+
+## Glucose (7 items)
+
+- `daily_actions:40dda16e-af13-48f1-b9f1-65b1a844e1cd#action_description` — tags: fasting_scheduling
+  - Current: "The Fasting tab is now open. Read the Intermittent Fasting Guide in Learn before you decide anything. IF is optional — a tool, not a requirement. If you take medication that lowers blood sugar, talk to your doctor first."
+  - Question for review: what wording states the same member action without the flagged claim?
+- `vita_quotes:08a3c3fd-dbca-4f20-bad4-003ed2c4d8f5#quote_text` — tags: promised_outcomes, insulin_sensitivity_claim
+  - Current: "Post-meal walks work because muscle contractions allow glucose uptake independent of insulin. You do not need insulin to be working well for a walk to lower your blood sugar."
+  - Question for review: what wording states the same member action without the flagged claim?
+- `vita_quotes:77bdfb03-a261-4db9-8eaf-c0d736420d85#quote_text` — tags: supplements
+  - Current: "At Day [N] in the program, most members see their first fasting blood sugar reading below 126 mg/dL. If yours has not arrived yet — it is coming. The mechanism is working even when the number has not moved yet."
+  - Question for review: what wording states the same member action without the flagged claim?
+- `vita_quotes:2fc65f37-39e0-4779-af0f-9e8549e1800d#quote_text` — tags: supplements, reversal_cure
+  - Current: "Consistent fasting blood sugar below 100 mg/dL for 60 consecutive days is the clinical marker most associated with sustained remission. You are building toward that number every day."
+  - Question for review: what wording states the same member action without the flagged claim?
+- `src/data/learnGuides.ts:140` — tags: supplements, diagnostic_label
+  - Current: "Fasting blood sugar under 100 mg/dL (5.6 mmol/L) is normal. 100–125 mg/dL (5.6–6.9 mmol/L) is pre-diabetic. 126 mg/dL (7.0 mmol/L) and above is diabetic. Post-meal targets are under 140 mg/dL (7.8 mmol/L) at two hours. Trends matter more than single readings."
+  - Question for review: what wording states the same member action without the flagged claim?
+- `src/data/learnGuides.ts:145` — tags: uncited_absolute
+  - Current: "Snacks bridge the gap between meals so your blood sugar never crashes into cravings. Pair protein with fiber: a boiled egg and cucumber, Greek yogurt and berries, almonds and an apple. Snacks work best 3–4 hours after a main meal, and are mainly for bridging gaps longer than 5 hours."
+  - Question for review: what wording states the same member action without the flagged claim?
+- `src/lib/glucose.ts:137` — tags: uncited_absolute
+  - Current: "Never change medication based on this app alone."
+  - Question for review: what wording states the same member action without the flagged claim?
+
+## A1C and testing (6 items)
+
+- `daily_actions:59c0886c-6dc6-417c-92cb-7073fb69af34#action_description` — tags: reversal_cure
+  - Current: "Remission means an A1C below 6.5% for at least three months without glucose-lowering medication. It is a real, documented outcome — and it is not the only good outcome."
+  - Question for review: what wording states the same member action without the flagged claim?
+- `daily_actions:59c0886c-6dc6-417c-92cb-7073fb69af34#sub_tasks` — tags: reversal_cure
+  - Current: "["Read today's blog entry on remission criteria", "Note where your last A1C sits relative to 6.5", "All rings"]"
+  - Question for review: what wording states the same member action without the flagged claim?
+- `content_items:876c3165-7f46-4a85-a7f4-e9d643686465#summary` — tags: reversal_cure
+  - Current: "An international expert group convened by the American Diabetes Association defines remission as an A1C below 6.5% sustained at least three months after stopping glucose-lowering medication. Here's the criteria in plain terms."
+  - Question for review: what wording states the same member action without the flagged claim?
+- `badges:467ade61-3680-4375-a86c-c461a37beb4f#unlock_hint` — tags: promised_outcomes
+  - Current: "Lower your A1C from any prior reading"
+  - Question for review: what wording states the same member action without the flagged claim?
+- `vita_quotes:0952f864-68cf-4204-b00f-040f1daf471c#quote_text` — tags: diagnostic_label
+  - Current: "The average A1C reduction in the first 90 days for members who maintain 80% or higher compliance is 1.4 percentage points. That is the difference between diabetic and pre-diabetic ranges for many people."
+  - Question for review: what wording states the same member action without the flagged claim?
+- `vita_quotes:a3067118-c32e-4077-ba8b-2333e2cf9a1d#quote_text` — tags: fasting_scheduling
+  - Current: "Time-restricted eating (intermittent fasting) has been shown to reduce HbA1c independently of caloric intake. The fasting window itself — separate from what you eat — improves metabolic function."
+  - Question for review: what wording states the same member action without the flagged claim?
+
+## Workouts and movement (1 items)
+
+- `src/data/workouts.ts:73` — tags: insulin_sensitivity_claim
+  - Current: "Heart rate • Blood-sugar clearance"
+  - Question for review: what wording states the same member action without the flagged claim?
+
+## Meals and nutrition (1 items)
+
+- `snack_library:a1da9085-31ed-495a-8817-bc94fbef9d13#nutritional_note` — tags: supplements
+  - Current: "Magnesium + healthy fat — diabetes-friendly snack."
+  - Question for review: what wording states the same member action without the flagged claim?
+
+## Fasting education (9 items)
+
+- `daily_actions:33846b14-71ab-45ed-9ace-7ae7195519d4#action_description` — tags: fasting_scheduling
+  - Current: "Tomorrow, intermittent fasting unlocks if your foundation is solid. Today, run a clean day: 3 plate-method meals, 3 walks, water target, mindset read. This is the qualifying lap."
+  - Question for review: what wording states the same member action without the flagged claim?
+- `daily_actions:40dda16e-af13-48f1-b9f1-65b1a844e1cd#day_name` — tags: fasting_scheduling
+  - Current: "Day 21: Intermittent Fasting Unlocks"
+  - Question for review: what wording states the same member action without the flagged claim?
+- `daily_actions:40dda16e-af13-48f1-b9f1-65b1a844e1cd#action_title` — tags: fasting_scheduling
+  - Current: "Day 21 — Intermittent Fasting Unlocks"
+  - Question for review: what wording states the same member action without the flagged claim?
+- `daily_actions:177e9f10-972f-48af-ac68-fc5b59eb59af#action_description` — tags: fasting_scheduling
+  - Current: "If you're using an eating window, is it still working? Earlier windows suit type 2 diabetes better than late ones. If yours has drifted late, pull it back."
+  - Question for review: what wording states the same member action without the flagged claim?
+- `badges:2a8f3d0b-a11e-4e27-9943-cea7d6b7373a#name` — tags: fasting_scheduling
+  - Current: "Night Faster"
+  - Question for review: what wording states the same member action without the flagged claim?
+- `vita_quotes:9420d73e-556e-4c2c-9f2d-52ec59eec8f7#quote_text` — tags: fasting_scheduling
+  - Current: "Intermittent fasting does not begin until Day 21 and only if the compliance gate is met. Patience here is not optional."
+  - Question for review: what wording states the same member action without the flagged claim?
+- `vita_quotes:d29a2484-7580-4b24-8a96-e787e47f12d6#quote_text` — tags: fasting_scheduling
+  - Current: "The fasting window is not punishment. It is giving your body the time it needs to do what it was designed to do when food is not present."
+  - Question for review: what wording states the same member action without the flagged claim?
+- `vita_quotes:204b8ff4-0bdb-46bf-81c7-523b02a3f386#quote_text` — tags: fasting_scheduling
+  - Current: "I designed the intermittent fasting phase to start at Day 21 for a specific reason. Your first three weeks are about building the habit of eating correctly. Layering a fasting window on top of new food habits in Week 1 is how people quit. Day 21 means you are ready. Trust the sequence."
+  - Question for review: what wording states the same member action without the flagged claim?
+- `src/data/learnGuides.ts:50` — tags: fasting_scheduling
+  - Current: "Fasting schedules and timers are not available right now. We are keeping those tools off while the safety screening and instructions are reviewed. The app cannot decide whether fasting is safe for you."
+  - Question for review: what wording states the same member action without the flagged claim?
+
+## Safety messages (0 items)
+
+
+## Other education (82 items)
+
+- `daily_actions:fbea7eb7-a1cc-4db4-9673-f25ea57d23bd#action_description` — tags: insulin_sensitivity_claim
+  - Current: "One poor night can measurably blunt insulin sensitivity the next day. Tonight: screens off 30 minutes earlier, bedroom cooler, same wake time tomorrow."
+- `daily_actions:9d1bc757-12c4-4096-9141-f1f9055ffd6e#action_description` — tags: insulin_sensitivity_claim
+  - Current: "Same wake time daily is the strongest lever on sleep quality — and sleep quality moves insulin sensitivity."
+- `daily_actions:da7da61c-effb-45d9-b2f6-41a5638172bf#day_name` — tags: supplements
+  - Current: "Day 59: Check Your Supplements"
+- `daily_actions:da7da61c-effb-45d9-b2f6-41a5638172bf#action_title` — tags: supplements
+  - Current: "Day 59 — Check Your Supplements"
+- `daily_actions:da7da61c-effb-45d9-b2f6-41a5638172bf#action_description` — tags: supplements
+  - Current: "Month 2 additions may now be unlocked in your Supplements tab. Read before you buy; add one thing at a time."
+- `daily_actions:da7da61c-effb-45d9-b2f6-41a5638172bf#sub_tasks` — tags: supplements
+  - Current: "["Open the Supplements tab and read what's unlocked", "Confirm your daily pack habit is still daily", "Walks or workout"]"
+- `daily_actions:b5fd6d1b-a00a-49fe-8e28-9471adf95a31#day_name` — tags: cheat_meal
+  - Current: "Day 64: The Cheat Meal Check"
+- `daily_actions:b5fd6d1b-a00a-49fe-8e28-9471adf95a31#action_title` — tags: cheat_meal
+  - Current: "Day 64 — The Cheat Meal Check"
+- `daily_actions:b5fd6d1b-a00a-49fe-8e28-9471adf95a31#action_description` — tags: cheat_meal
+  - Current: "If you use the weekly cheat meal: one meal, last of the day, fast begins after. If you haven't needed it — that's information too."
+- `daily_actions:b5fd6d1b-a00a-49fe-8e28-9471adf95a31#sub_tasks` — tags: cheat_meal
+  - Current: "["Review your cheat meal pattern this month", "Plan (or consciously skip) this week's", "Walks or workout"]"
+- `daily_actions:d51d41f9-d281-4179-bc31-5d21a5342cf9#day_name` — tags: uncited_absolute
+  - Current: "Day 66: Move After Dinner, Always"
+- `daily_actions:d51d41f9-d281-4179-bc31-5d21a5342cf9#action_title` — tags: uncited_absolute
+  - Current: "Day 66 — Move After Dinner, Always"
+- `daily_actions:30cdf68d-d8c1-491f-902e-d03ab82c39cd#action_description` — tags: reversal_cure
+  - Current: "Keep it boring. Boring is what reversal looks like from the inside."
+- `daily_actions:61af589b-61aa-4bac-a2b7-a13ce0b49641#action_description` — tags: reversal_cure
+  - Current: "Below 6.5% is the remission threshold. Between 5.7 and 6.4 is the pre-diabetes range. Above 6.5 means the work continues. All three are information, not identity."
+- `daily_actions:576353b0-1a19-458d-95ef-31ddd4139622#sub_tasks` — tags: uncited_absolute
+  - Current: "["Book or plan a doctor appointment", "Print your Progress report to bring with you", "Never adjust any medication on your own"]"
+- `daily_actions:5958d7d2-9bdd-4dc7-b860-0e85846c505c#day_name` — tags: uncited_absolute
+  - Current: "Day 98: The Meal You Never Get Tired Of"
+- `daily_actions:5958d7d2-9bdd-4dc7-b860-0e85846c505c#action_title` — tags: uncited_absolute
+  - Current: "Day 98 — The Meal You Never Get Tired Of"
+- `daily_actions:283fd408-9815-424b-8f1b-8cf5d70d0ea2#action_description` — tags: insulin_sensitivity_claim
+  - Current: "One short night can measurably blunt the next day's insulin sensitivity. Same wake time, cool room, screens off early."
+- `daily_actions:dedcc140-813c-4a11-9f33-b4956e0a01df#action_description` — tags: reversal_cure
+  - Current: "Reversal shouldn't be expensive. Look at this week's shopping list — which three ingredients repeat across the most meals? Those are your anchors."
+- `daily_actions:7456acbf-3cd4-4d98-8bca-9e9848b5fd8d#sub_tasks` — tags: uncited_absolute
+  - Current: "["Book or confirm your next appointment", "Update your printed Progress report", "Never adjust medication on your own"]"
+- `daily_actions:59c0886c-6dc6-417c-92cb-7073fb69af34#day_name` — tags: reversal_cure
+  - Current: "Day 127: What Remission Actually Means"
+- `daily_actions:59c0886c-6dc6-417c-92cb-7073fb69af34#action_title` — tags: reversal_cure
+  - Current: "Day 127 — What Remission Actually Means"
+- `daily_actions:c4c917d1-1ac1-487e-b044-60aa999876be#action_description` — tags: reversal_cure
+  - Current: "Studies following people who reached remission show that keeping the weight off is what keeps remission in place. This isn't a sprint that ends."
+- `daily_actions:7dd06aa4-d20c-4ea8-a33b-a8b33a0dc272#action_description` — tags: reversal_cure
+  - Current: "Boring is what reversal looks like from the inside. Today, be boring on purpose."
+- `daily_actions:90653f7f-ecd1-4a28-8809-921e992746a7#day_name` — tags: reversal_cure
+  - Current: "Day 135: Level 5: The Reverser"
+- `daily_actions:90653f7f-ecd1-4a28-8809-921e992746a7#action_title` — tags: reversal_cure
+  - Current: "Day 135 — Level 5: The Reverser"
+- `daily_actions:2ffd2a1f-d490-458f-a10b-410386383c00#day_name` — tags: reversal_cure
+  - Current: "Day 180: Level 6: The Reclaimer"
+- `daily_actions:2ffd2a1f-d490-458f-a10b-410386383c00#action_title` — tags: reversal_cure
+  - Current: "Day 180 — Level 6: The Reclaimer"
+- `content_items:818424c0-c00d-4a28-a07e-f8844896e83c#title` — tags: diagnostic_label
+  - Current: "Sick-Day Rules for Diabetics"
+- `content_items:9de05eda-ecd5-4b10-8660-131a4739d72a#summary` — tags: insulin_sensitivity_claim
+  - Current: "DiaTribe on how resistance work builds glucose-hungry muscle tissue and improves insulin sensitivity — the science behind your workout days."
+- `content_items:e1198e3f-a659-4302-8846-3484957556ae#title` — tags: reversal_cure
+  - Current: "What Diabetes Remission Programs Get Right (and What They Cost)"
+- `content_items:e1198e3f-a659-4302-8846-3484957556ae#summary` — tags: reversal_cure
+  - Current: "DiaTribe's honest review of Virta, Level2 and clinical remission programs — useful context on what remission requires and why daily execution is the whole game."
+- `content_items:876c3165-7f46-4a85-a7f4-e9d643686465#title` — tags: reversal_cure
+  - Current: "What "Remission" Officially Means"
+- `content_items:0b1f9c56-77d6-49c3-be5a-44f2106feb5a#title` — tags: reversal_cure
+  - Current: "Remission Is More Doable Than You Think"
+- `content_items:0b1f9c56-77d6-49c3-be5a-44f2106feb5a#summary` — tags: reversal_cure
+  - Current: "DiaTribe's look at the DiRECT trial, where 46% of participants reached remission at one year and 36% held it at two years — and what separated those who kept it from those who didn't."
+- `content_items:f7bc81cc-1ac6-45dd-9a61-800d04b821cc#title` — tags: reversal_cure
+  - Current: "Remission at Five Years: The Honest Numbers"
+- `content_items:f7bc81cc-1ac6-45dd-9a61-800d04b821cc#summary` — tags: reversal_cure
+  - Current: "Diabetes UK's report on the DiRECT extension study — what long-term remission actually looks like, why weight regain is the main threat, and why ongoing support matters more than the initial push."
+- `content_items:bfd9d9c5-0cbe-4867-bd20-f66e05dd99f3#title` — tags: reversal_cure
+  - Current: "How Weight Loss Drives Remission"
+- `content_items:68e1912c-a486-4a08-bd2a-645d265c222f#title` — tags: reversal_cure
+  - Current: "Type 2 Remission: What It Is and How It's Done"
+- `content_items:68e1912c-a486-4a08-bd2a-645d265c222f#summary` — tags: reversal_cure
+  - Current: "A plain-language overview of what remission requires, the trials that established it, and why the strategy you can actually maintain beats the one that works fastest."
+- `badges:ae4ea5cc-5eb4-46d8-8236-5dbf06163f99#name` — tags: diagnostic_label
+  - Current: "Pre-Diabetic Zone"
+- `badges:ae4ea5cc-5eb4-46d8-8236-5dbf06163f99#description` — tags: diagnostic_label
+  - Current: "First fasting reading in pre-diabetic range."
+- `badges:ae4ea5cc-5eb4-46d8-8236-5dbf06163f99#unlock_hint` — tags: supplements
+  - Current: "Log a fasting reading 100–125 mg/dL"
+- `badges:92831cb0-2db5-456e-84fa-a1f33507cbfa#name` — tags: diagnostic_label
+  - Current: "Normal Zone"
+- `badges:92831cb0-2db5-456e-84fa-a1f33507cbfa#unlock_hint` — tags: supplements
+  - Current: "Log a fasting reading under 100 mg/dL"
+- `badges:09e1bef8-303d-4d36-9845-6bf7a5fd1548#name` — tags: cheat_meal
+  - Current: "Cheat and Fast"
+- `badges:09e1bef8-303d-4d36-9845-6bf7a5fd1548#description` — tags: cheat_meal
+  - Current: "First cheat meal + fast logged immediately after."
+- `badges:09e1bef8-303d-4d36-9845-6bf7a5fd1548#unlock_hint` — tags: cheat_meal
+  - Current: "Log a cheat meal then an IF window"
+- `vita_quotes:b27eda5d-2708-4b10-8444-613953b324fa#quote_text` — tags: diagnostic_label, uncited_absolute
+  - Current: "Ackee is not just a Jamaican breakfast. It is a high-protein, low-carb food that most diabetics have never heard of."
+- `vita_quotes:fce73897-c01b-458d-a07d-1ee5c7f8722d#quote_text` — tags: cheat_meal
+  - Current: "Cheat meal, not cheat day. One meal, last of the day, fast begins immediately after. That is the rule."
+- `vita_quotes:4c222d8e-ca42-4af6-9b02-5ffcf89c8e46#quote_text` — tags: diagnostic_label
+  - Current: "Dasheen, breadfruit, christophene — these are not exotic. They are diabetic-appropriate foods that belong in your kitchen."
+- `vita_quotes:6201d90c-5cf0-4c2f-9e34-a49861f724aa#quote_text` — tags: supplements, diagnostic_label
+  - Current: "The supplement pack is not optional. It covers what a diabetic diet alone cannot. One packet, largest meal, every day."
+- `vita_quotes:d2c31879-ad5f-4d8f-914b-81d37150ff10#quote_text` — tags: insulin_sensitivity_claim
+  - Current: "Sleep affects insulin sensitivity. Poor sleep for one night can reduce insulin response by up to 25%. Protect your sleep."
+- `vita_quotes:ac3ed2cb-60af-496d-ba7e-c033413422c5#quote_text` — tags: supplements
+  - Current: "Chromium helps insulin work more effectively. It is in your Nature Made pack. That is why the pack is the foundation."
+- `vita_quotes:0821ce0a-4cb2-4286-9475-5c9da98325df#quote_text` — tags: supplements, diagnostic_label
+  - Current: "R-Alpha Lipoic Acid at 600mg is the therapeutic dose for diabetic neuropathy. Less than that has not demonstrated the same effect in research."
+- `vita_quotes:af5d1bf9-3365-4763-8d4c-2fd92463dc1a#quote_text` — tags: supplements
+  - Current: "Benfotiamine — the fat-soluble form of B1 in your DEAL supplement — can actually enter nerve tissue. The regular water-soluble B1 cannot. That is why the specific form matters."
+- `vita_quotes:04f39c89-721a-49a6-ad76-d7c44580ec9b#quote_text` — tags: reversal_cure
+  - Current: "A setback is not a reversal of progress. Biology does not work that way. What you built this week does not disappear because of one bad meal."
+- `vita_quotes:78cdce7b-fe3b-4bdc-9123-33c567d85f00#quote_text` — tags: reversal_cure
+  - Current: "The people who reverse this are not the ones who were most motivated at the start. They are the ones who showed up on the days they did not feel like it."
+- `vita_quotes:2b80bd4d-9149-4afd-8d0a-11e56539aae4#quote_text` — tags: uncited_absolute
+  - Current: "You already know this works. You knew it before you started. The question was never whether it works. It was whether you would do it."
+- `vita_quotes:b325d5f6-c262-4f11-abfa-2bd420cdf252#quote_text` — tags: reversal_cure
+  - Current: "Every person who has reversed Type 2 diabetes had a Day 1 that felt exactly like yours."
+- `vita_quotes:62fc589e-1b29-4924-b1fb-62a3a5410472#quote_text` — tags: diagnostic_label
+  - Current: "You have been in the pre-diabetic range for [X] days. That is not a number to protect — it is a number to push lower."
+- `vita_quotes:aa7d6dae-b247-445e-a797-703969d70132#quote_text` — tags: reversal_cure
+  - Current: "Nobody ever reversed Type 2 diabetes by accident. You are doing this on purpose. That is the entire point."
+- `vita_quotes:ba3724c4-c1b4-4188-bf18-9c3befce82e2#quote_text` — tags: uncited_absolute
+  - Current: "The fact that you are reading this means you have not quit. That puts you in a category most people never enter."
+- `vita_quotes:4d23f518-665b-4905-bb74-0cd04049ea35#quote_text` — tags: reversal_cure
+  - Current: "Diabetes reversal is not a personality type. It does not require you to love salads, wake up at 5am, or become a different person. It requires the plate method, water, movement, and time."
+- `vita_quotes:39174435-528e-41fa-ab6a-f865bc799fc6#quote_text` — tags: reversal_cure
+  - Current: "Nobody ever said 'I wish I hadn't reversed my diabetes.' Keep going."
+- `vita_quotes:c110eac6-17ca-4f2a-a568-ee3121ae5de6#quote_text` — tags: supplements, insulin_sensitivity_claim
+  - Current: "Magnesium deficiency is present in approximately 48% of people with Type 2 diabetes. The Nature Made pack contains 300mg — the therapeutic dose that has shown improved insulin sensitivity in research."
+- `vita_quotes:cedd1916-81bb-4aaa-8fc9-022aff73d6a4#quote_text` — tags: supplements, insulin_sensitivity_claim
+  - Current: "Chromium at 200–1000mcg per day has been shown to improve insulin sensitivity in insulin-resistant individuals. Your supplement pack contains 395mcg — within the effective range."
+- `vita_quotes:e935fbde-5ea5-4a26-ad59-eef370b04e45#quote_text` — tags: reversal_cure
+  - Current: "Brown stew chicken, brown rice, and callaloo. That was the test dish I used when I was building the meal plan system. If the plate method works with Caribbean food — food with real flavour, real culture, real history — it works for anyone. You do not have to abandon your cuisine to reverse this. Tha"
+- `vita_quotes:1fa59c57-3bbc-4865-880d-ff8b5ca297b3#quote_text` — tags: supplements
+  - Current: "The supplement pack is not optional. I know it looks like a sales add-on. It is not. The specific nutrients in that pack — the chromium, the magnesium, the R-ALA, the benfotiamine — address deficiencies that are nearly universal in Type 2 diabetes and that diet alone cannot fix. I researched every i"
+- `vita_quotes:c3e99342-db08-435f-ae13-d1e3f227aa4f#quote_text` — tags: reversal_cure, uncited_absolute
+  - Current: "I did not build this program because I read a study. I built it after helping a friend who lived with Type 2 diabetes for years — and eventually reversed it. The standard advice was never going to get them there; it was designed to manage, maintain, live with. I refused to accept that. Every single "
+- `src/data/learnGuides.ts:58` — tags: supplements
+  - Current: "Supplements and diabetes: questions to ask first"
+- `src/data/learnGuides.ts:61` — tags: supplements
+  - Current: "You do not need supplements to use DRM."
+- `src/data/learnGuides.ts:63` — tags: supplements
+  - Current: "Research has tested many supplements for Type 2 diabetes. For most supplements, there is not enough reliable evidence to show that they help manage diabetes or its complications. A result from one product or study may not apply to a different brand, formula, or dose."
+- `src/data/learnGuides.ts:65` — tags: supplements, uncited_absolute
+  - Current: "Supplements can cause side effects. Some can interact with diabetes medicines, affect lab tests, or create extra risk for people with kidney disease or another health condition. “Natural” does not always mean safe."
+- `src/data/learnGuides.ts:67` — tags: supplements, uncited_absolute
+  - Current: "Never use a supplement instead of prescribed diabetes care, and never stop or change medicine because of a supplement claim."
+- `src/data/learnGuides.ts:71` — tags: supplements
+  - Current: "• What am I hoping this supplement will help with?"
+- `src/data/learnGuides.ts:78` — tags: supplements
+  - Current: "Bring a list or photos of every supplement and medicine you use. Include the product name, ingredients, dose, and how often you take it. A prescriber or pharmacist can review the complete list with you."
+- `src/data/learnGuides.ts:80` — tags: supplements
+  - Current: "DRM does not sell, prescribe, or require supplements."
+- `src/data/learnGuides.ts:87` — tags: supplements
+  - Current: "NCCIH: Diabetes and Dietary Supplements"
+- `src/data/learnGuides.ts:91` — tags: supplements
+  - Current: "FDA 101: Dietary Supplements"
+- `supabase/functions/ask-vita/index.ts:103` — tags: supplements
+  - Current: "Supplements and diabetes: questions to ask first"
+- `supabase/functions/chat-agent/index.ts:79` — tags: uncited_absolute
+  - Current: "or similar — keep your reply SHORT. The server attaches its own approved membership link to your message. Never paste, invent or describe a link or button yourself, and never refer to"
