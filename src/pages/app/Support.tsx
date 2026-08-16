@@ -127,7 +127,11 @@ export default function Support() {
           category,
           message: message.trim(),
           pageContext: `${location.pathname}${location.search}`,
-          userAgent: navigator.userAgent,
+          // Minimum non-identifying diagnostics only. The raw user agent is
+          // never collected or transmitted.
+          clientPlatform: "web",
+          clientViewport: window.innerWidth < 768 ? "mobile" : "desktop",
+
         },
       });
       if (error) {
