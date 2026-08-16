@@ -147,3 +147,38 @@ export function glucoseSafetyCopy(status: GlucoseStatus): { title: string; messa
   if (status === "low") return { title: GLUCOSE_LOW_TITLE, message: GLUCOSE_LOW_MESSAGE };
   return null;
 }
+
+// ---- Reference bands (Part C) --------------------------------------------
+// Every reference bar, chart band and legend derives its numbers and wording
+// from here, so no surface can invent its own thresholds or labels.
+
+/** Chart/bar upper bound per reading type, in canonical mg/dL. */
+export const GLUCOSE_AXIS_MAX: Record<GlucoseReadingType, number> = {
+  fasting: 200,
+  post_meal: 300,
+  bedtime: 250,
+  other: 300,
+  cgm: 300,
+};
+
+export interface GlucoseBand {
+  status: GlucoseStatus;
+  label: string;
+  /** Inclusive lower bound in mg/dL. */
+  from: number;
+  /** Exclusive upper bound in mg/dL (axis max for the final band). */
+  to: number;
+}
+
+/** Ordered bands for a reading type, in canonical mg/dL. */
+export function glucoseBands(readingType: GlucoseReadingType = "other"): GlucoseBand[] {
+  const r = GLUCOSE_RANGES[readingType] ?? GLUCOSE_RANGES.other;
+  const max = GLUCOSE_AXIS_MAX[readingType] ?? GLUCOSE_AXIS_MAX.other;
+  return [
+    { status: "urgent_low", label: GLUCOSE_STATUS_LABEL.urgent_low, from: 0, to: GLUCOSE_LOW_THRESHOLDS.urgentLow },
+    { status: "low", label: GLUCOSE_STATUS_LABEL.low, from: GLUCOSE_LOW_THRESHOLDS.urgentLow, to: GLUCOSE_LOW_THRESHOLDS.low },
+    { status: "in_range", label: GLUCOSE_STATUS_LABEL.in_range, from: GLUCOSE_LOW_THRESHOLDS.low, to: r.inRangeMax },
+    { status: "elevated", label: GLUCOSE_STATUS_LABEL.elevated, from: r.inRangeMax, to: r.elevatedMax },
+    { status: "high", label: GLUCOSE_STATUS_LABEL.high, from: r.elevatedMax, to: Math.max(max, r.elevatedMax) },
+  ];
+}
