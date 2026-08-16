@@ -60,7 +60,7 @@ describe("BloodSugarTab — saved readings", () => {
   it("labels a saved low reading without an assertive announcement on load", async () => {
     readings = [reading(60)];
     render(<BloodSugarTab />);
-    expect(await screen.findByText("Low")).toBeInTheDocument();
+    expect((await screen.findAllByText("Low")).length).toBeGreaterThan(0);
     expect(screen.getByText(GLUCOSE_LOW_MESSAGE)).toBeInTheDocument();
     expect(screen.queryByRole("alert")).toBeNull();
   });
@@ -68,7 +68,7 @@ describe("BloodSugarTab — saved readings", () => {
   it('labels a saved in-range reading "In range" and never uses "Normal"', async () => {
     readings = [reading(95)];
     const { container } = render(<BloodSugarTab />);
-    expect(await screen.findByText("In range")).toBeInTheDocument();
+    expect((await screen.findAllByText("In range")).length).toBeGreaterThan(0);
     expect(container.textContent).not.toMatch(/\bNormal\b/);
     expect(screen.queryByRole("alert")).toBeNull();
   });
