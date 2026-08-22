@@ -91,8 +91,7 @@ def add(*, ident, source_type, location, field, surface, copy, active,
 def proposed_action(d: str) -> str:
     return {
         KEEP_EDU: "No change. Retain as approved, non-prescriptive education.",
-        "REWRITE — OWNER APPROVAL": "Owner supplies exact replacement copy in the approval appendix; record stays active meanwhile.",
-        "REWRITE — CLINICIAN REVIEW": "Clinician supplies or approves exact replacement copy in the appendix; record stays active meanwhile.",
+        "RETIRE — NOT APPROVED": "Not covered by the approved authority; must be made inactive and unreachable by members.",
         "RETIRE — OBSOLETE FEATURE": "Make inactive/unreachable; the feature it references no longer exists.",
         RETIRE_OUTCOME: "Retire the outcome/gamification record; preserve award history as non-display.",
         "FIX INTERACTION — NONFUNCTIONAL": "Repair the interaction so the described action works; copy unchanged.",

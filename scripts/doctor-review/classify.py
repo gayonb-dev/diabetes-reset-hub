@@ -16,8 +16,10 @@ SAFE_TAG = "safe_no_change_required"
 
 # --- disposition vocabulary (QA section 7, exhaustive) --------------------
 KEEP_EDU = "KEEP — APPROVED EDUCATION"
-REWRITE_OWNER = "REWRITE — OWNER APPROVAL"
-REWRITE_CLIN = "REWRITE — CLINICIAN REVIEW"
+# POST-v2: the REWRITE dispositions are retired. Remediation is complete, so a
+# live record is either approved content (KEEP) or must not be reachable
+# (RETIRE). Nothing stays active "pending replacement copy".
+RETIRE_UNAPPROVED = "RETIRE — NOT APPROVED"
 RETIRE_OBSOLETE = "RETIRE — OBSOLETE FEATURE"
 RETIRE_OUTCOME = "RETIRE — OUTCOME/GAMIFICATION"
 FIX_INTERACTION = "FIX INTERACTION — NONFUNCTIONAL"
@@ -25,7 +27,7 @@ TEMP_FALLBACK = "TEMPORARY FALLBACK APPLIED"
 HISTORICAL = "HISTORICAL — UNREACHABLE"
 
 DISPOSITIONS = [
-    KEEP_EDU, REWRITE_OWNER, REWRITE_CLIN, RETIRE_OBSOLETE,
+    KEEP_EDU, RETIRE_UNAPPROVED, RETIRE_OBSOLETE,
     RETIRE_OUTCOME, FIX_INTERACTION, TEMP_FALLBACK, HISTORICAL,
 ]
 
@@ -111,23 +113,23 @@ def classify(text: str, *, reachable: bool = True, contained: bool = False,
     elif gamification:
         disposition = RETIRE_OUTCOME
     elif set(tags) & CLINICAL_TAGS:
-        disposition = REWRITE_CLIN
+        disposition = RETIRE_UNAPPROVED
     elif set(tags) & OWNER_TAGS:
-        disposition = REWRITE_OWNER
+        disposition = RETIRE_UNAPPROVED
     else:
-        disposition = REWRITE_CLIN
+        disposition = RETIRE_UNAPPROVED
 
     stays_active = disposition in (KEEP_EDU, FIX_INTERACTION)
     if disposition == TEMP_FALLBACK:
         state = "active with approved temporary fallback copy"
     elif disposition == HISTORICAL:
         state = "retained as history, unreachable by members"
-    elif disposition in (RETIRE_OBSOLETE, RETIRE_OUTCOME):
+    elif disposition in (RETIRE_OBSOLETE, RETIRE_OUTCOME, RETIRE_UNAPPROVED):
         state = "becomes inactive / unreachable"
     elif stays_active:
         state = "stays active"
     else:
-        state = "stays active pending exact replacement copy"
+        state = "becomes inactive / unreachable"
 
     return {
         "risk_tags": tags,
