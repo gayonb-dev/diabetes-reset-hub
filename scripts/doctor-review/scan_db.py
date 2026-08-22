@@ -30,19 +30,20 @@ SURFACES = {
         "id": "id", "label": "category",
     },
     "content_items": {
-        "text": ["title", "summary", "body"], "jsonarr": [], "active": "is_published",
-        "id": "id", "label": "content_type",
+        "text": ["title", "summary", "body"], "jsonarr": [], "active": "is_active",
+        "id": "id", "label": "type",
     },
     "badges": {
         "text": ["name", "description", "unlock_hint"], "jsonarr": [],
         "active": "NOT is_retired", "id": "id", "label": "slug",
     },
     "snack_library": {
-        "text": ["name", "description"], "jsonarr": [], "active": "is_active",
-        "id": "id", "label": "name",
+        "text": ["name", "description", "nutritional_note", "timing"], "jsonarr": [],
+        "active": "is_active", "id": "id", "label": "name",
     },
     "app_config": {
-        "text": ["key"], "jsonarr": [], "active": "true", "id": "key", "label": "key",
+        "text": ["key", "description"], "jsonarr": [], "active": "true",
+        "id": "key", "label": "key",
     },
 }
 
