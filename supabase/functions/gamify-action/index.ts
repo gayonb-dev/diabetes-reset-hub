@@ -4,6 +4,7 @@
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
 import { corsFor, preflight } from "../_shared/cors.ts";
+import { calendarDayKey } from "../_shared/calendarDay.ts";
 
 
 const ACTION_XP: Record<string, number> = {
@@ -89,19 +90,32 @@ Deno.serve(async (req) => {
     const newLevel = Math.max(earnedLevel, priorLevel);
 
 
-    // Award XP (legacy streak XP) — its returned level is ignored.
-    const { data: xpRes } = await supabase.rpc("award_xp", { p_user_id: uid, p_amount: xp });
-
-    // G. The participation ledger is the canonical Activity Score source. One
-    // entry per action per member-day, idempotent on replay.
-    const ledgerDay = new Date().toISOString().slice(0, 10);
-    await supabase.rpc("award_points", {
+    // G. The participation ledger is the canonical Activity Score source and the
+    // ONLY award path. One entry per action per member calendar day, idempotent
+    // on replay, refresh and concurrent submissions. The member's own timezone
+    // decides the day so a local-midnight boundary is honoured.
+    const { data: prof } = await supabase
+      .from("profiles")
+      .select("timezone")
+      .eq("user_id", uid)
+      .maybeSingle();
+    const ledgerDay = calendarDayKey(new Date(), prof?.timezone ?? null);
+    const { data: awarded } = await supabase.rpc("award_points", {
       p_user_id: uid,
       p_kind: action,
       p_points: xp,
       p_idempotency_key: `${action}:${ledgerDay}`,
       p_detail: null,
     });
+    const inserted = (awarded as { inserted?: boolean } | null)?.inserted === true;
+
+    // Legacy streak XP moves only when the ledger actually recorded a new entry,
+    // so a duplicate request awards nothing anywhere.
+    let xpRes: { total_xp: number; level: number }[] | null = null;
+    if (inserted) {
+      const { data } = await supabase.rpc("award_xp", { p_user_id: uid, p_amount: xp });
+      xpRes = data as { total_xp: number; level: number }[] | null;
+    }
 
     // Level names/messages MUST stay in sync with src/lib/levels.ts and
     // src/components/gamification/LevelUpOverlay.tsx.

@@ -8,7 +8,8 @@ export type HabitKey = "water" | "food" | "exercise" | "mindset";
 interface HabitRingProps {
   habit: HabitKey;
   value: number;
-  target: number;
+  /** Target for the progress arc, or null for log-only habits (no target). */
+  target: number | null;
   unit?: string;
   /** Ring diameter in px. Defaults to 72. Dashboard passes 96 at md+. */
   size?: number;
@@ -34,7 +35,8 @@ export function HabitRing({
   className,
 }: HabitRingProps) {
   const { label, color, Icon } = META[habit];
-  const pct = target > 0 ? Math.min(value / target, 1) : 0;
+  const logOnly = target === null;
+  const pct = !logOnly && target > 0 ? Math.min(value / target, 1) : 0;
   const stroke = size >= 112 ? 10 : size >= 96 ? 8 : 6;
   const r = (size - stroke) / 2;
   const c = 2 * Math.PI * r;
@@ -66,7 +68,11 @@ export function HabitRing({
     <div
       className={cn("flex flex-col items-center gap-1.5", className)}
       role="img"
-      aria-label={`${label} habit ring: ${value} of ${target}${unit ? " " + unit : ""} completed, ${ariaPct} percent.`}
+      aria-label={
+        logOnly
+          ? `${label}: ${value}${unit ? " " + unit : ""} logged today. No target.`
+          : `${label} habit ring: ${value} of ${target}${unit ? " " + unit : ""} completed, ${ariaPct} percent.`
+      }
     >
       <motion.div
         className="relative rounded-full"
@@ -87,6 +93,7 @@ export function HabitRing({
             stroke="hsl(var(--muted))"
             strokeWidth={stroke}
           />
+          {!logOnly && (
           <motion.circle
             cx={size / 2}
             cy={size / 2}
@@ -105,6 +112,7 @@ export function HabitRing({
               ease: [0.65, 0, 0.35, 1],
             }}
           />
+          )}
         </svg>
         <div
           className="absolute inset-0 flex items-center justify-center"
@@ -123,9 +131,18 @@ export function HabitRing({
         {label}
       </span>
       <span className="ring-value text-secondary-fg">
-        {value}
-        {unit ? ` ${unit}` : ""} / {target}
-        {unit ? ` ${unit}` : ""}
+        {logOnly ? (
+          <>
+            {value}
+            {unit ? ` ${unit}` : ""} logged
+          </>
+        ) : (
+          <>
+            {value}
+            {unit ? ` ${unit}` : ""} / {target}
+            {unit ? ` ${unit}` : ""}
+          </>
+        )}
       </span>
     </div>
   );

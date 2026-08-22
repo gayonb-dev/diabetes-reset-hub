@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { DEFAULT_WATER_TARGET_OZ } from "@/lib/hydration";
 import { Button } from "@/components/ui/button";
 import {
   ArrowRight,
@@ -275,9 +274,8 @@ export default function Dashboard() {
   const walksDone = (["after_breakfast", "after_lunch", "after_dinner"] as const).filter(
     (s) => habits.walks[s],
   ).length;
-  const waterTargetOz = DEFAULT_WATER_TARGET_OZ;
   const habitData = {
-    water: { value: habits.waterOz, target: waterTargetOz, unit: "oz" },
+    water: { value: habits.waterOz, target: null, unit: "oz" },
     food: { value: mealsDone, target: 3, unit: "meals" },
     exercise: {
       value:
@@ -327,7 +325,7 @@ export default function Dashboard() {
     {
       label: "Water Today",
       value: habits.waterOz > 0 ? String(habits.waterOz) : null,
-      unit: habits.waterOz > 0 ? `oz / ${waterTargetOz}oz` : undefined,
+      unit: habits.waterOz > 0 ? "oz logged today" : undefined,
       sub: habits.waterStreak > 1 ? `💧 ${habits.waterStreak}-day streak` : undefined,
       emptyHint: "Tap to log",
       tone: "water" as const,
