@@ -64,10 +64,12 @@ coverage: list[dict] = []
 
 def add(*, ident, source_type, location, field, surface, copy, active,
         links, reachable=True, contained=False, gamification=False,
-        interaction_broken=False, replacement=None, notes=""):
+        interaction_broken=False, internal=False, replacement=None, notes=""):
     text = (copy or "").strip()
     res = classify(text, reachable=reachable and active, contained=contained,
-                   gamification=gamification, interaction_broken=interaction_broken)
+                   gamification=gamification, interaction_broken=interaction_broken,
+                   internal=internal)
+
     items.append({
         "id": ident,
         "source_type": source_type,
