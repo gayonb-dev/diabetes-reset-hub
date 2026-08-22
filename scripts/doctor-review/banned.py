@@ -27,7 +27,11 @@ BANNED: list[tuple[str, re.Pattern]] = [
     ("hydration_target", re.compile(
         r"(water target|water goal|hydration target|half your body weight in ounces"
         r"|\b\d{2,3}\s*(oz|ounces)\b|full water goal|hit your water|before 6 ?pm"
-        r"|front-?load(ing)? hydration|water intake goal)", re.I)),
+        r"|front-?load(ing)? hydration|water intake goal|half your water"
+        r"|full target|water by \d+ ?(am|pm))", re.I)),
+    ("fasting_scheduling", re.compile(
+        r"(before the first meal|before breakfast|eating window|fasting window"
+        r"|16:8|12:12|stop eating by|overnight fast)", re.I)),
     ("snack_window", re.compile(r"(snack window|snack 1 exactly|two and a half hours after)", re.I)),
     ("perfection_mandatory", re.compile(
         r"(all (four )?rings|all rings|rings closed|log everything|no zero days"
