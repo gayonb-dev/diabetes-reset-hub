@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
+import { DEFAULT_WATER_TARGET_OZ } from "@/lib/hydration";
 import { Button } from "@/components/ui/button";
 import {
   ArrowRight,
@@ -85,7 +86,6 @@ export default function Dashboard() {
   const [progress, setProgress] = useState<Progress | null>(null);
   const [latestBS, setLatestBS] = useState<{ value: number; date: string } | null>(null);
   const [latestWeight, setLatestWeight] = useState<{ value: number; date: string } | null>(null);
-  const [waterTargetLb, setWaterTargetLb] = useState<number>(180);
   const [latestA1C, setLatestA1C] = useState<{ value: number; date: string } | null>(null);
   const [latestReading, setLatestReading] = useState<{ value: number; at: string; type: GlucoseReadingType } | null>(null);
   const [loading, setLoading] = useState(true);
@@ -206,7 +206,6 @@ export default function Dashboard() {
         .maybeSingle();
       if (!cancelled && w?.weight != null) {
         setLatestWeight({ value: Number(w.weight), date: w.log_date as string });
-        setWaterTargetLb(Number(w.weight));
       }
 
       const { data: a1c } = await supabase
@@ -276,7 +275,7 @@ export default function Dashboard() {
   const walksDone = (["after_breakfast", "after_lunch", "after_dinner"] as const).filter(
     (s) => habits.walks[s],
   ).length;
-  const waterTargetOz = Math.round(waterTargetLb / 2);
+  const waterTargetOz = DEFAULT_WATER_TARGET_OZ;
   const habitData = {
     water: { value: habits.waterOz, target: waterTargetOz, unit: "oz" },
     food: { value: mealsDone, target: 3, unit: "meals" },

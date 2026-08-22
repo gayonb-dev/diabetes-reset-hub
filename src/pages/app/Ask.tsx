@@ -62,7 +62,7 @@ interface WinPost {
   created_at: string;
 }
 
-const TAGS = ["meals", "blood sugar", "workouts", "supplements", "IF", "mindset", "snacks", "water", "measurements", "cheat meal"];
+const TAGS = ["meals", "blood sugar", "workouts", "supplements", "IF", "mindset", "snacks", "water", "measurements", "off-plan meal"];
 const REACTIONS: Array<{ key: string; emoji: string; label: string }> = [
   { key: "muscle", emoji: "💪", label: "Strong" },
   { key: "fist", emoji: "✊", label: "Solidarity" },
@@ -541,7 +541,7 @@ export default function Ask() {
         <DialogContent>
           <DialogHeader><DialogTitle>Share a win</DialogTitle></DialogHeader>
           <Input value={winLabel} onChange={(e) => setWinLabel(e.target.value)} placeholder="Milestone (e.g. First normal-range reading)" />
-          <Input value={winStat} onChange={(e) => setWinStat(e.target.value)} placeholder="Stat improvement (optional, e.g. 148 → 94 mg/dL)" />
+          <Input value={winStat} onChange={(e) => setWinStat(e.target.value)} placeholder="Optional context (avoid private details you do not want to share)" />
           <DialogFooter>
             <Button onClick={submitWin} disabled={winLabel.trim().length < 3} className="w-full">Share</Button>
           </DialogFooter>

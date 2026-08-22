@@ -3,6 +3,7 @@ import { useDailyHabits } from "@/hooks/useDailyHabits";
 import { phaseFor } from "@/lib/phase";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
+import { DEFAULT_WATER_TARGET_OZ } from "@/lib/hydration";
 import { useGamification } from "@/hooks/useGamification";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -90,7 +91,6 @@ export default function HabitLogging({ currentProgramDay }: Props) {
   const h = useDailyHabits();
   const { recordAction } = useGamification();
   const [openKey, setOpenKey] = useState<string | null>(null);
-  const [weightLb, setWeightLb] = useState<number>(180);
   const [lowersMeds, setLowersMeds] = useState(false);
   const [customOz, setCustomOz] = useState("");
   const [snackOverflow, setSnackOverflow] = useState<null | "snack_3">(null);
@@ -133,22 +133,7 @@ export default function HabitLogging({ currentProgramDay }: Props) {
         .maybeSingle();
       if (data) {
         setLowersMeds(!!data.lowers_blood_sugar_meds);
-        const meta = (data.metadata as { weight?: number; weight_unit?: string }) ?? {};
-        if (meta.weight) {
-          const wLb = meta.weight_unit === "kg" ? meta.weight * 2.20462 : meta.weight;
-          setWeightLb(wLb);
-        }
       }
-      // also pull canonical lb from latest health_logs
-      const { data: hl } = await supabase
-        .from("health_logs")
-        .select("weight")
-        .eq("user_id", user.id)
-        .not("weight", "is", null)
-        .order("log_date", { ascending: false })
-        .limit(1)
-        .maybeSingle();
-      if (hl?.weight) setWeightLb(Number(hl.weight));
     })();
   }, [user]);
 
@@ -196,7 +181,7 @@ export default function HabitLogging({ currentProgramDay }: Props) {
       });
   }, [user, currentProgramDay, h.mood, h.mindsetRead]);
 
-  const waterTarget = Math.max(64, Math.round(weightLb / 2));
+  const waterTarget = DEFAULT_WATER_TARGET_OZ;
   const toggle = (k: string) => setOpenKey((p) => (p === k ? null : k));
 
   const mealsDone = useMemo(() => {
@@ -291,7 +276,7 @@ export default function HabitLogging({ currentProgramDay }: Props) {
             </Button>
           </div>
           <p className="text-xs text-tertiary-fg mt-3">
-            Your target: {waterTarget}oz — about half your body weight in ounces, with a 64oz minimum.
+            Keep water available and take regular drinks during the day. This {waterTarget}oz marker is a general reminder only. If a healthcare professional has given you a fluid limit or different advice, follow that advice.
           </p>
         </Section>
       </div>

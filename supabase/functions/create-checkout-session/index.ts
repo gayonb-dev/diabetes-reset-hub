@@ -38,7 +38,7 @@ const RETIRED_PRODUCTS = new Set([
 const PRODUCTS: Record<string, { name: string; description: string; amount: number; installmentAmount?: number; installmentCount?: number }> = {
   "five-day-reset-27": {
     name: "5-Day Diabetes Reset Challenge",
-    description: "Quick wins that lower sugar, jumpstart weight loss, and restore your energy in just 5 days.",
+    description: "Small daily actions, meal ideas, tracking tools, education and printable reports for health visits.",
     amount: 2700,
   },
 };

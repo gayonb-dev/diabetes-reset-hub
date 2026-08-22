@@ -12,7 +12,7 @@ interface Props {
 
 /**
  * Section 36 — Phase 1 Extension trigger.
- * On Day 15 morning, if fewer than 10 compliant Phase 1 days were logged
+ * On Day 15 morning, if fewer than 10 qualifying Phase 1 days were logged
  * (all 3 plate items + water target), present the bonus-round VITA card
  * and flip `phase_1_extension_active` to true.
  */
@@ -42,7 +42,7 @@ export default function Phase1ExtensionPrompt({ currentProgramDay, enabled }: Pr
         return;
       }
 
-      // Count compliant days in Phase 1 (Days 1–14)
+      // Count qualifying days in Phase 1 (Days 1–14)
       const { data: meals } = await supabase
         .from("meal_logs")
         .select("log_date, vegetables, protein, complex_carbs")
@@ -57,7 +57,7 @@ export default function Phase1ExtensionPrompt({ currentProgramDay, enabled }: Pr
         compliantByDay.set(m.log_date, cur);
       });
 
-      // Compliant day = at least 1 fully compliant meal logged (relaxed proxy)
+      // Qualifying day = at least 1 plate-method meal logged (relaxed proxy)
       const compliantCount = Array.from(compliantByDay.values()).filter(
         (v) => v.meals >= 1 && v.allCompliant,
       ).length;

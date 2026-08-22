@@ -171,7 +171,7 @@ function MealCard({ slot, meal, planId, day, weekIdx, onSwap, onUndoSwap }: {
               <Clock className="h-3 w-3" />
               {meal.prep_time_minutes + meal.cook_time_minutes} min
             </span>
-            <span className="text-[11px] text-primary">✓ Plate compliant</span>
+            <span className="text-[11px] text-primary">✓ Plate method</span>
           </div>
         </div>
         {expanded ? <ChevronUp className="h-4 w-4 text-muted-foreground shrink-0" /> : <ChevronDown className="h-4 w-4 text-muted-foreground shrink-0" />}
@@ -719,7 +719,7 @@ export default function Meals() {
           <TabsTrigger value="plan">My Meal Plan</TabsTrigger>
           <TabsTrigger value="snacks">Snacks</TabsTrigger>
           <TabsTrigger value="shopping">Shopping List</TabsTrigger>
-          <TabsTrigger value="cheat-meal">Cheat Meal</TabsTrigger>
+          <TabsTrigger value="cheat-meal">Off-Plan Meal</TabsTrigger>
         </TabsList>
 
         <TabsContent value="snacks" className="mt-4">

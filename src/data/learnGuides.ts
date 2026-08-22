@@ -137,12 +137,12 @@ export const DEFAULT_LEARN_GUIDES: LearnGuide[] = [
   {
     slug: "blood-sugar",
     title: "Blood Sugar Guide",
-    body: "Fasting blood sugar under 100 mg/dL (5.6 mmol/L) is normal. 100–125 mg/dL (5.6–6.9 mmol/L) is pre-diabetic. 126 mg/dL (7.0 mmol/L) and above is diabetic. Post-meal targets are under 140 mg/dL (7.8 mmol/L) at two hours. Trends matter more than single readings.",
+    body: "These are general laboratory reference points, not a diagnosis or personal target. A healthcare professional should interpret results in context. For many nonpregnant adults, targets are individualized; use the target your healthcare team gave you.",
   },
   {
     slug: "snack-strategy",
     title: "Snack Strategy Guide",
-    body: "Snacks bridge the gap between meals so your blood sugar never crashes into cravings. Pair protein with fiber: a boiled egg and cucumber, Greek yogurt and berries, almonds and an apple. Snacks work best 3–4 hours after a main meal, and are mainly for bridging gaps longer than 5 hours.",
+    body: "Snacks are optional. If a snack fits your care plan, choose a time and food that work with your hunger, medicines, activity and daily schedule. Options some members like include a boiled egg and cucumber, yogurt and berries, or almonds and an apple.",
   },
   {
     slug: "measurement",
