@@ -63,12 +63,12 @@ In `scripts/doctor-review/build-inventory.py` and `classify.py`:
 
 Extend the content scan so it queries the live `daily_actions`, `vita_quotes`, `content_items` and `badges` tables in addition to source files, covering every text column and each JSON `sub_tasks` element. New Vitest/script gate fails unless all of the following hold:
 
-- 0 active/member-reachable hydration-target references
-- 0 active/member-reachable fixed snack-window references
-- 0 active/member-reachable mandatory all-rings / all-walks / log-everything wording
+- 0 active/member-reachable hydration-target references — by distinct record **and** by individual field string
+- 0 active/member-reachable fixed snack-window references — both counts
+- 0 active/member-reachable mandatory all-rings / all-walks / log-everything wording — both counts
 - 0 active mechanism or guaranteed-result claims
 - 0 active/member-reachable `RETIRE` dispositions
-- 0 active/member-reachable `REWRITE — CLINICIAN REVIEW` dispositions
+- 0 active/member-reachable unresolved `REWRITE` dispositions of any kind, including `REWRITE — CLINICIAN REVIEW` and `REWRITE — OWNER APPROVAL`. The owner has accepted the evidence authority and its editorial decisions: safe false positives are corrected to `KEEP — APPROVED EDUCATION`, genuinely unsafe wording is remediated before closure, and anything truly unresolved makes Batch 1 report **FAIL** rather than close.
 - 180 active guided days + 7 inactive historical records
 - 24 active replacement VITA quotes + 105 retired/unreachable quotes
 
