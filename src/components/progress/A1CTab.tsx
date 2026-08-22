@@ -164,7 +164,7 @@ export default function A1CTab() {
         {logs.length === 0 ? (
           <EmptyState
             title="No A1C on file yet"
-            description="Your first A1C result anchors everything. Enter it when you have it."
+            description="If A1C testing is part of your care plan, you can record a result here when you have one."
             posture="encouraging"
           />
         ) : (
