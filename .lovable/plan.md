@@ -1,6 +1,6 @@
 # Batch 1 Completeness Correction (POST-v2)
 
-Verified against the live database before writing this plan: 180 active + 7 inactive daily actions, 24 active + 105 retired VITA quotes. Scanning all five text fields of the 180 active daily actions (not just `action_description`) currently returns 38 records with hydration-target wording, 1 with snack-window wording, 67 with all-rings / all-walks / every-meal / log-everything wording, and 12 with A1C or test-day wording. The previous "zero active banned-content hits" claim is therefore wrong, and the closeout stays open until these are zero.
+Verified against the live database before writing this plan: 180 active + 7 inactive daily actions, 24 active + 105 retired VITA quotes. Scanning all five text fields of the 180 active daily actions (not just `action_description`) currently returns hydration-target wording in 38 distinct records / 43 individual field strings, snack-window wording in 1 record / 3 field strings, and mandatory all-rings / all-walks / every-meal / log-everything wording in 67 records / 92 field strings, plus 12 records with A1C or test-day wording. Both counting methods are preserved in the pre-correction report and both must reach zero after remediation. The previous "zero active banned-content hits" claim is therefore wrong, and the closeout stays open until these are zero.
 
 No new research phase, no doctor approval gate, no change to the completed hydration UI/points work, no publication.
 
