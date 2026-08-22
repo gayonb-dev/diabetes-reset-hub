@@ -1,6 +1,6 @@
 # Batch 1 Completeness Correction (POST-v2)
 
-Verified against the live database before writing this plan: 180 active + 7 inactive daily actions, 24 active + 105 retired VITA quotes. Scanning all five text fields of the 180 active daily actions (not just `action_description`) currently returns 38 records with hydration-target wording, 1 with snack-window wording, 67 with all-rings / all-walks / every-meal / log-everything wording, and 12 with A1C or test-day wording. The previous "zero active banned-content hits" claim is therefore wrong, and the closeout stays open until these are zero.
+Verified against the live database before writing this plan: 180 active + 7 inactive daily actions, 24 active + 105 retired VITA quotes. Scanning all five text fields of the 180 active daily actions (not just `action_description`) currently returns hydration-target wording in 38 distinct records / 43 individual field strings, snack-window wording in 1 record / 3 field strings, and mandatory all-rings / all-walks / every-meal / log-everything wording in 67 records / 92 field strings, plus 12 records with A1C or test-day wording. Both counting methods are preserved in the pre-correction report and both must reach zero after remediation. The previous "zero active banned-content hits" claim is therefore wrong, and the closeout stays open until these are zero.
 
 No new research phase, no doctor approval gate, no change to the completed hydration UI/points work, no publication.
 
@@ -38,7 +38,7 @@ Named day corrections:
 | 166 | Replaced with a neutral movement-time day so the 180-day sequence stays complete; not left active with a RETIRE disposition |
 | 179 | Test-preparation language removed |
 
-Changes are applied as a single idempotent migration that updates rows in place (no day is deleted, no `is_active` flip for the 180), preserving the `daily_actions_one_active_per_day` index and the 7 historical E1–E7 rows.
+Changes are applied by a fail-closed, ID-addressed migration — never an unrestricted substring or global search-and-replace. Before applying: every intended record ID, field, old value and new value is enumerated; the expected record and field counts are asserted; the run stops on any missing, duplicate or unexpected current value (each update is guarded by the expected current value). After applying: every changed field is re-read by exact ID, expected versus actual row/field counts are reported, no unintended daily-action record may differ, and 180 active guided days plus the 7 inactive historical records are confirmed. No day is deleted and no `is_active` flag on the 180 is flipped, preserving the `daily_actions_one_active_per_day` index and the E1–E7 history.
 
 ## 3. Active source wording
 
@@ -56,19 +56,19 @@ In `scripts/doctor-review/build-inventory.py` and `classify.py`:
 - Retired VITA quotes and retired badges emit `active=false` and `reachable_by_member=false`.
 - No item may be active/member-reachable while its state text says it becomes inactive or unreachable — this becomes a fail-closed gate.
 - Retired unsafe wording is labelled "Retired historical evidence; not approved for member display", never "appendix-approved".
-- `REWRITE — CLINICIAN REVIEW` is removed from the current-state vocabulary; safe corrected boundary/education text becomes `KEEP — APPROVED EDUCATION`.
+- Every unresolved `REWRITE` disposition (`REWRITE — CLINICIAN REVIEW`, `REWRITE — OWNER APPROVAL`) is removed from the current-state vocabulary for active items; safe corrected boundary/education text becomes `KEEP — APPROVED EDUCATION`.
 - Genuinely unresolved active wording stays a failing closeout item and is reported as such, not as approved.
 
 ## 5. Fail-closed scans over database *and* source
 
 Extend the content scan so it queries the live `daily_actions`, `vita_quotes`, `content_items` and `badges` tables in addition to source files, covering every text column and each JSON `sub_tasks` element. New Vitest/script gate fails unless all of the following hold:
 
-- 0 active/member-reachable hydration-target references
-- 0 active/member-reachable fixed snack-window references
-- 0 active/member-reachable mandatory all-rings / all-walks / log-everything wording
+- 0 active/member-reachable hydration-target references — by distinct record **and** by individual field string
+- 0 active/member-reachable fixed snack-window references — both counts
+- 0 active/member-reachable mandatory all-rings / all-walks / log-everything wording — both counts
 - 0 active mechanism or guaranteed-result claims
 - 0 active/member-reachable `RETIRE` dispositions
-- 0 active/member-reachable `REWRITE — CLINICIAN REVIEW` dispositions
+- 0 active/member-reachable unresolved `REWRITE` dispositions of any kind, including `REWRITE — CLINICIAN REVIEW` and `REWRITE — OWNER APPROVAL`. The owner has accepted the evidence authority and its editorial decisions: safe false positives are corrected to `KEEP — APPROVED EDUCATION`, genuinely unsafe wording is remediated before closure, and anything truly unresolved makes Batch 1 report **FAIL** rather than close.
 - 180 active guided days + 7 inactive historical records
 - 24 active replacement VITA quotes + 105 retired/unreachable quotes
 
