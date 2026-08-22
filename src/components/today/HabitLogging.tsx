@@ -132,12 +132,7 @@ export default function HabitLogging({ currentProgramDay }: Props) {
         .maybeSingle();
       if (data) {
         setLowersMeds(!!data.lowers_blood_sugar_meds);
-        const meta = (data.metadata as { weight?: number; weight_unit?: string }) ?? {};
-        if (meta.weight) {
-          const wLb = meta.weight_unit === "kg" ? meta.weight * 2.20462 : meta.weight;
-        }
       }
-      // also pull canonical lb from latest health_logs
       const { data: hl } = await supabase
         .from("health_logs")
         .select("weight")
