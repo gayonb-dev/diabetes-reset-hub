@@ -64,7 +64,7 @@ BANNED: list[tuple[str, re.Pattern]] = [
         r"|lowers? (your )?(a1c|blood sugar|post-?meal glucose)|drops? \d+ points"
         r"|by up to \d+ ?%|works? immediately|measurable proof|is repeatable"
         r"|predict your a1c|blood sugar medicine|glucose repair|insulin[- ]sensitivity boost"
-        r"|moves glucose into your muscles|glucose sponge|prevents evening cravings)", re.I)),
+        r"|moves glucose into your muscles|glucose sponge|prevents (the )?evening cravings)", re.I)),
     ("reversal_cure", re.compile(
         r"(reverse (your |the )?diabetes|\breversal\b|\bcures?\b)", re.I)),
     ("shame_food", re.compile(
