@@ -38,7 +38,7 @@ Named day corrections:
 | 166 | Replaced with a neutral movement-time day so the 180-day sequence stays complete; not left active with a RETIRE disposition |
 | 179 | Test-preparation language removed |
 
-Changes are applied as a single idempotent migration that updates rows in place (no day is deleted, no `is_active` flip for the 180), preserving the `daily_actions_one_active_per_day` index and the 7 historical E1–E7 rows.
+Changes are applied by a fail-closed, ID-addressed migration — never an unrestricted substring or global search-and-replace. Before applying: every intended record ID, field, old value and new value is enumerated; the expected record and field counts are asserted; the run stops on any missing, duplicate or unexpected current value (each update is guarded by the expected current value). After applying: every changed field is re-read by exact ID, expected versus actual row/field counts are reported, no unintended daily-action record may differ, and 180 active guided days plus the 7 inactive historical records are confirmed. No day is deleted and no `is_active` flag on the 180 is flipped, preserving the `daily_actions_one_active_per_day` index and the E1–E7 history.
 
 ## 3. Active source wording
 
