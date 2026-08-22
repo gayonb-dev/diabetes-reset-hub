@@ -126,6 +126,16 @@ APPROVED_BOUNDARY_PATTERNS = [
     r"does not promise or diagnose",
     r"due in \d+ days",
     r"check-?in is in seven days",
+    # approved remission / A1C / portion education (authority sections 4 and 9)
+    r"does not promise (or diagnose )?remission",
+    r"remission is not cure",
+    r"identical for everyone",
+    r"not safe or appropriate for everyone",
+    r"do not guarantee the same effect",
+    r"healthcare professional (decides|can assess)",
+    r"if a1c testing is part of your usual care",
+    r"never recommends a dose change",
+    r"bring a list or photos",
 ]
 
 # Scheduling/administrative strings that trip outcome regexes purely because
