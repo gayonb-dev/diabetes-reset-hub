@@ -21,10 +21,11 @@ Explicitly allowed and covered by assertions: "N oz logged today", `+8oz` quick-
 
 ## 3. Idempotent once-daily water award
 
-- Server-side remains the authority: a new `award_points_v2` RPC performs `INSERT ... ON CONFLICT DO NOTHING RETURNING` and reports whether the row was actually inserted, so duplicates award no legacy XP either.
-- `gamify-action` computes the ledger day from the member's `profiles.timezone` via the shared `calendarDay` helper and uses the stable key `log_water:<member-calendar-day>`.
+- Server-side remains the authority. The **existing canonical `award_points` RPC is updated in place** (`CREATE OR REPLACE`) so its ledger insert uses `ON CONFLICT DO NOTHING RETURNING`, reports whether the row was actually inserted, and touches the legacy XP/display total only when the insert succeeded. No `award_points_v2` is created — exactly one callable award RPC remains, with the same signature, deletion restriction, authorization checks and `SET search_path = public` preserved.
+- `gamify-action` computes the ledger day from the member's `profiles.timezone` via the shared `calendarDay` helper and uses the stable key `log_water:<member-calendar-day>`; legacy `award_xp` is called only when `award_points` reports a new insert.
 - The React ref stays only as a within-session call suppressor, never the sole safeguard.
 - Tests cover: first entry, refresh/reload replay, two rapid concurrent entries, later same-day entry — each yields exactly one award; plus a new local calendar day starts a new award.
+- Verification assertion: query `pg_proc` and privileges to prove the database exposes exactly one permitted Activity Score award path (`award_points`, executable only by `service_role`), and no `award_points_v2`.
 
 ## 4. Baseline evidence preservation
 
