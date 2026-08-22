@@ -341,6 +341,31 @@ def gate_duplicates(rows) -> list[str]:
     return errs
 
 
+def gate_reachability_consistency(items: list[dict]) -> list[str]:
+    """POST-v2: inventory semantics must be internally consistent.
+
+    - a retired/historical item is never active and never member-reachable;
+    - a member-reachable item is always active;
+    - no item may carry a retired REWRITE disposition.
+    """
+    errs = []
+    retired = {"RETIRE — NOT APPROVED", "RETIRE — OBSOLETE FEATURE",
+               "RETIRE — OUTCOME/GAMIFICATION", "HISTORICAL — UNREACHABLE"}
+    for i in items:
+        d = i["disposition"]
+        if d.startswith("REWRITE"):
+            errs.append(f"{i['id']}: retired REWRITE disposition {d!r}")
+        if d in retired and (i["active"] or i["reachable_by_member"]):
+            errs.append(
+                f"{i['id']}: disposition {d} but active={i['active']} "
+                f"reachable={i['reachable_by_member']}")
+        if i["reachable_by_member"] and not i["active"]:
+            errs.append(f"{i['id']}: reachable but not active")
+    return errs
+
+
+
+
 def gate_no_personal_data() -> list[str]:
     """Fail closed if this generator ever queries a member-owned table, or if an
     emitted item's location points at one. The doctor-review pack must contain
