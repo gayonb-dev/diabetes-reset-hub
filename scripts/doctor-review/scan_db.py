@@ -49,9 +49,9 @@ SURFACES = {
 
 def q(sql: str) -> list[dict]:
     out = subprocess.run(
-        ["psql", "-At", "-c", f"COPY ({sql}) TO STDOUT"],
+        ["psql", "-At", "-c", f"SELECT coalesce(json_agg(t.x)::text,'[]') FROM ({sql}) t(x)"],
         capture_output=True, text=True, check=True).stdout
-    return [json.loads(line) for line in out.splitlines() if line.strip()]
+    return json.loads(out.strip() or "[]")
 
 
 def columns(table: str) -> set[str]:
