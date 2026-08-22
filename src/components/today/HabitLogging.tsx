@@ -3,7 +3,7 @@ import { useDailyHabits } from "@/hooks/useDailyHabits";
 import { phaseFor } from "@/lib/phase";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { DEFAULT_WATER_TARGET_OZ } from "@/lib/hydration";
+import { waterLoggedLabel } from "@/lib/hydration";
 import { useGamification } from "@/hooks/useGamification";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -181,7 +181,6 @@ export default function HabitLogging({ currentProgramDay }: Props) {
       });
   }, [user, currentProgramDay, h.mood, h.mindsetRead]);
 
-  const waterTarget = DEFAULT_WATER_TARGET_OZ;
   const toggle = (k: string) => setOpenKey((p) => (p === k ? null : k));
 
   const mealsDone = useMemo(() => {
@@ -190,16 +189,19 @@ export default function HabitLogging({ currentProgramDay }: Props) {
     ).length;
   }, [h.meals]);
 
-  // Wire gamify pipeline: fires log_water once per day when target hit; log_meal
-  // each time a plate-method meal transitions to fully-complete.
+  // Wire gamify pipeline: fires log_water once per member-day the first time
+  // any water is logged (logging, not a target); log_meal each time a
+  // plate-method meal transitions to fully-complete. The ref only suppresses
+  // duplicate calls inside this render session — the ledger's per-member-day
+  // idempotency key in `award_points` is the authoritative safeguard.
   const waterAwardedRef = useRef(false);
   const mealsAwardedRef = useRef<Set<string>>(new Set());
   useEffect(() => {
-    if (!waterAwardedRef.current && waterTarget > 0 && h.waterOz >= waterTarget) {
+    if (!waterAwardedRef.current && h.waterOz > 0) {
       waterAwardedRef.current = true;
       recordAction("log_water").catch(() => {});
     }
-  }, [h.waterOz, waterTarget, recordAction]);
+  }, [h.waterOz, recordAction]);
   useEffect(() => {
     (["breakfast", "lunch", "dinner"] as const).forEach((mt) => {
       const m = h.meals[mt];
@@ -244,7 +246,7 @@ export default function HabitLogging({ currentProgramDay }: Props) {
           icon={Droplet}
           title="Water"
           iconColor="hsl(var(--ring-water))"
-          status={`${h.waterOz}oz / ${waterTarget}oz${h.waterStreak > 1 ? `  ·  💧 ${h.waterStreak}-day streak` : ""}`}
+          status={`${waterLoggedLabel(h.waterOz)}${h.waterStreak > 1 ? `  ·  💧 ${h.waterStreak}-day streak` : ""}`}
           open={openKey === "water"}
           onToggle={() => toggle("water")}
         >
@@ -276,7 +278,7 @@ export default function HabitLogging({ currentProgramDay }: Props) {
             </Button>
           </div>
           <p className="text-xs text-tertiary-fg mt-3">
-            Keep water available and take regular drinks during the day. This {waterTarget}oz marker is a general reminder only. If a healthcare professional has given you a fluid limit or different advice, follow that advice.
+            Keep water available and take regular drinks during the day. This log records what you drank; it is not a target. If a healthcare professional has given you a fluid limit or different advice, follow that advice.
           </p>
         </Section>
       </div>
