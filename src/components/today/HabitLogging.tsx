@@ -3,6 +3,7 @@ import { useDailyHabits } from "@/hooks/useDailyHabits";
 import { phaseFor } from "@/lib/phase";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
+import { DEFAULT_WATER_TARGET_OZ } from "@/lib/hydration";
 import { useGamification } from "@/hooks/useGamification";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -133,14 +134,6 @@ export default function HabitLogging({ currentProgramDay }: Props) {
       if (data) {
         setLowersMeds(!!data.lowers_blood_sugar_meds);
       }
-      const { data: hl } = await supabase
-        .from("health_logs")
-        .select("weight")
-        .eq("user_id", user.id)
-        .not("weight", "is", null)
-        .order("log_date", { ascending: false })
-        .limit(1)
-        .maybeSingle();
     })();
   }, [user]);
 
