@@ -23,8 +23,14 @@ ROOT = pathlib.Path(__file__).resolve().parents[2]
 SURFACES = [
     ("client_source", "src", (".ts", ".tsx")),
     ("edge_functions", "supabase/functions", (".ts",)),
-    ("seeds", "supabase/migrations", (".sql",)),
 ]
+
+# Applied migration files are an immutable historical record of past database
+# state. They are not a member read path: what members see is the live database,
+# which is scanned separately by scan_db.py and must be at zero. Hits here are
+# reported as `historical_superseded` and do not fail the gate.
+HISTORICAL = [("seeds_historical", "supabase/migrations", (".sql",))]
+
 
 # Non-member-facing files: scanners, tests and fixtures deliberately contain
 # the banned strings so that the gate itself is regression-tested.
