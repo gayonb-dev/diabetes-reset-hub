@@ -85,7 +85,7 @@ export function rampStatus(
       chosen,
       ramping: false,
       daysUntilNext: 0,
-      description: "You're not fasting right now. Three meals across a twelve-hour day.",
+      description: "You're not using a fasting schedule. Meal times are yours to choose.",
     };
   }
 
