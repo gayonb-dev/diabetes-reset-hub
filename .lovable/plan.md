@@ -56,7 +56,7 @@ In `scripts/doctor-review/build-inventory.py` and `classify.py`:
 - Retired VITA quotes and retired badges emit `active=false` and `reachable_by_member=false`.
 - No item may be active/member-reachable while its state text says it becomes inactive or unreachable — this becomes a fail-closed gate.
 - Retired unsafe wording is labelled "Retired historical evidence; not approved for member display", never "appendix-approved".
-- `REWRITE — CLINICIAN REVIEW` is removed from the current-state vocabulary; safe corrected boundary/education text becomes `KEEP — APPROVED EDUCATION`.
+- Every unresolved `REWRITE` disposition (`REWRITE — CLINICIAN REVIEW`, `REWRITE — OWNER APPROVAL`) is removed from the current-state vocabulary for active items; safe corrected boundary/education text becomes `KEEP — APPROVED EDUCATION`.
 - Genuinely unresolved active wording stays a failing closeout item and is reported as such, not as approved.
 
 ## 5. Fail-closed scans over database *and* source
