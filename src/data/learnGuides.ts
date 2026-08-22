@@ -137,7 +137,7 @@ export const DEFAULT_LEARN_GUIDES: LearnGuide[] = [
   {
     slug: "blood-sugar",
     title: "Blood Sugar Guide",
-    body: "Fasting blood sugar under 100 mg/dL (5.6 mmol/L) is normal. 100–125 mg/dL (5.6–6.9 mmol/L) is pre-diabetic. 126 mg/dL (7.0 mmol/L) and above is diabetic. Post-meal targets are under 140 mg/dL (7.8 mmol/L) at two hours. Trends matter more than single readings.",
+    body: "These are general laboratory reference points, not a diagnosis or personal target. A healthcare professional should interpret results in context. For many nonpregnant adults, targets are individualized; use the target your healthcare team gave you.",
   },
   {
     slug: "snack-strategy",
