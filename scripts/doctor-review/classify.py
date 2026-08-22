@@ -155,8 +155,11 @@ def classify(text: str, *, reachable: bool = True, contained: bool = False,
         disposition = FIX_INTERACTION
     elif tags == [SAFE_TAG]:
         disposition = KEEP_EDU
+    elif is_approved_boundary(text, tags):
+        disposition = KEEP_EDU
     elif approved_edu and not (set(tags) & {"treatment_or_testing_instruction", "medical_clearance"}):
         disposition = KEEP_EDU
+
     elif set(tags) & OBSOLETE_TAGS:
         disposition = RETIRE_OBSOLETE
     elif gamification:
