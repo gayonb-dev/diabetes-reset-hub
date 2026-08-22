@@ -85,7 +85,6 @@ export default function Dashboard() {
   const [progress, setProgress] = useState<Progress | null>(null);
   const [latestBS, setLatestBS] = useState<{ value: number; date: string } | null>(null);
   const [latestWeight, setLatestWeight] = useState<{ value: number; date: string } | null>(null);
-  const [waterTargetLb, setWaterTargetLb] = useState<number>(180);
   const [latestA1C, setLatestA1C] = useState<{ value: number; date: string } | null>(null);
   const [latestReading, setLatestReading] = useState<{ value: number; at: string; type: GlucoseReadingType } | null>(null);
   const [loading, setLoading] = useState(true);
@@ -206,7 +205,6 @@ export default function Dashboard() {
         .maybeSingle();
       if (!cancelled && w?.weight != null) {
         setLatestWeight({ value: Number(w.weight), date: w.log_date as string });
-        setWaterTargetLb(Number(w.weight));
       }
 
       const { data: a1c } = await supabase

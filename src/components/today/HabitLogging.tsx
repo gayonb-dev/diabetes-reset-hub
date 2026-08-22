@@ -90,7 +90,6 @@ export default function HabitLogging({ currentProgramDay }: Props) {
   const h = useDailyHabits();
   const { recordAction } = useGamification();
   const [openKey, setOpenKey] = useState<string | null>(null);
-  const [weightLb, setWeightLb] = useState<number>(180);
   const [lowersMeds, setLowersMeds] = useState(false);
   const [customOz, setCustomOz] = useState("");
   const [snackOverflow, setSnackOverflow] = useState<null | "snack_3">(null);
@@ -136,7 +135,6 @@ export default function HabitLogging({ currentProgramDay }: Props) {
         const meta = (data.metadata as { weight?: number; weight_unit?: string }) ?? {};
         if (meta.weight) {
           const wLb = meta.weight_unit === "kg" ? meta.weight * 2.20462 : meta.weight;
-          setWeightLb(wLb);
         }
       }
       // also pull canonical lb from latest health_logs
@@ -148,7 +146,6 @@ export default function HabitLogging({ currentProgramDay }: Props) {
         .order("log_date", { ascending: false })
         .limit(1)
         .maybeSingle();
-      if (hl?.weight) setWeightLb(Number(hl.weight));
     })();
   }, [user]);
 
