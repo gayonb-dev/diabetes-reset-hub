@@ -99,16 +99,17 @@ export default function A1CTab() {
       {latestBelow65 && (
         <Card className="p-4 border-2 border-accent bg-accent-muted">
           <p className="text-sm leading-relaxed">
-            Your latest A1C is {latest.value_percent.toFixed(1)}% — below the diabetic threshold of 6.5%. Bring
-            this to your doctor and ask: <em>"Given these numbers, is my current medication dosage still the
-            right fit?"</em>
+            You have recorded an A1C of {latest.value_percent.toFixed(1)}%. DRM records what you enter and
+            does not interpret the result. Discuss what this number means for you with your healthcare
+            professional.
           </p>
           <p className="text-[11px] text-tertiary-fg mt-2">
-            This app does not provide medical advice. Never adjust or stop any medication without consulting
-            your healthcare provider.
+            This app does not provide medical advice. Never start, stop, skip or change any medicine because
+            of this app.
           </p>
         </Card>
       )}
+
 
       <Card className="p-5 border border-border">
         <p className="text-sm font-medium mb-3">Log an A1C result</p>
@@ -164,7 +165,7 @@ export default function A1CTab() {
         {logs.length === 0 ? (
           <EmptyState
             title="No A1C on file yet"
-            description="Your first A1C result anchors everything. Enter it when you have it."
+            description="If A1C testing is part of your care plan, you can record a result here when you have one."
             posture="encouraging"
           />
         ) : (

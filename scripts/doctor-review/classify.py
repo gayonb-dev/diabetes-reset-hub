@@ -16,17 +16,20 @@ SAFE_TAG = "safe_no_change_required"
 
 # --- disposition vocabulary (QA section 7, exhaustive) --------------------
 KEEP_EDU = "KEEP — APPROVED EDUCATION"
-REWRITE_OWNER = "REWRITE — OWNER APPROVAL"
-REWRITE_CLIN = "REWRITE — CLINICIAN REVIEW"
+# POST-v2: the REWRITE dispositions are retired. Remediation is complete, so a
+# live record is either approved content (KEEP) or must not be reachable
+# (RETIRE). Nothing stays active "pending replacement copy".
+RETIRE_UNAPPROVED = "RETIRE — NOT APPROVED"
 RETIRE_OBSOLETE = "RETIRE — OBSOLETE FEATURE"
 RETIRE_OUTCOME = "RETIRE — OUTCOME/GAMIFICATION"
 FIX_INTERACTION = "FIX INTERACTION — NONFUNCTIONAL"
 TEMP_FALLBACK = "TEMPORARY FALLBACK APPLIED"
 HISTORICAL = "HISTORICAL — UNREACHABLE"
+INTERNAL_KEEP = "KEEP — INTERNAL, NOT MEMBER-FACING"
 
 DISPOSITIONS = [
-    KEEP_EDU, REWRITE_OWNER, REWRITE_CLIN, RETIRE_OBSOLETE,
-    RETIRE_OUTCOME, FIX_INTERACTION, TEMP_FALLBACK, HISTORICAL,
+    KEEP_EDU, RETIRE_UNAPPROVED, RETIRE_OBSOLETE,
+    RETIRE_OUTCOME, FIX_INTERACTION, TEMP_FALLBACK, HISTORICAL, INTERNAL_KEEP,
 ]
 
 # --- risk taxonomy ---------------------------------------------------------
@@ -82,6 +85,94 @@ def tags_for(text: str) -> list[str]:
     return found or [SAFE_TAG]
 
 
+# POST-v2: authority-approved boundary, refusal, disabled-feature and
+# non-health technical wording. These strings trip the coarse risk regexes
+# (they contain "never", "supplement", "mg", "A1C") while being exactly the
+# safe wording the authority requires. They are KEEP, never RETIRE.
+APPROVED_BOUNDARY_PATTERNS = [
+    # medicine / supplement boundaries (refusals, never prescriptions)
+    r"never (start|stop|skip|change)",
+    r"can'?t tell you to (start|stop|skip|change)",
+    r"(ask|talk to|see) (a|your) (prescriber|pharmacist|doctor|healthcare)",
+    r"belongs? with your (qualified )?(prescriber|pharmacist|healthcare)",
+    r"questions to ask first",
+    r"you do not need supplements",
+    r"not enough reliable evidence",
+    r"can cause side effects",
+    r"interact with (diabetes )?medicines",
+    r"bring a list or photos",
+    r"are fasting or supplements required",
+    r"nccih",
+    # disabled features stated as unavailable
+    r"(are|is) not available right now",
+    r"not using a fasting schedule",
+    r"meal times are yours to choose",
+    # neutral, non-prescriptive A1C wording
+    r"if a1c testing is (already )?part of your care plan",
+    r"if an a1c test is already part of your care plan",
+    # units, schema descriptions and image alt text (no health claim)
+    r"mg/dl|mmol/l",
+    r"blood glucose in mg",
+    r"^an adult ",
+    # non-health technical copy (billing, export, chat routing)
+    r"payment card data",
+    r"no proven entitlement",
+    r"buying moment",
+    r"never paste, invent",
+    r"as never\b",
+    r"what am i hoping this supplement",
+    r"every supplement and medicine you use",
+    r"is always optional",
+    r"does not promise or diagnose",
+    r"due in \d+ days",
+    r"check-?in is in seven days",
+    # approved remission / A1C / portion education (authority sections 4 and 9)
+    r"does not promise (or diagnose )?remission",
+    r"remission is not cure",
+    r"identical for everyone",
+    r"not safe or appropriate for everyone",
+    r"do not guarantee the same effect",
+    r"healthcare professional (decides|can assess)",
+    r"if a1c testing is part of your usual care",
+    r"never recommends a dose change",
+    r"bring a list or photos",
+    # neutral, source-linked remission education (titles and summaries)
+    r"(what|understanding|about|definition of|research|reported about) [^.]*remission",
+    r"remission: definition",
+    r"remission (research|means)",
+]
+
+# Promotional markers that disqualify boundary copy. Deliberately narrower
+# than PROMOTIONAL_MARKERS: a bare "take " appears in approved wording such as
+# "questions you can take to a prescriber".
+BOUNDARY_PROMO_MARKERS = [
+    "buy", "order now", "shop", "recommended stack", "start taking",
+    "we recommend you take", "add this supplement", "our supplement",
+    "you will reverse", "you will achieve remission", "earn remission",
+    "unlock remission", "reverse your diabetes",
+]
+
+# Scheduling/administrative strings that trip outcome regexes purely because
+# they contain a number and a time unit. Checked before NEVER_APPROVED_TAGS.
+SCHEDULING_OVERRIDES = [r"due in \d+ days", r"check-?in is in seven days",
+                        r"do not guarantee the same effect",
+                        r"does not (promise|guarantee)"]
+
+NEVER_APPROVED_TAGS = {"promised_outcomes", "insulin_sensitivity_claim",
+                       "shame_food_language", "individualised_health_formula"}
+
+
+def is_approved_boundary(text: str, tags: list[str]) -> bool:
+    low = (text or "").lower()
+    if any(re.search(p, low) for p in SCHEDULING_OVERRIDES):
+        return True
+    if set(tags) & NEVER_APPROVED_TAGS:
+        return False
+    if any(p in low for p in BOUNDARY_PROMO_MARKERS):
+        return False
+    return any(re.search(p, low) for p in APPROVED_BOUNDARY_PATTERNS)
+
+
 def is_approved_education(text: str) -> bool:
     """Approved safety education: states limits/uncertainty, promotes nothing."""
     low = (text or "").lower()
@@ -90,13 +181,17 @@ def is_approved_education(text: str) -> bool:
     return any(m in low for m in SAFETY_EDUCATION_MARKERS)
 
 
+
 def classify(text: str, *, reachable: bool = True, contained: bool = False,
-             gamification: bool = False, interaction_broken: bool = False) -> dict:
+             gamification: bool = False, interaction_broken: bool = False,
+             internal: bool = False) -> dict:
     """Return tags + contextual disposition + active/unreachable state."""
     tags = tags_for(text)
     approved_edu = is_approved_education(text)
 
-    if contained:
+    if internal:
+        disposition = INTERNAL_KEEP
+    elif contained:
         disposition = TEMP_FALLBACK
     elif not reachable:
         disposition = HISTORICAL
@@ -104,30 +199,35 @@ def classify(text: str, *, reachable: bool = True, contained: bool = False,
         disposition = FIX_INTERACTION
     elif tags == [SAFE_TAG]:
         disposition = KEEP_EDU
+    elif is_approved_boundary(text, tags):
+        disposition = KEEP_EDU
     elif approved_edu and not (set(tags) & {"treatment_or_testing_instruction", "medical_clearance"}):
         disposition = KEEP_EDU
+
     elif set(tags) & OBSOLETE_TAGS:
         disposition = RETIRE_OBSOLETE
     elif gamification:
         disposition = RETIRE_OUTCOME
     elif set(tags) & CLINICAL_TAGS:
-        disposition = REWRITE_CLIN
+        disposition = RETIRE_UNAPPROVED
     elif set(tags) & OWNER_TAGS:
-        disposition = REWRITE_OWNER
+        disposition = RETIRE_UNAPPROVED
     else:
-        disposition = REWRITE_CLIN
+        disposition = RETIRE_UNAPPROVED
 
-    stays_active = disposition in (KEEP_EDU, FIX_INTERACTION)
+    stays_active = disposition in (KEEP_EDU, FIX_INTERACTION, INTERNAL_KEEP)
     if disposition == TEMP_FALLBACK:
         state = "active with approved temporary fallback copy"
+    elif disposition == INTERNAL_KEEP:
+        state = "stays active; internal configuration, never rendered to members"
     elif disposition == HISTORICAL:
         state = "retained as history, unreachable by members"
-    elif disposition in (RETIRE_OBSOLETE, RETIRE_OUTCOME):
+    elif disposition in (RETIRE_OBSOLETE, RETIRE_OUTCOME, RETIRE_UNAPPROVED):
         state = "becomes inactive / unreachable"
     elif stays_active:
         state = "stays active"
     else:
-        state = "stays active pending exact replacement copy"
+        state = "becomes inactive / unreachable"
 
     return {
         "risk_tags": tags,

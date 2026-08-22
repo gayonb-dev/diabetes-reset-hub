@@ -210,10 +210,10 @@ export function formatHour(hour: number): string {
 
 /** Copy used everywhere snack timing is explained. */
 export const SNACK_TIMING_COPY =
-  "Snacks work best 3–4 hours after a main meal, and are mainly for bridging gaps longer than 5 hours.";
+  "Snacks are optional. If a snack fits your care plan, choose a time and food that work with your hunger, medicines, activity and daily schedule.";
 
 export const NO_SNACK_COPY =
-  "Your meals are spaced closely enough today that a snack isn't needed — snacks mainly bridge gaps longer than five hours. If you're genuinely hungry, the Snack Library is there.";
+  "A snack is optional today. If you are hungry and a snack fits your care plan, the Snack Library is there.";
 
 /** Version stamp written onto generated meal plans. Bump when timing changes. */
 export const MEAL_TIMING_VERSION = 2;

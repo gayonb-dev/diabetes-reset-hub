@@ -10,8 +10,8 @@
   "personal_data_policy": "Authored content only. Member-owned tables are listed as EXCLUDED in the coverage manifest and are never read, sampled or exported by this generator.",
   "totals": {
     "items": 1987,
-    "active_items": 1833,
-    "member_reachable_items": 1820,
+    "active_items": 1854,
+    "member_reachable_items": 1841,
     "daily_action_records_total": 187,
     "daily_action_records_active": 180,
     "daily_action_records_historical": 7,
@@ -22,31 +22,31 @@
       "source": 921
     },
     "by_disposition": {
-      "KEEP \u2014 APPROVED EDUCATION": 1808,
-      "RETIRE \u2014 NOT APPROVED": 0,
-      "RETIRE \u2014 OBSOLETE FEATURE": 0,
-      "RETIRE \u2014 OUTCOME/GAMIFICATION": 0,
+      "KEEP \u2014 APPROVED EDUCATION": 1767,
+      "REWRITE \u2014 OWNER APPROVAL": 13,
+      "REWRITE \u2014 CLINICIAN REVIEW": 36,
+      "RETIRE \u2014 OBSOLETE FEATURE": 7,
+      "RETIRE \u2014 OUTCOME/GAMIFICATION": 6,
       "FIX INTERACTION \u2014 NONFUNCTIONAL": 0,
       "TEMPORARY FALLBACK APPLIED": 12,
-      "HISTORICAL \u2014 UNREACHABLE": 154,
-      "KEEP \u2014 INTERNAL, NOT MEMBER-FACING": 13
+      "HISTORICAL \u2014 UNREACHABLE": 146
     },
     "risk_tag_counts": {
-      "fasting_scheduling": 8,
+      "fasting_scheduling": 9,
       "cheat_meal": 4,
       "supplements": 31,
       "reversal_cure": 20,
       "promised_outcomes": 5,
       "diagnostic_label": 8,
-      "treatment_or_testing_instruction": 8,
+      "treatment_or_testing_instruction": 7,
       "medical_clearance": 1,
       "shame_food_language": 1,
       "uncited_absolute": 21,
       "obsolete_feature": 0,
       "nonfunctional_promise": 0,
-      "insulin_sensitivity_claim": 5,
+      "insulin_sensitivity_claim": 6,
       "individualised_health_formula": 0,
-      "safe_no_change_required": 1890
+      "safe_no_change_required": 1889
     }
   },
   "coverage_manifest": [
@@ -215,13 +215,13 @@
   ],
   "disposition_vocabulary": [
     "KEEP \u2014 APPROVED EDUCATION",
-    "RETIRE \u2014 NOT APPROVED",
+    "REWRITE \u2014 OWNER APPROVAL",
+    "REWRITE \u2014 CLINICIAN REVIEW",
     "RETIRE \u2014 OBSOLETE FEATURE",
     "RETIRE \u2014 OUTCOME/GAMIFICATION",
     "FIX INTERACTION \u2014 NONFUNCTIONAL",
     "TEMPORARY FALLBACK APPLIED",
-    "HISTORICAL \u2014 UNREACHABLE",
-    "KEEP \u2014 INTERNAL, NOT MEMBER-FACING"
+    "HISTORICAL \u2014 UNREACHABLE"
   ],
   "items": [
     {
@@ -280,7 +280,7 @@
       "location": "public.daily_actions",
       "field": "action_description",
       "surface": "/app/day/1",
-      "copy": "Try the plate method at one meal today: about half non-starchy vegetables, one quarter protein foods and one quarter carbohydrate foods. Adjust the foods and portions to your preferences and care plan.",
+      "copy": "Build every plate today around the 50/25/25 rule: half non-starchy vegetables, a quarter protein, a quarter slow carbs. One simple structure \u2014 used at every meal.",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -305,7 +305,7 @@
       "location": "public.daily_actions",
       "field": "learning_objective",
       "surface": "/app/day/1",
-      "copy": "Practise the plate method structure at one meal.",
+      "copy": "Understand and apply the 50/25/25 plate structure.",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -330,7 +330,7 @@
       "location": "public.daily_actions",
       "field": "day_name",
       "surface": "/app/day/2",
-      "copy": "Day 2: Log Water",
+      "copy": "Day 2: Water Target",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -355,7 +355,7 @@
       "location": "public.daily_actions",
       "field": "action_title",
       "surface": "/app/day/2",
-      "copy": "Log Water",
+      "copy": "Water Target",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -405,7 +405,7 @@
       "location": "public.daily_actions",
       "field": "learning_objective",
       "surface": "/app/day/2",
-      "copy": "Practise recording the water you drink.",
+      "copy": "Know your water target and hit it once.",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -980,7 +980,7 @@
       "location": "public.daily_actions",
       "field": "action_description",
       "surface": "/app/day/8",
-      "copy": "If it is safe and practical for you, try a comfortable walk after a meal today. Choose the length and pace that suit you.",
+      "copy": "Ten minutes of walking after each meal today. It moves glucose into your muscles instead of your bloodstream \u2014 and it sets up Phase 2.",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -990,12 +990,12 @@
         "is_active=True"
       ],
       "risk_tags": [
-        "safe_no_change_required"
+        "insulin_sensitivity_claim"
       ],
       "approved_education": false,
-      "disposition": "KEEP \u2014 APPROVED EDUCATION",
-      "record_state": "stays active",
-      "proposed_action": "No change. Retain as approved, non-prescriptive education.",
+      "disposition": "REWRITE \u2014 CLINICIAN REVIEW",
+      "record_state": "stays active pending exact replacement copy",
+      "proposed_action": "Clinician supplies or approves exact replacement copy in the appendix; record stays active meanwhile.",
       "replacement_copy": null,
       "notes": ""
     },
@@ -1005,7 +1005,7 @@
       "location": "public.daily_actions",
       "field": "learning_objective",
       "surface": "/app/day/8",
-      "copy": "Notice how a comfortable walk after a meal feels for you.",
+      "copy": "Feel how movement after meals changes how you feel.",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -1230,7 +1230,7 @@
       "location": "public.daily_actions",
       "field": "day_name",
       "surface": "/app/day/11",
-      "copy": "Day 11: Hydration Routine",
+      "copy": "Day 11: Hydration Consistency",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -1255,7 +1255,7 @@
       "location": "public.daily_actions",
       "field": "action_title",
       "surface": "/app/day/11",
-      "copy": "Hydration Routine",
+      "copy": "Hydration Consistency",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -1280,7 +1280,7 @@
       "location": "public.daily_actions",
       "field": "action_description",
       "surface": "/app/day/11",
-      "copy": "Keep water available and take regular drinks during the day. If a healthcare professional has given you a fluid limit or different advice, follow that advice.",
+      "copy": "Hit your full water goal before 6 PM today. Front-loading hydration prevents the evening cravings most people fight.",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -1305,7 +1305,7 @@
       "location": "public.daily_actions",
       "field": "learning_objective",
       "surface": "/app/day/11",
-      "copy": "Find a hydration routine that fits your day.",
+      "copy": "Use timing to make hydration effortless.",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -1905,7 +1905,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/16",
-      "copy": "[\"Pick your walking trigger (dishes done, table cleared)\", \"Choose one comfortable movement option if it is safe for you\", \"Note how you feel after the dinner walk vs. yesterday\"]",
+      "copy": "[\"Pick your walking trigger (dishes done, table cleared)\", \"Complete all 3 walks\", \"Note how you feel after the dinner walk vs. yesterday\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -2305,7 +2305,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/18",
-      "copy": "[\"Choose your indoor backup plan\", \"Choose one comfortable indoor or outdoor movement option if it is safe for you\", \"Log the water you drink, if that is useful to you\"]",
+      "copy": "[\"Choose your indoor backup plan\", \"Complete all 3 walks (indoor counts)\", \"Hit your water target\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -2505,7 +2505,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/19",
-      "copy": "[\"One walk with company (in person or on a call)\", \"One comfortable movement option, if it is safe for you\", \"Log all 3 plate-method meals\"]",
+      "copy": "[\"One walk with company (in person or on a call)\", \"All 3 walks complete\", \"Log all 3 plate-method meals\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -2906,7 +2906,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/21",
-      "copy": "[\"Review one routine that helped\", \"Note why it worked for you\", \"Choose movement or rest that fits today\"]",
+      "copy": "[\"Review one routine that helped\", \"Note why it worked for you\", \"Walks or workout\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -3231,7 +3231,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/23",
-      "copy": "[\"Review this week's snack timing\", \"Choose today's snacks from the Snack Library\", \"One comfortable movement option, if it is safe for you\"]",
+      "copy": "[\"Review this week's snack timing\", \"Choose today's snacks from the Snack Library\", \"All 3 walks\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -3256,7 +3256,7 @@
       "location": "public.daily_actions",
       "field": "day_name",
       "surface": "/app/day/24",
-      "copy": "Day 24: Sleep Support",
+      "copy": "Day 24: Sleep Is a Blood Sugar Tool",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -3281,7 +3281,7 @@
       "location": "public.daily_actions",
       "field": "action_title",
       "surface": "/app/day/24",
-      "copy": "Day 24 \u2014 Sleep Support",
+      "copy": "Day 24 \u2014 Sleep Is a Blood Sugar Tool",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -3331,7 +3331,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/24",
-      "copy": "[\"Set a tonight bedtime and keep it\", \"Screens off 30 min before\", \"One comfortable movement option, if it is safe for you\"]",
+      "copy": "[\"Set a tonight bedtime and keep it\", \"Screens off 30 min before\", \"All 3 walks\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -3431,7 +3431,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/25",
-      "copy": "[\"One comfortable movement option, if it is safe for you\", \"Write one sentence in your blood sugar log notes: what feels different\", \"Log the water you drink, if that is useful to you\"]",
+      "copy": "[\"All 3 walks\", \"Write one sentence in your blood sugar log notes: what feels different\", \"Water target\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -3531,7 +3531,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/26",
-      "copy": "[\"Plan or execute one plate-method meal away from home\", \"One comfortable movement option, if it is safe for you\", \"Log one meal, if that is useful to you\"]",
+      "copy": "[\"Plan or execute one plate-method meal away from home\", \"All 3 walks\", \"All meals logged\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -3631,7 +3631,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/27",
-      "copy": "[\"Explain the plate method to someone\", \"One comfortable movement option, if it is safe for you\", \"Mindset card read\"]",
+      "copy": "[\"Explain the plate method to someone\", \"All 3 walks\", \"Mindset card read\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -3731,7 +3731,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/28",
-      "copy": "[\"One comfortable movement option, if it is safe for you\", \"All 3 meals\", \"Read tomorrow's preview in the Workouts tab (it unlocks in the morning)\"]",
+      "copy": "[\"All 3 walks\", \"All 3 meals\", \"Read tomorrow's preview in the Workouts tab (it unlocks in the morning)\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -3831,7 +3831,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/29",
-      "copy": "[\"Complete your first workout (either track)\", \"Keep a comfortable movement option if it suits you\", \"Log what is useful to you today\"]",
+      "copy": "[\"Complete your first workout (either track)\", \"Keep 2 of your 3 post-meal walks (workout replaces one)\", \"Log everything\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -4031,7 +4031,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/31",
-      "copy": "[\"Workout or a comfortable movement option that fits your schedule\", \"Include a protein food at one meal if it fits your plan\", \"Log the water you drink, if that is useful to you\"]",
+      "copy": "[\"Workout or 3 walks per your schedule\", \"Protein at every meal today\", \"Water target\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -4331,7 +4331,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/34",
-      "copy": "[\"Clear one shelf/drawer\", \"Try the plate method at one meal\", \"Walks per schedule\"]",
+      "copy": "[\"Clear one shelf/drawer\", \"All meals plate-method\", \"Walks per schedule\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -4531,7 +4531,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/36",
-      "copy": "[\"Read Mindset Week 6, card 1\", \"Workout or a comfortable movement option that fits your schedule\", \"Log the water you drink, if that is useful to you\"]",
+      "copy": "[\"Read Mindset Week 6, card 1\", \"Walks/workout per schedule\", \"Water target\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -4631,7 +4631,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/37",
-      "copy": "[\"Log 2 post-meal readings today\", \"Log one meal, if that is useful to you\", \"Workout or a comfortable movement option that fits your schedule\"]",
+      "copy": "[\"Log 2 post-meal readings today\", \"All meals logged\", \"Walks/workout per schedule\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -4731,7 +4731,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/38",
-      "copy": "[\"Complete workout #3\", \"2 walks\", \"Include a protein food at one meal if it fits your plan\"]",
+      "copy": "[\"Complete workout #3\", \"2 walks\", \"Protein-first at all meals\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -4831,7 +4831,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/39",
-      "copy": "[\"Log the water you drink, if that is useful to you\", \"Keep water available through the day\", \"Walks per schedule\"]",
+      "copy": "[\"Half your water target by 2 PM\", \"Full target by evening\", \"Walks per schedule\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -4906,7 +4906,7 @@
       "location": "public.daily_actions",
       "field": "action_description",
       "surface": "/app/day/40",
-      "copy": "You are at Day 40. Nothing new today \u2014 use the routines that already fit you and notice which ones feel manageable.",
+      "copy": "Most programs lose people by Day 10. You're at 40. Today, do nothing new \u2014 just execute the basics cleanly and let that be the point.",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -4931,7 +4931,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/40",
-      "copy": "[\"Try the plate method at one meal\", \"Workout or a comfortable movement option that fits your schedule\", \"Mindset card\"]",
+      "copy": "[\"3 plate-method meals\", \"Walks/workout per schedule\", \"Mindset card\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -5031,7 +5031,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/41",
-      "copy": "[\"Review the week ahead in Meals\", \"Set your 3 workout/walk days\", \"Log the water you drink, if that is useful to you\"]",
+      "copy": "[\"Review the week ahead in Meals\", \"Set your 3 workout/walk days\", \"Water target\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -5119,9 +5119,9 @@
         "treatment_or_testing_instruction"
       ],
       "approved_education": true,
-      "disposition": "KEEP \u2014 APPROVED EDUCATION",
-      "record_state": "stays active",
-      "proposed_action": "No change. Retain as approved, non-prescriptive education.",
+      "disposition": "REWRITE \u2014 CLINICIAN REVIEW",
+      "record_state": "stays active pending exact replacement copy",
+      "proposed_action": "Clinician supplies or approves exact replacement copy in the appendix; record stays active meanwhile.",
       "replacement_copy": null,
       "notes": ""
     },
@@ -5131,7 +5131,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/42",
-      "copy": "[\"Choose and log one useful routine today\", \"Write one line: the biggest change since Day 1\", \"Book nothing, change nothing \u2014 just show up tomorrow\"]",
+      "copy": "[\"All rings closed today\", \"Write one line: the biggest change since Day 1\", \"Book nothing, change nothing \u2014 just show up tomorrow\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -5231,7 +5231,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/43",
-      "copy": "[\"Workout or a comfortable movement option that fits your schedule\", \"Try the plate method at one meal\", \"Log the water you drink, if that is useful to you\"]",
+      "copy": "[\"Workout or 3 walks per your schedule\", \"3 plate-method meals\", \"Water target\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -5331,7 +5331,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/44",
-      "copy": "[\"Pick the habit you least feel like doing\", \"Do its first two minutes\", \"Log what is useful to you today\"]",
+      "copy": "[\"Pick the habit you least feel like doing\", \"Do its first two minutes\", \"Log everything as usual\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -5519,9 +5519,9 @@
         "uncited_absolute"
       ],
       "approved_education": false,
-      "disposition": "KEEP \u2014 APPROVED EDUCATION",
-      "record_state": "stays active",
-      "proposed_action": "No change. Retain as approved, non-prescriptive education.",
+      "disposition": "REWRITE \u2014 OWNER APPROVAL",
+      "record_state": "stays active pending exact replacement copy",
+      "proposed_action": "Owner supplies exact replacement copy in the approval appendix; record stays active meanwhile.",
       "replacement_copy": null,
       "notes": ""
     },
@@ -5731,7 +5731,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/48",
-      "copy": "[\"Break up sitting with a short movement break when it suits you\", \"A comfortable movement option or workout\", \"Mindset: re-read any card you liked\"]",
+      "copy": "[\"Stand or move 2 minutes every waking hour\", \"3 walks or workout\", \"Mindset: re-read any card you liked\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -5931,7 +5931,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/50",
-      "copy": "[\"Tell one person about your program\", \"3 meals, all plate-method\", \"Choose movement or rest that fits today\"]",
+      "copy": "[\"Tell one person about your program\", \"3 meals, all plate-method\", \"Walks or workout\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -6031,7 +6031,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/51",
-      "copy": "[\"Execute or plan one eating-out plate-method meal\", \"Log it honestly\", \"Log the water you drink, if that is useful to you\"]",
+      "copy": "[\"Execute or plan one eating-out plate-method meal\", \"Log it honestly\", \"Water target\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -6131,7 +6131,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/52",
-      "copy": "[\"Set one wake time for the next 7 days\", \"Screens off 30 min before bed tonight\", \"Choose movement or rest that fits today\"]",
+      "copy": "[\"Set one wake time for the next 7 days\", \"Screens off 30 min before bed tonight\", \"Walks or workout\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -6331,7 +6331,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/54",
-      "copy": "[\"Workout at a pace that suits you, or a comfortable movement option\", \"Include a protein food at one meal if it fits your plan\", \"Log the water you drink, if that is useful to you\"]",
+      "copy": "[\"Workout (+1 set on one exercise) or 3 walks\", \"Protein at all meals\", \"Water target\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -6431,7 +6431,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/55",
-      "copy": "[\"Read your Day 1 blood sugar vs today's latest\", \"Mindset card\", \"Choose movement or rest that fits today\"]",
+      "copy": "[\"Read your Day 1 blood sugar vs today's latest\", \"Mindset card\", \"Walks or workout\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -6531,7 +6531,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/56",
-      "copy": "[\"Choose and log one useful routine today\", \"One line: what's easier now than on Day 1\", \"Prep tape measure for Day 60\"]",
+      "copy": "[\"All rings closed today\", \"One line: what's easier now than on Day 1\", \"Prep tape measure for Day 60\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -6631,7 +6631,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/57",
-      "copy": "[\"Try the plate method at one meal\", \"Choose movement or rest that fits today\", \"Log the water you drink, if that is useful to you\"]",
+      "copy": "[\"3 plate-method meals\", \"Walks or workout\", \"Water target\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -6731,7 +6731,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/58",
-      "copy": "[\"Vegetables first at all 3 meals\", \"Log a 2-hour post-meal reading\", \"Choose movement or rest that fits today\"]",
+      "copy": "[\"Vegetables first at all 3 meals\", \"Log a 2-hour post-meal reading\", \"Walks or workout\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -7031,7 +7031,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/61",
-      "copy": "[\"Open Progress \u2192 Blood Sugar, find your best 7-day stretch\", \"Write down what was different that week\", \"Choose movement or rest that fits today\"]",
+      "copy": "[\"Open Progress \u2192 Blood Sugar, find your best 7-day stretch\", \"Write down what was different that week\", \"Walks or workout\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -7131,7 +7131,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/62",
-      "copy": "[\"Execute yesterday's finding\", \"Try the plate method at one meal\", \"Log the water you drink, if that is useful to you\"]",
+      "copy": "[\"Execute yesterday's finding\", \"3 plate-method meals\", \"Water target\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -7331,7 +7331,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/64",
-      "copy": "[\"Review one routine that helped\", \"Note why it worked for you\", \"Choose movement or rest that fits today\"]",
+      "copy": "[\"Review one routine that helped\", \"Note why it worked for you\", \"Walks or workout\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -7356,7 +7356,7 @@
       "location": "public.daily_actions",
       "field": "day_name",
       "surface": "/app/day/65",
-      "copy": "Day 65: Water With Meals",
+      "copy": "Day 65: Hydration Before Hunger",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -7381,7 +7381,7 @@
       "location": "public.daily_actions",
       "field": "action_title",
       "surface": "/app/day/65",
-      "copy": "Day 65 \u2014 Water With Meals",
+      "copy": "Day 65 \u2014 Hydration Before Hunger",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -7406,7 +7406,7 @@
       "location": "public.daily_actions",
       "field": "action_description",
       "surface": "/app/day/65",
-      "copy": "Thirst and hunger can feel similar. Try a glass of water with a meal or snack today and notice how you feel.",
+      "copy": "Half of casual hunger is thirst wearing a costume. Today: a full glass of water before every meal and snack.",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -7431,7 +7431,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/65",
-      "copy": "[\"Keep water available with meals and snacks\", \"Log the water you drink, if that is useful to you\", \"Choose movement or rest that fits today\"]",
+      "copy": "[\"Water before all meals and snacks\", \"Hit the full water target by evening\", \"Walks or workout\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -7556,7 +7556,7 @@
       "location": "public.daily_actions",
       "field": "day_name",
       "surface": "/app/day/67",
-      "copy": "Day 67: Talk Through Your Routine",
+      "copy": "Day 67: Teach the Snack Window",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -7581,7 +7581,7 @@
       "location": "public.daily_actions",
       "field": "action_title",
       "surface": "/app/day/67",
-      "copy": "Day 67 \u2014 Talk Through Your Routine",
+      "copy": "Day 67 \u2014 Teach the Snack Window",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -7606,7 +7606,7 @@
       "location": "public.daily_actions",
       "field": "action_description",
       "surface": "/app/day/67",
-      "copy": "Snacks are optional. If a snack fits your care plan, choose a time and food that work with your hunger, medicines, activity and daily schedule. If you like, describe your own routine to someone.",
+      "copy": "Explain to someone why you snack 3\u20134 hours after meals. Teaching it locks it in.",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -7631,7 +7631,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/67",
-      "copy": "[\"Describe your own routine to one person, if you want to\", \"Choose a snack only if it fits your care plan\", \"Choose movement or rest that fits today\"]",
+      "copy": "[\"Explain the snack window to one person\", \"Keep both snacks in the window\", \"Walks or workout\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -7731,7 +7731,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/68",
-      "copy": "[\"Clear or rearrange one shelf\", \"Try the plate method at one meal\", \"Log the water you drink, if that is useful to you\"]",
+      "copy": "[\"Clear or rearrange one shelf\", \"3 plate-method meals\", \"Water target\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -7756,7 +7756,7 @@
       "location": "public.daily_actions",
       "field": "day_name",
       "surface": "/app/day/69",
-      "copy": "Day 69: A Short Stress Pause",
+      "copy": "Day 69: Stress Is a Blood Sugar Input",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -7781,7 +7781,7 @@
       "location": "public.daily_actions",
       "field": "action_title",
       "surface": "/app/day/69",
-      "copy": "Day 69 \u2014 A Short Stress Pause",
+      "copy": "Day 69 \u2014 Stress Is a Blood Sugar Input",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -7831,7 +7831,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/69",
-      "copy": "[\"Two 10-breath pauses (morning, evening)\", \"Mindset card\", \"Choose movement or rest that fits today\"]",
+      "copy": "[\"Two 10-breath pauses (morning, evening)\", \"Mindset card\", \"Walks or workout\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -8231,7 +8231,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/73",
-      "copy": "[\"Write both sentences in your notes\", \"Mindset card\", \"Choose movement or rest that fits today\"]",
+      "copy": "[\"Write both sentences in your notes\", \"Mindset card\", \"Walks or workout\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -8319,9 +8319,9 @@
         "uncited_absolute"
       ],
       "approved_education": false,
-      "disposition": "KEEP \u2014 APPROVED EDUCATION",
-      "record_state": "stays active",
-      "proposed_action": "No change. Retain as approved, non-prescriptive education.",
+      "disposition": "REWRITE \u2014 OWNER APPROVAL",
+      "record_state": "stays active pending exact replacement copy",
+      "proposed_action": "Owner supplies exact replacement copy in the approval appendix; record stays active meanwhile.",
       "replacement_copy": null,
       "notes": ""
     },
@@ -8919,9 +8919,9 @@
         "treatment_or_testing_instruction"
       ],
       "approved_education": true,
-      "disposition": "KEEP \u2014 APPROVED EDUCATION",
-      "record_state": "stays active",
-      "proposed_action": "No change. Retain as approved, non-prescriptive education.",
+      "disposition": "REWRITE \u2014 CLINICIAN REVIEW",
+      "record_state": "stays active pending exact replacement copy",
+      "proposed_action": "Clinician supplies or approves exact replacement copy in the appendix; record stays active meanwhile.",
       "replacement_copy": null,
       "notes": ""
     },
@@ -9231,7 +9231,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/83",
-      "copy": "[\"Write the three things\", \"Mindset card\", \"Choose movement or rest that fits today\"]",
+      "copy": "[\"Write the three things\", \"Mindset card\", \"Walks or workout\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -10420,9 +10420,9 @@
         "uncited_absolute"
       ],
       "approved_education": false,
-      "disposition": "KEEP \u2014 APPROVED EDUCATION",
-      "record_state": "stays active",
-      "proposed_action": "No change. Retain as approved, non-prescriptive education.",
+      "disposition": "REWRITE \u2014 CLINICIAN REVIEW",
+      "record_state": "stays active pending exact replacement copy",
+      "proposed_action": "Clinician supplies or approves exact replacement copy in the appendix; record stays active meanwhile.",
       "replacement_copy": null,
       "notes": ""
     },
@@ -10532,7 +10532,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/96",
-      "copy": "[\"Write your three questions down\", \"Add them to your phone notes for the appointment\", \"Try the plate method at one meal\"]",
+      "copy": "[\"Write your three questions down\", \"Add them to your phone notes for the appointment\", \"All meals plate-method\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -10607,7 +10607,7 @@
       "location": "public.daily_actions",
       "field": "action_description",
       "surface": "/app/day/97",
-      "copy": "No new tactics this week. Use the routines that already fit you and notice which ones feel manageable.",
+      "copy": "No new tactics for the next seven days. Just the four rings, cleanly, every day. Consolidation is what makes a result durable.",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -10632,7 +10632,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/97",
-      "copy": "[\"Choose and log one useful routine today\", \"Try the plate method at one meal\", \"Log the water you drink, if that is useful to you\"]",
+      "copy": "[\"All four rings closed\", \"3 plate-method meals\", \"Water target\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -10732,7 +10732,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/98",
-      "copy": "[\"Write down your three go-to meals\", \"Cook one of them today\", \"Choose movement or rest that fits today\"]",
+      "copy": "[\"Write down your three go-to meals\", \"Cook one of them today\", \"Walks or workout\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -10932,7 +10932,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/100",
-      "copy": "[\"Tell one person what's different since Day 1\", \"Share a win in Ask if you have one\", \"Choose and log one useful routine today\"]",
+      "copy": "[\"Tell one person what's different since Day 1\", \"Share a win in Ask if you have one\", \"All rings closed\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -11032,7 +11032,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/101",
-      "copy": "[\"Try the plate method at one meal\", \"Walks or workout per schedule\", \"Log the water you drink, if that is useful to you\"]",
+      "copy": "[\"3 plate-method meals\", \"Walks or workout per schedule\", \"Water target\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -11132,7 +11132,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/102",
-      "copy": "[\"Review the week in Meals\", \"Set your movement days\", \"Log the water you drink, if that is useful to you\"]",
+      "copy": "[\"Review the week in Meals\", \"Set your movement days\", \"Water target\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -11332,7 +11332,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/104",
-      "copy": "[\"Vegetables first at all 3 meals\", \"Log a 2-hour post-meal reading\", \"Choose and log one useful routine today\"]",
+      "copy": "[\"Vegetables first at all 3 meals\", \"Log a 2-hour post-meal reading\", \"All rings\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -11432,7 +11432,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/105",
-      "copy": "[\"Two 10-breath pauses, morning and evening\", \"Mindset card\", \"Choose movement or rest that fits today\"]",
+      "copy": "[\"Two 10-breath pauses, morning and evening\", \"Mindset card\", \"Walks or workout\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -11532,7 +11532,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/106",
-      "copy": "[\"One plate-method meal away from home, planned or executed\", \"Log it honestly\", \"Choose and log one useful routine today\"]",
+      "copy": "[\"One plate-method meal away from home, planned or executed\", \"Log it honestly\", \"All rings\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -11632,7 +11632,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/107",
-      "copy": "[\"Review blood sugar and weight trends in Progress\", \"Write one line: the trend you're proudest of\", \"Choose and log one useful routine today\"]",
+      "copy": "[\"Review blood sugar and weight trends in Progress\", \"Write one line: the trend you're proudest of\", \"All rings\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -11732,7 +11732,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/108",
-      "copy": "[\"Do one form of movement you actually enjoy\", \"Log it\", \"Log the water you drink, if that is useful to you\"]",
+      "copy": "[\"Do one form of movement you actually enjoy\", \"Log it\", \"Water target\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -11832,7 +11832,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/109",
-      "copy": "[\"Log the water you drink, if that is useful to you\", \"Keep water available through the day\", \"Choose movement or rest that fits today\"]",
+      "copy": "[\"Half your water by 2 PM\", \"Full target by evening\", \"Walks or workout\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -11932,7 +11932,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/110",
-      "copy": "[\"Explain it to one person\", \"Try the plate method at one meal\", \"Mindset card\"]",
+      "copy": "[\"Explain it to one person\", \"All meals plate-method\", \"Mindset card\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -12032,7 +12032,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/111",
-      "copy": "[\"Review your snack pattern this week\", \"Skip any snack that isn't bridging a real gap\", \"Choose and log one useful routine today\"]",
+      "copy": "[\"Review your snack pattern this week\", \"Skip any snack that isn't bridging a real gap\", \"All rings\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -12132,7 +12132,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/112",
-      "copy": "[\"Choose and log one useful routine today\", \"Log the water you drink, if that is useful to you\", \"Early night\"]",
+      "copy": "[\"All rings closed\", \"Water target\", \"Early night\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -12232,7 +12232,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/113",
-      "copy": "[\"Clear or rearrange one shelf\", \"Try the plate method at one meal\", \"Choose movement or rest that fits today\"]",
+      "copy": "[\"Clear or rearrange one shelf\", \"3 plate-method meals\", \"Walks or workout\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -12332,7 +12332,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/114",
-      "copy": "[\"Review one routine that helped\", \"Note why it worked for you\", \"Choose movement or rest that fits today\"]",
+      "copy": "[\"Review one routine that helped\", \"Note why it worked for you\", \"Walks or workout\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -12432,7 +12432,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/115",
-      "copy": "[\"Workout or a comfortable movement option that fits your schedule\", \"Include a protein food at one meal if it fits your plan\", \"Log the water you drink, if that is useful to you\"]",
+      "copy": "[\"Workout, or 3 walks per your schedule\", \"Protein at every meal\", \"Water target\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -12532,7 +12532,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/116",
-      "copy": "[\"Log two post-meal readings\", \"Log one meal, if that is useful to you\", \"Choose movement or rest that fits today\"]",
+      "copy": "[\"Log two post-meal readings\", \"All meals logged\", \"Walks or workout\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -12632,7 +12632,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/117",
-      "copy": "[\"Write your minimum day: water, one plate-method meal, one walk\", \"Save it where you'll find it\", \"Choose and log one useful routine today\"]",
+      "copy": "[\"Write your minimum day: water, one plate-method meal, one walk\", \"Save it where you'll find it\", \"All rings today\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -12732,7 +12732,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/118",
-      "copy": "[\"Read the Ask feed\", \"Answer one question or react to one win\", \"Choose and log one useful routine today\"]",
+      "copy": "[\"Read the Ask feed\", \"Answer one question or react to one win\", \"All rings\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -13032,7 +13032,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/121",
-      "copy": "[\"Open Progress \u2192 Blood Sugar, find your best 7-day stretch\", \"Write down what you did differently\", \"Choose and log one useful routine today\"]",
+      "copy": "[\"Open Progress \u2192 Blood Sugar, find your best 7-day stretch\", \"Write down what you did differently\", \"All rings\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -13132,7 +13132,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/122",
-      "copy": "[\"Execute yesterday's finding\", \"Try the plate method at one meal\", \"Log the water you drink, if that is useful to you\"]",
+      "copy": "[\"Execute yesterday's finding\", \"3 plate-method meals\", \"Water target\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -13232,7 +13232,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/123",
-      "copy": "[\"Identify your three anchor ingredients\", \"Build tomorrow's meals around them\", \"Choose movement or rest that fits today\"]",
+      "copy": "[\"Identify your three anchor ingredients\", \"Build tomorrow's meals around them\", \"Walks or workout\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -13407,7 +13407,7 @@
       "location": "public.daily_actions",
       "field": "action_description",
       "surface": "/app/day/125",
-      "copy": "Nothing new today. Use the routines that already fit you.",
+      "copy": "Nothing new today. Execute cleanly and let that be the point.",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -13432,7 +13432,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/125",
-      "copy": "[\"Choose and log one useful routine today\", \"Mindset card\", \"Log the water you drink, if that is useful to you\"]",
+      "copy": "[\"All four rings closed\", \"Mindset card\", \"Water target\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -13521,9 +13521,9 @@
         "uncited_absolute"
       ],
       "approved_education": false,
-      "disposition": "KEEP \u2014 APPROVED EDUCATION",
-      "record_state": "stays active",
-      "proposed_action": "No change. Retain as approved, non-prescriptive education.",
+      "disposition": "REWRITE \u2014 CLINICIAN REVIEW",
+      "record_state": "stays active pending exact replacement copy",
+      "proposed_action": "Clinician supplies or approves exact replacement copy in the appendix; record stays active meanwhile.",
       "replacement_copy": null,
       "notes": ""
     },
@@ -13571,9 +13571,9 @@
         "reversal_cure"
       ],
       "approved_education": false,
-      "disposition": "KEEP \u2014 APPROVED EDUCATION",
-      "record_state": "stays active",
-      "proposed_action": "No change. Retain as approved, non-prescriptive education.",
+      "disposition": "REWRITE \u2014 CLINICIAN REVIEW",
+      "record_state": "stays active pending exact replacement copy",
+      "proposed_action": "Clinician supplies or approves exact replacement copy in the appendix; record stays active meanwhile.",
       "replacement_copy": null,
       "notes": ""
     },
@@ -13596,9 +13596,9 @@
         "reversal_cure"
       ],
       "approved_education": false,
-      "disposition": "KEEP \u2014 APPROVED EDUCATION",
-      "record_state": "stays active",
-      "proposed_action": "No change. Retain as approved, non-prescriptive education.",
+      "disposition": "REWRITE \u2014 CLINICIAN REVIEW",
+      "record_state": "stays active pending exact replacement copy",
+      "proposed_action": "Clinician supplies or approves exact replacement copy in the appendix; record stays active meanwhile.",
       "replacement_copy": null,
       "notes": ""
     },
@@ -13733,7 +13733,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/128",
-      "copy": "[\"Write one sentence: what your maintenance version looks like\", \"Try the plate method at one meal\", \"Choose movement or rest that fits today\"]",
+      "copy": "[\"Write one sentence: what your maintenance version looks like\", \"All meals plate-method\", \"Walks or workout\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -13833,7 +13833,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/129",
-      "copy": "[\"Measure the carb portion at one meal\", \"Try the plate method at one meal\", \"Log the water you drink, if that is useful to you\"]",
+      "copy": "[\"Measure the carb portion at one meal\", \"3 plate-method meals\", \"Water target\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -13933,7 +13933,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/130",
-      "copy": "[\"Half-plate vegetables \u00d73\", \"Log a post-meal reading\", \"Choose and log one useful routine today\"]",
+      "copy": "[\"Half-plate vegetables \u00d73\", \"Log a post-meal reading\", \"All rings\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -14033,7 +14033,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/131",
-      "copy": "[\"One walk with company\", \"Movement or workout done, if it suited you\", \"Log the water you drink, if that is useful to you\"]",
+      "copy": "[\"One walk with company\", \"All walks or workout complete\", \"Water target\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -14133,7 +14133,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/132",
-      "copy": "[\"Write both sentences in your notes\", \"Mindset card\", \"Choose and log one useful routine today\"]",
+      "copy": "[\"Write both sentences in your notes\", \"Mindset card\", \"All rings\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -14233,7 +14233,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/133",
-      "copy": "[\"Choose and log one useful routine today\", \"Try the plate method at one meal\", \"Choose movement or rest that fits today\"]",
+      "copy": "[\"All four rings closed\", \"3 plate-method meals\", \"Walks or workout\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -14333,7 +14333,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/134",
-      "copy": "[\"Choose and log one useful routine today\", \"Log the water you drink, if that is useful to you\", \"Early night\"]",
+      "copy": "[\"All rings\", \"Water target\", \"Early night\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -14533,7 +14533,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/136",
-      "copy": "[\"Try the plate method at one meal\", \"Choose movement or rest that fits today\", \"Log the water you drink, if that is useful to you\"]",
+      "copy": "[\"3 plate-method meals\", \"Walks or workout\", \"Water target\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -14733,7 +14733,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/138",
-      "copy": "[\"Do two minutes of the thing you're avoiding\", \"Log what is useful to you today\", \"Log the water you drink, if that is useful to you\"]",
+      "copy": "[\"Do two minutes of the thing you're avoiding\", \"Log everything as usual\", \"Water target\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -14933,7 +14933,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/140",
-      "copy": "[\"Review your Progress trends\", \"Write one line about what's easier now\", \"Choose and log one useful routine today\"]",
+      "copy": "[\"Review your Progress trends\", \"Write one line about what's easier now\", \"All rings\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -15033,7 +15033,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/141",
-      "copy": "[\"Review your current week in Meals\", \"Regenerate if it's gone stale\", \"Log the water you drink, if that is useful to you\"]",
+      "copy": "[\"Review your current week in Meals\", \"Regenerate if it's gone stale\", \"Water target\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -15133,7 +15133,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/142",
-      "copy": "[\"Cook one protein in a double batch\", \"Plan tomorrow's second use\", \"Choose and log one useful routine today\"]",
+      "copy": "[\"Cook one protein in a double batch\", \"Plan tomorrow's second use\", \"All rings\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -15233,7 +15233,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/143",
-      "copy": "[\"Break up one period of sitting with a short movement break\", \"Walks or workout per schedule\", \"Mindset card\"]",
+      "copy": "[\"Move two minutes every waking hour\", \"Walks or workout per schedule\", \"Mindset card\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -15333,7 +15333,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/144",
-      "copy": "[\"Write the three things\", \"Try the plate method at one meal\", \"Log the water you drink, if that is useful to you\"]",
+      "copy": "[\"Write the three things\", \"All meals plate-method\", \"Water target\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -15358,7 +15358,7 @@
       "location": "public.daily_actions",
       "field": "day_name",
       "surface": "/app/day/145",
-      "copy": "Day 145: Reviewing Your Progress Report",
+      "copy": "Day 145: The A1C Countdown Begins",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -15383,7 +15383,7 @@
       "location": "public.daily_actions",
       "field": "action_title",
       "surface": "/app/day/145",
-      "copy": "Day 145 \u2014 Reviewing Your Progress Report",
+      "copy": "Day 145 \u2014 The A1C Countdown Begins",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -15421,9 +15421,9 @@
         "treatment_or_testing_instruction"
       ],
       "approved_education": true,
-      "disposition": "KEEP \u2014 APPROVED EDUCATION",
-      "record_state": "stays active",
-      "proposed_action": "No change. Retain as approved, non-prescriptive education.",
+      "disposition": "REWRITE \u2014 CLINICIAN REVIEW",
+      "record_state": "stays active pending exact replacement copy",
+      "proposed_action": "Clinician supplies or approves exact replacement copy in the appendix; record stays active meanwhile.",
       "replacement_copy": null,
       "notes": ""
     },
@@ -15533,7 +15533,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/146",
-      "copy": "[\"Protein first at all 3 meals\", \"Log a post-meal reading\", \"Choose movement or rest that fits today\"]",
+      "copy": "[\"Protein first at all 3 meals\", \"Log a post-meal reading\", \"Walks or workout\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -15633,7 +15633,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/147",
-      "copy": "[\"Choose and log one useful routine today\", \"Log the water you drink, if that is useful to you\", \"Early night\"]",
+      "copy": "[\"All four rings\", \"Water target\", \"Early night\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -15733,7 +15733,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/148",
-      "copy": "[\"One social or family meal, plate-method, no announcement\", \"Log it honestly\", \"Choose and log one useful routine today\"]",
+      "copy": "[\"One social or family meal, plate-method, no announcement\", \"Log it honestly\", \"All rings\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -16033,7 +16033,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/151",
-      "copy": "[\"Review your full measurement history\", \"Note the largest single change\", \"Choose and log one useful routine today\"]",
+      "copy": "[\"Review your full measurement history\", \"Note the largest single change\", \"All rings\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -16133,7 +16133,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/152",
-      "copy": "[\"Write your Day 400 version in one paragraph\", \"Save it in your notes\", \"Choose movement or rest that fits today\"]",
+      "copy": "[\"Write your Day 400 version in one paragraph\", \"Save it in your notes\", \"Walks or workout\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -16208,7 +16208,7 @@
       "location": "public.daily_actions",
       "field": "action_description",
       "surface": "/app/day/153",
-      "copy": "A simple routine can be easy to overlook. Log the water you drink today if that is useful to you.",
+      "copy": "The least glamorous habit and one of the most reliable. Hit the target cleanly today.",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -16233,7 +16233,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/153",
-      "copy": "[\"Log the water you drink, if that is useful to you\", \"Keep water available through the day\", \"Choose and log one useful routine today\"]",
+      "copy": "[\"Half your water by 2 PM\", \"Full target by evening\", \"All rings\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -16333,7 +16333,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/154",
-      "copy": "[\"Answer two questions in Ask\", \"Try the plate method at one meal\", \"Log the water you drink, if that is useful to you\"]",
+      "copy": "[\"Answer two questions in Ask\", \"All meals plate-method\", \"Water target\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -16433,7 +16433,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/155",
-      "copy": "[\"Run your minimum day exactly as written\", \"Note whether it held\", \"Log what is useful to you today\"]",
+      "copy": "[\"Run your minimum day exactly as written\", \"Note whether it held\", \"Log everything\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -16533,7 +16533,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/156",
-      "copy": "[\"Review Progress trends\", \"Choose and log one useful routine today\", \"Mindset card\"]",
+      "copy": "[\"Review Progress trends\", \"All rings\", \"Mindset card\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -16558,7 +16558,7 @@
       "location": "public.daily_actions",
       "field": "day_name",
       "surface": "/app/day/157",
-      "copy": "Day 157: Strength at Your Own Pace",
+      "copy": "Day 157: Strength Progression",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -16583,7 +16583,7 @@
       "location": "public.daily_actions",
       "field": "action_title",
       "surface": "/app/day/157",
-      "copy": "Day 157 \u2014 Strength at Your Own Pace",
+      "copy": "Day 157 \u2014 Strength Progression",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -16608,7 +16608,7 @@
       "location": "public.daily_actions",
       "field": "action_description",
       "surface": "/app/day/157",
-      "copy": "If a workout has felt comfortable for a while, you may choose to do a little more. Changing or keeping your current level is equally fine.",
+      "copy": "If your workouts have felt easy for two weeks, add one set or move to the next progression today.",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -16633,7 +16633,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/157",
-      "copy": "[\"Workout at a pace that suits you, or a comfortable movement option\", \"Include a protein food at one meal if it fits your plan\", \"Log the water you drink, if that is useful to you\"]",
+      "copy": "[\"Workout with one added set, or 3 walks\", \"Protein at every meal\", \"Water target\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -16733,7 +16733,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/158",
-      "copy": "[\"Review your shopping list for repeats\", \"Note two ingredients to build around\", \"Choose and log one useful routine today\"]",
+      "copy": "[\"Review your shopping list for repeats\", \"Note two ingredients to build around\", \"All rings\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -17033,7 +17033,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/161",
-      "copy": "[\"Confirm your appointment date\", \"Print your 90-day Progress report\", \"Choose and log one useful routine today\"]",
+      "copy": "[\"Confirm your appointment date\", \"Print your 90-day Progress report\", \"All rings\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -17133,7 +17133,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/162",
-      "copy": "[\"Write three questions for your doctor\", \"Add them to your phone\", \"Choose movement or rest that fits today\"]",
+      "copy": "[\"Write three questions for your doctor\", \"Add them to your phone\", \"Walks or workout\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -17233,7 +17233,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/163",
-      "copy": "[\"Choose and log one useful routine today\", \"Log the water you drink, if that is useful to you\", \"Mindset card\"]",
+      "copy": "[\"All rings\", \"Water target\", \"Mindset card\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -17333,7 +17333,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/164",
-      "copy": "[\"Cook your forever meal\", \"Log it\", \"Choose and log one useful routine today\"]",
+      "copy": "[\"Cook your forever meal\", \"Log it\", \"All rings\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -17458,7 +17458,7 @@
       "location": "public.daily_actions",
       "field": "day_name",
       "surface": "/app/day/166",
-      "copy": "Day 166: A Movement Break That Fits Your Day",
+      "copy": "Day 166: Movement Before the First Meal",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -17468,12 +17468,12 @@
         "is_active=True"
       ],
       "risk_tags": [
-        "safe_no_change_required"
+        "fasting_scheduling"
       ],
       "approved_education": false,
-      "disposition": "KEEP \u2014 APPROVED EDUCATION",
-      "record_state": "stays active",
-      "proposed_action": "No change. Retain as approved, non-prescriptive education.",
+      "disposition": "RETIRE \u2014 OBSOLETE FEATURE",
+      "record_state": "becomes inactive / unreachable",
+      "proposed_action": "Make inactive/unreachable; the feature it references no longer exists.",
       "replacement_copy": null,
       "notes": ""
     },
@@ -17483,7 +17483,7 @@
       "location": "public.daily_actions",
       "field": "action_title",
       "surface": "/app/day/166",
-      "copy": "Day 166 \u2014 A Movement Break That Fits Your Day",
+      "copy": "Day 166 \u2014 Movement Before the First Meal",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -17493,12 +17493,12 @@
         "is_active=True"
       ],
       "risk_tags": [
-        "safe_no_change_required"
+        "fasting_scheduling"
       ],
       "approved_education": false,
-      "disposition": "KEEP \u2014 APPROVED EDUCATION",
-      "record_state": "stays active",
-      "proposed_action": "No change. Retain as approved, non-prescriptive education.",
+      "disposition": "RETIRE \u2014 OBSOLETE FEATURE",
+      "record_state": "becomes inactive / unreachable",
+      "proposed_action": "Make inactive/unreachable; the feature it references no longer exists.",
       "replacement_copy": null,
       "notes": ""
     },
@@ -17508,7 +17508,7 @@
       "location": "public.daily_actions",
       "field": "action_description",
       "surface": "/app/day/166",
-      "copy": "If it is safe and practical for you, choose a comfortable movement break at a time that fits your day. Record a reading only if it is part of your plan.",
+      "copy": "If it is safe and practical for you, try a comfortable movement break before your first meal. Record a reading only if it is part of your plan.",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -17533,7 +17533,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/166",
-      "copy": "[\"Choose a safe movement break at a time that suits you\", \"Record a reading only if it is part of your plan\", \"Use a meal routine that fits you\"]",
+      "copy": "[\"Choose a safe movement break before your first meal\", \"Record a reading only if it is part of your plan\", \"Use a meal routine that fits you\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -17633,7 +17633,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/167",
-      "copy": "[\"Read the wins in Ask\", \"React to two of them\", \"Log the water you drink, if that is useful to you\"]",
+      "copy": "[\"Read the wins in Ask\", \"React to two of them\", \"Water target\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -17733,7 +17733,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/168",
-      "copy": "[\"Choose and log one useful routine today\", \"Early night\", \"One line: the biggest change since Day 1\"]",
+      "copy": "[\"All rings closed\", \"Early night\", \"One line: the biggest change since Day 1\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -17833,7 +17833,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/169",
-      "copy": "[\"Repeat a day from your best week\", \"Choose and log one useful routine today\", \"Log the water you drink, if that is useful to you\"]",
+      "copy": "[\"Repeat a day from your best week\", \"All rings\", \"Water target\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -17921,9 +17921,9 @@
         "treatment_or_testing_instruction"
       ],
       "approved_education": true,
-      "disposition": "KEEP \u2014 APPROVED EDUCATION",
-      "record_state": "stays active",
-      "proposed_action": "No change. Retain as approved, non-prescriptive education.",
+      "disposition": "REWRITE \u2014 CLINICIAN REVIEW",
+      "record_state": "stays active pending exact replacement copy",
+      "proposed_action": "Clinician supplies or approves exact replacement copy in the appendix; record stays active meanwhile.",
       "replacement_copy": null,
       "notes": ""
     },
@@ -18133,7 +18133,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/172",
-      "copy": "[\"Write both sentences\", \"Choose and log one useful routine today\", \"Log the water you drink, if that is useful to you\"]",
+      "copy": "[\"Write both sentences\", \"All rings\", \"Water target\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -18233,7 +18233,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/173",
-      "copy": "[\"Try the plate method at one meal\", \"Choose movement or rest that fits today\", \"Log the water you drink, if that is useful to you\"]",
+      "copy": "[\"3 plate-method meals\", \"Walks or workout\", \"Water target\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -18333,7 +18333,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/174",
-      "copy": "[\"Open Progress \u2192 Print report for my doctor\", \"Review your 180-day trends\", \"Choose and log one useful routine today\"]",
+      "copy": "[\"Open Progress \u2192 Print report for my doctor\", \"Review your 180-day trends\", \"All rings\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -18533,7 +18533,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/176",
-      "copy": "[\"Write the list\", \"Mindset card\", \"Choose and log one useful routine today\"]",
+      "copy": "[\"Write the list\", \"Mindset card\", \"All rings\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -18633,7 +18633,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/177",
-      "copy": "[\"Choose and log one useful routine today\", \"Sleep protocol tonight\", \"Log the water you drink, if that is useful to you\"]",
+      "copy": "[\"All rings\", \"Sleep protocol tonight\", \"Water target\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -18733,7 +18733,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/178",
-      "copy": "[\"Choose and log one useful routine today\", \"Confirm tomorrow and Day 180\", \"Early night\"]",
+      "copy": "[\"All rings closed\", \"Confirm tomorrow and Day 180\", \"Early night\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -18833,7 +18833,7 @@
       "location": "public.daily_actions",
       "field": "sub_tasks",
       "surface": "/app/day/179",
-      "copy": "[\"Choose and log one useful routine today\", \"Use your familiar routines; do not change them because of an upcoming test\", \"Early night\"]",
+      "copy": "[\"All rings closed\", \"Prepare for tomorrow's test and measurement\", \"Early night\"]",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -18921,9 +18921,9 @@
         "treatment_or_testing_instruction"
       ],
       "approved_education": true,
-      "disposition": "KEEP \u2014 APPROVED EDUCATION",
-      "record_state": "stays active",
-      "proposed_action": "No change. Retain as approved, non-prescriptive education.",
+      "disposition": "REWRITE \u2014 CLINICIAN REVIEW",
+      "record_state": "stays active pending exact replacement copy",
+      "proposed_action": "Clinician supplies or approves exact replacement copy in the appendix; record stays active meanwhile.",
       "replacement_copy": null,
       "notes": ""
     },
@@ -19091,9 +19091,9 @@
         "uncited_absolute"
       ],
       "approved_education": false,
-      "disposition": "KEEP \u2014 APPROVED EDUCATION",
-      "record_state": "stays active",
-      "proposed_action": "No change. Retain as approved, non-prescriptive education.",
+      "disposition": "REWRITE \u2014 CLINICIAN REVIEW",
+      "record_state": "stays active pending exact replacement copy",
+      "proposed_action": "Clinician supplies or approves exact replacement copy in the appendix; record stays active meanwhile.",
       "replacement_copy": null,
       "notes": ""
     },
@@ -19235,9 +19235,9 @@
         "promised_outcomes"
       ],
       "approved_education": false,
-      "disposition": "KEEP \u2014 APPROVED EDUCATION",
-      "record_state": "stays active",
-      "proposed_action": "No change. Retain as approved, non-prescriptive education.",
+      "disposition": "REWRITE \u2014 OWNER APPROVAL",
+      "record_state": "stays active pending exact replacement copy",
+      "proposed_action": "Owner supplies exact replacement copy in the approval appendix; record stays active meanwhile.",
       "replacement_copy": null,
       "notes": ""
     },
@@ -19595,9 +19595,9 @@
         "reversal_cure"
       ],
       "approved_education": false,
-      "disposition": "KEEP \u2014 APPROVED EDUCATION",
-      "record_state": "stays active",
-      "proposed_action": "No change. Retain as approved, non-prescriptive education.",
+      "disposition": "REWRITE \u2014 CLINICIAN REVIEW",
+      "record_state": "stays active pending exact replacement copy",
+      "proposed_action": "Clinician supplies or approves exact replacement copy in the appendix; record stays active meanwhile.",
       "replacement_copy": null,
       "notes": ""
     },
@@ -19643,9 +19643,9 @@
         "reversal_cure"
       ],
       "approved_education": false,
-      "disposition": "KEEP \u2014 APPROVED EDUCATION",
-      "record_state": "stays active",
-      "proposed_action": "No change. Retain as approved, non-prescriptive education.",
+      "disposition": "REWRITE \u2014 CLINICIAN REVIEW",
+      "record_state": "stays active pending exact replacement copy",
+      "proposed_action": "Clinician supplies or approves exact replacement copy in the appendix; record stays active meanwhile.",
       "replacement_copy": null,
       "notes": ""
     },
@@ -19667,9 +19667,9 @@
         "reversal_cure"
       ],
       "approved_education": false,
-      "disposition": "KEEP \u2014 APPROVED EDUCATION",
-      "record_state": "stays active",
-      "proposed_action": "No change. Retain as approved, non-prescriptive education.",
+      "disposition": "REWRITE \u2014 CLINICIAN REVIEW",
+      "record_state": "stays active pending exact replacement copy",
+      "proposed_action": "Clinician supplies or approves exact replacement copy in the appendix; record stays active meanwhile.",
       "replacement_copy": null,
       "notes": ""
     },
@@ -19715,9 +19715,9 @@
         "reversal_cure"
       ],
       "approved_education": false,
-      "disposition": "KEEP \u2014 APPROVED EDUCATION",
-      "record_state": "stays active",
-      "proposed_action": "No change. Retain as approved, non-prescriptive education.",
+      "disposition": "REWRITE \u2014 CLINICIAN REVIEW",
+      "record_state": "stays active pending exact replacement copy",
+      "proposed_action": "Clinician supplies or approves exact replacement copy in the appendix; record stays active meanwhile.",
       "replacement_copy": null,
       "notes": ""
     },
@@ -19739,9 +19739,9 @@
         "reversal_cure"
       ],
       "approved_education": false,
-      "disposition": "KEEP \u2014 APPROVED EDUCATION",
-      "record_state": "stays active",
-      "proposed_action": "No change. Retain as approved, non-prescriptive education.",
+      "disposition": "REWRITE \u2014 CLINICIAN REVIEW",
+      "record_state": "stays active pending exact replacement copy",
+      "proposed_action": "Clinician supplies or approves exact replacement copy in the appendix; record stays active meanwhile.",
       "replacement_copy": null,
       "notes": ""
     },
@@ -19764,9 +19764,9 @@
         "uncited_absolute"
       ],
       "approved_education": false,
-      "disposition": "KEEP \u2014 APPROVED EDUCATION",
-      "record_state": "stays active",
-      "proposed_action": "No change. Retain as approved, non-prescriptive education.",
+      "disposition": "REWRITE \u2014 CLINICIAN REVIEW",
+      "record_state": "stays active pending exact replacement copy",
+      "proposed_action": "Clinician supplies or approves exact replacement copy in the appendix; record stays active meanwhile.",
       "replacement_copy": null,
       "notes": ""
     },
@@ -19788,9 +19788,9 @@
         "reversal_cure"
       ],
       "approved_education": false,
-      "disposition": "KEEP \u2014 APPROVED EDUCATION",
-      "record_state": "stays active",
-      "proposed_action": "No change. Retain as approved, non-prescriptive education.",
+      "disposition": "REWRITE \u2014 CLINICIAN REVIEW",
+      "record_state": "stays active pending exact replacement copy",
+      "proposed_action": "Clinician supplies or approves exact replacement copy in the appendix; record stays active meanwhile.",
       "replacement_copy": null,
       "notes": ""
     },
@@ -20352,7 +20352,7 @@
       "location": "public.badges",
       "field": "description",
       "surface": "/app/progress (badges)",
-      "copy": "You logged your first meal using the plate method.",
+      "copy": "Logged your first compliant meal.",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -20376,7 +20376,7 @@
       "location": "public.badges",
       "field": "unlock_hint",
       "surface": "/app/progress (badges)",
-      "copy": "Log one meal using the plate method.",
+      "copy": "Log one plate-method meal.",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -20424,7 +20424,7 @@
       "location": "public.badges",
       "field": "description",
       "surface": "/app/progress (badges)",
-      "copy": "You logged water for the first time.",
+      "copy": "First day water goal hit.",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -20448,7 +20448,7 @@
       "location": "public.badges",
       "field": "unlock_hint",
       "surface": "/app/progress (badges)",
-      "copy": "Log the water you drink once.",
+      "copy": "Close the water ring once",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -20689,8 +20689,8 @@
       "field": "name",
       "surface": "/app/progress (badges)",
       "copy": "Night Faster",
-      "active": false,
-      "reachable_by_member": false,
+      "active": true,
+      "reachable_by_member": true,
       "linked_records": [
         "slug=night-faster",
         "category=program",
@@ -20700,9 +20700,9 @@
         "fasting_scheduling"
       ],
       "approved_education": false,
-      "disposition": "HISTORICAL \u2014 UNREACHABLE",
-      "record_state": "retained as history, unreachable by members",
-      "proposed_action": "Retain as history only. Already unreachable by members.",
+      "disposition": "RETIRE \u2014 OBSOLETE FEATURE",
+      "record_state": "becomes inactive / unreachable",
+      "proposed_action": "Make inactive/unreachable; the feature it references no longer exists.",
       "replacement_copy": null,
       "notes": "Outcome/obsolete-feature badge retired in Part G; award history preserved as non-display."
     },
@@ -20713,8 +20713,8 @@
       "field": "description",
       "surface": "/app/progress (badges)",
       "copy": "First intermittent fast completed.",
-      "active": false,
-      "reachable_by_member": false,
+      "active": true,
+      "reachable_by_member": true,
       "linked_records": [
         "slug=night-faster",
         "category=program",
@@ -20724,9 +20724,9 @@
         "safe_no_change_required"
       ],
       "approved_education": false,
-      "disposition": "HISTORICAL \u2014 UNREACHABLE",
-      "record_state": "retained as history, unreachable by members",
-      "proposed_action": "Retain as history only. Already unreachable by members.",
+      "disposition": "KEEP \u2014 APPROVED EDUCATION",
+      "record_state": "stays active",
+      "proposed_action": "No change. Retain as approved, non-prescriptive education.",
       "replacement_copy": null,
       "notes": "Outcome/obsolete-feature badge retired in Part G; award history preserved as non-display."
     },
@@ -20737,8 +20737,8 @@
       "field": "unlock_hint",
       "surface": "/app/progress (badges)",
       "copy": "Unlock IF and complete one fast",
-      "active": false,
-      "reachable_by_member": false,
+      "active": true,
+      "reachable_by_member": true,
       "linked_records": [
         "slug=night-faster",
         "category=program",
@@ -20748,9 +20748,9 @@
         "safe_no_change_required"
       ],
       "approved_education": false,
-      "disposition": "HISTORICAL \u2014 UNREACHABLE",
-      "record_state": "retained as history, unreachable by members",
-      "proposed_action": "Retain as history only. Already unreachable by members.",
+      "disposition": "KEEP \u2014 APPROVED EDUCATION",
+      "record_state": "stays active",
+      "proposed_action": "No change. Retain as approved, non-prescriptive education.",
       "replacement_copy": null,
       "notes": "Outcome/obsolete-feature badge retired in Part G; award history preserved as non-display."
     },
@@ -20761,8 +20761,8 @@
       "field": "name",
       "surface": "/app/progress (badges)",
       "copy": "A1C Entry",
-      "active": false,
-      "reachable_by_member": false,
+      "active": true,
+      "reachable_by_member": true,
       "linked_records": [
         "slug=a1c-entry",
         "category=program",
@@ -20772,11 +20772,11 @@
         "safe_no_change_required"
       ],
       "approved_education": false,
-      "disposition": "HISTORICAL \u2014 UNREACHABLE",
-      "record_state": "retained as history, unreachable by members",
-      "proposed_action": "Retain as history only. Already unreachable by members.",
+      "disposition": "KEEP \u2014 APPROVED EDUCATION",
+      "record_state": "stays active",
+      "proposed_action": "No change. Retain as approved, non-prescriptive education.",
       "replacement_copy": null,
-      "notes": "Outcome/obsolete-feature badge retired in Part G; award history preserved as non-display."
+      "notes": ""
     },
     {
       "id": "badges:b461639c-3042-4b76-b056-57dadb8750c2#description",
@@ -20785,8 +20785,8 @@
       "field": "description",
       "surface": "/app/progress (badges)",
       "copy": "First A1C value recorded.",
-      "active": false,
-      "reachable_by_member": false,
+      "active": true,
+      "reachable_by_member": true,
       "linked_records": [
         "slug=a1c-entry",
         "category=program",
@@ -20796,11 +20796,11 @@
         "safe_no_change_required"
       ],
       "approved_education": false,
-      "disposition": "HISTORICAL \u2014 UNREACHABLE",
-      "record_state": "retained as history, unreachable by members",
-      "proposed_action": "Retain as history only. Already unreachable by members.",
+      "disposition": "KEEP \u2014 APPROVED EDUCATION",
+      "record_state": "stays active",
+      "proposed_action": "No change. Retain as approved, non-prescriptive education.",
       "replacement_copy": null,
-      "notes": "Outcome/obsolete-feature badge retired in Part G; award history preserved as non-display."
+      "notes": ""
     },
     {
       "id": "badges:b461639c-3042-4b76-b056-57dadb8750c2#unlock_hint",
@@ -20809,8 +20809,8 @@
       "field": "unlock_hint",
       "surface": "/app/progress (badges)",
       "copy": "Enter your first A1C result",
-      "active": false,
-      "reachable_by_member": false,
+      "active": true,
+      "reachable_by_member": true,
       "linked_records": [
         "slug=a1c-entry",
         "category=program",
@@ -20820,11 +20820,11 @@
         "safe_no_change_required"
       ],
       "approved_education": false,
-      "disposition": "HISTORICAL \u2014 UNREACHABLE",
-      "record_state": "retained as history, unreachable by members",
-      "proposed_action": "Retain as history only. Already unreachable by members.",
+      "disposition": "KEEP \u2014 APPROVED EDUCATION",
+      "record_state": "stays active",
+      "proposed_action": "No change. Retain as approved, non-prescriptive education.",
       "replacement_copy": null,
-      "notes": "Outcome/obsolete-feature badge retired in Part G; award history preserved as non-display."
+      "notes": ""
     },
     {
       "id": "badges:467ade61-3680-4375-a86c-c461a37beb4f#name",
@@ -20833,8 +20833,8 @@
       "field": "name",
       "surface": "/app/progress (badges)",
       "copy": "Dropping",
-      "active": false,
-      "reachable_by_member": false,
+      "active": true,
+      "reachable_by_member": true,
       "linked_records": [
         "slug=dropping",
         "category=program",
@@ -20844,9 +20844,9 @@
         "safe_no_change_required"
       ],
       "approved_education": false,
-      "disposition": "HISTORICAL \u2014 UNREACHABLE",
-      "record_state": "retained as history, unreachable by members",
-      "proposed_action": "Retain as history only. Already unreachable by members.",
+      "disposition": "KEEP \u2014 APPROVED EDUCATION",
+      "record_state": "stays active",
+      "proposed_action": "No change. Retain as approved, non-prescriptive education.",
       "replacement_copy": null,
       "notes": "Outcome/obsolete-feature badge retired in Part G; award history preserved as non-display."
     },
@@ -20857,8 +20857,8 @@
       "field": "description",
       "surface": "/app/progress (badges)",
       "copy": "A1C decreased from a previous reading.",
-      "active": false,
-      "reachable_by_member": false,
+      "active": true,
+      "reachable_by_member": true,
       "linked_records": [
         "slug=dropping",
         "category=program",
@@ -20868,9 +20868,9 @@
         "safe_no_change_required"
       ],
       "approved_education": false,
-      "disposition": "HISTORICAL \u2014 UNREACHABLE",
-      "record_state": "retained as history, unreachable by members",
-      "proposed_action": "Retain as history only. Already unreachable by members.",
+      "disposition": "KEEP \u2014 APPROVED EDUCATION",
+      "record_state": "stays active",
+      "proposed_action": "No change. Retain as approved, non-prescriptive education.",
       "replacement_copy": null,
       "notes": "Outcome/obsolete-feature badge retired in Part G; award history preserved as non-display."
     },
@@ -20881,8 +20881,8 @@
       "field": "unlock_hint",
       "surface": "/app/progress (badges)",
       "copy": "Lower your A1C from any prior reading",
-      "active": false,
-      "reachable_by_member": false,
+      "active": true,
+      "reachable_by_member": true,
       "linked_records": [
         "slug=dropping",
         "category=program",
@@ -20892,9 +20892,9 @@
         "promised_outcomes"
       ],
       "approved_education": false,
-      "disposition": "HISTORICAL \u2014 UNREACHABLE",
-      "record_state": "retained as history, unreachable by members",
-      "proposed_action": "Retain as history only. Already unreachable by members.",
+      "disposition": "RETIRE \u2014 OUTCOME/GAMIFICATION",
+      "record_state": "becomes inactive / unreachable",
+      "proposed_action": "Retire the outcome/gamification record; preserve award history as non-display.",
       "replacement_copy": null,
       "notes": "Outcome/obsolete-feature badge retired in Part G; award history preserved as non-display."
     },
@@ -20905,8 +20905,8 @@
       "field": "name",
       "surface": "/app/progress (badges)",
       "copy": "Pre-Diabetic Zone",
-      "active": false,
-      "reachable_by_member": false,
+      "active": true,
+      "reachable_by_member": true,
       "linked_records": [
         "slug=pre-diabetic-zone",
         "category=program",
@@ -20916,9 +20916,9 @@
         "diagnostic_label"
       ],
       "approved_education": false,
-      "disposition": "HISTORICAL \u2014 UNREACHABLE",
-      "record_state": "retained as history, unreachable by members",
-      "proposed_action": "Retain as history only. Already unreachable by members.",
+      "disposition": "RETIRE \u2014 OUTCOME/GAMIFICATION",
+      "record_state": "becomes inactive / unreachable",
+      "proposed_action": "Retire the outcome/gamification record; preserve award history as non-display.",
       "replacement_copy": null,
       "notes": "Outcome/obsolete-feature badge retired in Part G; award history preserved as non-display."
     },
@@ -20929,8 +20929,8 @@
       "field": "description",
       "surface": "/app/progress (badges)",
       "copy": "First fasting reading in pre-diabetic range.",
-      "active": false,
-      "reachable_by_member": false,
+      "active": true,
+      "reachable_by_member": true,
       "linked_records": [
         "slug=pre-diabetic-zone",
         "category=program",
@@ -20940,9 +20940,9 @@
         "diagnostic_label"
       ],
       "approved_education": false,
-      "disposition": "HISTORICAL \u2014 UNREACHABLE",
-      "record_state": "retained as history, unreachable by members",
-      "proposed_action": "Retain as history only. Already unreachable by members.",
+      "disposition": "RETIRE \u2014 OUTCOME/GAMIFICATION",
+      "record_state": "becomes inactive / unreachable",
+      "proposed_action": "Retire the outcome/gamification record; preserve award history as non-display.",
       "replacement_copy": null,
       "notes": "Outcome/obsolete-feature badge retired in Part G; award history preserved as non-display."
     },
@@ -20953,8 +20953,8 @@
       "field": "unlock_hint",
       "surface": "/app/progress (badges)",
       "copy": "Log a fasting reading 100\u2013125 mg/dL",
-      "active": false,
-      "reachable_by_member": false,
+      "active": true,
+      "reachable_by_member": true,
       "linked_records": [
         "slug=pre-diabetic-zone",
         "category=program",
@@ -20964,9 +20964,9 @@
         "supplements"
       ],
       "approved_education": false,
-      "disposition": "HISTORICAL \u2014 UNREACHABLE",
-      "record_state": "retained as history, unreachable by members",
-      "proposed_action": "Retain as history only. Already unreachable by members.",
+      "disposition": "RETIRE \u2014 OUTCOME/GAMIFICATION",
+      "record_state": "becomes inactive / unreachable",
+      "proposed_action": "Retire the outcome/gamification record; preserve award history as non-display.",
       "replacement_copy": null,
       "notes": "Outcome/obsolete-feature badge retired in Part G; award history preserved as non-display."
     },
@@ -20977,8 +20977,8 @@
       "field": "name",
       "surface": "/app/progress (badges)",
       "copy": "Normal Zone",
-      "active": false,
-      "reachable_by_member": false,
+      "active": true,
+      "reachable_by_member": true,
       "linked_records": [
         "slug=normal-zone",
         "category=program",
@@ -20988,9 +20988,9 @@
         "diagnostic_label"
       ],
       "approved_education": false,
-      "disposition": "HISTORICAL \u2014 UNREACHABLE",
-      "record_state": "retained as history, unreachable by members",
-      "proposed_action": "Retain as history only. Already unreachable by members.",
+      "disposition": "RETIRE \u2014 OUTCOME/GAMIFICATION",
+      "record_state": "becomes inactive / unreachable",
+      "proposed_action": "Retire the outcome/gamification record; preserve award history as non-display.",
       "replacement_copy": null,
       "notes": "Outcome/obsolete-feature badge retired in Part G; award history preserved as non-display."
     },
@@ -21001,8 +21001,8 @@
       "field": "description",
       "surface": "/app/progress (badges)",
       "copy": "First fasting reading in normal range.",
-      "active": false,
-      "reachable_by_member": false,
+      "active": true,
+      "reachable_by_member": true,
       "linked_records": [
         "slug=normal-zone",
         "category=program",
@@ -21012,9 +21012,9 @@
         "safe_no_change_required"
       ],
       "approved_education": false,
-      "disposition": "HISTORICAL \u2014 UNREACHABLE",
-      "record_state": "retained as history, unreachable by members",
-      "proposed_action": "Retain as history only. Already unreachable by members.",
+      "disposition": "KEEP \u2014 APPROVED EDUCATION",
+      "record_state": "stays active",
+      "proposed_action": "No change. Retain as approved, non-prescriptive education.",
       "replacement_copy": null,
       "notes": "Outcome/obsolete-feature badge retired in Part G; award history preserved as non-display."
     },
@@ -21025,8 +21025,8 @@
       "field": "unlock_hint",
       "surface": "/app/progress (badges)",
       "copy": "Log a fasting reading under 100 mg/dL",
-      "active": false,
-      "reachable_by_member": false,
+      "active": true,
+      "reachable_by_member": true,
       "linked_records": [
         "slug=normal-zone",
         "category=program",
@@ -21036,9 +21036,9 @@
         "supplements"
       ],
       "approved_education": false,
-      "disposition": "HISTORICAL \u2014 UNREACHABLE",
-      "record_state": "retained as history, unreachable by members",
-      "proposed_action": "Retain as history only. Already unreachable by members.",
+      "disposition": "RETIRE \u2014 OUTCOME/GAMIFICATION",
+      "record_state": "becomes inactive / unreachable",
+      "proposed_action": "Retire the outcome/gamification record; preserve award history as non-display.",
       "replacement_copy": null,
       "notes": "Outcome/obsolete-feature badge retired in Part G; award history preserved as non-display."
     },
@@ -21072,7 +21072,7 @@
       "location": "public.badges",
       "field": "description",
       "surface": "/app/progress (badges)",
-      "copy": "You logged something on 30 days in a row.",
+      "copy": "30 consecutive days all rings closed.",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -21096,7 +21096,7 @@
       "location": "public.badges",
       "field": "unlock_hint",
       "surface": "/app/progress (badges)",
-      "copy": "Log something on 30 days in a row.",
+      "copy": "Reach a 30-day streak",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -21121,8 +21121,8 @@
       "field": "name",
       "surface": "/app/progress (badges)",
       "copy": "Weight Milestone",
-      "active": false,
-      "reachable_by_member": false,
+      "active": true,
+      "reachable_by_member": true,
       "linked_records": [
         "slug=weight-milestone",
         "category=program",
@@ -21132,9 +21132,9 @@
         "safe_no_change_required"
       ],
       "approved_education": false,
-      "disposition": "HISTORICAL \u2014 UNREACHABLE",
-      "record_state": "retained as history, unreachable by members",
-      "proposed_action": "Retain as history only. Already unreachable by members.",
+      "disposition": "KEEP \u2014 APPROVED EDUCATION",
+      "record_state": "stays active",
+      "proposed_action": "No change. Retain as approved, non-prescriptive education.",
       "replacement_copy": null,
       "notes": "Outcome/obsolete-feature badge retired in Part G; award history preserved as non-display."
     },
@@ -21145,8 +21145,8 @@
       "field": "description",
       "surface": "/app/progress (badges)",
       "copy": "First 5% body weight reduction.",
-      "active": false,
-      "reachable_by_member": false,
+      "active": true,
+      "reachable_by_member": true,
       "linked_records": [
         "slug=weight-milestone",
         "category=program",
@@ -21156,9 +21156,9 @@
         "safe_no_change_required"
       ],
       "approved_education": false,
-      "disposition": "HISTORICAL \u2014 UNREACHABLE",
-      "record_state": "retained as history, unreachable by members",
-      "proposed_action": "Retain as history only. Already unreachable by members.",
+      "disposition": "KEEP \u2014 APPROVED EDUCATION",
+      "record_state": "stays active",
+      "proposed_action": "No change. Retain as approved, non-prescriptive education.",
       "replacement_copy": null,
       "notes": "Outcome/obsolete-feature badge retired in Part G; award history preserved as non-display."
     },
@@ -21169,8 +21169,8 @@
       "field": "unlock_hint",
       "surface": "/app/progress (badges)",
       "copy": "Lose 5% of starting body weight",
-      "active": false,
-      "reachable_by_member": false,
+      "active": true,
+      "reachable_by_member": true,
       "linked_records": [
         "slug=weight-milestone",
         "category=program",
@@ -21180,9 +21180,9 @@
         "safe_no_change_required"
       ],
       "approved_education": false,
-      "disposition": "HISTORICAL \u2014 UNREACHABLE",
-      "record_state": "retained as history, unreachable by members",
-      "proposed_action": "Retain as history only. Already unreachable by members.",
+      "disposition": "KEEP \u2014 APPROVED EDUCATION",
+      "record_state": "stays active",
+      "proposed_action": "No change. Retain as approved, non-prescriptive education.",
       "replacement_copy": null,
       "notes": "Outcome/obsolete-feature badge retired in Part G; award history preserved as non-display."
     },
@@ -21216,7 +21216,7 @@
       "location": "public.badges",
       "field": "description",
       "surface": "/app/progress (badges)",
-      "copy": "You logged each of the four daily routines on 7 days.",
+      "copy": "7 days all 4 rings closed.",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -21240,7 +21240,7 @@
       "location": "public.badges",
       "field": "unlock_hint",
       "surface": "/app/progress (badges)",
-      "copy": "Log each of the four daily routines across 7 days.",
+      "copy": "Close all 4 rings for 7 days straight",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [
@@ -21481,8 +21481,8 @@
       "field": "name",
       "surface": "/app/progress (badges)",
       "copy": "Cheat and Fast",
-      "active": false,
-      "reachable_by_member": false,
+      "active": true,
+      "reachable_by_member": true,
       "linked_records": [
         "slug=cheat-and-fast",
         "category=program",
@@ -21492,9 +21492,9 @@
         "cheat_meal"
       ],
       "approved_education": false,
-      "disposition": "HISTORICAL \u2014 UNREACHABLE",
-      "record_state": "retained as history, unreachable by members",
-      "proposed_action": "Retain as history only. Already unreachable by members.",
+      "disposition": "RETIRE \u2014 OBSOLETE FEATURE",
+      "record_state": "becomes inactive / unreachable",
+      "proposed_action": "Make inactive/unreachable; the feature it references no longer exists.",
       "replacement_copy": null,
       "notes": "Outcome/obsolete-feature badge retired in Part G; award history preserved as non-display."
     },
@@ -21505,8 +21505,8 @@
       "field": "description",
       "surface": "/app/progress (badges)",
       "copy": "First cheat meal + fast logged immediately after.",
-      "active": false,
-      "reachable_by_member": false,
+      "active": true,
+      "reachable_by_member": true,
       "linked_records": [
         "slug=cheat-and-fast",
         "category=program",
@@ -21516,9 +21516,9 @@
         "cheat_meal"
       ],
       "approved_education": false,
-      "disposition": "HISTORICAL \u2014 UNREACHABLE",
-      "record_state": "retained as history, unreachable by members",
-      "proposed_action": "Retain as history only. Already unreachable by members.",
+      "disposition": "RETIRE \u2014 OBSOLETE FEATURE",
+      "record_state": "becomes inactive / unreachable",
+      "proposed_action": "Make inactive/unreachable; the feature it references no longer exists.",
       "replacement_copy": null,
       "notes": "Outcome/obsolete-feature badge retired in Part G; award history preserved as non-display."
     },
@@ -21529,8 +21529,8 @@
       "field": "unlock_hint",
       "surface": "/app/progress (badges)",
       "copy": "Log a cheat meal then an IF window",
-      "active": false,
-      "reachable_by_member": false,
+      "active": true,
+      "reachable_by_member": true,
       "linked_records": [
         "slug=cheat-and-fast",
         "category=program",
@@ -21540,9 +21540,9 @@
         "cheat_meal"
       ],
       "approved_education": false,
-      "disposition": "HISTORICAL \u2014 UNREACHABLE",
-      "record_state": "retained as history, unreachable by members",
-      "proposed_action": "Retain as history only. Already unreachable by members.",
+      "disposition": "RETIRE \u2014 OBSOLETE FEATURE",
+      "record_state": "becomes inactive / unreachable",
+      "proposed_action": "Make inactive/unreachable; the feature it references no longer exists.",
       "replacement_copy": null,
       "notes": "Outcome/obsolete-feature badge retired in Part G; award history preserved as non-display."
     },
@@ -24887,9 +24887,9 @@
         "uncited_absolute"
       ],
       "approved_education": false,
-      "disposition": "KEEP \u2014 APPROVED EDUCATION",
-      "record_state": "stays active",
-      "proposed_action": "No change. Retain as approved, non-prescriptive education.",
+      "disposition": "REWRITE \u2014 OWNER APPROVAL",
+      "record_state": "stays active pending exact replacement copy",
+      "proposed_action": "Owner supplies exact replacement copy in the approval appendix; record stays active meanwhile.",
       "replacement_copy": null,
       "notes": ""
     },
@@ -24933,9 +24933,9 @@
         "reversal_cure"
       ],
       "approved_education": false,
-      "disposition": "KEEP \u2014 APPROVED EDUCATION",
-      "record_state": "stays active",
-      "proposed_action": "No change. Retain as approved, non-prescriptive education.",
+      "disposition": "REWRITE \u2014 CLINICIAN REVIEW",
+      "record_state": "stays active pending exact replacement copy",
+      "proposed_action": "Clinician supplies or approves exact replacement copy in the appendix; record stays active meanwhile.",
       "replacement_copy": null,
       "notes": ""
     },
@@ -25071,9 +25071,9 @@
         "supplements"
       ],
       "approved_education": false,
-      "disposition": "KEEP \u2014 APPROVED EDUCATION",
-      "record_state": "stays active",
-      "proposed_action": "No change. Retain as approved, non-prescriptive education.",
+      "disposition": "REWRITE \u2014 CLINICIAN REVIEW",
+      "record_state": "stays active pending exact replacement copy",
+      "proposed_action": "Clinician supplies or approves exact replacement copy in the appendix; record stays active meanwhile.",
       "replacement_copy": null,
       "notes": ""
     },
@@ -25163,9 +25163,9 @@
         "uncited_absolute"
       ],
       "approved_education": false,
-      "disposition": "KEEP \u2014 APPROVED EDUCATION",
-      "record_state": "stays active",
-      "proposed_action": "No change. Retain as approved, non-prescriptive education.",
+      "disposition": "REWRITE \u2014 OWNER APPROVAL",
+      "record_state": "stays active pending exact replacement copy",
+      "proposed_action": "Owner supplies exact replacement copy in the approval appendix; record stays active meanwhile.",
       "replacement_copy": null,
       "notes": ""
     },
@@ -26065,9 +26065,9 @@
         "safe_no_change_required"
       ],
       "approved_education": false,
-      "disposition": "KEEP \u2014 INTERNAL, NOT MEMBER-FACING",
-      "record_state": "stays active; internal configuration, never rendered to members",
-      "proposed_action": "Internal configuration or code value; keep as is. Never rendered to members.",
+      "disposition": "HISTORICAL \u2014 UNREACHABLE",
+      "record_state": "retained as history, unreachable by members",
+      "proposed_action": "Retain as history only. Already unreachable by members.",
       "replacement_copy": null,
       "notes": "Configuration value; not rendered verbatim to members."
     },
@@ -26087,9 +26087,9 @@
         "safe_no_change_required"
       ],
       "approved_education": false,
-      "disposition": "KEEP \u2014 INTERNAL, NOT MEMBER-FACING",
-      "record_state": "stays active; internal configuration, never rendered to members",
-      "proposed_action": "Internal configuration or code value; keep as is. Never rendered to members.",
+      "disposition": "HISTORICAL \u2014 UNREACHABLE",
+      "record_state": "retained as history, unreachable by members",
+      "proposed_action": "Retain as history only. Already unreachable by members.",
       "replacement_copy": null,
       "notes": "Configuration value; not rendered verbatim to members."
     },
@@ -26109,9 +26109,9 @@
         "safe_no_change_required"
       ],
       "approved_education": false,
-      "disposition": "KEEP \u2014 INTERNAL, NOT MEMBER-FACING",
-      "record_state": "stays active; internal configuration, never rendered to members",
-      "proposed_action": "Internal configuration or code value; keep as is. Never rendered to members.",
+      "disposition": "HISTORICAL \u2014 UNREACHABLE",
+      "record_state": "retained as history, unreachable by members",
+      "proposed_action": "Retain as history only. Already unreachable by members.",
       "replacement_copy": null,
       "notes": "Configuration value; not rendered verbatim to members."
     },
@@ -26131,9 +26131,9 @@
         "safe_no_change_required"
       ],
       "approved_education": false,
-      "disposition": "KEEP \u2014 INTERNAL, NOT MEMBER-FACING",
-      "record_state": "stays active; internal configuration, never rendered to members",
-      "proposed_action": "Internal configuration or code value; keep as is. Never rendered to members.",
+      "disposition": "HISTORICAL \u2014 UNREACHABLE",
+      "record_state": "retained as history, unreachable by members",
+      "proposed_action": "Retain as history only. Already unreachable by members.",
       "replacement_copy": null,
       "notes": "Configuration value; not rendered verbatim to members."
     },
@@ -26153,9 +26153,9 @@
         "safe_no_change_required"
       ],
       "approved_education": false,
-      "disposition": "KEEP \u2014 INTERNAL, NOT MEMBER-FACING",
-      "record_state": "stays active; internal configuration, never rendered to members",
-      "proposed_action": "Internal configuration or code value; keep as is. Never rendered to members.",
+      "disposition": "HISTORICAL \u2014 UNREACHABLE",
+      "record_state": "retained as history, unreachable by members",
+      "proposed_action": "Retain as history only. Already unreachable by members.",
       "replacement_copy": null,
       "notes": "Configuration value; not rendered verbatim to members."
     },
@@ -26175,9 +26175,9 @@
         "safe_no_change_required"
       ],
       "approved_education": false,
-      "disposition": "KEEP \u2014 INTERNAL, NOT MEMBER-FACING",
-      "record_state": "stays active; internal configuration, never rendered to members",
-      "proposed_action": "Internal configuration or code value; keep as is. Never rendered to members.",
+      "disposition": "HISTORICAL \u2014 UNREACHABLE",
+      "record_state": "retained as history, unreachable by members",
+      "proposed_action": "Retain as history only. Already unreachable by members.",
       "replacement_copy": null,
       "notes": "Configuration value; not rendered verbatim to members."
     },
@@ -26197,9 +26197,9 @@
         "safe_no_change_required"
       ],
       "approved_education": false,
-      "disposition": "KEEP \u2014 INTERNAL, NOT MEMBER-FACING",
-      "record_state": "stays active; internal configuration, never rendered to members",
-      "proposed_action": "Internal configuration or code value; keep as is. Never rendered to members.",
+      "disposition": "HISTORICAL \u2014 UNREACHABLE",
+      "record_state": "retained as history, unreachable by members",
+      "proposed_action": "Retain as history only. Already unreachable by members.",
       "replacement_copy": null,
       "notes": "Configuration value; not rendered verbatim to members."
     },
@@ -26219,9 +26219,9 @@
         "safe_no_change_required"
       ],
       "approved_education": false,
-      "disposition": "KEEP \u2014 INTERNAL, NOT MEMBER-FACING",
-      "record_state": "stays active; internal configuration, never rendered to members",
-      "proposed_action": "Internal configuration or code value; keep as is. Never rendered to members.",
+      "disposition": "HISTORICAL \u2014 UNREACHABLE",
+      "record_state": "retained as history, unreachable by members",
+      "proposed_action": "Retain as history only. Already unreachable by members.",
       "replacement_copy": null,
       "notes": "Configuration value; not rendered verbatim to members."
     },
@@ -26241,9 +26241,9 @@
         "safe_no_change_required"
       ],
       "approved_education": false,
-      "disposition": "KEEP \u2014 INTERNAL, NOT MEMBER-FACING",
-      "record_state": "stays active; internal configuration, never rendered to members",
-      "proposed_action": "Internal configuration or code value; keep as is. Never rendered to members.",
+      "disposition": "HISTORICAL \u2014 UNREACHABLE",
+      "record_state": "retained as history, unreachable by members",
+      "proposed_action": "Retain as history only. Already unreachable by members.",
       "replacement_copy": null,
       "notes": "Configuration value; not rendered verbatim to members."
     },
@@ -26263,9 +26263,9 @@
         "safe_no_change_required"
       ],
       "approved_education": false,
-      "disposition": "KEEP \u2014 INTERNAL, NOT MEMBER-FACING",
-      "record_state": "stays active; internal configuration, never rendered to members",
-      "proposed_action": "Internal configuration or code value; keep as is. Never rendered to members.",
+      "disposition": "HISTORICAL \u2014 UNREACHABLE",
+      "record_state": "retained as history, unreachable by members",
+      "proposed_action": "Retain as history only. Already unreachable by members.",
       "replacement_copy": null,
       "notes": "Configuration value; not rendered verbatim to members."
     },
@@ -26285,9 +26285,9 @@
         "safe_no_change_required"
       ],
       "approved_education": false,
-      "disposition": "KEEP \u2014 INTERNAL, NOT MEMBER-FACING",
-      "record_state": "stays active; internal configuration, never rendered to members",
-      "proposed_action": "Internal configuration or code value; keep as is. Never rendered to members.",
+      "disposition": "HISTORICAL \u2014 UNREACHABLE",
+      "record_state": "retained as history, unreachable by members",
+      "proposed_action": "Retain as history only. Already unreachable by members.",
       "replacement_copy": null,
       "notes": "Configuration value; not rendered verbatim to members."
     },
@@ -26307,9 +26307,9 @@
         "safe_no_change_required"
       ],
       "approved_education": false,
-      "disposition": "KEEP \u2014 INTERNAL, NOT MEMBER-FACING",
-      "record_state": "stays active; internal configuration, never rendered to members",
-      "proposed_action": "Internal configuration or code value; keep as is. Never rendered to members.",
+      "disposition": "HISTORICAL \u2014 UNREACHABLE",
+      "record_state": "retained as history, unreachable by members",
+      "proposed_action": "Retain as history only. Already unreachable by members.",
       "replacement_copy": null,
       "notes": "Configuration value; not rendered verbatim to members."
     },
@@ -26329,9 +26329,9 @@
         "safe_no_change_required"
       ],
       "approved_education": false,
-      "disposition": "KEEP \u2014 INTERNAL, NOT MEMBER-FACING",
-      "record_state": "stays active; internal configuration, never rendered to members",
-      "proposed_action": "Internal configuration or code value; keep as is. Never rendered to members.",
+      "disposition": "HISTORICAL \u2014 UNREACHABLE",
+      "record_state": "retained as history, unreachable by members",
+      "proposed_action": "Retain as history only. Already unreachable by members.",
       "replacement_copy": null,
       "notes": "Configuration value; not rendered verbatim to members."
     },
@@ -27529,9 +27529,9 @@
         "promised_outcomes"
       ],
       "approved_education": false,
-      "disposition": "KEEP \u2014 APPROVED EDUCATION",
-      "record_state": "stays active",
-      "proposed_action": "No change. Retain as approved, non-prescriptive education.",
+      "disposition": "REWRITE \u2014 OWNER APPROVAL",
+      "record_state": "stays active pending exact replacement copy",
+      "proposed_action": "Owner supplies exact replacement copy in the approval appendix; record stays active meanwhile.",
       "replacement_copy": null,
       "notes": ""
     },
@@ -28829,9 +28829,9 @@
         "uncited_absolute"
       ],
       "approved_education": false,
-      "disposition": "KEEP \u2014 APPROVED EDUCATION",
-      "record_state": "stays active",
-      "proposed_action": "No change. Retain as approved, non-prescriptive education.",
+      "disposition": "REWRITE \u2014 OWNER APPROVAL",
+      "record_state": "stays active pending exact replacement copy",
+      "proposed_action": "Owner supplies exact replacement copy in the approval appendix; record stays active meanwhile.",
       "replacement_copy": null,
       "notes": ""
     },
@@ -28849,9 +28849,9 @@
         "uncited_absolute"
       ],
       "approved_education": false,
-      "disposition": "KEEP \u2014 APPROVED EDUCATION",
-      "record_state": "stays active",
-      "proposed_action": "No change. Retain as approved, non-prescriptive education.",
+      "disposition": "REWRITE \u2014 OWNER APPROVAL",
+      "record_state": "stays active pending exact replacement copy",
+      "proposed_action": "Owner supplies exact replacement copy in the approval appendix; record stays active meanwhile.",
       "replacement_copy": null,
       "notes": ""
     },
@@ -29389,9 +29389,9 @@
         "supplements"
       ],
       "approved_education": false,
-      "disposition": "KEEP \u2014 APPROVED EDUCATION",
-      "record_state": "stays active",
-      "proposed_action": "No change. Retain as approved, non-prescriptive education.",
+      "disposition": "REWRITE \u2014 CLINICIAN REVIEW",
+      "record_state": "stays active pending exact replacement copy",
+      "proposed_action": "Clinician supplies or approves exact replacement copy in the appendix; record stays active meanwhile.",
       "replacement_copy": null,
       "notes": ""
     },
@@ -31589,9 +31589,9 @@
         "uncited_absolute"
       ],
       "approved_education": false,
-      "disposition": "KEEP \u2014 APPROVED EDUCATION",
-      "record_state": "stays active",
-      "proposed_action": "No change. Retain as approved, non-prescriptive education.",
+      "disposition": "REWRITE \u2014 OWNER APPROVAL",
+      "record_state": "stays active pending exact replacement copy",
+      "proposed_action": "Owner supplies exact replacement copy in the approval appendix; record stays active meanwhile.",
       "replacement_copy": null,
       "notes": ""
     },
@@ -31609,9 +31609,9 @@
         "supplements"
       ],
       "approved_education": false,
-      "disposition": "KEEP \u2014 APPROVED EDUCATION",
-      "record_state": "stays active",
-      "proposed_action": "No change. Retain as approved, non-prescriptive education.",
+      "disposition": "REWRITE \u2014 CLINICIAN REVIEW",
+      "record_state": "stays active pending exact replacement copy",
+      "proposed_action": "Clinician supplies or approves exact replacement copy in the appendix; record stays active meanwhile.",
       "replacement_copy": null,
       "notes": ""
     },
@@ -31889,9 +31889,9 @@
         "treatment_or_testing_instruction"
       ],
       "approved_education": false,
-      "disposition": "KEEP \u2014 APPROVED EDUCATION",
-      "record_state": "stays active",
-      "proposed_action": "No change. Retain as approved, non-prescriptive education.",
+      "disposition": "REWRITE \u2014 CLINICIAN REVIEW",
+      "record_state": "stays active pending exact replacement copy",
+      "proposed_action": "Clinician supplies or approves exact replacement copy in the appendix; record stays active meanwhile.",
       "replacement_copy": null,
       "notes": ""
     },
@@ -32516,17 +32516,17 @@
       "notes": ""
     },
     {
-      "id": "src/components/progress/A1CTab.tsx:168",
+      "id": "src/components/progress/A1CTab.tsx:167",
       "source_type": "source",
       "location": "src/components/progress/A1CTab.tsx",
       "field": "string literal",
       "surface": "component: progress",
-      "copy": "If A1C testing is part of your care plan, you can record a result here when you have one.",
+      "copy": "Your first A1C result anchors everything. Enter it when you have it.",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [],
       "risk_tags": [
-        "treatment_or_testing_instruction"
+        "safe_no_change_required"
       ],
       "approved_education": false,
       "disposition": "KEEP \u2014 APPROVED EDUCATION",
@@ -32536,7 +32536,7 @@
       "notes": ""
     },
     {
-      "id": "src/components/progress/A1CTab.tsx:189",
+      "id": "src/components/progress/A1CTab.tsx:188",
       "source_type": "source",
       "location": "src/components/progress/A1CTab.tsx",
       "field": "string literal",
@@ -33649,9 +33649,9 @@
         "fasting_scheduling"
       ],
       "approved_education": false,
-      "disposition": "KEEP \u2014 APPROVED EDUCATION",
-      "record_state": "stays active",
-      "proposed_action": "No change. Retain as approved, non-prescriptive education.",
+      "disposition": "RETIRE \u2014 OBSOLETE FEATURE",
+      "record_state": "becomes inactive / unreachable",
+      "proposed_action": "Make inactive/unreachable; the feature it references no longer exists.",
       "replacement_copy": null,
       "notes": ""
     },
@@ -33709,9 +33709,9 @@
         "supplements"
       ],
       "approved_education": false,
-      "disposition": "KEEP \u2014 APPROVED EDUCATION",
-      "record_state": "stays active",
-      "proposed_action": "No change. Retain as approved, non-prescriptive education.",
+      "disposition": "REWRITE \u2014 CLINICIAN REVIEW",
+      "record_state": "stays active pending exact replacement copy",
+      "proposed_action": "Clinician supplies or approves exact replacement copy in the appendix; record stays active meanwhile.",
       "replacement_copy": null,
       "notes": ""
     },
@@ -33729,9 +33729,9 @@
         "supplements"
       ],
       "approved_education": false,
-      "disposition": "KEEP \u2014 APPROVED EDUCATION",
-      "record_state": "stays active",
-      "proposed_action": "No change. Retain as approved, non-prescriptive education.",
+      "disposition": "REWRITE \u2014 CLINICIAN REVIEW",
+      "record_state": "stays active pending exact replacement copy",
+      "proposed_action": "Clinician supplies or approves exact replacement copy in the appendix; record stays active meanwhile.",
       "replacement_copy": null,
       "notes": ""
     },
@@ -33749,9 +33749,9 @@
         "supplements"
       ],
       "approved_education": false,
-      "disposition": "KEEP \u2014 APPROVED EDUCATION",
-      "record_state": "stays active",
-      "proposed_action": "No change. Retain as approved, non-prescriptive education.",
+      "disposition": "REWRITE \u2014 CLINICIAN REVIEW",
+      "record_state": "stays active pending exact replacement copy",
+      "proposed_action": "Clinician supplies or approves exact replacement copy in the appendix; record stays active meanwhile.",
       "replacement_copy": null,
       "notes": ""
     },
@@ -33770,9 +33770,9 @@
         "uncited_absolute"
       ],
       "approved_education": false,
-      "disposition": "KEEP \u2014 APPROVED EDUCATION",
-      "record_state": "stays active",
-      "proposed_action": "No change. Retain as approved, non-prescriptive education.",
+      "disposition": "REWRITE \u2014 CLINICIAN REVIEW",
+      "record_state": "stays active pending exact replacement copy",
+      "proposed_action": "Clinician supplies or approves exact replacement copy in the appendix; record stays active meanwhile.",
       "replacement_copy": null,
       "notes": ""
     },
@@ -33791,9 +33791,9 @@
         "uncited_absolute"
       ],
       "approved_education": false,
-      "disposition": "KEEP \u2014 APPROVED EDUCATION",
-      "record_state": "stays active",
-      "proposed_action": "No change. Retain as approved, non-prescriptive education.",
+      "disposition": "REWRITE \u2014 CLINICIAN REVIEW",
+      "record_state": "stays active pending exact replacement copy",
+      "proposed_action": "Clinician supplies or approves exact replacement copy in the appendix; record stays active meanwhile.",
       "replacement_copy": null,
       "notes": ""
     },
@@ -33831,9 +33831,9 @@
         "supplements"
       ],
       "approved_education": false,
-      "disposition": "KEEP \u2014 APPROVED EDUCATION",
-      "record_state": "stays active",
-      "proposed_action": "No change. Retain as approved, non-prescriptive education.",
+      "disposition": "REWRITE \u2014 CLINICIAN REVIEW",
+      "record_state": "stays active pending exact replacement copy",
+      "proposed_action": "Clinician supplies or approves exact replacement copy in the appendix; record stays active meanwhile.",
       "replacement_copy": null,
       "notes": ""
     },
@@ -33951,9 +33951,9 @@
         "supplements"
       ],
       "approved_education": false,
-      "disposition": "KEEP \u2014 APPROVED EDUCATION",
-      "record_state": "stays active",
-      "proposed_action": "No change. Retain as approved, non-prescriptive education.",
+      "disposition": "REWRITE \u2014 CLINICIAN REVIEW",
+      "record_state": "stays active pending exact replacement copy",
+      "proposed_action": "Clinician supplies or approves exact replacement copy in the appendix; record stays active meanwhile.",
       "replacement_copy": null,
       "notes": ""
     },
@@ -34031,9 +34031,9 @@
         "supplements"
       ],
       "approved_education": false,
-      "disposition": "KEEP \u2014 APPROVED EDUCATION",
-      "record_state": "stays active",
-      "proposed_action": "No change. Retain as approved, non-prescriptive education.",
+      "disposition": "REWRITE \u2014 CLINICIAN REVIEW",
+      "record_state": "stays active pending exact replacement copy",
+      "proposed_action": "Clinician supplies or approves exact replacement copy in the appendix; record stays active meanwhile.",
       "replacement_copy": null,
       "notes": ""
     },
@@ -34943,7 +34943,7 @@
       "location": "src/data/workouts.ts",
       "field": "string literal",
       "surface": "src/data/workouts.ts",
-      "copy": "Legs & glutes \u2022 Lower-body strength",
+      "copy": "Legs & glutes \u2022 Insulin-sensitivity boost",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [],
@@ -36211,9 +36211,9 @@
         "uncited_absolute"
       ],
       "approved_education": false,
-      "disposition": "KEEP \u2014 APPROVED EDUCATION",
-      "record_state": "stays active",
-      "proposed_action": "No change. Retain as approved, non-prescriptive education.",
+      "disposition": "REWRITE \u2014 OWNER APPROVAL",
+      "record_state": "stays active pending exact replacement copy",
+      "proposed_action": "Owner supplies exact replacement copy in the approval appendix; record stays active meanwhile.",
       "replacement_copy": null,
       "notes": ""
     },
@@ -36671,9 +36671,9 @@
         "supplements"
       ],
       "approved_education": false,
-      "disposition": "KEEP \u2014 APPROVED EDUCATION",
-      "record_state": "stays active",
-      "proposed_action": "No change. Retain as approved, non-prescriptive education.",
+      "disposition": "REWRITE \u2014 CLINICIAN REVIEW",
+      "record_state": "stays active pending exact replacement copy",
+      "proposed_action": "Clinician supplies or approves exact replacement copy in the appendix; record stays active meanwhile.",
       "replacement_copy": null,
       "notes": ""
     },
@@ -36803,12 +36803,12 @@
       "location": "src/lib/mealTiming.ts",
       "field": "string literal",
       "surface": "src/lib/mealTiming.ts",
-      "copy": "You're not using a fasting schedule. Meal times are yours to choose.",
+      "copy": "You're not fasting right now. Three meals across a twelve-hour day.",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [],
       "risk_tags": [
-        "fasting_scheduling"
+        "safe_no_change_required"
       ],
       "approved_education": false,
       "disposition": "KEEP \u2014 APPROVED EDUCATION",
@@ -37591,9 +37591,9 @@
         "uncited_absolute"
       ],
       "approved_education": false,
-      "disposition": "KEEP \u2014 APPROVED EDUCATION",
-      "record_state": "stays active",
-      "proposed_action": "No change. Retain as approved, non-prescriptive education.",
+      "disposition": "REWRITE \u2014 OWNER APPROVAL",
+      "record_state": "stays active pending exact replacement copy",
+      "proposed_action": "Owner supplies exact replacement copy in the approval appendix; record stays active meanwhile.",
       "replacement_copy": null,
       "notes": ""
     },
@@ -38351,9 +38351,9 @@
         "uncited_absolute"
       ],
       "approved_education": false,
-      "disposition": "KEEP \u2014 APPROVED EDUCATION",
-      "record_state": "stays active",
-      "proposed_action": "No change. Retain as approved, non-prescriptive education.",
+      "disposition": "REWRITE \u2014 OWNER APPROVAL",
+      "record_state": "stays active pending exact replacement copy",
+      "proposed_action": "Owner supplies exact replacement copy in the approval appendix; record stays active meanwhile.",
       "replacement_copy": null,
       "notes": ""
     },
@@ -38463,7 +38463,7 @@
       "location": "supabase/functions/_shared/fastingTarget.ts",
       "field": "string literal",
       "surface": "edge function: _shared",
-      "copy": "Snacks are optional. If a snack fits your care plan, choose a time and food that work with your hunger, medicines, activity and daily schedule.",
+      "copy": "Snacks work best 3\u20134 hours after a main meal, and are mainly for bridging gaps longer than 5 hours.",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [],
@@ -38483,7 +38483,7 @@
       "location": "supabase/functions/_shared/fastingTarget.ts",
       "field": "string literal",
       "surface": "edge function: _shared",
-      "copy": "A snack is optional today. If you are hungry and a snack fits your care plan, the Snack Library is there.",
+      "copy": "Your meals are spaced closely enough today that a snack isn't needed \u2014 snacks mainly bridge gaps longer than five hours. If you're genuinely hungry, the Snack Library is there.",
       "active": true,
       "reachable_by_member": true,
       "linked_records": [],
@@ -38531,9 +38531,9 @@
         "supplements"
       ],
       "approved_education": false,
-      "disposition": "KEEP \u2014 APPROVED EDUCATION",
-      "record_state": "stays active",
-      "proposed_action": "No change. Retain as approved, non-prescriptive education.",
+      "disposition": "REWRITE \u2014 CLINICIAN REVIEW",
+      "record_state": "stays active pending exact replacement copy",
+      "proposed_action": "Clinician supplies or approves exact replacement copy in the appendix; record stays active meanwhile.",
       "replacement_copy": null,
       "notes": ""
     },
@@ -39191,9 +39191,9 @@
         "supplements"
       ],
       "approved_education": false,
-      "disposition": "KEEP \u2014 APPROVED EDUCATION",
-      "record_state": "stays active",
-      "proposed_action": "No change. Retain as approved, non-prescriptive education.",
+      "disposition": "REWRITE \u2014 CLINICIAN REVIEW",
+      "record_state": "stays active pending exact replacement copy",
+      "proposed_action": "Clinician supplies or approves exact replacement copy in the appendix; record stays active meanwhile.",
       "replacement_copy": null,
       "notes": ""
     },
@@ -39571,9 +39571,9 @@
         "uncited_absolute"
       ],
       "approved_education": false,
-      "disposition": "KEEP \u2014 APPROVED EDUCATION",
-      "record_state": "stays active",
-      "proposed_action": "No change. Retain as approved, non-prescriptive education.",
+      "disposition": "REWRITE \u2014 OWNER APPROVAL",
+      "record_state": "stays active pending exact replacement copy",
+      "proposed_action": "Owner supplies exact replacement copy in the approval appendix; record stays active meanwhile.",
       "replacement_copy": null,
       "notes": ""
     },
@@ -41551,9 +41551,9 @@
         "supplements"
       ],
       "approved_education": false,
-      "disposition": "KEEP \u2014 APPROVED EDUCATION",
-      "record_state": "stays active",
-      "proposed_action": "No change. Retain as approved, non-prescriptive education.",
+      "disposition": "REWRITE \u2014 CLINICIAN REVIEW",
+      "record_state": "stays active pending exact replacement copy",
+      "proposed_action": "Clinician supplies or approves exact replacement copy in the appendix; record stays active meanwhile.",
       "replacement_copy": null,
       "notes": ""
     },
@@ -43291,9 +43291,9 @@
         "treatment_or_testing_instruction"
       ],
       "approved_education": true,
-      "disposition": "KEEP \u2014 APPROVED EDUCATION",
-      "record_state": "stays active",
-      "proposed_action": "No change. Retain as approved, non-prescriptive education.",
+      "disposition": "REWRITE \u2014 CLINICIAN REVIEW",
+      "record_state": "stays active pending exact replacement copy",
+      "proposed_action": "Clinician supplies or approves exact replacement copy in the appendix; record stays active meanwhile.",
       "replacement_copy": null,
       "notes": ""
     },

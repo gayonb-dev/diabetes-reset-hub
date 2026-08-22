@@ -64,10 +64,12 @@ coverage: list[dict] = []
 
 def add(*, ident, source_type, location, field, surface, copy, active,
         links, reachable=True, contained=False, gamification=False,
-        interaction_broken=False, replacement=None, notes=""):
+        interaction_broken=False, internal=False, replacement=None, notes=""):
     text = (copy or "").strip()
     res = classify(text, reachable=reachable and active, contained=contained,
-                   gamification=gamification, interaction_broken=interaction_broken)
+                   gamification=gamification, interaction_broken=interaction_broken,
+                   internal=internal)
+
     items.append({
         "id": ident,
         "source_type": source_type,
@@ -91,13 +93,13 @@ def add(*, ident, source_type, location, field, surface, copy, active,
 def proposed_action(d: str) -> str:
     return {
         KEEP_EDU: "No change. Retain as approved, non-prescriptive education.",
-        "REWRITE — OWNER APPROVAL": "Owner supplies exact replacement copy in the approval appendix; record stays active meanwhile.",
-        "REWRITE — CLINICIAN REVIEW": "Clinician supplies or approves exact replacement copy in the appendix; record stays active meanwhile.",
+        "RETIRE — NOT APPROVED": "Not covered by the approved authority; must be made inactive and unreachable by members.",
         "RETIRE — OBSOLETE FEATURE": "Make inactive/unreachable; the feature it references no longer exists.",
         RETIRE_OUTCOME: "Retire the outcome/gamification record; preserve award history as non-display.",
         "FIX INTERACTION — NONFUNCTIONAL": "Repair the interaction so the described action works; copy unchanged.",
         TEMP_FALLBACK: "Approved temporary fallback already live; replace with appendix copy when supplied.",
         HISTORICAL: "Retain as history only. Already unreachable by members.",
+        "KEEP — INTERNAL, NOT MEMBER-FACING": "Internal configuration or code value; keep as is. Never rendered to members.",
     }[d]
 
 
@@ -189,15 +191,16 @@ def collect_content_items():
 
 def collect_badges():
     n = 0
-    for r in q("select id, slug, name, description, unlock_hint, category, tier, xp_reward from badges order by sort_order"):
-        retired = bool(RETIRED_BADGE_PATTERNS.search(r["slug"] or "")) or \
+    for r in q("select id, slug, name, description, unlock_hint, category, tier, xp_reward, is_retired from badges order by sort_order"):
+        retired = bool(r["is_retired"]) or \
+            bool(RETIRED_BADGE_PATTERNS.search(r["slug"] or "")) or \
             bool(RETIRED_BADGE_PATTERNS.search(r["name"] or ""))
         for field in ("name", "description", "unlock_hint"):
             if not r.get(field):
                 continue
             add(ident=f"badges:{r['id']}#{field}", source_type="database", location="public.badges",
-                field=field, surface="/app/progress (badges)", copy=r[field], active=True,
-                gamification=retired, reachable=True,
+                field=field, surface="/app/progress (badges)", copy=r[field], active=not retired,
+                gamification=retired, reachable=not retired,
                 links=[f"slug={r['slug']}", f"category={r['category']}", f"xp={r['xp_reward']}"],
                 notes="Outcome/obsolete-feature badge retired in Part G; award history preserved as non-display."
                 if retired else "")
@@ -239,7 +242,7 @@ def collect_app_config():
                 continue
             add(ident=f"app_config:{r['key']}#{field}", source_type="seed/default",
                 location="public.app_config", field=field, surface="(configuration defaults)",
-                copy=val, active=True, reachable=False,
+                copy=val, active=True, reachable=False, internal=True,
                 links=[f"key={r['key']}"],
                 notes="Configuration value; not rendered verbatim to members.")
             n += 1
@@ -342,6 +345,31 @@ def gate_duplicates(rows) -> list[str]:
     return errs
 
 
+def gate_reachability_consistency(items: list[dict]) -> list[str]:
+    """POST-v2: inventory semantics must be internally consistent.
+
+    - a retired/historical item is never active and never member-reachable;
+    - a member-reachable item is always active;
+    - no item may carry a retired REWRITE disposition.
+    """
+    errs = []
+    retired = {"RETIRE — NOT APPROVED", "RETIRE — OBSOLETE FEATURE",
+               "RETIRE — OUTCOME/GAMIFICATION", "HISTORICAL — UNREACHABLE"}
+    for i in items:
+        d = i["disposition"]
+        if d.startswith("REWRITE"):
+            errs.append(f"{i['id']}: retired REWRITE disposition {d!r}")
+        if d in retired and (i["active"] or i["reachable_by_member"]):
+            errs.append(
+                f"{i['id']}: disposition {d} but active={i['active']} "
+                f"reachable={i['reachable_by_member']}")
+        if i["reachable_by_member"] and not i["active"]:
+            errs.append(f"{i['id']}: reachable but not active")
+    return errs
+
+
+
+
 def gate_no_personal_data() -> list[str]:
     """Fail closed if this generator ever queries a member-owned table, or if an
     emitted item's location points at one. The doctor-review pack must contain
@@ -376,7 +404,9 @@ def main() -> int:
     collect_source()
     cover_personal_data_exclusions()
 
-    errs = gate_coverage() + gate_duplicates(rows) + gate_no_personal_data()
+    errs = (gate_coverage() + gate_duplicates(rows) + gate_no_personal_data()
+            + gate_reachability_consistency(items))
+
 
     if errs:
         for e in errs:

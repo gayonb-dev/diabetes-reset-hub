@@ -40,7 +40,7 @@ const TRACK_A: Workout[] = [
   {
     slug: "lower-body-strength-a",
     name: "Lower-Body Strength",
-    focus: "Legs & glutes • Insulin-sensitivity boost",
+    focus: "Legs & glutes • Lower-body strength",
     durationMin: 30,
     difficulty: 2,
     track: "A",

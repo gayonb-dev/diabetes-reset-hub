@@ -437,7 +437,7 @@ export default function HabitLogging({ currentProgramDay }: Props) {
           iconColor="hsl(var(--ring-exercise))"
           status={
             phase === 2
-              ? `${walksDone} / 3 walks`
+              ? `${walksDone} walk${walksDone === 1 ? "" : "s"} logged`
               : workoutsTodayCount > 0
                 ? `${workoutsTodayCount} workout${workoutsTodayCount > 1 ? "s" : ""} logged ✓`
                 : "Tap to start"
