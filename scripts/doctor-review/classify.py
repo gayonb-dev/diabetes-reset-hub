@@ -136,6 +136,20 @@ APPROVED_BOUNDARY_PATTERNS = [
     r"if a1c testing is part of your usual care",
     r"never recommends a dose change",
     r"bring a list or photos",
+    # neutral, source-linked remission education (titles and summaries)
+    r"(what|understanding|about|definition of|research|reported about) [^.]*remission",
+    r"remission: definition",
+    r"remission (research|means)",
+]
+
+# Promotional markers that disqualify boundary copy. Deliberately narrower
+# than PROMOTIONAL_MARKERS: a bare "take " appears in approved wording such as
+# "questions you can take to a prescriber".
+BOUNDARY_PROMO_MARKERS = [
+    "buy", "order now", "shop", "recommended stack", "start taking",
+    "we recommend you take", "add this supplement", "our supplement",
+    "you will reverse", "you will achieve remission", "earn remission",
+    "unlock remission", "reverse your diabetes",
 ]
 
 # Scheduling/administrative strings that trip outcome regexes purely because
@@ -152,7 +166,7 @@ def is_approved_boundary(text: str, tags: list[str]) -> bool:
         return True
     if set(tags) & NEVER_APPROVED_TAGS:
         return False
-    if any(p in low for p in PROMOTIONAL_MARKERS):
+    if any(p in low for p in BOUNDARY_PROMO_MARKERS):
         return False
     return any(re.search(p, low) for p in APPROVED_BOUNDARY_PATTERNS)
 
