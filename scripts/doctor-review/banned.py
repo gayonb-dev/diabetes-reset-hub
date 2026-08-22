@@ -12,6 +12,12 @@ from __future__ import annotations
 
 import re
 
+# Approved neutral phrasings that must never be flagged (exact-shape allowances).
+APPROVED_NEUTRAL = [
+    re.compile(r"^\s*\d{1,3}\s*oz logged today\s*$", re.I),
+    re.compile(r"^\s*\d{1,3}\s*oz\s*$", re.I),
+]
+
 # Safe negations and neutral education that must never be flagged.
 SAFE_NEGATION = re.compile(
     r"(does not (promise|diagnose|claim|sell|require|prescribe|interpret|set)"
@@ -22,6 +28,7 @@ SAFE_NEGATION = re.compile(
     r"|only a qualified healthcare professional)",
     re.I,
 )
+
 
 BANNED: list[tuple[str, re.Pattern]] = [
     ("hydration_target", re.compile(
