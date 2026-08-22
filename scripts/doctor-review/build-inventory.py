@@ -99,6 +99,7 @@ def proposed_action(d: str) -> str:
         "FIX INTERACTION — NONFUNCTIONAL": "Repair the interaction so the described action works; copy unchanged.",
         TEMP_FALLBACK: "Approved temporary fallback already live; replace with appendix copy when supplied.",
         HISTORICAL: "Retain as history only. Already unreachable by members.",
+        "KEEP — INTERNAL, NOT MEMBER-FACING": "Internal configuration or code value; keep as is. Never rendered to members.",
     }[d]
 
 
