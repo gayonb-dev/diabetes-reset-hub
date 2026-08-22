@@ -85,7 +85,10 @@ def scan_text(text: str) -> list[str]:
     """Return banned categories present in `text`, honouring safe negations."""
     if not text:
         return []
+    if any(p.match(text) for p in APPROVED_NEUTRAL):
+        return []
     hits = []
+
     for name, pat in BANNED:
         for m in pat.finditer(text):
             # A safe negation anywhere in the same sentence clears the hit.
