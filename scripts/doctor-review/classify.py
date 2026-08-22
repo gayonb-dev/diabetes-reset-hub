@@ -84,12 +84,61 @@ def tags_for(text: str) -> list[str]:
     return found or [SAFE_TAG]
 
 
+# POST-v2: authority-approved boundary, refusal, disabled-feature and
+# non-health technical wording. These strings trip the coarse risk regexes
+# (they contain "never", "supplement", "mg", "A1C") while being exactly the
+# safe wording the authority requires. They are KEEP, never RETIRE.
+APPROVED_BOUNDARY_PATTERNS = [
+    # medicine / supplement boundaries (refusals, never prescriptions)
+    r"never (start|stop|skip|change)",
+    r"can'?t tell you to (start|stop|skip|change)",
+    r"(ask|talk to|see) (a|your) (prescriber|pharmacist|doctor|healthcare)",
+    r"belongs? with your (qualified )?(prescriber|pharmacist|healthcare)",
+    r"questions to ask first",
+    r"you do not need supplements",
+    r"not enough reliable evidence",
+    r"can cause side effects",
+    r"interact with (diabetes )?medicines",
+    r"bring a list or photos",
+    r"are fasting or supplements required",
+    r"nccih",
+    # disabled features stated as unavailable
+    r"(are|is) not available right now",
+    r"not using a fasting schedule",
+    r"meal times are yours to choose",
+    # neutral, non-prescriptive A1C wording
+    r"if a1c testing is (already )?part of your care plan",
+    r"if an a1c test is already part of your care plan",
+    # units, schema descriptions and image alt text (no health claim)
+    r"mg/dl|mmol/l",
+    r"blood glucose in mg",
+    r"^an adult ",
+    # non-health technical copy (billing, export, chat routing)
+    r"payment card data",
+    r"no proven entitlement",
+    r"buying moment",
+]
+
+NEVER_APPROVED_TAGS = {"promised_outcomes", "insulin_sensitivity_claim",
+                       "shame_food_language", "individualised_health_formula"}
+
+
+def is_approved_boundary(text: str, tags: list[str]) -> bool:
+    low = (text or "").lower()
+    if set(tags) & NEVER_APPROVED_TAGS:
+        return False
+    if any(p in low for p in PROMOTIONAL_MARKERS):
+        return False
+    return any(re.search(p, low) for p in APPROVED_BOUNDARY_PATTERNS)
+
+
 def is_approved_education(text: str) -> bool:
     """Approved safety education: states limits/uncertainty, promotes nothing."""
     low = (text or "").lower()
     if any(p in low for p in PROMOTIONAL_MARKERS):
         return False
     return any(m in low for m in SAFETY_EDUCATION_MARKERS)
+
 
 
 def classify(text: str, *, reachable: bool = True, contained: bool = False,
