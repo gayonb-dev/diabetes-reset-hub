@@ -154,7 +154,9 @@ BOUNDARY_PROMO_MARKERS = [
 
 # Scheduling/administrative strings that trip outcome regexes purely because
 # they contain a number and a time unit. Checked before NEVER_APPROVED_TAGS.
-SCHEDULING_OVERRIDES = [r"due in \d+ days", r"check-?in is in seven days"]
+SCHEDULING_OVERRIDES = [r"due in \d+ days", r"check-?in is in seven days",
+                        r"do not guarantee the same effect",
+                        r"does not (promise|guarantee)"]
 
 NEVER_APPROVED_TAGS = {"promised_outcomes", "insulin_sensitivity_claim",
                        "shame_food_language", "individualised_health_formula"}
