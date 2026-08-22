@@ -519,7 +519,7 @@ export default function Onboarding() {
                   ]}
                 />
                 <p className="text-[11px] text-muted-foreground/70 mt-2">
-                  Used for your meal week, cheat meal, and habit grids. You can change this later in Settings.
+                  Used for your meal week, off-plan meal, and habit grids. You can change this later in Settings.
                 </p>
               </Field>
 

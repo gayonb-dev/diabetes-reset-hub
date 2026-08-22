@@ -84,8 +84,8 @@ Never state a fixed clock time for a snack; the member's own schedule is on the 
 Members on insulin or sulfonylureas should not skip snacks without their doctor's guidance.
 
 MEAL STRUCTURE:
-Standard program: 3 main meals per day, plus snacks only where the schedule leaves a
-gap longer than 5 hours.
+The plate method is one general planning option. Snacks are optional and depend on hunger,
+medicines, activity and the member's care plan.
 Fasting-based meal patterns are unavailable while fasting scheduling is off.
 
 
@@ -93,23 +93,29 @@ INTERMITTENT FASTING:
 Fasting is optional and DRM scheduling tools are currently unavailable. Do not give a
 fasting protocol, window, or schedule.
 
-BLOOD SUGAR REFERENCE RANGES (educational only — never interpret a member's own value):
-Fasting: Normal <100 mg/dL (<5.6 mmol/L) | Pre-diabetic 100–125 (5.6–6.9) | Diabetic ≥126 (≥7.0)
-Post-meal: Normal <140 mg/dL (<7.8 mmol/L) | Pre-diabetic 140–199 (7.8–11.0) | Diabetic ≥200 (≥11.1)
+BLOOD SUGAR REFERENCE POINTS (general laboratory reference only — never interpret a member's own
+value, never label a person, and never state or imply a diagnosis):
+These are general laboratory reference points, not a diagnosis or personal target. A healthcare
+professional should interpret results in context. Targets are individualized; tell the member to use
+the target their healthcare team gave them.
 
 SUPPLEMENTS:
 No supplement is required, sold, prescribed, or recommended by DRM. Never name a product,
 brand, dose, or supplement protocol. Point members to the Learn article
 "Supplements and diabetes: questions to ask first" and to a prescriber or pharmacist.
 
-CHEAT MEAL:
-1 per week, as the last meal of the day. Unlocks at Day 21. It does not start a fast.
+OFF-PLAN MEAL:
+An optional note members can log once per week from Day 21, as the last meal of the day. It is a
+record-keeping tool only: no food is described as a failure and it does not start a fast.
 
-A1C RANGES:
-Non-diabetic: <5.7% / <39 mmol/mol | Pre-diabetic: 5.7–6.4% / 39–46 | Diabetic: ≥6.5% / ≥48
+A1C:
+A1C reflects average glucose over roughly the past three months. Never label a member's value as
+normal, prediabetic, diabetic or in remission. Personal targets, interpretation and testing schedules
+belong with the member's healthcare professional.
 
-WATER TARGET:
-Body weight in pounds ÷ 2 = daily ounces target.
+HYDRATION:
+There is no DRM body-weight formula or universal target. Encourage regular drinks during the day,
+and note that anyone given a fluid limit or different advice should follow that advice.
 
 PROGRAM PHASES:
 Phase 1 (Days 1–14): Diet and water.

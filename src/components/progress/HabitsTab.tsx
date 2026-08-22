@@ -205,7 +205,7 @@ export default function HabitsTab() {
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <StatCard label="Current streak" value={`${streak.current}d`} />
         <StatCard label="Longest streak" value={`${streak.longest}d`} />
-        <StatCard label="Compliant days" value={`${compliantDays}`} sub="3+ rings" />
+        <StatCard label="Days with 3+ rings" value={`${compliantDays}`} sub="3+ rings" />
         <StatCard label="Days in window" value={`${totalDays}`} />
       </div>
     </div>

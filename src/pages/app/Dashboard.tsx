@@ -276,7 +276,7 @@ export default function Dashboard() {
   const walksDone = (["after_breakfast", "after_lunch", "after_dinner"] as const).filter(
     (s) => habits.walks[s],
   ).length;
-  const waterTargetOz = Math.round(waterTargetLb / 2);
+  const waterTargetOz = DEFAULT_WATER_TARGET_OZ;
   const habitData = {
     water: { value: habits.waterOz, target: waterTargetOz, unit: "oz" },
     food: { value: mealsDone, target: 3, unit: "meals" },

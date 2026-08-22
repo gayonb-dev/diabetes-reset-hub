@@ -72,9 +72,9 @@ export default function CheatMeal() {
   const eligibility: { ok: boolean; reason?: string } = !isUnlocked
     ? { ok: false, reason: `Unlocks on Day 21. You're on Day ${currentProgramDay}.` }
     : usedThisWeek
-    ? { ok: false, reason: `You've used your cheat meal this week. Next available: ${new Date(thisWeekStart.getTime() + 7 * 86400000).toLocaleDateString()}.` }
+    ? { ok: false, reason: `You've logged your off-plan meal this week. Next available: ${new Date(thisWeekStart.getTime() + 7 * 86400000).toLocaleDateString()}.` }
     : !isEvening
-    ? { ok: false, reason: "Cheat meal is only available after 5 PM — it's always the last meal of the day." }
+    ? { ok: false, reason: "Off-plan meal logging is available after 5 PM." }
     : { ok: true };
 
   const logCheatMeal = async () => {
@@ -100,7 +100,7 @@ export default function CheatMeal() {
     setDescription("");
     toast({
       title: "Logged",
-      description: "Cheat meal recorded.",
+      description: "Off-plan meal recorded.",
     });
     refresh();
   };
@@ -119,17 +119,17 @@ export default function CheatMeal() {
     <div className="space-y-5">
       <div>
         <h1 className="font-heading font-semibold text-2xl text-primary flex items-center gap-2">
-          <Utensils className="h-6 w-6" /> Cheat Meal
+          <Utensils className="h-6 w-6" /> Off-Plan Meal
         </h1>
-        <p className="text-sm text-muted-foreground">One per week, as your evening meal.</p>
+        <p className="text-sm text-muted-foreground">One note per week, as your evening meal. Food choices are yours.</p>
       </div>
 
       {/* Rules */}
       <Card className="p-4 border border-accent/40 bg-accent-muted">
         <ul className="text-sm space-y-1 text-foreground">
-          <li>• 1 cheat meal per week</li>
+          <li>• 1 off-plan meal note per week</li>
           <li>• Last meal of the day only</li>
-          <li>• Unlocked after 21 days of compliance</li>
+          <li>• Available from Day 21</li>
         </ul>
       </Card>
 
@@ -171,12 +171,12 @@ export default function CheatMeal() {
             disabled={!eligibility.ok}
             className="w-full h-14 lg:h-[52px] bg-primary hover:bg-primary/90 text-primary-foreground"
           >
-            Log my cheat meal
+            Log my off-plan meal
           </Button>
         </SheetTrigger>
         <SheetContent side="bottom" className="rounded-t-2xl">
           <SheetHeader>
-            <SheetTitle>Log your cheat meal</SheetTitle>
+            <SheetTitle>Log your off-plan meal</SheetTitle>
           </SheetHeader>
           <div className="space-y-4 py-4">
             <div>
@@ -203,12 +203,12 @@ export default function CheatMeal() {
 
       {/* Past meals */}
       <Card className="p-5 border border-border">
-        <p className="text-sm font-medium mb-3">Past cheat meals</p>
+        <p className="text-sm font-medium mb-3">Past off-plan meals</p>
         {loading ? (
           <p className="text-sm text-muted-foreground">Loading…</p>
         ) : meals.length === 0 ? (
           <EmptyState
-            title="No cheat meals logged yet"
+            title="No off-plan meals logged yet"
             description={isUnlocked ? "Log your first when you're ready — one per week, evening only." : `Unlocks on Day 21. You're on Day ${currentProgramDay}.`}
             posture="encouraging"
             vitaSize={56}

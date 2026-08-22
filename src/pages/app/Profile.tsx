@@ -143,7 +143,7 @@ export default function Profile() {
             than a legacy value that contradicts the ledger entries below. */}
         <StatCard icon={<Sparkles className="h-4 w-4" />} value={ledgerTotal ?? "—"} label="activity score" color="text-primary" />
         <StatCard icon={<Heart className="h-4 w-4" />} value={g.helpful_points} label="helpful pts" color="text-accent" />
-        <StatCard icon={<CalendarCheck className="h-4 w-4" />} value={compliantDays} label="compliant days" color="text-primary" />
+        <StatCard icon={<CalendarCheck className="h-4 w-4" />} value={compliantDays} label="days completed" color="text-primary" />
       </div>
 
       <p className="text-[12px] text-tertiary-fg -mt-1">

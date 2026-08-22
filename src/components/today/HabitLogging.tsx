@@ -196,7 +196,7 @@ export default function HabitLogging({ currentProgramDay }: Props) {
       });
   }, [user, currentProgramDay, h.mood, h.mindsetRead]);
 
-  const waterTarget = Math.max(64, Math.round(weightLb / 2));
+  const waterTarget = DEFAULT_WATER_TARGET_OZ;
   const toggle = (k: string) => setOpenKey((p) => (p === k ? null : k));
 
   const mealsDone = useMemo(() => {
@@ -291,7 +291,7 @@ export default function HabitLogging({ currentProgramDay }: Props) {
             </Button>
           </div>
           <p className="text-xs text-tertiary-fg mt-3">
-            Your target: {waterTarget}oz — about half your body weight in ounces, with a 64oz minimum.
+            Keep water available and take regular drinks during the day. This {waterTarget}oz marker is a general reminder only. If a healthcare professional has given you a fluid limit or different advice, follow that advice.
           </p>
         </Section>
       </div>

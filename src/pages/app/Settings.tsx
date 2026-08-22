@@ -105,7 +105,7 @@ export default function Settings() {
     workout: { title: "Workout reminders", desc: "Reminders on your scheduled training days." },
     a1c: { title: "A1C reminders", desc: "Periodic prompts to log a new A1C." },
     measurement: { title: "Measurement reminders", desc: "Weekly nudge to update measurements." },
-    cheat_meal: { title: "Cheat meal tips", desc: "Tips after logging an off-plan meal." },
+    cheat_meal: { title: "Off-plan meal tips", desc: "Tips after logging an off-plan meal." },
     birthday: { title: "Birthday greeting", desc: "A short note from VITA on your day." },
     community_mission: { title: "Community missions", desc: "Weekly community challenges and Q&A picks." },
   };
@@ -706,7 +706,7 @@ export default function Settings() {
           Week starts on
         </h2>
         <p className="text-xs text-muted-foreground mb-3">
-          Used for your meal week, cheat meal, and habit grids.
+          Used for your meal week, off-plan meal, and habit grids.
         </p>
         <div className="grid grid-cols-2 gap-2">
           <Chip active={weekStart === 0} onClick={() => saveWeekStart(0)}>Sunday</Chip>

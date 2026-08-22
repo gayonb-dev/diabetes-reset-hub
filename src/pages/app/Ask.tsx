@@ -62,7 +62,7 @@ interface WinPost {
   created_at: string;
 }
 
-const TAGS = ["meals", "blood sugar", "workouts", "supplements", "IF", "mindset", "snacks", "water", "measurements", "cheat meal"];
+const TAGS = ["meals", "blood sugar", "workouts", "supplements", "IF", "mindset", "snacks", "water", "measurements", "off-plan meal"];
 const REACTIONS: Array<{ key: string; emoji: string; label: string }> = [
   { key: "muscle", emoji: "💪", label: "Strong" },
   { key: "fist", emoji: "✊", label: "Solidarity" },

@@ -21,7 +21,7 @@ STRICT RULES:
 APP MAP (use for navigation answers):
 - Dashboard / Today: /app — 4 rings (water, meals, exercise, mindset), today's action card.
 - Daily action detail: /app/day/N — opens the current day's action, sub-tasks, complete button.
-- Meals: /app/meals — 4-week plan, snack library, shopping list, cheat meal. Regenerate a plan from Settings (cap: 2 per month).
+- Meals: /app/meals — 4-week plan, snack library, shopping list, off-plan meal. Regenerate a plan from Settings (cap: 2 per month).
 - Workouts: /app/workouts — unlocks Day 29. Standard + Knee-Friendly tracks.
 - Fasting: /app/fasting — intermittent fasting timer.
 - Progress: /app/progress — weight, A1C, blood sugar, measurements tabs.
