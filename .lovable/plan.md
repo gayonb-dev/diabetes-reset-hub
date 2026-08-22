@@ -116,3 +116,22 @@ If any gate fails: report FAIL, no closeout claim. Nothing published.
 **Verification completeness.** Run guarded migration assertions and post-migration reconciliation; rollback-target verification; authority-conformance tests; read-path tests; full database/source/bundle content scans; TypeScript; touched-file lint; full Vitest; production build; Deno check for any Edge Function changed as a result of the scan; and existing protected-system regression tests. No successful POST-v2 artifacts are written until every gate passes. If anything remains unresolved: report FAIL and stop, with no closeout claim.
 
 All other approved plan requirements stand. No client publication, no new clinical research, no doctor worksheet, no unrelated system change.
+
+## 9. Authority precedence, Day 14 erratum and execution-time preflight (approved)
+
+**Authority precedence.** The `authority_conformance` gate uses `DRM_Batch1_Clinical_and_Owner_Approval_Appendix.md`, SHA-256 `a44e1f3cd599e6810dce140ad5b6a9f5046c23dbdd7f3c9772360c134b052788`, together with this approved POST-v2 plan and its approved addenda acting as a narrowly scoped implementation erratum.
+
+**Day 14 erratum.** The original authority contains an incorrect Day 14 record ID. The erratum supersedes only that identifier:
+
+- Incorrect historical reference: `ec4ea88d-6773-43c5-a4c1-151639681c97`
+- Correct live Day 14 ID: `ec4ea88d-6773-43c5-8ef9-6248b02e963d`
+
+The approved Day 14 replacement wording is unchanged. The incorrect ID is never searched for and never mutated.
+
+The POST-v2 plan supersedes the authority only where it explicitly governs previously missed `day_name`, `action_title`, `learning_objective` or `sub_tasks` fields. For everything else the appendix remains authoritative. This precedence and erratum are recorded in the migration manifest, the authority-conformance test and the final report.
+
+**Fresh execution-time production preflight.** Immediately before opening the migration transaction, reconfirm: the connected project is exactly `wqennhjdojjqmmqzjhti`; 180 active guided daily actions and 7 inactive historical records; 24 active replacement and 105 retired VITA quotes; `daily_actions_one_active_per_day` exists; every intended record ID is unique; every guarded old field value still matches the migration manifest; and no unexpected migration with the same identifier has already been applied. Any mismatch stops execution before mutation.
+
+**Inside the transaction.** Lock only the intended content rows before updating; rerun the expected-value and expected-count assertions after locks are acquired; perform the guarded ID-and-field updates; re-read and reconcile every changed field before commit; roll back the complete transaction on any discrepancy. No broad table lock, no member-owned row lock, no unrelated data read or mutation.
+
+Every other requirement in the approved POST-v2 plan and addenda is preserved. No publication.
