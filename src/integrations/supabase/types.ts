@@ -3212,7 +3212,7 @@ export type Database = {
           p_points: number
           p_user_id: string
         }
-        Returns: number
+        Returns: Json
       }
       award_xp: {
         Args: { p_amount: number; p_user_id: string }
