@@ -188,15 +188,16 @@ def collect_content_items():
 
 def collect_badges():
     n = 0
-    for r in q("select id, slug, name, description, unlock_hint, category, tier, xp_reward from badges order by sort_order"):
-        retired = bool(RETIRED_BADGE_PATTERNS.search(r["slug"] or "")) or \
+    for r in q("select id, slug, name, description, unlock_hint, category, tier, xp_reward, is_retired from badges order by sort_order"):
+        retired = bool(r["is_retired"]) or \
+            bool(RETIRED_BADGE_PATTERNS.search(r["slug"] or "")) or \
             bool(RETIRED_BADGE_PATTERNS.search(r["name"] or ""))
         for field in ("name", "description", "unlock_hint"):
             if not r.get(field):
                 continue
             add(ident=f"badges:{r['id']}#{field}", source_type="database", location="public.badges",
-                field=field, surface="/app/progress (badges)", copy=r[field], active=True,
-                gamification=retired, reachable=True,
+                field=field, surface="/app/progress (badges)", copy=r[field], active=not retired,
+                gamification=retired, reachable=not retired,
                 links=[f"slug={r['slug']}", f"category={r['category']}", f"xp={r['xp_reward']}"],
                 notes="Outcome/obsolete-feature badge retired in Part G; award history preserved as non-display."
                 if retired else "")
@@ -238,7 +239,7 @@ def collect_app_config():
                 continue
             add(ident=f"app_config:{r['key']}#{field}", source_type="seed/default",
                 location="public.app_config", field=field, surface="(configuration defaults)",
-                copy=val, active=True, reachable=False,
+                copy=val, active=True, reachable=False, internal=True,
                 links=[f"key={r['key']}"],
                 notes="Configuration value; not rendered verbatim to members.")
             n += 1

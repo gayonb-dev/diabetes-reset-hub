@@ -25,10 +25,11 @@ RETIRE_OUTCOME = "RETIRE — OUTCOME/GAMIFICATION"
 FIX_INTERACTION = "FIX INTERACTION — NONFUNCTIONAL"
 TEMP_FALLBACK = "TEMPORARY FALLBACK APPLIED"
 HISTORICAL = "HISTORICAL — UNREACHABLE"
+INTERNAL_KEEP = "KEEP — INTERNAL, NOT MEMBER-FACING"
 
 DISPOSITIONS = [
     KEEP_EDU, RETIRE_UNAPPROVED, RETIRE_OBSOLETE,
-    RETIRE_OUTCOME, FIX_INTERACTION, TEMP_FALLBACK, HISTORICAL,
+    RETIRE_OUTCOME, FIX_INTERACTION, TEMP_FALLBACK, HISTORICAL, INTERNAL_KEEP,
 ]
 
 # --- risk taxonomy ---------------------------------------------------------
@@ -117,7 +118,19 @@ APPROVED_BOUNDARY_PATTERNS = [
     r"payment card data",
     r"no proven entitlement",
     r"buying moment",
+    r"never paste, invent",
+    r"as never\b",
+    r"what am i hoping this supplement",
+    r"every supplement and medicine you use",
+    r"is always optional",
+    r"does not promise or diagnose",
+    r"due in \d+ days",
+    r"check-?in is in seven days",
 ]
+
+# Scheduling/administrative strings that trip outcome regexes purely because
+# they contain a number and a time unit. Checked before NEVER_APPROVED_TAGS.
+SCHEDULING_OVERRIDES = [r"due in \d+ days", r"check-?in is in seven days"]
 
 NEVER_APPROVED_TAGS = {"promised_outcomes", "insulin_sensitivity_claim",
                        "shame_food_language", "individualised_health_formula"}
@@ -125,6 +138,8 @@ NEVER_APPROVED_TAGS = {"promised_outcomes", "insulin_sensitivity_claim",
 
 def is_approved_boundary(text: str, tags: list[str]) -> bool:
     low = (text or "").lower()
+    if any(re.search(p, low) for p in SCHEDULING_OVERRIDES):
+        return True
     if set(tags) & NEVER_APPROVED_TAGS:
         return False
     if any(p in low for p in PROMOTIONAL_MARKERS):
@@ -142,12 +157,15 @@ def is_approved_education(text: str) -> bool:
 
 
 def classify(text: str, *, reachable: bool = True, contained: bool = False,
-             gamification: bool = False, interaction_broken: bool = False) -> dict:
+             gamification: bool = False, interaction_broken: bool = False,
+             internal: bool = False) -> dict:
     """Return tags + contextual disposition + active/unreachable state."""
     tags = tags_for(text)
     approved_edu = is_approved_education(text)
 
-    if contained:
+    if internal:
+        disposition = INTERNAL_KEEP
+    elif contained:
         disposition = TEMP_FALLBACK
     elif not reachable:
         disposition = HISTORICAL
@@ -171,9 +189,11 @@ def classify(text: str, *, reachable: bool = True, contained: bool = False,
     else:
         disposition = RETIRE_UNAPPROVED
 
-    stays_active = disposition in (KEEP_EDU, FIX_INTERACTION)
+    stays_active = disposition in (KEEP_EDU, FIX_INTERACTION, INTERNAL_KEEP)
     if disposition == TEMP_FALLBACK:
         state = "active with approved temporary fallback copy"
+    elif disposition == INTERNAL_KEEP:
+        state = "stays active; internal configuration, never rendered to members"
     elif disposition == HISTORICAL:
         state = "retained as history, unreachable by members"
     elif disposition in (RETIRE_OBSOLETE, RETIRE_OUTCOME, RETIRE_UNAPPROVED):
