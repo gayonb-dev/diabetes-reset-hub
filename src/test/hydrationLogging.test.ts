@@ -36,7 +36,7 @@ const HYDRATION_TARGET_PATTERNS: Array<[string, RegExp]> = [
   ["water target variable", /\b(water|hydration)[_A-Za-z]*target[_A-Za-z]*\b/i],
   ["fixed ounce target phrase", /\b\d{2,3}\s*(oz|ounces)\b[^.\n]{0,20}\b(target|goal|daily minimum|per day)\b/i],
   ["target phrase before ounces", /\b(target|goal|daily minimum)\b[^.\n]{0,20}\b\d{2,3}\s*(oz|ounces)\b/i],
-  ["progress-against-target water string", /\d+\s*oz\s*\/\s*\d+\s*oz/i],
+  ["progress-against-target water string", /oz\s*\/\s*\$?\{?\s*\d*\s*\w*\s*\}?\s*oz/i],
   ["body-weight hydration formula", /half your body weight in ounces|body weight in pounds\s*(÷|\/)\s*2|weight\s*[*x×]\s*0?\.5\s*(oz|ounces)|ounces? per (pound|lb)/i],
 ];
 
