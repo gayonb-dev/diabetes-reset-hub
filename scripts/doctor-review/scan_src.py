@@ -79,9 +79,22 @@ def main() -> int:
         surfaces["production_bundle"] = {"files": len(files), "hits": len(found)}
         hits += found
 
-    report = {"surfaces": surfaces, "hit_count": len(hits), "hits": hits}
+    historical = []
+    for name, rel, exts in HISTORICAL:
+        base = ROOT / rel
+        files = [p for p in base.rglob("*")
+                 if p.suffix in exts and not EXCLUDE.search(str(p))]
+        found = [h for p in files for h in scan_file(p)]
+        surfaces[name] = {"files": len(files), "hits": len(found),
+                          "blocking": False,
+                          "note": "historical_superseded — live DB verified by scan_db.py"}
+        historical += found
+
+    report = {"surfaces": surfaces, "hit_count": len(hits), "hits": hits,
+              "historical_superseded_count": len(historical)}
     print(json.dumps(report, indent=1))
     return 1 if hits else 0
+
 
 
 if __name__ == "__main__":
