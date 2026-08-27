@@ -25,6 +25,7 @@ import {
   ChevronRight,
   CheckCircle2,
   ExternalLink,
+  ArrowLeft,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Vita } from "@/components/vita/Vita";
