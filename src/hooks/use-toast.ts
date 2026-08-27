@@ -163,10 +163,17 @@ function toast({ ...props }: Toast) {
     });
   const dismiss = () => dispatch({ type: "DISMISS_TOAST", toastId: id });
 
+  // An ordinary notice must never sit on screen for minutes. Callers can still
+  // pass an explicit `duration`, including Infinity for a persistent error.
+  const duration =
+    props.duration ??
+    (props.variant === "destructive" ? TOAST_DURATIONS.error : TOAST_DURATIONS.info);
+
   dispatch({
     type: "ADD_TOAST",
     toast: {
       ...props,
+      duration,
       id,
       open: true,
       onOpenChange: (open) => {
@@ -174,6 +181,7 @@ function toast({ ...props }: Toast) {
       },
     },
   });
+
 
   return {
     id: id,
