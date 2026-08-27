@@ -322,8 +322,14 @@ export default function AppLayout() {
 
         {/* Main */}
         <main id="app-main" tabIndex={-1} className="flex-1 px-4 lg:px-8 py-6 lg:py-8 pb-[calc(env(safe-area-inset-bottom)+5.5rem)] lg:pb-10 max-w-3xl lg:max-w-6xl xl:max-w-7xl mx-auto w-full safe-x">
-          <Outlet />
+          {/* A lazily loaded page renders a page-shaped skeleton, never a blank
+              content region. Keyed by pathname so the skeleton switches shape
+              with the destination. */}
+          <Suspense key={location.pathname} fallback={<RouteSkeleton variant={skeletonVariant} />}>
+            <Outlet />
+          </Suspense>
         </main>
+
       </div>
     </div>
   );
