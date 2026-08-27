@@ -88,14 +88,22 @@ export default function AdminLayout() {
               <p className="text-xs text-slate-500 dark:text-slate-400">{user?.email}</p>
             </div>
           </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={signOut}
-            className="text-slate-600 hover:text-slate-900 dark:text-slate-300"
-          >
-            <LogOut className="h-4 w-4 mr-2" /> Sign out
-          </Button>
+          <div className="flex items-center gap-2">
+            {/* Batch 2 F19 — persistent, functional return to the member app. */}
+            <Button asChild variant="outline" size="sm" className="min-h-11">
+              <Link to="/app">
+                <ArrowLeft className="h-4 w-4 mr-2" aria-hidden /> Back to member app
+              </Link>
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={signOut}
+              className="text-slate-600 hover:text-slate-900 dark:text-slate-300 min-h-11"
+            >
+              <LogOut className="h-4 w-4 mr-2" /> Sign out
+            </Button>
+          </div>
         </div>
         <nav className="container mx-auto px-4 overflow-x-auto">
           <div className="flex gap-1 pb-2 min-w-max">
