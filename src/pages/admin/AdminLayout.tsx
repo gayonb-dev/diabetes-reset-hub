@@ -12,12 +12,13 @@ import {
   Megaphone,
   UserPlus,
   BarChart3,
-  TrendingUp,
+  HeartHandshake,
   FileText,
   Shield,
   ShieldCheck,
   Monitor,
   LifeBuoy,
+  ArrowLeft,
   X,
 } from "lucide-react";
 
