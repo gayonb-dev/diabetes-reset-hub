@@ -72,6 +72,25 @@ const OAuthConsent = lazy(() => import("./pages/OAuthConsent"));
 
 const queryClient = new QueryClient();
 
+/**
+ * Shell-level fallback. Deliberately minimal and neutral: it stands in for a
+ * whole layout (marketing page, app shell, admin shell) whose shape is not yet
+ * known, and it announces itself so a screen reader is not left in silence.
+ */
+function AppBootFallback() {
+  return (
+    <div className="min-h-[60vh] px-4 py-10 max-w-3xl mx-auto space-y-5" aria-busy="true">
+      <span className="sr-only" role="status" aria-live="polite">
+        Loading…
+      </span>
+      <div className="h-8 w-1/2 max-w-xs rounded bg-muted animate-pulse" />
+      <div className="h-40 rounded-xl bg-muted animate-pulse" />
+      <div className="h-24 rounded-xl bg-muted animate-pulse" />
+    </div>
+  );
+}
+
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
