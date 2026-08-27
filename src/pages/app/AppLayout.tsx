@@ -32,7 +32,7 @@ import { MORE_GROUPS } from "@/lib/appNav";
 import { Suspense } from "react";
 import { useLocation } from "react-router-dom";
 import RouteSkeleton, { type RouteSkeletonVariant } from "@/components/system/RouteSkeleton";
-import { prefetchOnIdle } from "@/lib/routePrefetch";
+import { prefetchOnIdle, prefetchHandlers } from "@/lib/routePrefetch";
 
 /** Page-shaped loading fallback per destination. */
 function skeletonVariantFor(pathname: string): RouteSkeletonVariant {
@@ -205,35 +205,35 @@ export default function AppLayout() {
               exactly as the mobile "More" sheet groups it, so the two surfaces
               share a single mental model and identical naming. */}
           <nav className="flex-1 space-y-0.5" aria-label="Member navigation">
-            <NavLink to="/app" end className={navClass}>
+            <NavLink to="/app" end {...prefetchHandlers("/app")} className={navClass}>
               <Home className="h-4 w-4" aria-hidden /> Today
             </NavLink>
-            <NavLink to="/app/meals" className={navClass}>
+            <NavLink to="/app/meals"None {...prefetchHandlers("/app/meals")} className={navClass}>
               <UtensilsCrossed className="h-4 w-4" aria-hidden /> Meals
             </NavLink>
-            <NavLink to="/app/progress" className={navClass}>
+            <NavLink to="/app/progress"None {...prefetchHandlers("/app/progress")} className={navClass}>
               <LineChart className="h-4 w-4" aria-hidden /> Progress
             </NavLink>
-            <NavLink to="/app/ask" className={navClass}>
+            <NavLink to="/app/ask"None {...prefetchHandlers("/app/ask")} className={navClass}>
               <MessageCircleQuestion className="h-4 w-4" aria-hidden /> Ask
             </NavLink>
 
             <p className="label-caps text-white/30 px-[10px] pt-4 pb-1" id="nav-group-learn">
               Learn &amp; tools
             </p>
-            <NavLink to="/app/learn" className={navClass}>
+            <NavLink to="/app/learn"None {...prefetchHandlers("/app/learn")} className={navClass}>
               <BookOpen className="h-4 w-4" aria-hidden /> Learn
             </NavLink>
-            <NavLink to="/app/library" className={navClass}>
+            <NavLink to="/app/library"None {...prefetchHandlers("/app/library")} className={navClass}>
               <Library className="h-4 w-4" aria-hidden /> Library
             </NavLink>
-            <NavLink to="/app/workouts" className={navClass}>
+            <NavLink to="/app/workouts"None {...prefetchHandlers("/app/workouts")} className={navClass}>
               <Activity className="h-4 w-4" aria-hidden /> Workouts
             </NavLink>
 
             {/* Community lives inside Ask — one route, not a duplicate. */}
             <p className="label-caps text-white/30 px-[10px] pt-4 pb-1">Community</p>
-            <NavLink to="/app/ask" className={navClass}>
+            <NavLink to="/app/ask"None {...prefetchHandlers("/app/ask")} className={navClass}>
               <Users className="h-4 w-4" aria-hidden /> Community
             </NavLink>
 
@@ -241,16 +241,16 @@ export default function AppLayout() {
             <p className="label-caps text-white/30 px-[10px] pt-4 pb-1" id="nav-group-account">
               Account &amp; help
             </p>
-            <NavLink to="/app/profile" className={navClass}>
+            <NavLink to="/app/profile"None {...prefetchHandlers("/app/profile")} className={navClass}>
               <User className="h-4 w-4" aria-hidden /> Profile
             </NavLink>
-            <NavLink to="/app/billing" className={navClass}>
+            <NavLink to="/app/billing"None {...prefetchHandlers("/app/billing")} className={navClass}>
               <CreditCard className="h-4 w-4" aria-hidden /> Billing
             </NavLink>
-            <NavLink to="/app/settings" className={navClass}>
+            <NavLink to="/app/settings"None {...prefetchHandlers("/app/settings")} className={navClass}>
               <SettingsIcon className="h-4 w-4" aria-hidden /> Settings
             </NavLink>
-            <NavLink to="/app/support" className={navClass}>
+            <NavLink to="/app/support"None {...prefetchHandlers("/app/support")} className={navClass}>
               <LifeBuoy className="h-4 w-4" aria-hidden /> Support
             </NavLink>
             {isAdmin && (
@@ -281,16 +281,16 @@ export default function AppLayout() {
           aria-label="Primary"
           className="lg:hidden fixed bottom-0 left-0 right-0 bg-card border-t border-border z-40 flex justify-around py-1.5 pb-[calc(env(safe-area-inset-bottom)+0.375rem)] px-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)] keyboard-hide"
         >
-          <NavLink to="/app" end className={mobileNavClass}>
+          <NavLink to="/app" end {...prefetchHandlers("/app")} className={mobileNavClass}>
             <Home className="h-5 w-5" aria-hidden /> Today
           </NavLink>
-          <NavLink to="/app/meals" className={mobileNavClass}>
+          <NavLink to="/app/meals"None {...prefetchHandlers("/app/meals")} className={mobileNavClass}>
             <UtensilsCrossed className="h-5 w-5" aria-hidden /> Meals
           </NavLink>
-          <NavLink to="/app/progress" className={mobileNavClass}>
+          <NavLink to="/app/progress"None {...prefetchHandlers("/app/progress")} className={mobileNavClass}>
             <LineChart className="h-5 w-5" aria-hidden /> Progress
           </NavLink>
-          <NavLink to="/app/ask" className={mobileNavClass}>
+          <NavLink to="/app/ask"None {...prefetchHandlers("/app/ask")} className={mobileNavClass}>
             <MessageCircleQuestion className="h-5 w-5" aria-hidden /> Ask
           </NavLink>
           <Sheet open={moreOpen} onOpenChange={setMoreOpen}>
