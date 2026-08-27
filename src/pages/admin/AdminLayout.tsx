@@ -1,5 +1,5 @@
 import { Suspense, useState } from "react";
-import { NavLink, Outlet } from "react-router-dom";
+import { Link, NavLink, Outlet } from "react-router-dom";
 import RouteSkeleton from "@/components/system/RouteSkeleton";
 
 import { useAuth } from "@/hooks/useAuth";
