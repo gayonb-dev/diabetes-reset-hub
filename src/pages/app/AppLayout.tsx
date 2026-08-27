@@ -29,8 +29,25 @@ import { useVisualViewport } from "@/hooks/useVisualViewport";
 import { OfflineBanner } from "@/components/system/OfflineBanner";
 import { useBackButtonClose } from "@/hooks/useBackButtonClose";
 import { MORE_GROUPS } from "@/lib/appNav";
+import { Suspense } from "react";
+import { useLocation } from "react-router-dom";
+import RouteSkeleton, { type RouteSkeletonVariant } from "@/components/system/RouteSkeleton";
+import { prefetchOnIdle } from "@/lib/routePrefetch";
 
-
+/** Page-shaped loading fallback per destination. */
+function skeletonVariantFor(pathname: string): RouteSkeletonVariant {
+  const p = pathname.replace(/\/+$/, "");
+  if (p === "/app" || p.startsWith("/app/today")) return "dashboard";
+  if (p.startsWith("/app/workouts") || p.startsWith("/app/workout")) return "list";
+  if (p.startsWith("/app/meals") || p.startsWith("/app/progress") || p.startsWith("/app/fasting"))
+    return "tabs";
+  if (p.startsWith("/app/learn") || p.startsWith("/app/library") || p.startsWith("/app/day"))
+    return "article";
+  if (p.startsWith("/app/ask") || p.startsWith("/app/support")) return "chat";
+  if (p.startsWith("/app/settings") || p.startsWith("/app/profile") || p.startsWith("/app/billing"))
+    return "form";
+  return "list";
+}
 
 function navClass({ isActive }: { isActive: boolean }) {
   return `flex items-center gap-2.5 pl-[10px] pr-3 py-2 rounded-lg text-[13px] border-l-2 transition-colors ${
@@ -46,6 +63,7 @@ function mobileNavClass({ isActive }: { isActive: boolean }) {
     isActive ? "text-primary" : "text-tertiary-fg"
   }`;
 }
+
 
 export default function AppLayout() {
   useVisualViewport();
