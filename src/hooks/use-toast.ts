@@ -3,7 +3,26 @@ import * as React from "react";
 import type { ToastActionElement, ToastProps } from "@/components/ui/toast";
 
 const TOAST_LIMIT = 1;
-const TOAST_REMOVE_DELAY = 1000000;
+/**
+ * Batch 2 Part C — how long a CLOSED toast lingers in state before it is
+ * dropped. This is the exit-animation window, not the visible lifetime.
+ */
+const TOAST_REMOVE_DELAY = 1000;
+
+/**
+ * Visible lifetimes, in milliseconds.
+ *  - success: 4–6s
+ *  - informational (default): 6–8s
+ *  - errors needing action: 8–10s
+ * Radix pauses these timers while the toast is hovered or keyboard-focused,
+ * and announces through its own live region without stealing focus.
+ */
+export const TOAST_DURATIONS = {
+  success: 5000,
+  info: 7000,
+  error: 9000,
+} as const;
+
 
 type ToasterToast = ToastProps & {
   id: string;
