@@ -44,6 +44,7 @@ export function CoachingInterestCard() {
     return () => {
       cancelled = true;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- identity is the user id only
   }, [user?.id]);
 
   const register = async () => {
