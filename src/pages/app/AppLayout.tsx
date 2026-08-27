@@ -69,9 +69,15 @@ export default function AppLayout() {
   useVisualViewport();
   const { signOut, subscription, isAdmin, user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const skeletonVariant = skeletonVariantFor(location.pathname);
+  // Warm the common destination chunks once the browser is idle. Code only —
+  // access is still decided by AuthGuard when the route renders.
+  useEffect(() => prefetchOnIdle(), []);
   const [levelName, setLevelName] = useState("Level 1: Getting Started");
   const [moreOpen, setMoreOpen] = useState(false);
   useBackButtonClose(moreOpen, () => setMoreOpen(false));
+
 
 
   // Onboarding gate: redirect new users (no onboarded_at) to /app/onboarding.
