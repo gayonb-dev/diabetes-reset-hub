@@ -141,9 +141,11 @@ export function parseIngredient(raw: string): ParsedIngredient {
   }
 
   const rest = trimmed.slice(m[0].length).trim();
-  // Refuse any correction that would leave nothing, or a fragment shorter than
-  // a plausible word. Better to show the raw line than to damage it.
-  if (rest.length < 2) {
+  const restIsOnlyUnit = UNIT_SET.has(rest.toLowerCase().replace(/\.$/, ""));
+  // Refuse any correction that would leave nothing, a fragment shorter than a
+  // plausible word, or a bare unit ("1 cup" has no item to show). Better to
+  // display the raw line than to damage it.
+  if (rest.length < 2 || restIsOnlyUnit) {
     return { name: trimmed, quantity: parseQuantity(m[1]), unit: null, raw: original };
   }
 
@@ -154,6 +156,32 @@ export function parseIngredient(raw: string): ParsedIngredient {
     raw: original,
   };
 }
+
+/** Singular form used when comparing units, so "cup" and "cups" agree. */
+export function canonicalUnit(unit: UnitToken): string {
+  if (!unit) return "";
+  const u = unit.toLowerCase();
+  const SINGULAR: Record<string, string> = {
+    grams: "g",
+    gram: "g",
+    litre: "l",
+    litres: "l",
+    liter: "l",
+    liters: "l",
+    ounce: "oz",
+    ounces: "oz",
+    lbs: "lb",
+    pound: "lb",
+    pounds: "lb",
+    tablespoon: "tbsp",
+    tablespoons: "tbsp",
+    teaspoon: "tsp",
+    teaspoons: "tsp",
+  };
+  if (SINGULAR[u]) return SINGULAR[u];
+  return u.endsWith("s") && u.length > 2 ? u.slice(0, -1) : u;
+}
+
 
 /** Convenience: the display name only. */
 export function ingredientDisplayName(raw: string): string {
