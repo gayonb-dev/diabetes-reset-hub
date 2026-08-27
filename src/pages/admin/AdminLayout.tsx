@@ -21,9 +21,13 @@ import {
   X,
 } from "lucide-react";
 
+/**
+ * Batch 2 Part F — active admin navigation.
+ * Top Customers, Intake Forms and Challenge Progress are retired from active
+ * navigation; their historical records are retained in the database.
+ */
 const tabs = [
   { to: "/admin", label: "Legacy", icon: BarChart3, end: true },
-  { to: "/admin/top-customers", label: "Top Customers", icon: TrendingUp },
   { to: "/admin/digest", label: "Daily Digest", icon: FileText },
   { to: "/admin/subscriptions", label: "Subscriptions", icon: CreditCard },
   { to: "/admin/qa-queue", label: "Q&A Queue", icon: MessageSquare },
@@ -31,6 +35,7 @@ const tabs = [
   { to: "/admin/community", label: "Community", icon: MessageSquare },
   { to: "/admin/content", label: "Content", icon: BookOpen },
   { to: "/admin/broadcasts", label: "Broadcasts", icon: Megaphone },
+  { to: "/admin/coaching-interest", label: "Coaching Interest", icon: HeartHandshake },
   { to: "/admin/waitlist", label: "Coaching Waitlist", icon: UserPlus },
   { to: "/admin/phi-log", label: "PHI Audit", icon: Shield },
 ];
