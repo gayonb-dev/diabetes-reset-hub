@@ -25,6 +25,7 @@ import {
   ChevronRight,
   CheckCircle2,
   ExternalLink,
+  ArrowLeft,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Vita } from "@/components/vita/Vita";
@@ -45,7 +46,7 @@ type BlogPost = {
 export default function Learn() {
   const { user } = useAuth();
   const currentProgramDay = useProgramDay();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const requestedGuide = searchParams.get("guide");
 
   const [activeWeek, setActiveWeek] = useState<MindsetWeek | null>(null);
@@ -54,9 +55,22 @@ export default function Learn() {
   const [tab, setTab] = useState(requestedGuide ? "learn" : "mindset");
   const [openGuide, setOpenGuide] = useState<string>(requestedGuide ?? "");
   const headingRefs = useRef<Record<string, HTMLSpanElement | null>>({});
+  const guidesHeadingRef = useRef<HTMLHeadingElement | null>(null);
   // Focus/scroll only when the requested guide actually changes (a real
   // navigation or redirect) — never on background data refreshes.
   const lastFocusedGuide = useRef<string | null>(null);
+
+  /** Batch 2 E10 — collapse the article, clear the deep link, restore focus. */
+  const returnToGuides = () => {
+    setOpenGuide("");
+    lastFocusedGuide.current = null;
+    if (searchParams.has("guide")) {
+      const next = new URLSearchParams(searchParams);
+      next.delete("guide");
+      setSearchParams(next, { replace: false });
+    }
+    window.setTimeout(() => guidesHeadingRef.current?.focus(), 0);
+  };
 
   useEffect(() => {
     let cancelled = false;
@@ -166,6 +180,27 @@ export default function Learn() {
 
         {/* LEARN TAB — accordion */}
         <TabsContent value="learn" className="mt-5">
+          <div className="flex items-center justify-between gap-3 mb-3">
+            <h2
+              ref={guidesHeadingRef}
+              tabIndex={-1}
+              className="font-heading font-semibold text-lg text-foreground outline-none"
+            >
+              Guides
+            </h2>
+            {/* Batch 2 E10 — returning clears the open article, restores the
+                list, drops ?guide= from the URL and focuses the Guides heading. */}
+            {openGuide && (
+              <Button
+                variant="outline"
+                size="sm"
+                className="min-h-11 rounded-lg"
+                onClick={returnToGuides}
+              >
+                <ArrowLeft className="h-4 w-4 mr-1.5" aria-hidden /> Return to Guides
+              </Button>
+            )}
+          </div>
           <Accordion
             type="single"
             collapsible

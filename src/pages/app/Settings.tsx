@@ -33,6 +33,7 @@ import { getUnits, setUnits, WeightUnit, GlucoseUnit } from "@/lib/units";
 // dexcom-sync-every-30-min cron job.
 // import ConnectedDevicesCard from "@/components/settings/ConnectedDevicesCard";
 import AIAssistantCard from "@/components/settings/AIAssistantCard";
+import CoachingInterestCard from "@/components/settings/CoachingInterestCard";
 
 
 const CUISINE_OPTIONS = [
@@ -902,6 +903,8 @@ export default function Settings() {
       {/* <ConnectedDevicesCard /> */}
 
       <AIAssistantCard />
+
+      <CoachingInterestCard />
 
       {/* Billing link */}
       <Card className="p-5 border-border rounded-xl shadow-warm">

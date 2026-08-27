@@ -406,6 +406,39 @@ export type Database = {
         }
         Relationships: []
       }
+      coaching_interest: {
+        Row: {
+          consented_at: string
+          created_at: string
+          email: string
+          id: string
+          status: string
+          updated_at: string
+          user_id: string
+          withdrawn_at: string | null
+        }
+        Insert: {
+          consented_at?: string
+          created_at?: string
+          email: string
+          id?: string
+          status?: string
+          updated_at?: string
+          user_id: string
+          withdrawn_at?: string | null
+        }
+        Update: {
+          consented_at?: string
+          created_at?: string
+          email?: string
+          id?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+          withdrawn_at?: string | null
+        }
+        Relationships: []
+      }
       coaching_waitlist: {
         Row: {
           created_at: string

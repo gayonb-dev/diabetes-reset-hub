@@ -1,5 +1,5 @@
 import { Suspense, useState } from "react";
-import { NavLink, Outlet } from "react-router-dom";
+import { Link, NavLink, Outlet } from "react-router-dom";
 import RouteSkeleton from "@/components/system/RouteSkeleton";
 
 import { useAuth } from "@/hooks/useAuth";
@@ -12,18 +12,23 @@ import {
   Megaphone,
   UserPlus,
   BarChart3,
-  TrendingUp,
+  HeartHandshake,
   FileText,
   Shield,
   ShieldCheck,
   Monitor,
   LifeBuoy,
+  ArrowLeft,
   X,
 } from "lucide-react";
 
+/**
+ * Batch 2 Part F — active admin navigation.
+ * Top Customers, Intake Forms and Challenge Progress are retired from active
+ * navigation; their historical records are retained in the database.
+ */
 const tabs = [
   { to: "/admin", label: "Legacy", icon: BarChart3, end: true },
-  { to: "/admin/top-customers", label: "Top Customers", icon: TrendingUp },
   { to: "/admin/digest", label: "Daily Digest", icon: FileText },
   { to: "/admin/subscriptions", label: "Subscriptions", icon: CreditCard },
   { to: "/admin/qa-queue", label: "Q&A Queue", icon: MessageSquare },
@@ -31,6 +36,7 @@ const tabs = [
   { to: "/admin/community", label: "Community", icon: MessageSquare },
   { to: "/admin/content", label: "Content", icon: BookOpen },
   { to: "/admin/broadcasts", label: "Broadcasts", icon: Megaphone },
+  { to: "/admin/coaching-interest", label: "Coaching Interest", icon: HeartHandshake },
   { to: "/admin/waitlist", label: "Coaching Waitlist", icon: UserPlus },
   { to: "/admin/phi-log", label: "PHI Audit", icon: Shield },
 ];
@@ -82,14 +88,22 @@ export default function AdminLayout() {
               <p className="text-xs text-slate-500 dark:text-slate-400">{user?.email}</p>
             </div>
           </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={signOut}
-            className="text-slate-600 hover:text-slate-900 dark:text-slate-300"
-          >
-            <LogOut className="h-4 w-4 mr-2" /> Sign out
-          </Button>
+          <div className="flex items-center gap-2">
+            {/* Batch 2 F19 — persistent, functional return to the member app. */}
+            <Button asChild variant="outline" size="sm" className="min-h-11">
+              <Link to="/app">
+                <ArrowLeft className="h-4 w-4 mr-2" aria-hidden /> Back to member app
+              </Link>
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={signOut}
+              className="text-slate-600 hover:text-slate-900 dark:text-slate-300 min-h-11"
+            >
+              <LogOut className="h-4 w-4 mr-2" /> Sign out
+            </Button>
+          </div>
         </div>
         <nav className="container mx-auto px-4 overflow-x-auto">
           <div className="flex gap-1 pb-2 min-w-max">

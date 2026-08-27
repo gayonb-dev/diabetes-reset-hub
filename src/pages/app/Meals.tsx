@@ -280,7 +280,7 @@ export default function Meals() {
   const [weekIdx, setWeekIdx] = useState<1 | 2 | 3 | 4>(1);
   const [cuisines, setCuisines] = useState<string[]>([]);
   const [shoppingChecked, setShoppingChecked] = useState<Record<string, boolean>>({});
-  const [shoppingView, setShoppingView] = useState<"category" | "meal">("category");
+  const [shoppingView, setShoppingView] = useState<"category" | "meal">("meal");
   const [excludedMeals, setExcludedMeals] = useState<Record<string, boolean>>({});
   const [toolsSheetOpen, setToolsSheetOpen] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -793,7 +793,7 @@ export default function Meals() {
           </p>
 
           <div className="inline-flex rounded-lg border border-border p-1 bg-muted/40">
-            {(["category", "meal"] as const).map((v) => (
+            {(["meal", "category"] as const).map((v) => (
               <button
                 key={v}
                 type="button"

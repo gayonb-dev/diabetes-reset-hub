@@ -27,34 +27,100 @@ const statusColors: Record<string, string> = {
   unpaid: "bg-destructive/10 text-destructive",
 };
 
+/**
+ * Batch 2 F21 — billing metrics on the canonical order / subscription /
+ * billing-event model. Orders, active subscriptions, cancellations, refunds,
+ * disputes and payment failures are counted separately, stamped with an
+ * as-of time, and a backend failure renders an error — never a fabricated
+ * zero. No Stripe identifiers are surfaced that the screen does not need.
+ */
+type Metrics = {
+  orders: number;
+  activeSubscriptions: number;
+  trialing: number;
+  cancellations: number;
+  refunds: number;
+  disputes: number;
+  paymentFailures: number;
+};
+
+const METRIC_LABELS: Record<keyof Metrics, string> = {
+  orders: "Orders",
+  activeSubscriptions: "Active subscriptions",
+  trialing: "Trialing",
+  cancellations: "Cancellations",
+  refunds: "Refunds",
+  disputes: "Disputes",
+  paymentFailures: "Payment failures",
+};
+
+const REFUND_EVENTS = ["charge.refunded", "refund.updated"];
+const DISPUTE_EVENTS = ["charge.dispute.created", "charge.dispute.closed"];
+const FAILURE_EVENTS = ["invoice.payment_failed", "charge.failed"];
+
 export default function AdminSubscriptions() {
   const [rows, setRows] = useState<Row[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [metrics, setMetrics] = useState<Metrics | null>(null);
+  const [state, setState] = useState<"loading" | "ready" | "error">("loading");
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [asOf, setAsOf] = useState<Date | null>(null);
   const [search, setSearch] = useState("");
 
   useEffect(() => {
-    supabase
-      .from("subscriptions")
-      .select("*")
-      .order("created_at", { ascending: false })
-      .then(({ data }) => {
-        setRows((data as Row[]) || []);
-        setLoading(false);
+    let cancelled = false;
+    (async () => {
+      const [subs, orders, refunds, disputes, failures] = await Promise.all([
+        supabase.from("subscriptions").select("*").order("created_at", { ascending: false }),
+        supabase.from("orders").select("id", { count: "exact", head: true }),
+        supabase
+          .from("billing_events")
+          .select("id", { count: "exact", head: true })
+          .in("event_type", REFUND_EVENTS),
+        supabase
+          .from("billing_events")
+          .select("id", { count: "exact", head: true })
+          .in("event_type", DISPUTE_EVENTS),
+        supabase
+          .from("billing_events")
+          .select("id", { count: "exact", head: true })
+          .in("event_type", FAILURE_EVENTS),
+      ]);
+      if (cancelled) return;
+
+      const firstError =
+        subs.error || orders.error || refunds.error || disputes.error || failures.error;
+      if (firstError) {
+        setErrorMsg((firstError as { message?: string }).message ?? "Unknown backend error");
+        setState("error");
+        return;
+      }
+
+      const subRows = (subs.data as Row[]) || [];
+      setRows(subRows);
+      setMetrics({
+        orders: orders.count ?? 0,
+        activeSubscriptions: subRows.filter((r) => r.status === "active").length,
+        trialing: subRows.filter((r) => r.status === "trialing").length,
+        cancellations: subRows.filter(
+          (r) => r.cancel_at_period_end || r.status === "cancelled",
+        ).length,
+        refunds: refunds.count ?? 0,
+        disputes: disputes.count ?? 0,
+        paymentFailures: failures.count ?? 0,
       });
+      setAsOf(new Date());
+      setState("ready");
+    })();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const filtered = rows.filter(
     (r) => !search || JSON.stringify(r).toLowerCase().includes(search.toLowerCase()),
   );
 
-  const stats = {
-    total: rows.length,
-    trialing: rows.filter((r) => r.status === "trialing").length,
-    active: rows.filter((r) => r.status === "active").length,
-    cancelling: rows.filter((r) => r.cancel_at_period_end).length,
-  };
-
-  if (loading) {
+  if (state === "loading") {
     return (
       <div className="space-y-6">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -75,16 +141,38 @@ export default function AdminSubscriptions() {
     );
   }
 
+  if (state === "error") {
+    return (
+      <Card className="p-5 border-destructive/40" role="status">
+        <p className="text-sm font-medium text-destructive">
+          Billing metrics could not be loaded.
+        </p>
+        <p className="text-xs text-muted-foreground mt-1">
+          This is a backend error, not zero revenue. No figures are shown because none could be
+          read. {errorMsg}
+        </p>
+      </Card>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        {Object.entries(stats).map(([k, v]) => (
+        {(Object.keys(METRIC_LABELS) as (keyof Metrics)[]).map((k) => (
           <Card key={k} className="p-4">
-            <p className="text-xs uppercase text-muted-foreground font-semibold">{k}</p>
-            <p className="text-2xl font-heading font-bold">{v}</p>
+            <p className="text-xs uppercase text-muted-foreground font-semibold">
+              {METRIC_LABELS[k]}
+            </p>
+            <p className="text-2xl font-heading font-bold tabular-nums">{metrics?.[k] ?? 0}</p>
           </Card>
         ))}
       </div>
+      {asOf && (
+        <p className="text-xs text-muted-foreground tabular-nums">
+          As of {asOf.toLocaleString()}. Counts read directly from orders, subscriptions and the
+          billing-event ledger.
+        </p>
+      )}
 
       <Input
         placeholder="Search subscriptions..."

@@ -93,6 +93,7 @@ export const INVENTORY: InventoryEntry[] = [
   { table: "user_roles", match: "user_id", column: "user_id", disposition: "export_and_delete", order: 24, category: "authorization" },
   { table: "oauth_client_grants", match: "member_id", column: "member_id", disposition: "export_and_delete", order: 24, category: "authorization" },
   { table: "coaching_waitlist", match: "user_id", column: "user_id", disposition: "export_and_delete", order: 24, category: "membership" },
+  { table: "coaching_interest", match: "user_id", column: "user_id", disposition: "export_and_delete", order: 24, category: "membership" },
   { table: "deletion_requests", match: "user_id", column: "user_id", disposition: "export_and_delete", order: 24, category: "privacy" },
 
   // ---- commerce ----
