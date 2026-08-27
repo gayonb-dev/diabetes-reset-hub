@@ -166,6 +166,27 @@ export default function Learn() {
 
         {/* LEARN TAB — accordion */}
         <TabsContent value="learn" className="mt-5">
+          <div className="flex items-center justify-between gap-3 mb-3">
+            <h2
+              ref={guidesHeadingRef}
+              tabIndex={-1}
+              className="font-heading font-semibold text-lg text-foreground outline-none"
+            >
+              Guides
+            </h2>
+            {/* Batch 2 E10 — returning clears the open article, restores the
+                list, drops ?guide= from the URL and focuses the Guides heading. */}
+            {openGuide && (
+              <Button
+                variant="outline"
+                size="sm"
+                className="min-h-11 rounded-lg"
+                onClick={returnToGuides}
+              >
+                <ArrowLeft className="h-4 w-4 mr-1.5" aria-hidden /> Return to Guides
+              </Button>
+            )}
+          </div>
           <Accordion
             type="single"
             collapsible
