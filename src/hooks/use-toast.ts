@@ -165,9 +165,16 @@ function toast({ ...props }: Toast) {
 
   // An ordinary notice must never sit on screen for minutes. Callers can still
   // pass an explicit `duration`, including Infinity for a persistent error.
+  // Success/plain notices get the short interval; anything carrying an action
+  // gets the informational interval; destructive gets the error interval.
   const duration =
     props.duration ??
-    (props.variant === "destructive" ? TOAST_DURATIONS.error : TOAST_DURATIONS.info);
+    (props.variant === "destructive"
+      ? TOAST_DURATIONS.error
+      : props.action
+        ? TOAST_DURATIONS.info
+        : TOAST_DURATIONS.success);
+
 
   dispatch({
     type: "ADD_TOAST",
