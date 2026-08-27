@@ -227,7 +227,8 @@ export function mergeIngredients(lines: string[]): MergedIngredient[] {
   for (const key of order) {
     const items = groups.get(key)!;
     const name = items[0].name;
-    const units = new Set(items.map((i) => i.unit ?? ""));
+    // "cup" and "cups" are the same unit; "cup" and "g" are not.
+    const units = new Set(items.map((i) => canonicalUnit(i.unit)));
     const everyHasQty = items.every((i) => i.quantity !== null);
 
     if (items.length === 1) {
@@ -236,8 +237,8 @@ export function mergeIngredients(lines: string[]): MergedIngredient[] {
     }
 
     if (units.size === 1 && everyHasQty) {
-      const unit = items[0].unit;
       const total = items.reduce((s, i) => s + (i.quantity ?? 0), 0);
+      const unit = canonicalUnit(items[0].unit);
       const qty = Number.isInteger(total) ? String(total) : String(Math.round(total * 100) / 100);
       out.push({
         key,
@@ -246,6 +247,7 @@ export function mergeIngredients(lines: string[]): MergedIngredient[] {
       });
       continue;
     }
+
 
     // Incompatible units — show the ingredient once, never a fabricated total.
     out.push({ key, label: name, combined: false });
