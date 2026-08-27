@@ -69,12 +69,9 @@ export default function AdminSubscriptions() {
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      const count = (q: PromiseLike<{ count: number | null; error: unknown }>) => q;
       const [subs, orders, refunds, disputes, failures] = await Promise.all([
         supabase.from("subscriptions").select("*").order("created_at", { ascending: false }),
-        count(
-          supabase.from("orders").select("id", { count: "exact", head: true }) as never,
-        ) as unknown as { count: number | null; error: unknown },
+        supabase.from("orders").select("id", { count: "exact", head: true }),
         supabase
           .from("billing_events")
           .select("id", { count: "exact", head: true })
@@ -91,7 +88,7 @@ export default function AdminSubscriptions() {
       if (cancelled) return;
 
       const firstError =
-        subs.error || refunds.error || disputes.error || failures.error || (orders as { error: unknown }).error;
+        subs.error || orders.error || refunds.error || disputes.error || failures.error;
       if (firstError) {
         setErrorMsg((firstError as { message?: string }).message ?? "Unknown backend error");
         setState("error");
@@ -101,7 +98,7 @@ export default function AdminSubscriptions() {
       const subRows = (subs.data as Row[]) || [];
       setRows(subRows);
       setMetrics({
-        orders: (orders as { count: number | null }).count ?? 0,
+        orders: orders.count ?? 0,
         activeSubscriptions: subRows.filter((r) => r.status === "active").length,
         trialing: subRows.filter((r) => r.status === "trialing").length,
         cancellations: subRows.filter(
