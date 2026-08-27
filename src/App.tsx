@@ -80,7 +80,10 @@ const App = () => (
       <BrowserRouter>
         <AuthProvider>
           <ClockSkewBanner />
-          <Suspense fallback={null}>
+          {/* Outer boundary: covers the shell itself (layouts are lazy too).
+              Nested layouts provide their own page-shaped skeletons. */}
+          <Suspense fallback={<AppBootFallback />}>
+
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/payment-success" element={<PaymentSuccess />} />
