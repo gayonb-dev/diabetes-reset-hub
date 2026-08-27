@@ -13,6 +13,8 @@ import { Vita } from "@/components/vita/Vita";
 import VitaErrorCard from "@/components/vita/VitaErrorCard";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import { ingredientDisplayName } from "@/lib/ingredients";
+
 import { SnackLibrary } from "@/components/meals/SnackLibrary";
 import CheatMeal from "@/pages/app/CheatMeal";
 import { useSearchParams, Link } from "react-router-dom";
@@ -47,11 +49,13 @@ function ingredientText(ing: Ingredient): string {
   return [ing.quantity, ing.unit, ing.item].filter(Boolean).join(" ");
 }
 function ingredientItemName(ing: Ingredient): string {
-  if (typeof ing === "string") {
-    return ing.replace(/^[\d./\s]+(?:g|kg|ml|l|oz|lb|tbsp|tsp|cup|cups|pieces?|fillets?)?\s*/i, "").trim() || ing;
-  }
-  return ing.item;
+  // Structured ingredients already separate the item from its quantity.
+  if (typeof ing !== "string") return ing.item;
+  // Free-text lines go through the shared parser, which only strips a leading
+  // quantity/unit when it is unambiguous — "2 large eggs" keeps "large eggs".
+  return ingredientDisplayName(ing);
 }
+
 type Day = Record<string, Meal>; // breakfast/lunch/dinner/snack_1/snack_2 OR meal_1/meal_2/snack_1/snack_2
 type Week = Record<string, Day>; // monday..sunday
 interface PlanData {

@@ -1,5 +1,7 @@
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { NavLink, Outlet } from "react-router-dom";
+import RouteSkeleton from "@/components/system/RouteSkeleton";
+
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import {
@@ -112,8 +114,12 @@ export default function AdminLayout() {
         </nav>
       </header>
       <main className="container mx-auto px-4 py-6">
-        <Outlet />
+        {/* Admin pages are lazy too — show an admin-shaped skeleton, not blank. */}
+        <Suspense fallback={<RouteSkeleton variant="admin" label="Loading admin page" />}>
+          <Outlet />
+        </Suspense>
       </main>
+
     </div>
   );
 }
