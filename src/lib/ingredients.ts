@@ -87,6 +87,9 @@ const UNIT_PATTERN = UNITS.slice()
   .sort((a, b) => b.length - a.length)
   .join("|");
 
+const UNIT_SET = new Set<string>(UNITS.map((u) => u.toLowerCase()));
+
+
 // [quantity][optional unit] at the start of the string. The unit must be a
 // whole word (\b) and must be followed by whitespace, so "large" can never be
 // mistaken for the "l" unit.
