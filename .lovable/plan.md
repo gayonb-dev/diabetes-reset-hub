@@ -114,3 +114,32 @@ Batch 2 is not reported complete while any in-scope gate is FAIL or NOT TESTED; 
 **Responsive and accessibility evidence.** At 320/390/768/1280px plus 200% zoom, keyboard-only and reduced motion, record actual results for heading order, landmarks, focus order and restoration, contrast values, font sizes, tap-target dimensions, horizontal overflow, sticky/fixed-layer collisions, VITA open and closed, notification panel open and closed, toast live-region behaviour, modal/sheet focus handling, chart and table text alternatives, loading-skeleton announcements, authenticated mobile navigation, and Admin navigation and tables. Before/after screenshots cover Today, Meals, Progress, Workouts, Learn, Ask, Profile, Settings, Billing, Support and every changed Admin page.
 
 **Completion truthfulness.** `BATCH-2-COMPLETION-REPORT.md` carries one row per task and gate marked PASS, FAIL, BLOCKED or NOT TESTED, and distinguishes client code changed but unpublished, migrations actually applied, Edge Functions actually deployed, surfaces verified only with mocks, surfaces verified against production with synthetic fixtures, and platform items left for Batch 3. Batch 2 is not complete with any in-scope FAIL or NOT TESTED; failures are fixed and both focused and full gates rerun in the same run. Nothing is published.
+
+## Binding signed-in task matrix (per-task, desktop and mobile)
+
+Each numbered task is reported with expected result, actual result, evidence location and PASS / FAIL / BLOCKED / NOT TESTED — separately for desktop and mobile. No aggregate statement.
+
+1. Navigate Today, Meals, Progress, Workouts, Learn, Ask with no unexplained blank content region; shell and accessible loading state stay visible.
+2. Keyboard-only navigation: focus visible, logical and restored after route changes, dialogs and async rendering.
+3. Today shows correct `Day X of 180` and a separate `Phase N — [name], day X of Y` with a plain-language explanation.
+4. `Log habits` waits for the destination to render, scrolls to the habit section and moves focus to its heading.
+5. Mindset uses a clear `Read reflection` / `Hide reflection` disclosure with a visible, accessible expanded state.
+6. Shopping List opens with `By meal` first and selected by default.
+7. A selected day or selected meals do not render the whole weekly ingredient list; full-week expansion requires a deliberate action.
+8. Parser output readable across quantities, fractions, Unicode fractions, plurals, optional quantities and numeric prefixes; no legitimate ingredient name silently damaged.
+9. Rapid meal text entry loses no characters; all three plate-method components persist as 3/3 after reload.
+10. `Return to Guides` clears the selected article, restores the list, updates the URL and focuses the Guides heading; browser Back/Forward verified.
+11. Fasting education cannot be mistaken for a questionnaire, eligibility screening, timer or scheduler; the page says plainly there is no questionnaire and scheduling is unavailable.
+12. `Ask VITA` and `Post to community` are visibly and accessibly distinct.
+13. Only `Ask` appears selected in primary navigation; no duplicate Community primary item remains while both share a route.
+14. Ordinary success toasts auto-dismiss within 4–6s, pause on hover/focus, stay accessible without stealing focus.
+15. Selecting a notification marks it read and decrements the count; `Mark all as read` clears it; opening the panel alone marks nothing; no reload needed.
+16. Support persists a durable ticket before success, shows its reference and reports email state honestly as notified, suppressed or failed.
+17. Coaching interest added and withdrawn using authenticated identity/email, explicit consent and timestamp only — no health narrative or fields, no urgency, deposit, checkout or availability promise.
+18. Activity Score explains its canonical ledger source and recent entries, or shows the approved migration state; no legacy XP or retired badge as canonical score.
+19. Every changed Admin screen has a persistent, functional `Back to member app`.
+20. Admin Support Queue reachable, permission-protected and usable, with accessible filter/status/reply-state controls and no raw user agent.
+21. Admin billing metrics reconcile orders, active subscriptions, cancellations, refunds, disputes and payment failures separately against read-only queries; backend failure shows an error, never fabricated zero revenue.
+22. Top Customers, its browser refresh path, WhatsApp scripts, Intake Forms and Challenge Progress absent from active Admin; no member-app flow writes to Challenge Progress.
+23. Billing, Settings, Support, export and deletion reachable under allowed, grace, restricted-billing, deletion-restricted and dispute states per the Prompt 5 lifecycle; no billing condition redirects a signed-in member to Login.
+24. No retired badge, unsafe clinical copy, obsolete WhatsApp/coaching promise, fasting tool, supplement promotion, cheat-meal mechanism, reversal language or personalized-health-AI promise in active source, database-managed member content or the production bundle.
