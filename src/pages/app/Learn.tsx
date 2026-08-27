@@ -45,7 +45,7 @@ type BlogPost = {
 export default function Learn() {
   const { user } = useAuth();
   const currentProgramDay = useProgramDay();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const requestedGuide = searchParams.get("guide");
 
   const [activeWeek, setActiveWeek] = useState<MindsetWeek | null>(null);
@@ -54,9 +54,22 @@ export default function Learn() {
   const [tab, setTab] = useState(requestedGuide ? "learn" : "mindset");
   const [openGuide, setOpenGuide] = useState<string>(requestedGuide ?? "");
   const headingRefs = useRef<Record<string, HTMLSpanElement | null>>({});
+  const guidesHeadingRef = useRef<HTMLHeadingElement | null>(null);
   // Focus/scroll only when the requested guide actually changes (a real
   // navigation or redirect) — never on background data refreshes.
   const lastFocusedGuide = useRef<string | null>(null);
+
+  /** Batch 2 E10 — collapse the article, clear the deep link, restore focus. */
+  const returnToGuides = () => {
+    setOpenGuide("");
+    lastFocusedGuide.current = null;
+    if (searchParams.has("guide")) {
+      const next = new URLSearchParams(searchParams);
+      next.delete("guide");
+      setSearchParams(next, { replace: false });
+    }
+    window.setTimeout(() => guidesHeadingRef.current?.focus(), 0);
+  };
 
   useEffect(() => {
     let cancelled = false;
