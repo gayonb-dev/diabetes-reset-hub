@@ -1,0 +1,34 @@
+{
+  "generated_utc": "2026-08-28",
+  "method": "live read-only SQL against the production database",
+  "auth_users_total": 1,
+  "auth_users_synthetic_remaining": 0,
+  "real_account": {
+    "id": "ce55d7b0-fb88-47bc-953c-51445ba250f7",
+    "created_at": "2026-05-22T02:58:54Z",
+    "confirmed_at": "2026-05-25T19:55:54Z",
+    "last_sign_in_at": "2026-08-16T00:55:09Z",
+    "note": "predates the Batch 2 window; unaffected"
+  },
+  "synthetic_identities_created_and_deleted": [
+    {"id":"b75609d6-c7e4-4192-882c-50b380da9d61","email":"batch2-matrix-member@example.invalid","deleted":true},
+    {"id":"98684c52-05cf-43c4-b8eb-3a27d5e0b6d8","email":"batch2-matrix-admin@example.invalid","deleted":true}
+  ],
+  "residual_row_counts": {
+    "activity_events": 12,
+    "member_progress": 1,
+    "profiles": 1,
+    "subscriptions": 0,
+    "support_tickets": 0,
+    "note": "all remaining rows belong to the single real account"
+  },
+  "app_config_flags_at_verification": {
+    "email_delivery_enabled": false,
+    "transactional_automation_enabled": false,
+    "marketing_email_enabled": false,
+    "retention_mode": "report_only",
+    "last_updated_any_flag_utc": "2026-08-13T02:07:58Z",
+    "note": "no app_config flag was mutated on 2026-08-28"
+  },
+  "result": "PASS"
+}
