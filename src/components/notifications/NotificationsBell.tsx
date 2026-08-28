@@ -80,6 +80,19 @@ export function NotificationsBell({
     );
   };
 
+  const markOneRead = async (id: string) => {
+    if (!user) return;
+    const n = items.find((x) => x.id === id);
+    if (!n || n.read_at) return;
+    await supabase
+      .from("notifications")
+      .update({ read_at: new Date().toISOString() })
+      .eq("id", id);
+    setItems((prev) =>
+      prev.map((x) => (x.id === id ? { ...x, read_at: new Date().toISOString() } : x)),
+    );
+  };
+
   const iconColor =
     variant === "dark" ? "text-white/70 hover:text-white" : "text-foreground";
 
@@ -89,7 +102,7 @@ export function NotificationsBell({
         <button
           type="button"
           className={`relative p-1.5 rounded-md transition-colors ${iconColor}`}
-          aria-label="Notifications"
+          aria-label={`Notifications${unreadCount > 0 ? `, ${unreadCount} unread` : ""}`}
         >
           <Bell className="h-4 w-4" />
           {unreadCount > 0 && (
@@ -113,7 +126,7 @@ export function NotificationsBell({
             </Button>
           )}
         </div>
-        <div className="max-h-[380px] overflow-y-auto">
+        <div className="max-h-[380px] overflow-y-auto" role="list">
           {loading && items.length === 0 ? (
             <p className="text-xs text-muted-foreground p-6 text-center">
               Loading…
@@ -125,11 +138,14 @@ export function NotificationsBell({
             </p>
           ) : (
             items.map((n) => (
-              <div
+              <button
                 key={n.id}
-                className={`px-4 py-3 border-b border-border/60 ${
-                  !n.read_at ? "bg-accent/5" : ""
+                type="button"
+                onClick={() => markOneRead(n.id)}
+                className={`w-full text-left px-4 py-3 border-b border-border/60 transition-colors ${
+                  !n.read_at ? "bg-accent/5 hover:bg-accent/10" : "hover:bg-muted/50"
                 }`}
+                aria-label={!n.read_at ? "Unread notification" : "Read notification"}
               >
                 <p className="text-[13px] leading-snug text-foreground">
                   {n.body}
@@ -139,7 +155,7 @@ export function NotificationsBell({
                     addSuffix: true,
                   })}
                 </p>
-              </div>
+              </button>
             ))
           )}
         </div>
