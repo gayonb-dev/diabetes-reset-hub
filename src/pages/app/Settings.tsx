@@ -72,7 +72,7 @@ const DEFAULT_NOTIF_PREFS: NotifPrefs = {
   workout: true,
   a1c: true,
   measurement: true,
-  cheat_meal: true,
+  off_plan_meal: true,
   birthday: true,
   community_mission: true,
 };
@@ -89,6 +89,7 @@ export default function Settings() {
   const [signOutOpen, setSignOutOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [showAdvanced, setShowAdvanced] = useState(false);
 
   // Profile — community display name (defaults to first_name, editable independently)
   const [firstName, setFirstName] = useState<string>("");
@@ -106,7 +107,7 @@ export default function Settings() {
     workout: { title: "Workout reminders", desc: "Reminders on your scheduled training days." },
     a1c: { title: "A1C reminders", desc: "Periodic prompts to log a new A1C." },
     measurement: { title: "Measurement reminders", desc: "Weekly nudge to update measurements." },
-    cheat_meal: { title: "Off-plan meal tips", desc: "Tips after logging an off-plan meal." },
+    off_plan_meal: { title: "Off-plan meal tips", desc: "Tips after logging an off-plan meal." },
     birthday: { title: "Birthday greeting", desc: "A short note from VITA on your day." },
     community_mission: { title: "Community missions", desc: "Weekly community challenges and Q&A picks." },
   };
@@ -902,7 +903,18 @@ export default function Settings() {
           the dexcom-sync-every-30-min cron job. */}
       {/* <ConnectedDevicesCard /> */}
 
-      <AIAssistantCard />
+      {/* Batch 2 E — MCP/AI assistant connector stays behind an Advanced flag so
+          it is not part of the normal member journey. */}
+      {!showAdvanced && (
+        <button
+          type="button"
+          onClick={() => setShowAdvanced(true)}
+          className="w-full text-left text-xs text-muted-foreground hover:text-primary underline py-1"
+        >
+          Show advanced options
+        </button>
+      )}
+      {showAdvanced && <AIAssistantCard />}
 
       <CoachingInterestCard />
 

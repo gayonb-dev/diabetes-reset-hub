@@ -44,6 +44,9 @@ export default function AdminSupport() {
   const [notes, setNotes] = useState<Record<string, Note[]>>({});
   const [drafts, setDrafts] = useState<Record<string, string>>({});
   const [busy, setBusy] = useState<string | null>(null);
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [categoryFilter, setCategoryFilter] = useState<string>("all");
+  const [replyFilter, setReplyFilter] = useState<string>("all");
 
   const load = useCallback(async () => {
     const { data, error } = await supabase
@@ -113,6 +116,16 @@ export default function AdminSupport() {
 
   if (tickets == null) return <AdminListSkeleton />;
 
+  const filtered = tickets.filter((t) => {
+    const statusOk = statusFilter === "all" || t.status === statusFilter;
+    const categoryOk = categoryFilter === "all" || t.category === categoryFilter;
+    const replyOk =
+      replyFilter === "all" ||
+      (replyFilter === "replied" && t.first_response_at) ||
+      (replyFilter === "unreplied" && !t.first_response_at);
+    return statusOk && categoryOk && replyOk;
+  });
+
   return (
     <div className="space-y-4">
       <div>
@@ -123,9 +136,54 @@ export default function AdminSupport() {
         </p>
       </div>
 
-      {tickets.length === 0 && <p className="text-sm text-muted-foreground">No tickets yet.</p>}
+      {/* Batch 2 F20 — accessible filters for status, category and reply state. */}
+      <div className="flex flex-wrap gap-3">
+        <label className="text-sm text-muted-foreground">
+          Status
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="ml-2 rounded-md border border-border bg-background px-2 py-1 text-sm"
+            aria-label="Filter by status"
+          >
+            <option value="all">All</option>
+            {STATUSES.map((s) => (
+              <option key={s} value={s}>{s.replace("_", " ")}</option>
+            ))}
+          </select>
+        </label>
+        <label className="text-sm text-muted-foreground">
+          Category
+          <select
+            value={categoryFilter}
+            onChange={(e) => setCategoryFilter(e.target.value)}
+            className="ml-2 rounded-md border border-border bg-background px-2 py-1 text-sm"
+            aria-label="Filter by category"
+          >
+            <option value="all">All</option>
+            {["Bug", "Question", "Feedback", "Billing"].map((c) => (
+              <option key={c} value={c}>{c}</option>
+            ))}
+          </select>
+        </label>
+        <label className="text-sm text-muted-foreground">
+          Reply state
+          <select
+            value={replyFilter}
+            onChange={(e) => setReplyFilter(e.target.value)}
+            className="ml-2 rounded-md border border-border bg-background px-2 py-1 text-sm"
+            aria-label="Filter by reply state"
+          >
+            <option value="all">All</option>
+            <option value="replied">Replied</option>
+            <option value="unreplied">Unreplied</option>
+          </select>
+        </label>
+      </div>
 
-      {tickets.map((t) => (
+      {filtered.length === 0 && <p className="text-sm text-muted-foreground">No tickets match the selected filters.</p>}
+
+      {filtered.map((t) => (
         <Card key={t.id} className="p-4 space-y-3">
           <div className="flex flex-wrap items-center justify-between gap-2 text-sm">
             <span className="font-medium tabular-nums">{t.reference}</span>

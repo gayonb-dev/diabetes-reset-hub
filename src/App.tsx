@@ -237,7 +237,7 @@ const App = () => (
                 <Route path="settings" element={<Settings />} />
                 <Route path="profile" element={<Profile />} />
                 <Route path="fasting" element={<Fasting />} />
-                <Route path="cheat-meal" element={<Navigate to="/app/meals?tab=cheat-meal" replace />} />
+                <Route path="cheat-meal" element={<Navigate to="/app/meals?tab=off-plan" replace />} />
                 <Route path="support" element={<Support />} />
                 <Route path="settings/billing" element={<Billing />} />
                 {/* Prompt 6 A6 — /app/coaching-waitlist retired: one-to-one coaching

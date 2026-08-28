@@ -37,6 +37,7 @@ export default function Support() {
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
   const [reference, setReference] = useState<string | null>(null);
+  const [emailStatus, setEmailStatus] = useState<"sent" | "suppressed" | "failed" | null>(null);
 
   const [chat, setChat] = useState<ChatTurn[]>([]);
   const [chatInput, setChatInput] = useState("");
@@ -148,10 +149,12 @@ export default function Support() {
         throw new Error(detail);
       }
       const ref = (data as { reference?: string } | null)?.reference ?? null;
+      const status = (data as { email_status?: "sent" | "suppressed" | "failed" } | null)?.email_status ?? "failed";
       if (!ref) {
         throw new Error("We couldn't save your ticket. Please try again.");
       }
       setReference(ref);
+      setEmailStatus(status);
       setSent(true);
     } catch (e) {
       toast({
@@ -274,7 +277,7 @@ export default function Support() {
           </DialogHeader>
 
           {sent ? (
-            <div className="py-4 text-center space-y-3">
+          <div className="py-4 text-center space-y-3">
               <div className="mx-auto h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
                 <CheckCircle2 className="h-6 w-6 text-primary" />
               </div>
@@ -282,10 +285,25 @@ export default function Support() {
                 Your ticket is saved. Reference{" "}
                 <span className="font-medium text-foreground select-text">{reference}</span>.
               </p>
-              <p className="text-sm text-muted-foreground">
-                We aim to respond within one business day at{" "}
-                <span className="font-medium text-foreground">{user?.email}</span>.
-              </p>
+              {emailStatus === "sent" && (
+                <p className="text-sm text-muted-foreground">
+                  We notified the support team and aim to respond within one business day at{" "}
+                  <span className="font-medium text-foreground">{user?.email}</span>.
+                </p>
+              )}
+              {emailStatus === "suppressed" && (
+                <p className="text-sm text-muted-foreground">
+                  Your ticket is saved. Team notifications are temporarily suppressed; if it's urgent, email{" "}
+                  <span className="font-medium text-foreground">info@diabetesresetmethod.com</span>.
+                </p>
+              )}
+              {emailStatus === "failed" && (
+                <p className="text-sm text-muted-foreground">
+                  Your ticket is saved, but we couldn't notify the team by email. Please email{" "}
+                  <span className="font-medium text-foreground">info@diabetesresetmethod.com</span>{" "}
+                  with reference <span className="font-medium text-foreground select-text">{reference}</span>.
+                </p>
+              )}
               <Button onClick={() => setOpen(false)} className="w-full">
                 Close
               </Button>

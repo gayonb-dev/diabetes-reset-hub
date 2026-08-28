@@ -1,0 +1,228 @@
+{
+  "source": ".lovable/plan/batch-2-experience-design-and-admin-consolidation-2026-08-27.md",
+  "starting_authority_sha": "ba3e356921bcb1670dfd7115f27dbf269093579b",
+  "current_working_sha": "63e783c062d8af9b1ff2470deeaf5eae117bbe2e",
+  "branch": "edit/edt-ffbedddd-e5fa-4270-91d7-c6f350c44c16",
+  "working_tree_clean": true,
+  "total_tasks": 24,
+  "desktop_results": 24,
+  "mobile_results": 24,
+  "matrix": [
+    {
+      "id": 1,
+      "task": "Navigate Today, Meals, Progress, Workouts, Learn, Ask with no unexplained blank content region; shell and accessible loading state stay visible.",
+      "expected": "Each route renders the authenticated shell and navigation; route-shaped skeleton announces loading; no blank content region.",
+      "actual": "",
+      "evidence": "",
+      "desktop": "",
+      "mobile": ""
+    },
+    {
+      "id": 2,
+      "task": "Keyboard-only navigation: focus visible, logical and restored after route changes, dialogs and async rendering.",
+      "expected": "Tab order is logical; focus indicator visible on every interactive control; focus restored after navigation/dialog close.",
+      "actual": "",
+      "evidence": "",
+      "desktop": "",
+      "mobile": ""
+    },
+    {
+      "id": 3,
+      "task": "Today shows correct `Day X of 180` and a separate `Phase N — [name], day X of Y` with a plain-language explanation.",
+      "expected": "Program day and named phase-relative day are both displayed; phase end is not presented as programme end.",
+      "actual": "",
+      "evidence": "",
+      "desktop": "",
+      "mobile": ""
+    },
+    {
+      "id": 4,
+      "task": "`Log habits` waits for the destination to render, scrolls to the habit section and moves focus to its heading.",
+      "expected": "Clicking Log habits scrolls to and focuses the habit section heading.",
+      "actual": "",
+      "evidence": "",
+      "desktop": "",
+      "mobile": ""
+    },
+    {
+      "id": 5,
+      "task": "Mindset uses a clear `Read reflection` / `Hide reflection` disclosure with a visible, accessible expanded state.",
+      "expected": "Mindset card has Read/Hide reflection control; expanded state announced.",
+      "actual": "",
+      "evidence": "",
+      "desktop": "",
+      "mobile": ""
+    },
+    {
+      "id": 6,
+      "task": "Shopping List opens with `By meal` first and selected by default.",
+      "expected": "Shopping list default view is By meal.",
+      "actual": "",
+      "evidence": "",
+      "desktop": "",
+      "mobile": ""
+    },
+    {
+      "id": 7,
+      "task": "A selected day or selected meals do not render the whole weekly ingredient list; full-week expansion requires a deliberate action.",
+      "expected": "Only selected day/meals shown by default; whole-week expansion is explicit.",
+      "actual": "",
+      "evidence": "",
+      "desktop": "",
+      "mobile": ""
+    },
+    {
+      "id": 8,
+      "task": "Parser output readable across quantities, fractions, Unicode fractions, plurals, optional quantities and numeric prefixes; no legitimate ingredient name silently damaged.",
+      "expected": "Ingredients display correctly; quantity-less names remain readable; incompatible units not merged.",
+      "actual": "",
+      "evidence": "",
+      "desktop": "",
+      "mobile": ""
+    },
+    {
+      "id": 9,
+      "task": "Rapid meal text entry loses no characters; all three plate-method components persist as 3/3 after reload.",
+      "expected": "Typing is responsive; 3/3 plate components survive reload.",
+      "actual": "",
+      "evidence": "",
+      "desktop": "",
+      "mobile": ""
+    },
+    {
+      "id": 10,
+      "task": "`Return to Guides` clears the selected article, restores the list, updates the URL and focuses the Guides heading; browser Back/Forward verified.",
+      "expected": "Return to Guides restores list, URL and focus; Back/Forward synchronized.",
+      "actual": "",
+      "evidence": "",
+      "desktop": "",
+      "mobile": ""
+    },
+    {
+      "id": 11,
+      "task": "Fasting education cannot be mistaken for a questionnaire, eligibility screening, timer or scheduler; the page says plainly there is no questionnaire and scheduling is unavailable.",
+      "expected": "Fasting page is education-only; no questionnaire/scheduler implication.",
+      "actual": "",
+      "evidence": "",
+      "desktop": "",
+      "mobile": ""
+    },
+    {
+      "id": 12,
+      "task": "`Ask VITA` and `Post to community` are visibly and accessibly distinct.",
+      "expected": "Two distinct actions inside Ask surface.",
+      "actual": "",
+      "evidence": "",
+      "desktop": "",
+      "mobile": ""
+    },
+    {
+      "id": 13,
+      "task": "Only `Ask` appears selected in primary navigation; no duplicate Community primary item remains while both share a route.",
+      "expected": "Primary nav has Ask only; Community is not a separate primary item.",
+      "actual": "",
+      "evidence": "",
+      "desktop": "",
+      "mobile": ""
+    },
+    {
+      "id": 14,
+      "task": "Ordinary success toasts auto-dismiss within 4–6s, pause on hover/focus, stay accessible without stealing focus.",
+      "expected": "Success toast dismisses 4-6s; pauses on hover/focus; polite announcement.",
+      "actual": "",
+      "evidence": "",
+      "desktop": "",
+      "mobile": ""
+    },
+    {
+      "id": 15,
+      "task": "Selecting a notification marks it read and decrements the count; `Mark all as read` clears it; opening the panel alone marks nothing; no reload needed.",
+      "expected": "Per-item read updates count; mark-all clears count; panel open alone marks nothing.",
+      "actual": "",
+      "evidence": "",
+      "desktop": "",
+      "mobile": ""
+    },
+    {
+      "id": 16,
+      "task": "Support persists a durable ticket before success, shows its reference and reports email state honestly as notified, suppressed or failed.",
+      "expected": "Ticket persisted; reference shown; email state truthful.",
+      "actual": "",
+      "evidence": "",
+      "desktop": "",
+      "mobile": ""
+    },
+    {
+      "id": 17,
+      "task": "Coaching interest added and withdrawn using authenticated identity/email, explicit consent and timestamp only — no health narrative or fields, no urgency, deposit, checkout or availability promise.",
+      "expected": "Coaching interest collects only identity, consent, status and timestamp; withdrawal works.",
+      "actual": "",
+      "evidence": "",
+      "desktop": "",
+      "mobile": ""
+    },
+    {
+      "id": 18,
+      "task": "Activity Score explains its canonical ledger source and recent entries, or shows the approved migration state; no legacy XP or retired badge as canonical score.",
+      "expected": "Activity Score explains ledger source or migration state.",
+      "actual": "",
+      "evidence": "",
+      "desktop": "",
+      "mobile": ""
+    },
+    {
+      "id": 19,
+      "task": "Every changed Admin screen has a persistent, functional `Back to member app`.",
+      "expected": "Back to member app link present and functional on changed Admin pages.",
+      "actual": "",
+      "evidence": "",
+      "desktop": "",
+      "mobile": ""
+    },
+    {
+      "id": 20,
+      "task": "Admin Support Queue reachable, permission-protected and usable, with accessible filter/status/reply-state controls and no raw user agent.",
+      "expected": "Admin Support Queue has filters, status/reply controls; no raw user agent.",
+      "actual": "",
+      "evidence": "",
+      "desktop": "",
+      "mobile": ""
+    },
+    {
+      "id": 21,
+      "task": "Admin billing metrics reconcile orders, active subscriptions, cancellations, refunds, disputes and payment failures separately against read-only queries; backend failure shows an error, never fabricated zero revenue.",
+      "expected": "Billing metrics reconciled separately; backend failure renders error.",
+      "actual": "",
+      "evidence": "",
+      "desktop": "",
+      "mobile": ""
+    },
+    {
+      "id": 22,
+      "task": "Top Customers, its browser refresh path, WhatsApp scripts, Intake Forms and Challenge Progress absent from active Admin; no member-app flow writes to Challenge Progress.",
+      "expected": "Retired surfaces absent from active Admin; no app writes to Challenge Progress.",
+      "actual": "",
+      "evidence": "",
+      "desktop": "",
+      "mobile": ""
+    },
+    {
+      "id": 23,
+      "task": "Billing, Settings, Support, export and deletion reachable under allowed, grace, restricted-billing, deletion-restricted and dispute states per the Prompt 5 lifecycle; no billing condition redirects a signed-in member to Login.",
+      "expected": "Restricted members retain Billing, Settings, Support, export and deletion surfaces; no redirect to Login.",
+      "actual": "",
+      "evidence": "",
+      "desktop": "",
+      "mobile": ""
+    },
+    {
+      "id": 24,
+      "task": "No retired badge, unsafe clinical copy, obsolete WhatsApp/coaching promise, fasting tool, supplement promotion, cheat-meal mechanism, reversal language or personalized-health-AI promise in active source, database-managed member content or the production bundle.",
+      "expected": "No retired or unsafe content in source, DB-managed content or bundle.",
+      "actual": "",
+      "evidence": "",
+      "desktop": "",
+      "mobile": ""
+    }
+  ]
+}

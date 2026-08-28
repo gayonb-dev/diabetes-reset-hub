@@ -285,7 +285,7 @@ export default function Meals() {
   const [toolsSheetOpen, setToolsSheetOpen] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
   const tabParam = searchParams.get("tab");
-  const activeTab = ["plan", "snacks", "shopping", "cheat-meal"].includes(tabParam || "") ? (tabParam as string) : "plan";
+  const activeTab = ["plan", "snacks", "shopping", "off-plan"].includes(tabParam || "") ? (tabParam as string) : "plan";
 
   const programDay = useProgramDay();
   const { weekStart } = useWeekStart();
@@ -723,14 +723,14 @@ export default function Meals() {
           <TabsTrigger value="plan">My Meal Plan</TabsTrigger>
           <TabsTrigger value="snacks">Snacks</TabsTrigger>
           <TabsTrigger value="shopping">Shopping List</TabsTrigger>
-          <TabsTrigger value="cheat-meal">Off-Plan Meal</TabsTrigger>
+          <TabsTrigger value="off-plan">Off-Plan Meal</TabsTrigger>
         </TabsList>
 
         <TabsContent value="snacks" className="mt-4">
           <SnackLibrary dayNumber={programDay} />
         </TabsContent>
 
-        <TabsContent value="cheat-meal" className="mt-4">
+        <TabsContent value="off-plan" className="mt-4">
           <CheatMeal />
         </TabsContent>
 
