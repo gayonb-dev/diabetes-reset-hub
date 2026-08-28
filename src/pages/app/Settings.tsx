@@ -89,6 +89,7 @@ export default function Settings() {
   const [signOutOpen, setSignOutOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [showAdvanced, setShowAdvanced] = useState(false);
 
   // Profile — community display name (defaults to first_name, editable independently)
   const [firstName, setFirstName] = useState<string>("");
@@ -902,7 +903,18 @@ export default function Settings() {
           the dexcom-sync-every-30-min cron job. */}
       {/* <ConnectedDevicesCard /> */}
 
-      <AIAssistantCard />
+      {/* Batch 2 E — MCP/AI assistant connector stays behind an Advanced flag so
+          it is not part of the normal member journey. */}
+      {!showAdvanced && (
+        <button
+          type="button"
+          onClick={() => setShowAdvanced(true)}
+          className="w-full text-left text-xs text-muted-foreground hover:text-primary underline py-1"
+        >
+          Show advanced options
+        </button>
+      )}
+      {showAdvanced && <AIAssistantCard />}
 
       <CoachingInterestCard />
 
