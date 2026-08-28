@@ -1,6 +1,6 @@
 # Batch 2 — Closeout Correction
 
-The existing completion report is treated as rejected evidence. All correct Batch 2 code already in the tree is preserved; the report's conclusion becomes "incomplete" until every corrected gate passes. Nothing is published.
+The existing completion report is treated as rejected evidence. All correct Batch 2 code already in the tree is preserved; the report remains incomplete while any in-scope item is FAIL or NOT TESTED. A genuinely independent platform limitation may remain BLOCKED only under the completion rule below. Nothing is published.
 
 ## Approach
 
@@ -80,12 +80,12 @@ Any in-scope FAIL or NOT TESTED is fixed and the focused plus full gates rerun b
 
 **Migration and deployment provenance**: before applying a migration or deploying a function, record the SHA-256 of the exact tested source or deployment input; apply/deploy from that same tested working tree; record the migration version or deployment receipt and resulting schema/behavior evidence; verify deployed behavior with safe smoke tests. Deployed-bytes comparison is claimed only if the platform can actually retrieve them. A Batch 2 migration must be directly necessary for an approved Batch 2 surface — "additive" alone does not authorize unrelated schema work.
 
-**Completion rule**: any in-scope FAIL or NOT TESTED keeps Batch 2 incomplete; failures are fixed and both focused and affected full gates rerun. BLOCKED only for an independent platform limitation after all unaffected work is done. No ZIP, no publication, no landing-page conversion-design change, no PWA/service worker. PWA, Day 181+, large badge catalogue, broad dependency upgrades and publication stay out of scope.
+**Completion rule**: any in-scope FAIL or NOT TESTED keeps Batch 2 incomplete; failures are fixed and both focused and affected full gates rerun. BLOCKED only for an independent platform limitation after all unaffected work is done. Execute continuously without asking "Continue?" or requesting another plan. If a platform time limit interrupts execution, save a machine-readable checkpoint and resume from it in the next available run without repeating completed work. No ZIP, no publication, no landing-page conversion-design change, no PWA/service worker. PWA, Day 181+, large badge catalogue, broad dependency upgrades and publication stay out of scope.
 
 ## Technical notes
 
 - Starting revision: `ba3e356` (full SHA resolved and recorded at run start).
-- Evidence scripts live under `/tmp/browser/batch2/`; only report artifacts and screenshots are written into the repo.
+- Evidence scripts remain under `/tmp/browser/batch2/`; their only repository outputs are the listed evidence artifacts and screenshots. Normal in-scope product code, tests, migrations and Edge Function changes are still written to the repository and included in the reconciliation.
 - Baseline build isolated under a temporary worktree; current tree untouched.
 - Contrast computed from rendered `getComputedStyle` colors composited against actual backgrounds; font sizes and target boxes from `getBoundingClientRect`.
 - No publication step at any point.
