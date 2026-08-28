@@ -17,7 +17,6 @@ import {
   User,
   Library,
   CreditCard,
-  Users,
   MoreHorizontal,
   Settings as SettingsIcon,
 } from "lucide-react";
