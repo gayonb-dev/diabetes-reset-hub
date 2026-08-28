@@ -85,7 +85,7 @@ Any in-scope FAIL or NOT TESTED is fixed and the focused plus full gates rerun b
 ## Technical notes
 
 - Starting revision: `ba3e356` (full SHA resolved and recorded at run start).
-- Evidence scripts live under `/tmp/browser/batch2/`; only report artifacts and screenshots are written into the repo.
+- Evidence scripts remain under `/tmp/browser/batch2/`; their only repository outputs are the listed evidence artifacts and screenshots. Normal in-scope product code, tests, migrations and Edge Function changes are still written to the repository and included in the reconciliation.
 - Baseline build isolated under a temporary worktree; current tree untouched.
 - Contrast computed from rendered `getComputedStyle` colors composited against actual backgrounds; font sizes and target boxes from `getBoundingClientRect`.
 - No publication step at any point.
