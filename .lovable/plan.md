@@ -1,6 +1,6 @@
 # Batch 2 — Closeout Correction
 
-The existing completion report is treated as rejected evidence. All correct Batch 2 code already in the tree is preserved; the report's conclusion becomes "incomplete" until every corrected gate passes. Nothing is published.
+The existing completion report is treated as rejected evidence. All correct Batch 2 code already in the tree is preserved; the report remains incomplete while any in-scope item is FAIL or NOT TESTED. A genuinely independent platform limitation may remain BLOCKED only under the completion rule below. Nothing is published.
 
 ## Approach
 
