@@ -797,6 +797,7 @@ export default function Meals() {
               <button
                 key={v}
                 type="button"
+                aria-pressed={shoppingView === v}
                 onClick={() => setShoppingView(v)}
                 className={cn(
                   "px-3 min-h-9 rounded-md text-xs font-medium transition-colors",

@@ -59,14 +59,14 @@ export function VitaQuoteCard({
           <button
             onClick={prev}
             aria-label="Previous tip"
-            className="h-11 w-11 lg:h-6 lg:w-6 flex items-center justify-center rounded-lg text-tertiary-fg hover:text-foreground transition-colors"
+            className="h-11 w-11 flex items-center justify-center rounded-lg text-tertiary-fg hover:text-foreground transition-colors"
           >
             <ChevronUp className="h-4 w-4" />
           </button>
           <button
             onClick={next}
             aria-label="Next tip"
-            className="h-11 w-11 lg:h-6 lg:w-6 flex items-center justify-center rounded-lg text-tertiary-fg hover:text-foreground transition-colors"
+            className="h-11 w-11 flex items-center justify-center rounded-lg text-tertiary-fg hover:text-foreground transition-colors"
           >
             <ChevronDown className="h-4 w-4" />
           </button>
