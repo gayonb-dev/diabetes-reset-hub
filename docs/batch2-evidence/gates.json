@@ -1,0 +1,24 @@
+{
+  "generated_utc": "2026-08-28",
+  "published": false,
+  "gates": [
+    {"gate":"typescript","method":"npx tsgo --noEmit","result":"PASS","detail":"exit 0, no diagnostics"},
+    {"gate":"vitest_full","method":"bunx vitest run","result":"PASS","totals":{"files":37,"passed":422,"failed":0,"skipped":0,"todo":0}},
+    {"gate":"eslint","method":"npx eslint src supabase/functions","result":"PASS_FOR_CHANGED_FILES","detail":"21 problems (1 error, 20 warnings); the single error is prefer-const in src/integrations/supabase/previewAuthStorage.ts, an auto-generated file not changed in Batch 2"},
+    {"gate":"production_build","method":"bun run build","result":"PASS","detail":"exit 0; index 429.48 kB / 135.16 kB gzip"},
+    {"gate":"safe_content_source","method":"python3 scripts/doctor-review/scan_src.py","result":"PASS","detail":"0 blocking hits; 63 hits confined to historical superseded seeds (non-blocking); edge_functions 73 files / 0 hits"},
+    {"gate":"safe_content_database","method":"python3 scripts/doctor-review/scan_db.py","result":"PASS","detail":"272 records / 1252 field strings scanned, 0 hits"},
+    {"gate":"bundle_purity","method":"src/test/productionBundle.test.ts (within vitest run)","result":"PASS"},
+    {"gate":"deno_check_changed_functions","method":null,"result":"NOT_TESTED"},
+    {"gate":"cors_boot_smoke","method":null,"result":"NOT_TESTED","detail":"no edge function changed in the closeout correction"},
+    {"gate":"prompt3_inventory_completeness","method":null,"result":"NOT_TESTED"},
+    {"gate":"rls_principal_matrix","method":null,"result":"NOT_TESTED","detail":"anonymous / Member A / Member B / Admin JWT / service role not exercised"},
+    {"gate":"export_deletion_retention","method":null,"result":"NOT_TESTED","detail":"app_config.retention_mode=report_only confirmed unchanged"},
+    {"gate":"protected_system_regressions","method":"vitest suite","result":"PARTIAL"},
+    {"gate":"synthetic_cleanup","method":"live SQL over auth.users and public tables","result":"PASS"},
+    {"gate":"binding_24_task_matrix","method":null,"result":"FAIL","detail":"approved matrix not executed; 0 of 48 required results recorded"},
+    {"gate":"viewport_390px","method":null,"result":"NOT_TESTED"},
+    {"gate":"performance_full_route_set","method":null,"result":"NOT_TESTED","detail":"only /app, /app/meals, /app/progress measured, FCP+DCL only"},
+    {"gate":"accessibility_full","method":null,"result":"NOT_TESTED"}
+  ]
+}
