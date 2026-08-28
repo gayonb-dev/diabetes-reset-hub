@@ -72,7 +72,7 @@ const DEFAULT_NOTIF_PREFS: NotifPrefs = {
   workout: true,
   a1c: true,
   measurement: true,
-  cheat_meal: true,
+  off_plan_meal: true,
   birthday: true,
   community_mission: true,
 };
@@ -106,7 +106,7 @@ export default function Settings() {
     workout: { title: "Workout reminders", desc: "Reminders on your scheduled training days." },
     a1c: { title: "A1C reminders", desc: "Periodic prompts to log a new A1C." },
     measurement: { title: "Measurement reminders", desc: "Weekly nudge to update measurements." },
-    cheat_meal: { title: "Off-plan meal tips", desc: "Tips after logging an off-plan meal." },
+    off_plan_meal: { title: "Off-plan meal tips", desc: "Tips after logging an off-plan meal." },
     birthday: { title: "Birthday greeting", desc: "A short note from VITA on your day." },
     community_mission: { title: "Community missions", desc: "Weekly community challenges and Q&A picks." },
   };
