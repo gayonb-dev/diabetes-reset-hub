@@ -231,13 +231,6 @@ export default function AppLayout() {
               <Activity className="h-4 w-4" aria-hidden /> Workouts
             </NavLink>
 
-            {/* Community lives inside Ask — one route, not a duplicate. */}
-            <p className="label-caps text-white/30 px-[10px] pt-4 pb-1">Community</p>
-            <NavLink to="/app/ask" {...prefetchHandlers("/app/ask")} className={navClass}>
-              <Users className="h-4 w-4" aria-hidden /> Community
-            </NavLink>
-
-
             <p className="label-caps text-white/30 px-[10px] pt-4 pb-1" id="nav-group-account">
               Account &amp; help
             </p>
