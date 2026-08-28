@@ -101,7 +101,7 @@ export function NotificationsBell({
       <PopoverTrigger asChild>
         <button
           type="button"
-          className={`relative p-1.5 rounded-md transition-colors ${iconColor}`}
+          className={`relative h-11 w-11 inline-flex items-center justify-center rounded-md transition-colors ${iconColor}`}
           aria-label={`Notifications${unreadCount > 0 ? `, ${unreadCount} unread` : ""}`}
         >
           <Bell className="h-4 w-4" />
