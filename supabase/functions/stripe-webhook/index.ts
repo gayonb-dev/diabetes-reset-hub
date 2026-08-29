@@ -213,6 +213,22 @@ serve(async (req) => {
         // or claimed erased. Order completion above is driven solely by the
         // Stripe session -> order relationship.
 
+        // Batch 2 closeout: bind the order to its member through an immutable
+        // owner column so `orders` RLS never has to fall back to an email
+        // comparison. The address comes from the signed Stripe session or the
+        // stored order row; caller metadata is never consulted. The write is
+        // conditional on user_id IS NULL, so a replay changes nothing.
+        {
+          const ownership = await assignImmutableOwner(
+            supabaseAdmin as unknown as Parameters<typeof assignImmutableOwner>[0],
+            session.id,
+            session.customer_email ?? session.customer_details?.email ?? null,
+          );
+          console.log("[payment-webhook] order ownership:", ownership.reason);
+        }
+
+
+
 
         // Get customer details from order (for emails)
         const { data: orderData } = await supabaseAdmin
