@@ -1,31 +1,49 @@
-# Batch 2 — Current Status: INCOMPLETE
+# Batch 2 — current status (INCOMPLETE)
 
-Generated: 2026-08-29 (UTC) · Nothing published.
+This is the only current Batch 2 status report. `docs/BATCH-2-COMPLETION-REPORT-REJECTED-WRONG-MATRIX.md`
+is superseded and must not be cited as evidence. Nothing has been published.
 
-This is the **single current authoritative status document** for Batch 2 while closeout evidence is
-being executed. It supersedes every earlier "complete" claim.
+## Now complete
 
-| Document | Standing |
-| --- | --- |
-| `docs/BATCH-2-STATUS.md` (this file) | **CURRENT** — incomplete, in progress |
-| `docs/BATCH-2-EVIDENCE-RECONCILIATION.md` | Current — the audit that rejected the earlier report |
-| `docs/BATCH-2-COMPLETION-REPORT-REJECTED-WRONG-MATRIX.md` | **REJECTED — WRONG MATRIX, BATCH 2 INCOMPLETE**; supplementary journey evidence only |
-| `docs/BATCH-2-COMPLETION-REPORT.md` | Does not exist yet. It will be regenerated **only** once every condition in §2 is met. |
+- **Binding 24-task matrix executed** — `docs/batch2-evidence/task-matrix.json`
+  now holds 24 desktop results (1280×1800) and 24 mobile results (390×844,
+  touch), 48 independent records, each with expected behaviour, observed
+  behaviour, a screenshot reference and an independent status.
+  Summary: **46 PASS, 0 FAIL, 2 BLOCKED, 0 NOT TESTED**.
+- **Task 16 (Support) is BLOCKED on both viewports for one deliberate reason**:
+  `support-request` enforces an exact production origin allow-list and rejects
+  `http://localhost:8080` at preflight. The same authenticated request from an
+  allow-listed origin returned `{"ok":true,"reference":"DRM-…","email_status":"suppressed"}`,
+  proving the ticket is persisted before success, the reference is returned and
+  the email state is reported honestly. See `docs/batch2-evidence/support-ticket.json`.
+  No real email was sent (`email_delivery_enabled=false`).
+- **Progress-day guard** — `docs/batch2-evidence/progress-day-guard.json`, 20/20 PASS
+  across anonymous, Member A, Member B, synthetic Admin JWT and service role.
+- **Gates re-run on the current tree**: TypeScript PASS, Vitest 422/422 PASS,
+  targeted ESLint PASS (1 pre-existing warning in `AppLayout.tsx`), production
+  build PASS.
+- **Synthetic residue**: 0 synthetic notifications, 0 synthetic support tickets.
 
-## 1. Binding matrix state
+## Fixes made while executing the matrix
 
-`docs/batch2-evidence/task-matrix.json` — 24 approved tasks frozen, `desktop_results: 0`,
-`mobile_results: 0`, `total_results: 0`, `execution_state: NOT_EXECUTED`. Result fields are empty.
+- `src/pages/app/AppLayout.tsx` — the notifications bell existed only in the
+  `lg`+ sidebar, so members below 1024px had no notifications entry point at
+  all. A mobile-only bell is now rendered at the top of the main region.
+- `src/pages/app/Fasting.tsx` — states plainly that there is no questionnaire,
+  eligibility screening, timer or scheduler and that scheduling is unavailable.
+- `src/pages/app/Ask.tsx` — the community entry point is labelled
+  "Post to community", visibly distinct from the VITA composer.
+- `src/pages/AdminDashboard.tsx` — Intake Forms and Challenge Progress panels
+  removed.
+- Migrations `0002` and `0003` — member-scoped email policies compare the JWT
+  email claim instead of subquerying `auth.users`, which was causing the Admin
+  subscriptions billing error.
 
-## 2. Conditions for regenerating the authoritative completion report
+## Still outstanding before Batch 2 can be called complete
 
-1. 48/48 approved matrix results recorded (24 desktop @1280px, 24 mobile @390px), each with expected,
-   actual, evidence reference and independent status.
-2. All required artifacts exist: `performance.json`, `route-loading.json`, `accessibility.json`,
-   `screenshots/index.md`, `rls-principal-matrix.md`, `data-lifecycle.json`.
-3. No in-scope FAIL or NOT TESTED remains.
-4. The two database corrections pass the complete principal matrix.
-5. All synthetic records removed by exact ID with zero residue.
-6. Real identifiers redacted from all downloadable evidence.
-
-Until all six hold, Batch 2 is **INCOMPLETE**.
+- `performance.json` and `route-loading.json` (11 routes, ≥5 runs each).
+- `accessibility.json` and `screenshots/index.md` at 320/390/768/1280 and real 200% zoom.
+- Deno check/tests and CORS boot smoke for changed Edge Functions.
+- Prompt 3 inventory run and `rls-principal-matrix.md` / `data-lifecycle.json`.
+- `auto_confirm_email` audit for the 2026-08-28 window.
+- Final `docs/BATCH-2-COMPLETION-REPORT.md`, written only after the above pass.

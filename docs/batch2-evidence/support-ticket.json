@@ -1,0 +1,19 @@
+{
+ "task": 16,
+ "surface": "supabase/functions/support-request",
+ "principal": "synthetic Member A",
+ "origin": "https://diabetesresetmethod.com (allow-listed)",
+ "request": {
+  "category": "Bug",
+  "message": "Batch 2 closeout synthetic ticket - please ignore.",
+  "pageContext": "/app/support"
+ },
+ "response": {
+  "status": 200,
+  "ok": true,
+  "reference": "DRM-P27JC9",
+  "email_status": "suppressed"
+ },
+ "localhost_origin": "rejected at preflight by design; the browser leg of task 16 is BLOCKED for that reason",
+ "email_boundary": "email_delivery_enabled=false and the test allow-list is empty, so no real email was sent"
+}
