@@ -9,11 +9,13 @@ published and no ZIP is produced.
 ## 0. Production preflight (before any synthetic principal or database change)
 
 Confirm the production project ref `wqennhjdojjqmmqzjhti` and the domain
-`https://diabetesresetmethod.com`; record the current safety flags (email delivery,
-transactional automation, marketing email, retention mode, `stripe_deletion_enabled`) and the
-production Auth auto-confirm state as the pre-run baseline. Stop on a project mismatch or if
-synthetic records cannot be isolated safely. Global Auth auto-confirm, secrets, origins,
-Stripe flags, email flags and retention mode are not changed at any point.
+`https://diabetesresetmethod.com`; record the pre-run baseline of `ai_health_enabled`,
+`dexcom_enabled`, `email_delivery_enabled`, `transactional_automation_enabled`,
+`marketing_email_enabled`, `retention_mode`, `stripe_deletion_enabled` and the production Auth
+auto-confirm state. The identical set is re-recorded after cleanup and must retain the same
+values. Stop on a project mismatch or if synthetic records cannot be isolated safely. Global
+Auth auto-confirm, secrets, origins, Stripe flags, email flags and retention mode are not
+changed at any point.
 
 
 
@@ -66,6 +68,34 @@ changed, recycled or newly registered matching email cannot expose a legacy orde
 access read-only unless an existing authorized operation requires otherwise; deletion
 restrictions effective; Admin uses the application admin predicate; service role separate.
 Output: `rls-principal-matrix.md`, plus rollback notes and the migration source hash.
+
+### Immutable ownership for future orders
+
+Before choosing the migration design, inspect the canonical checkout, payment webhook,
+subscription webhook and order schema so removing the legacy JWT-email policy cannot leave
+newly created orders ownerless. Reuse an existing immutable relationship if one already works
+safely (`orders.user_id = auth.uid()`, or `orders.subscription_id` → canonical subscription →
+authenticated `user_id`). If neither is populated reliably, make the smallest safe server-side
+correction so every newly provisioned order receives immutable ownership through the trusted
+checkout/webhook process.
+
+Proven with synthetic mocked Stripe objects only — no live Stripe object created or modified:
+a newly created order receives the correct immutable owner; webhook replay does not change or
+duplicate ownership; concurrent verification and webhook handling do not duplicate orders or
+subscriptions; request-body or metadata email cannot select the owner; Member A cannot claim
+Member B's order; a legacy NULL-owner order stays inaccessible to ordinary members; Admin can
+still investigate a legacy order; no real legacy order is backfilled or changed.
+
+### Focused visible regression (only if Billing behaviour changes)
+
+Rerun only the affected client evidence: Task 23 on desktop and mobile across its five
+canonical lifecycle states; Billing loading, owned-order, no-owned-order and backend-error
+states; Settings, Support, export and deletion reachability where Task 23 requires them; and
+proof that no authenticated billing condition redirects to Login. The other 23 matrix tasks,
+the performance suite, the accessibility sweep and unrelated screenshots are not rerun.
+Preserved matrix totals are updated only from this focused evidence.
+
+
 
 
 ## 4. Export, deletion and retention execution
