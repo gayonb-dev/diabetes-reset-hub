@@ -1,0 +1,1335 @@
+{
+ "generated_utc": "2026-08-29T15:49:44Z",
+ "server": "local production build (vite build) served by vite preview on :4173",
+ "viewport": "1280x1800",
+ "runs_per_route": 5,
+ "metric_definitions": {
+  "shell_ms": "app shell / main landmark present",
+  "heading_ms": "first non-empty heading painted",
+  "useful_ms": "shell present, zero skeleton placeholders, >120 characters of content",
+  "timeout_ms": 8000,
+  "clock": "python time.perf_counter(), baseline taken immediately before each navigation"
+ },
+ "routes": [
+  {
+   "route": "Today",
+   "path": "/app",
+   "runs": 5,
+   "principal": "synthetic member",
+   "first_navigation_median": {
+    "shell_ms": 322.8,
+    "heading_ms": 1442.1,
+    "useful_ms": 1442.1,
+    "requests": 103,
+    "duplicate_requests": 11
+   },
+   "return_navigation_median": {
+    "shell_ms": 249.2,
+    "heading_ms": 1078.8,
+    "useful_ms": 1078.8,
+    "requests": 52,
+    "duplicate_requests": 24
+   },
+   "raw_first": [
+    {
+     "shell_ms": 322.8,
+     "heading_ms": 1919.5,
+     "useful_ms": 1919.5,
+     "requests": 101,
+     "duplicate_requests": 9
+    },
+    {
+     "shell_ms": 398.1,
+     "heading_ms": 1542.8,
+     "useful_ms": 1542.8,
+     "requests": 105,
+     "duplicate_requests": 13
+    },
+    {
+     "shell_ms": 359.4,
+     "heading_ms": 1442.1,
+     "useful_ms": 1442.1,
+     "requests": 106,
+     "duplicate_requests": 14
+    },
+    {
+     "shell_ms": 235.1,
+     "heading_ms": 1266.8,
+     "useful_ms": 1266.8,
+     "requests": 103,
+     "duplicate_requests": 11
+    },
+    {
+     "shell_ms": 150.0,
+     "heading_ms": 1385.9,
+     "useful_ms": 1385.9,
+     "requests": 101,
+     "duplicate_requests": 9
+    }
+   ],
+   "raw_return": [
+    {
+     "shell_ms": 307.6,
+     "heading_ms": 1093.4,
+     "useful_ms": 1093.4,
+     "requests": 52,
+     "duplicate_requests": 24
+    },
+    {
+     "shell_ms": 259.8,
+     "heading_ms": 1083.9,
+     "useful_ms": 1083.9,
+     "requests": 52,
+     "duplicate_requests": 24
+    },
+    {
+     "shell_ms": 132.1,
+     "heading_ms": 923.6,
+     "useful_ms": 923.6,
+     "requests": 49,
+     "duplicate_requests": 24
+    },
+    {
+     "shell_ms": 170.0,
+     "heading_ms": 993.8,
+     "useful_ms": 993.8,
+     "requests": 34,
+     "duplicate_requests": 6
+    },
+    {
+     "shell_ms": 249.2,
+     "heading_ms": 1078.8,
+     "useful_ms": 1078.8,
+     "requests": 52,
+     "duplicate_requests": 24
+    }
+   ]
+  },
+  {
+   "route": "Meals",
+   "path": "/app/meals",
+   "runs": 5,
+   "principal": "synthetic member",
+   "first_navigation_median": {
+    "shell_ms": 221.0,
+    "heading_ms": 1063.9,
+    "useful_ms": null,
+    "requests": 78,
+    "duplicate_requests": 9
+   },
+   "return_navigation_median": {
+    "shell_ms": 272.4,
+    "heading_ms": 474.0,
+    "useful_ms": null,
+    "requests": 24,
+    "duplicate_requests": 2
+   },
+   "raw_first": [
+    {
+     "shell_ms": 221.0,
+     "heading_ms": 1098.5,
+     "useful_ms": null,
+     "requests": 78,
+     "duplicate_requests": 9
+    },
+    {
+     "shell_ms": 327.1,
+     "heading_ms": 1172.8,
+     "useful_ms": null,
+     "requests": 109,
+     "duplicate_requests": 37
+    },
+    {
+     "shell_ms": 196.8,
+     "heading_ms": 849.8,
+     "useful_ms": null,
+     "requests": 74,
+     "duplicate_requests": 5
+    },
+    {
+     "shell_ms": 292.3,
+     "heading_ms": 1063.9,
+     "useful_ms": null,
+     "requests": 76,
+     "duplicate_requests": 4
+    },
+    {
+     "shell_ms": 212.3,
+     "heading_ms": 832.1,
+     "useful_ms": null,
+     "requests": 107,
+     "duplicate_requests": 38
+    }
+   ],
+   "raw_return": [
+    {
+     "shell_ms": 272.4,
+     "heading_ms": 467.2,
+     "useful_ms": null,
+     "requests": 24,
+     "duplicate_requests": 2
+    },
+    {
+     "shell_ms": 213.6,
+     "heading_ms": 398.9,
+     "useful_ms": null,
+     "requests": 24,
+     "duplicate_requests": 2
+    },
+    {
+     "shell_ms": 281.3,
+     "heading_ms": 474.0,
+     "useful_ms": null,
+     "requests": 9,
+     "duplicate_requests": 1
+    },
+    {
+     "shell_ms": 260.2,
+     "heading_ms": 474.1,
+     "useful_ms": null,
+     "requests": 24,
+     "duplicate_requests": 2
+    },
+    {
+     "shell_ms": 396.5,
+     "heading_ms": 590.2,
+     "useful_ms": null,
+     "requests": 27,
+     "duplicate_requests": 2
+    }
+   ]
+  },
+  {
+   "route": "Progress",
+   "path": "/app/progress",
+   "runs": 5,
+   "principal": "synthetic member",
+   "first_navigation_median": {
+    "shell_ms": 249.5,
+    "heading_ms": 780.2,
+    "useful_ms": 780.2,
+    "requests": 71,
+    "duplicate_requests": 6
+   },
+   "return_navigation_median": {
+    "shell_ms": 181.9,
+    "heading_ms": 246.9,
+    "useful_ms": 246.9,
+    "requests": 4,
+    "duplicate_requests": 0
+   },
+   "raw_first": [
+    {
+     "shell_ms": 191.7,
+     "heading_ms": 838.2,
+     "useful_ms": 838.2,
+     "requests": 69,
+     "duplicate_requests": 4
+    },
+    {
+     "shell_ms": 288.9,
+     "heading_ms": 932.2,
+     "useful_ms": 932.2,
+     "requests": 74,
+     "duplicate_requests": 6
+    },
+    {
+     "shell_ms": 249.5,
+     "heading_ms": 745.9,
+     "useful_ms": 745.9,
+     "requests": 71,
+     "duplicate_requests": 6
+    },
+    {
+     "shell_ms": 277.5,
+     "heading_ms": 780.2,
+     "useful_ms": 780.2,
+     "requests": 74,
+     "duplicate_requests": 6
+    },
+    {
+     "shell_ms": 182.0,
+     "heading_ms": 586.4,
+     "useful_ms": 586.4,
+     "requests": 69,
+     "duplicate_requests": 4
+    }
+   ],
+   "raw_return": [
+    {
+     "shell_ms": 280.2,
+     "heading_ms": 280.2,
+     "useful_ms": 280.2,
+     "requests": 1,
+     "duplicate_requests": 0
+    },
+    {
+     "shell_ms": 231.9,
+     "heading_ms": 295.6,
+     "useful_ms": 295.6,
+     "requests": 5,
+     "duplicate_requests": 1
+    },
+    {
+     "shell_ms": 181.9,
+     "heading_ms": 246.9,
+     "useful_ms": 246.9,
+     "requests": 7,
+     "duplicate_requests": 1
+    },
+    {
+     "shell_ms": 130.4,
+     "heading_ms": 169.1,
+     "useful_ms": 169.1,
+     "requests": 1,
+     "duplicate_requests": 0
+    },
+    {
+     "shell_ms": 116.4,
+     "heading_ms": 156.1,
+     "useful_ms": 156.1,
+     "requests": 4,
+     "duplicate_requests": 0
+    }
+   ]
+  },
+  {
+   "route": "Workouts",
+   "path": "/app/workouts",
+   "runs": 5,
+   "principal": "synthetic member",
+   "first_navigation_median": {
+    "shell_ms": 197.9,
+    "heading_ms": 670.2,
+    "useful_ms": 670.2,
+    "requests": 72,
+    "duplicate_requests": 6
+   },
+   "return_navigation_median": {
+    "shell_ms": 129.3,
+    "heading_ms": 299.9,
+    "useful_ms": 299.9,
+    "requests": 18,
+    "duplicate_requests": 2
+   },
+   "raw_first": [
+    {
+     "shell_ms": 182.6,
+     "heading_ms": 906.1,
+     "useful_ms": 906.1,
+     "requests": 70,
+     "duplicate_requests": 4
+    },
+    {
+     "shell_ms": 261.2,
+     "heading_ms": 662.8,
+     "useful_ms": 662.8,
+     "requests": 75,
+     "duplicate_requests": 6
+    },
+    {
+     "shell_ms": 203.0,
+     "heading_ms": 670.2,
+     "useful_ms": 670.2,
+     "requests": 75,
+     "duplicate_requests": 6
+    },
+    {
+     "shell_ms": 194.3,
+     "heading_ms": 610.7,
+     "useful_ms": 610.7,
+     "requests": 70,
+     "duplicate_requests": 4
+    },
+    {
+     "shell_ms": 197.9,
+     "heading_ms": 721.5,
+     "useful_ms": 721.5,
+     "requests": 72,
+     "duplicate_requests": 6
+    }
+   ],
+   "raw_return": [
+    {
+     "shell_ms": 225.6,
+     "heading_ms": 419.1,
+     "useful_ms": 419.1,
+     "requests": 18,
+     "duplicate_requests": 2
+    },
+    {
+     "shell_ms": 116.4,
+     "heading_ms": 289.0,
+     "useful_ms": 289.0,
+     "requests": 19,
+     "duplicate_requests": 2
+    },
+    {
+     "shell_ms": 136.2,
+     "heading_ms": 310.7,
+     "useful_ms": 310.7,
+     "requests": 15,
+     "duplicate_requests": 1
+    },
+    {
+     "shell_ms": null,
+     "heading_ms": null,
+     "useful_ms": null,
+     "requests": 0,
+     "duplicate_requests": 0,
+     "note": "no in-app link to this route from the start page"
+    },
+    {
+     "shell_ms": 122.5,
+     "heading_ms": 274.7,
+     "useful_ms": 274.7,
+     "requests": 19,
+     "duplicate_requests": 2
+    }
+   ]
+  },
+  {
+   "route": "Learn",
+   "path": "/app/learn",
+   "runs": 5,
+   "principal": "synthetic member",
+   "first_navigation_median": {
+    "shell_ms": 194.4,
+    "heading_ms": 691.6,
+    "useful_ms": 691.6,
+    "requests": 75,
+    "duplicate_requests": 6
+   },
+   "return_navigation_median": {
+    "shell_ms": 170.6,
+    "heading_ms": 209.6,
+    "useful_ms": 209.6,
+    "requests": 9,
+    "duplicate_requests": 1
+   },
+   "raw_first": [
+    {
+     "shell_ms": 173.5,
+     "heading_ms": 800.2,
+     "useful_ms": 800.2,
+     "requests": 102,
+     "duplicate_requests": 37
+    },
+    {
+     "shell_ms": 224.7,
+     "heading_ms": 691.6,
+     "useful_ms": 691.6,
+     "requests": 73,
+     "duplicate_requests": 6
+    },
+    {
+     "shell_ms": 311.5,
+     "heading_ms": 844.8,
+     "useful_ms": 844.8,
+     "requests": 75,
+     "duplicate_requests": 5
+    },
+    {
+     "shell_ms": 194.4,
+     "heading_ms": 662.9,
+     "useful_ms": 662.9,
+     "requests": 76,
+     "duplicate_requests": 6
+    },
+    {
+     "shell_ms": 165.4,
+     "heading_ms": 521.6,
+     "useful_ms": 521.6,
+     "requests": 73,
+     "duplicate_requests": 6
+    }
+   ],
+   "raw_return": [
+    {
+     "shell_ms": 295.6,
+     "heading_ms": 350.3,
+     "useful_ms": 350.3,
+     "requests": 9,
+     "duplicate_requests": 1
+    },
+    {
+     "shell_ms": 216.0,
+     "heading_ms": 279.7,
+     "useful_ms": 279.7,
+     "requests": 18,
+     "duplicate_requests": 3
+    },
+    {
+     "shell_ms": 170.6,
+     "heading_ms": 209.6,
+     "useful_ms": 209.6,
+     "requests": 3,
+     "duplicate_requests": 1
+    },
+    {
+     "shell_ms": 104.5,
+     "heading_ms": 136.9,
+     "useful_ms": 136.9,
+     "requests": 4,
+     "duplicate_requests": 1
+    },
+    {
+     "shell_ms": 165.8,
+     "heading_ms": 200.1,
+     "useful_ms": 200.1,
+     "requests": 14,
+     "duplicate_requests": 2
+    }
+   ]
+  },
+  {
+   "route": "Ask",
+   "path": "/app/ask",
+   "runs": 5,
+   "principal": "synthetic member",
+   "first_navigation_median": {
+    "shell_ms": 272.3,
+    "heading_ms": 777.2,
+    "useful_ms": 777.2,
+    "requests": 74,
+    "duplicate_requests": 6
+   },
+   "return_navigation_median": {
+    "shell_ms": 188.7,
+    "heading_ms": 252.6,
+    "useful_ms": 252.6,
+    "requests": 8,
+    "duplicate_requests": 1
+   },
+   "raw_first": [
+    {
+     "shell_ms": 275.3,
+     "heading_ms": 1070.1,
+     "useful_ms": 1070.1,
+     "requests": 70,
+     "duplicate_requests": 4
+    },
+    {
+     "shell_ms": 150.5,
+     "heading_ms": 590.4,
+     "useful_ms": 590.4,
+     "requests": 74,
+     "duplicate_requests": 4
+    },
+    {
+     "shell_ms": 272.3,
+     "heading_ms": 777.2,
+     "useful_ms": 777.2,
+     "requests": 74,
+     "duplicate_requests": 6
+    },
+    {
+     "shell_ms": 293.6,
+     "heading_ms": 833.3,
+     "useful_ms": 833.3,
+     "requests": 76,
+     "duplicate_requests": 6
+    },
+    {
+     "shell_ms": 258.5,
+     "heading_ms": 621.9,
+     "useful_ms": 621.9,
+     "requests": 71,
+     "duplicate_requests": 6
+    }
+   ],
+   "raw_return": [
+    {
+     "shell_ms": 214.0,
+     "heading_ms": 256.3,
+     "useful_ms": 256.3,
+     "requests": 10,
+     "duplicate_requests": 1
+    },
+    {
+     "shell_ms": 154.5,
+     "heading_ms": 186.6,
+     "useful_ms": 186.6,
+     "requests": 5,
+     "duplicate_requests": 1
+    },
+    {
+     "shell_ms": 361.4,
+     "heading_ms": 361.4,
+     "useful_ms": 361.4,
+     "requests": 11,
+     "duplicate_requests": 1
+    },
+    {
+     "shell_ms": 188.7,
+     "heading_ms": 252.6,
+     "useful_ms": 252.6,
+     "requests": 5,
+     "duplicate_requests": 1
+    },
+    {
+     "shell_ms": 181.0,
+     "heading_ms": 221.4,
+     "useful_ms": 221.4,
+     "requests": 8,
+     "duplicate_requests": 1
+    }
+   ]
+  },
+  {
+   "route": "Profile",
+   "path": "/app/profile",
+   "runs": 5,
+   "principal": "synthetic member",
+   "first_navigation_median": {
+    "shell_ms": 218.5,
+    "heading_ms": 852.3,
+    "useful_ms": 852.3,
+    "requests": 78,
+    "duplicate_requests": 7
+   },
+   "return_navigation_median": {
+    "shell_ms": 241.0,
+    "heading_ms": 326.1,
+    "useful_ms": 326.1,
+    "requests": 12,
+    "duplicate_requests": 1
+   },
+   "raw_first": [
+    {
+     "shell_ms": 169.4,
+     "heading_ms": 852.3,
+     "useful_ms": 852.3,
+     "requests": 71,
+     "duplicate_requests": 4
+    },
+    {
+     "shell_ms": 417.3,
+     "heading_ms": 1049.5,
+     "useful_ms": 1049.5,
+     "requests": 112,
+     "duplicate_requests": 38
+    },
+    {
+     "shell_ms": 218.5,
+     "heading_ms": 892.7,
+     "useful_ms": 892.7,
+     "requests": 78,
+     "duplicate_requests": 7
+    },
+    {
+     "shell_ms": 207.5,
+     "heading_ms": 616.2,
+     "useful_ms": 616.2,
+     "requests": 76,
+     "duplicate_requests": 7
+    },
+    {
+     "shell_ms": 230.8,
+     "heading_ms": 766.5,
+     "useful_ms": 766.5,
+     "requests": 81,
+     "duplicate_requests": 7
+    }
+   ],
+   "raw_return": [
+    {
+     "shell_ms": 392.1,
+     "heading_ms": 444.6,
+     "useful_ms": 444.6,
+     "requests": 12,
+     "duplicate_requests": 1
+    },
+    {
+     "shell_ms": null,
+     "heading_ms": null,
+     "useful_ms": null,
+     "requests": 0,
+     "duplicate_requests": 0,
+     "note": "no in-app link to this route from the start page"
+    },
+    {
+     "shell_ms": 262.4,
+     "heading_ms": 313.8,
+     "useful_ms": 313.8,
+     "requests": 10,
+     "duplicate_requests": 1
+    },
+    {
+     "shell_ms": 219.6,
+     "heading_ms": 262.3,
+     "useful_ms": 262.3,
+     "requests": 22,
+     "duplicate_requests": 3
+    },
+    {
+     "shell_ms": 212.4,
+     "heading_ms": 338.3,
+     "useful_ms": 338.3,
+     "requests": 15,
+     "duplicate_requests": 2
+    }
+   ]
+  },
+  {
+   "route": "Settings",
+   "path": "/app/settings",
+   "runs": 5,
+   "principal": "synthetic member",
+   "first_navigation_median": {
+    "shell_ms": 203.3,
+    "heading_ms": 854.4,
+    "useful_ms": 854.4,
+    "requests": 77,
+    "duplicate_requests": 4
+   },
+   "return_navigation_median": {
+    "shell_ms": 208.9,
+    "heading_ms": 316.3,
+    "useful_ms": 316.3,
+    "requests": 8,
+    "duplicate_requests": 1
+   },
+   "raw_first": [
+    {
+     "shell_ms": 185.2,
+     "heading_ms": 854.4,
+     "useful_ms": 854.4,
+     "requests": 72,
+     "duplicate_requests": 4
+    },
+    {
+     "shell_ms": 272.5,
+     "heading_ms": 795.8,
+     "useful_ms": 795.8,
+     "requests": 78,
+     "duplicate_requests": 4
+    },
+    {
+     "shell_ms": 358.1,
+     "heading_ms": 1026.7,
+     "useful_ms": 1026.7,
+     "requests": 78,
+     "duplicate_requests": 4
+    },
+    {
+     "shell_ms": 203.3,
+     "heading_ms": 1108.7,
+     "useful_ms": 1108.7,
+     "requests": 74,
+     "duplicate_requests": 6
+    },
+    {
+     "shell_ms": 189.3,
+     "heading_ms": 804.6,
+     "useful_ms": 804.6,
+     "requests": 77,
+     "duplicate_requests": 6
+    }
+   ],
+   "raw_return": [
+    {
+     "shell_ms": 233.6,
+     "heading_ms": 345.1,
+     "useful_ms": 345.1,
+     "requests": 22,
+     "duplicate_requests": 1
+    },
+    {
+     "shell_ms": 176.5,
+     "heading_ms": 348.9,
+     "useful_ms": 348.9,
+     "requests": 8,
+     "duplicate_requests": 1
+    },
+    {
+     "shell_ms": 192.9,
+     "heading_ms": 260.7,
+     "useful_ms": 260.7,
+     "requests": 5,
+     "duplicate_requests": 1
+    },
+    {
+     "shell_ms": 224.8,
+     "heading_ms": 287.5,
+     "useful_ms": 287.5,
+     "requests": 8,
+     "duplicate_requests": 1
+    },
+    {
+     "shell_ms": null,
+     "heading_ms": null,
+     "useful_ms": null,
+     "requests": 0,
+     "duplicate_requests": 0,
+     "note": "no in-app link to this route from the start page"
+    }
+   ]
+  },
+  {
+   "route": "Billing",
+   "path": "/app/billing",
+   "runs": 5,
+   "principal": "synthetic member",
+   "first_navigation_median": {
+    "shell_ms": 184.2,
+    "heading_ms": 689.6,
+    "useful_ms": 689.6,
+    "requests": 74,
+    "duplicate_requests": 6
+   },
+   "return_navigation_median": {
+    "shell_ms": 183.1,
+    "heading_ms": 233.5,
+    "useful_ms": 233.5,
+    "requests": 8,
+    "duplicate_requests": 1
+   },
+   "raw_first": [
+    {
+     "shell_ms": 155.6,
+     "heading_ms": 855.1,
+     "useful_ms": 855.1,
+     "requests": 72,
+     "duplicate_requests": 4
+    },
+    {
+     "shell_ms": 206.3,
+     "heading_ms": 689.6,
+     "useful_ms": 689.6,
+     "requests": 77,
+     "duplicate_requests": 6
+    },
+    {
+     "shell_ms": 170.8,
+     "heading_ms": 649.4,
+     "useful_ms": 649.4,
+     "requests": 77,
+     "duplicate_requests": 6
+    },
+    {
+     "shell_ms": 184.2,
+     "heading_ms": 614.0,
+     "useful_ms": 614.0,
+     "requests": 74,
+     "duplicate_requests": 6
+    },
+    {
+     "shell_ms": 224.7,
+     "heading_ms": 693.0,
+     "useful_ms": 693.0,
+     "requests": 74,
+     "duplicate_requests": 6
+    }
+   ],
+   "raw_return": [
+    {
+     "shell_ms": 274.6,
+     "heading_ms": 324.3,
+     "useful_ms": 324.3,
+     "requests": 17,
+     "duplicate_requests": 1
+    },
+    {
+     "shell_ms": 183.1,
+     "heading_ms": 233.5,
+     "useful_ms": 233.5,
+     "requests": 7,
+     "duplicate_requests": 1
+    },
+    {
+     "shell_ms": 126.4,
+     "heading_ms": 189.1,
+     "useful_ms": 189.1,
+     "requests": 8,
+     "duplicate_requests": 0
+    },
+    {
+     "shell_ms": 205.0,
+     "heading_ms": 256.5,
+     "useful_ms": 256.5,
+     "requests": 12,
+     "duplicate_requests": 1
+    },
+    {
+     "shell_ms": 156.6,
+     "heading_ms": 187.1,
+     "useful_ms": 187.1,
+     "requests": 3,
+     "duplicate_requests": 0
+    }
+   ]
+  },
+  {
+   "route": "Support",
+   "path": "/app/support",
+   "runs": 5,
+   "principal": "synthetic member",
+   "first_navigation_median": {
+    "shell_ms": 235.3,
+    "heading_ms": 765.7,
+    "useful_ms": 765.7,
+    "requests": 75,
+    "duplicate_requests": 6
+   },
+   "return_navigation_median": {
+    "shell_ms": 203.8,
+    "heading_ms": 309.0,
+    "useful_ms": 309.0,
+    "requests": 9,
+    "duplicate_requests": 1
+   },
+   "raw_first": [
+    {
+     "shell_ms": 235.3,
+     "heading_ms": 965.5,
+     "useful_ms": 965.5,
+     "requests": 73,
+     "duplicate_requests": 4
+    },
+    {
+     "shell_ms": 192.2,
+     "heading_ms": 699.4,
+     "useful_ms": 699.4,
+     "requests": 75,
+     "duplicate_requests": 6
+    },
+    {
+     "shell_ms": 222.6,
+     "heading_ms": 755.8,
+     "useful_ms": 755.8,
+     "requests": 78,
+     "duplicate_requests": 6
+    },
+    {
+     "shell_ms": 296.6,
+     "heading_ms": 765.7,
+     "useful_ms": 765.7,
+     "requests": 75,
+     "duplicate_requests": 6
+    },
+    {
+     "shell_ms": 346.2,
+     "heading_ms": 993.4,
+     "useful_ms": 993.4,
+     "requests": 76,
+     "duplicate_requests": 4
+    }
+   ],
+   "raw_return": [
+    {
+     "shell_ms": 311.7,
+     "heading_ms": 359.3,
+     "useful_ms": 359.3,
+     "requests": 20,
+     "duplicate_requests": 1
+    },
+    {
+     "shell_ms": 161.7,
+     "heading_ms": 482.0,
+     "useful_ms": 482.0,
+     "requests": 23,
+     "duplicate_requests": 1
+    },
+    {
+     "shell_ms": null,
+     "heading_ms": null,
+     "useful_ms": null,
+     "requests": 0,
+     "duplicate_requests": 0,
+     "note": "no in-app link to this route from the start page"
+    },
+    {
+     "shell_ms": 206.5,
+     "heading_ms": 258.6,
+     "useful_ms": 258.6,
+     "requests": 9,
+     "duplicate_requests": 1
+    },
+    {
+     "shell_ms": 201.0,
+     "heading_ms": 237.7,
+     "useful_ms": 237.7,
+     "requests": 9,
+     "duplicate_requests": 1
+    }
+   ]
+  },
+  {
+   "route": "Admin: Overview",
+   "path": "/admin",
+   "runs": 5,
+   "principal": "synthetic admin",
+   "first_navigation_median": {
+    "shell_ms": 138.3,
+    "heading_ms": 352.6,
+    "useful_ms": 541.4,
+    "requests": 36,
+    "duplicate_requests": 3
+   },
+   "return_navigation_median": {
+    "shell_ms": 77.4,
+    "heading_ms": 77.4,
+    "useful_ms": 95.0,
+    "requests": 0,
+    "duplicate_requests": 0
+   },
+   "raw_first": [
+    {
+     "shell_ms": 164.1,
+     "heading_ms": 376.7,
+     "useful_ms": 1215.9,
+     "requests": 41,
+     "duplicate_requests": 8
+    },
+    {
+     "shell_ms": 130.8,
+     "heading_ms": 281.4,
+     "useful_ms": 491.2,
+     "requests": 36,
+     "duplicate_requests": 3
+    },
+    {
+     "shell_ms": 132.8,
+     "heading_ms": 345.6,
+     "useful_ms": 493.7,
+     "requests": 36,
+     "duplicate_requests": 3
+    },
+    {
+     "shell_ms": 138.3,
+     "heading_ms": 384.5,
+     "useful_ms": 628.7,
+     "requests": 36,
+     "duplicate_requests": 3
+    },
+    {
+     "shell_ms": 195.6,
+     "heading_ms": 352.6,
+     "useful_ms": 541.4,
+     "requests": 36,
+     "duplicate_requests": 3
+    }
+   ],
+   "raw_return": [
+    {
+     "shell_ms": 113.9,
+     "heading_ms": 113.9,
+     "useful_ms": 641.4,
+     "requests": 0,
+     "duplicate_requests": 0
+    },
+    {
+     "shell_ms": 58.6,
+     "heading_ms": 58.6,
+     "useful_ms": 110.5,
+     "requests": 0,
+     "duplicate_requests": 0
+    },
+    {
+     "shell_ms": 87.6,
+     "heading_ms": 87.6,
+     "useful_ms": 87.6,
+     "requests": 0,
+     "duplicate_requests": 0
+    },
+    {
+     "shell_ms": 56.6,
+     "heading_ms": 56.6,
+     "useful_ms": 95.0,
+     "requests": 0,
+     "duplicate_requests": 0
+    },
+    {
+     "shell_ms": 77.4,
+     "heading_ms": 77.4,
+     "useful_ms": 77.4,
+     "requests": 0,
+     "duplicate_requests": 0
+    }
+   ]
+  },
+  {
+   "route": "Admin: Subscriptions",
+   "path": "/admin/subscriptions",
+   "runs": 5,
+   "principal": "synthetic admin",
+   "first_navigation_median": {
+    "shell_ms": 144.3,
+    "heading_ms": 351.6,
+    "useful_ms": 499.2,
+    "requests": 35,
+    "duplicate_requests": 3
+   },
+   "return_navigation_median": {
+    "shell_ms": 75.1,
+    "heading_ms": 75.1,
+    "useful_ms": 215.4,
+    "requests": 8,
+    "duplicate_requests": 0
+   },
+   "raw_first": [
+    {
+     "shell_ms": 161.2,
+     "heading_ms": 398.8,
+     "useful_ms": 781.0,
+     "requests": 41,
+     "duplicate_requests": 4
+    },
+    {
+     "shell_ms": 143.3,
+     "heading_ms": 331.8,
+     "useful_ms": 439.5,
+     "requests": 35,
+     "duplicate_requests": 3
+    },
+    {
+     "shell_ms": 197.5,
+     "heading_ms": 441.7,
+     "useful_ms": 584.4,
+     "requests": 35,
+     "duplicate_requests": 3
+    },
+    {
+     "shell_ms": 144.3,
+     "heading_ms": 351.6,
+     "useful_ms": 499.2,
+     "requests": 35,
+     "duplicate_requests": 3
+    },
+    {
+     "shell_ms": 130.5,
+     "heading_ms": 291.9,
+     "useful_ms": 443.7,
+     "requests": 35,
+     "duplicate_requests": 3
+    }
+   ],
+   "raw_return": [
+    {
+     "shell_ms": 147.4,
+     "heading_ms": 147.4,
+     "useful_ms": 374.1,
+     "requests": 12,
+     "duplicate_requests": 0
+    },
+    {
+     "shell_ms": 76.3,
+     "heading_ms": 76.3,
+     "useful_ms": 208.9,
+     "requests": 8,
+     "duplicate_requests": 0
+    },
+    {
+     "shell_ms": 75.1,
+     "heading_ms": 75.1,
+     "useful_ms": 207.3,
+     "requests": 8,
+     "duplicate_requests": 0
+    },
+    {
+     "shell_ms": 67.7,
+     "heading_ms": 67.7,
+     "useful_ms": 215.4,
+     "requests": 8,
+     "duplicate_requests": 0
+    },
+    {
+     "shell_ms": 73.6,
+     "heading_ms": 73.6,
+     "useful_ms": 232.0,
+     "requests": 8,
+     "duplicate_requests": 0
+    }
+   ]
+  },
+  {
+   "route": "Admin: Support",
+   "path": "/admin/support",
+   "runs": 5,
+   "principal": "synthetic admin",
+   "first_navigation_median": {
+    "shell_ms": 161.3,
+    "heading_ms": 377.6,
+    "useful_ms": 504.0,
+    "requests": 39,
+    "duplicate_requests": 3
+   },
+   "return_navigation_median": {
+    "shell_ms": 136.1,
+    "heading_ms": 136.1,
+    "useful_ms": 259.1,
+    "requests": 10,
+    "duplicate_requests": 0
+   },
+   "raw_first": [
+    {
+     "shell_ms": 383.8,
+     "heading_ms": 569.8,
+     "useful_ms": 734.7,
+     "requests": 38,
+     "duplicate_requests": 3
+    },
+    {
+     "shell_ms": 99.4,
+     "heading_ms": 244.0,
+     "useful_ms": 378.2,
+     "requests": 39,
+     "duplicate_requests": 3
+    },
+    {
+     "shell_ms": 152.1,
+     "heading_ms": 336.9,
+     "useful_ms": 442.0,
+     "requests": 39,
+     "duplicate_requests": 3
+    },
+    {
+     "shell_ms": 167.9,
+     "heading_ms": 404.4,
+     "useful_ms": 547.2,
+     "requests": 39,
+     "duplicate_requests": 3
+    },
+    {
+     "shell_ms": 161.3,
+     "heading_ms": 377.6,
+     "useful_ms": 504.0,
+     "requests": 39,
+     "duplicate_requests": 3
+    }
+   ],
+   "raw_return": [
+    {
+     "shell_ms": 136.1,
+     "heading_ms": 136.1,
+     "useful_ms": 235.6,
+     "requests": 10,
+     "duplicate_requests": 0
+    },
+    {
+     "shell_ms": 94.6,
+     "heading_ms": 94.6,
+     "useful_ms": 217.7,
+     "requests": 10,
+     "duplicate_requests": 0
+    },
+    {
+     "shell_ms": 154.0,
+     "heading_ms": 154.0,
+     "useful_ms": 259.1,
+     "requests": 11,
+     "duplicate_requests": 0
+    },
+    {
+     "shell_ms": 96.5,
+     "heading_ms": 96.5,
+     "useful_ms": 264.8,
+     "requests": 10,
+     "duplicate_requests": 0
+    },
+    {
+     "shell_ms": 255.3,
+     "heading_ms": 255.3,
+     "useful_ms": 292.7,
+     "requests": 10,
+     "duplicate_requests": 0
+    }
+   ]
+  },
+  {
+   "route": "Admin: Coaching interest",
+   "path": "/admin/coaching-interest",
+   "runs": 5,
+   "principal": "synthetic admin",
+   "first_navigation_median": {
+    "shell_ms": 184.7,
+    "heading_ms": 345.0,
+    "useful_ms": null,
+    "requests": 34,
+    "duplicate_requests": 3
+   },
+   "return_navigation_median": {
+    "shell_ms": 216.4,
+    "heading_ms": 216.4,
+    "useful_ms": null,
+    "requests": 9,
+    "duplicate_requests": 0
+   },
+   "raw_first": [
+    {
+     "shell_ms": 184.7,
+     "heading_ms": 345.0,
+     "useful_ms": null,
+     "requests": 39,
+     "duplicate_requests": 5
+    },
+    {
+     "shell_ms": 104.9,
+     "heading_ms": 308.7,
+     "useful_ms": null,
+     "requests": 34,
+     "duplicate_requests": 3
+    },
+    {
+     "shell_ms": 191.8,
+     "heading_ms": 436.9,
+     "useful_ms": null,
+     "requests": 34,
+     "duplicate_requests": 3
+    },
+    {
+     "shell_ms": 140.0,
+     "heading_ms": 321.5,
+     "useful_ms": null,
+     "requests": 34,
+     "duplicate_requests": 3
+    },
+    {
+     "shell_ms": 192.7,
+     "heading_ms": 421.7,
+     "useful_ms": null,
+     "requests": 39,
+     "duplicate_requests": 5
+    }
+   ],
+   "raw_return": [
+    {
+     "shell_ms": 343.9,
+     "heading_ms": 343.9,
+     "useful_ms": null,
+     "requests": 9,
+     "duplicate_requests": 0
+    },
+    {
+     "shell_ms": 121.8,
+     "heading_ms": 121.8,
+     "useful_ms": null,
+     "requests": 5,
+     "duplicate_requests": 0
+    },
+    {
+     "shell_ms": 151.2,
+     "heading_ms": 151.2,
+     "useful_ms": null,
+     "requests": 8,
+     "duplicate_requests": 0
+    },
+    {
+     "shell_ms": 216.4,
+     "heading_ms": 216.4,
+     "useful_ms": null,
+     "requests": 9,
+     "duplicate_requests": 0
+    },
+    {
+     "shell_ms": 216.7,
+     "heading_ms": 216.7,
+     "useful_ms": null,
+     "requests": 9,
+     "duplicate_requests": 0
+    }
+   ]
+  }
+ ]
+}

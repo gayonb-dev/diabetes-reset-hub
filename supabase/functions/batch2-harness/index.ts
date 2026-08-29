@@ -69,24 +69,32 @@ async function provision() {
       { onConflict: "user_id" },
     );
 
-    await admin.from("visitor_profiles").insert({
+    const vp = await admin.from("visitor_profiles").insert({
       user_id: id,
+      anonymous_id: crypto.randomUUID(),
       metadata: { onboarded_at: new Date().toISOString(), synthetic_fixture: "batch2-closeout" },
     });
+    if (vp.error) return json({ error: `visitor_profiles ${spec.key}: ${vp.error.message}` }, 500);
+
 
     if (spec.anchored) {
       const end = new Date();
       end.setUTCDate(end.getUTCDate() + 20);
-      await admin.from("subscriptions").insert({
+      const sub = await admin.from("subscriptions").insert({
         user_id: id,
+        // Synthetic, clearly-marked identifiers. No Stripe object is created or mutated.
+        stripe_subscription_id: `sub_batch2_synth_${spec.key}_${crypto.randomUUID().slice(0, 8)}`,
+        stripe_customer_id: `cus_batch2_synth_${spec.key}`,
         status: "active",
         cancel_at_period_end: false,
         current_period_end: end.toISOString(),
       });
+      if (sub.error) return json({ error: `subscriptions ${spec.key}: ${sub.error.message}` }, 500);
     }
 
     if (spec.admin) {
-      await admin.from("user_roles").insert({ user_id: id, role: "admin" });
+      const ur = await admin.from("user_roles").insert({ user_id: id, role: "admin" });
+      if (ur.error) return json({ error: `user_roles ${spec.key}: ${ur.error.message}` }, 500);
     }
 
     const anon = createClient(SUPABASE_URL, ANON_KEY, {

@@ -224,7 +224,7 @@ export default function Billing() {
         <p className="text-[15px] text-secondary-fg mb-4">$67 / month</p>
 
         {trialDay && subscription.trial_end_date && (
-          <p className="text-sm text-accent mb-3">
+          <p className="text-sm text-accent-ink mb-3">
             Day {trialDay} of 7-day trial. Trial ends {new Date(subscription.trial_end_date).toLocaleDateString()}.
           </p>
         )}

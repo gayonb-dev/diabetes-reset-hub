@@ -1,0 +1,4383 @@
+{
+ "generated_utc": "2026-08-29T16:10:59Z",
+ "server": "local production build served by vite preview on :4173",
+ "zoom_technique": "200% applied with CSS `zoom: 2` on document.documentElement at a 1280px viewport; Chromium reflows CSS zoom like browser zoom. deviceScaleFactor was NOT used as a zoom substitute.",
+ "contrast_method": "computed foreground colour against the nearest ancestor with an opaque background; gradients, images and semi-transparent overlays are approximated and are reported as review items rather than definitive failures",
+ "routes": [
+  {
+   "route": "Today",
+   "path": "/app",
+   "viewports": {
+    "320": {
+     "h1_count": 1,
+     "h1": "friend.",
+     "landmarks": {
+      "main": 1,
+      "nav": 3,
+      "banner_or_header": 0,
+      "skip_link": true
+     },
+     "horizontal_overflow": false,
+     "scroll_width": 320,
+     "client_width": 320,
+     "low_contrast": [],
+     "low_contrast_count": 0,
+     "small_fonts": [
+      {
+       "text": "Today",
+       "size": 10
+      },
+      {
+       "text": "Meals",
+       "size": 10
+      },
+      {
+       "text": "Progress",
+       "size": 10
+      },
+      {
+       "text": "Ask",
+       "size": 10
+      },
+      {
+       "text": "More",
+       "size": 10
+      },
+      {
+       "text": "0-day Daily Action Streak",
+       "size": 11
+      },
+      {
+       "text": "Lv 1 : The Starter",
+       "size": 10
+      },
+      {
+       "text": "Today's Action",
+       "size": 11
+      },
+      {
+       "text": "Water",
+       "size": 9
+      },
+      {
+       "text": "Food",
+       "size": 9
+      }
+     ],
+     "small_font_count": 29,
+     "small_targets": [
+      {
+       "label": "Skip to main content",
+       "w": 1,
+       "h": 1
+      }
+     ],
+     "small_target_count": 1,
+     "tables_with_headers": [],
+     "canvas_or_svg_charts": 0,
+     "chart_text_alternative": false,
+     "screenshot": "screenshots/today-320.png"
+    },
+    "390": {
+     "h1_count": 1,
+     "h1": "friend.",
+     "landmarks": {
+      "main": 1,
+      "nav": 3,
+      "banner_or_header": 0,
+      "skip_link": true
+     },
+     "horizontal_overflow": false,
+     "scroll_width": 390,
+     "client_width": 390,
+     "low_contrast": [],
+     "low_contrast_count": 0,
+     "small_fonts": [
+      {
+       "text": "Today",
+       "size": 10
+      },
+      {
+       "text": "Meals",
+       "size": 10
+      },
+      {
+       "text": "Progress",
+       "size": 10
+      },
+      {
+       "text": "Ask",
+       "size": 10
+      },
+      {
+       "text": "More",
+       "size": 10
+      },
+      {
+       "text": "0-day Daily Action Streak",
+       "size": 11
+      },
+      {
+       "text": "Lv 1 : The Starter",
+       "size": 10
+      },
+      {
+       "text": "Today's Action",
+       "size": 11
+      },
+      {
+       "text": "Water",
+       "size": 9
+      },
+      {
+       "text": "Food",
+       "size": 9
+      }
+     ],
+     "small_font_count": 29,
+     "small_targets": [
+      {
+       "label": "Skip to main content",
+       "w": 1,
+       "h": 1
+      }
+     ],
+     "small_target_count": 1,
+     "tables_with_headers": [],
+     "canvas_or_svg_charts": 0,
+     "chart_text_alternative": false,
+     "screenshot": "screenshots/today-390.png"
+    },
+    "768": {
+     "h1_count": 1,
+     "h1": "friend.",
+     "landmarks": {
+      "main": 1,
+      "nav": 3,
+      "banner_or_header": 0,
+      "skip_link": true
+     },
+     "horizontal_overflow": false,
+     "scroll_width": 768,
+     "client_width": 768,
+     "low_contrast": [],
+     "low_contrast_count": 0,
+     "small_fonts": [
+      {
+       "text": "Today",
+       "size": 10
+      },
+      {
+       "text": "Meals",
+       "size": 10
+      },
+      {
+       "text": "Progress",
+       "size": 10
+      },
+      {
+       "text": "Ask",
+       "size": 10
+      },
+      {
+       "text": "More",
+       "size": 10
+      },
+      {
+       "text": "0-day Daily Action Streak",
+       "size": 11
+      },
+      {
+       "text": "Lv 1 : The Starter",
+       "size": 10
+      },
+      {
+       "text": "Today's Action",
+       "size": 11
+      },
+      {
+       "text": "Water",
+       "size": 9
+      },
+      {
+       "text": "Food",
+       "size": 9
+      }
+     ],
+     "small_font_count": 29,
+     "small_targets": [
+      {
+       "label": "Skip to main content",
+       "w": 1,
+       "h": 1
+      }
+     ],
+     "small_target_count": 1,
+     "tables_with_headers": [],
+     "canvas_or_svg_charts": 0,
+     "chart_text_alternative": false,
+     "screenshot": "screenshots/today-768.png"
+    },
+    "1280": {
+     "h1_count": 1,
+     "h1": "friend.",
+     "landmarks": {
+      "main": 1,
+      "nav": 3,
+      "banner_or_header": 0,
+      "skip_link": true
+     },
+     "horizontal_overflow": false,
+     "scroll_width": 1280,
+     "client_width": 1280,
+     "low_contrast": [],
+     "low_contrast_count": 0,
+     "small_fonts": [
+      {
+       "text": "Diabetes Reset",
+       "size": 10
+      },
+      {
+       "text": "Learn & tools",
+       "size": 11
+      },
+      {
+       "text": "Account & help",
+       "size": 11
+      },
+      {
+       "text": "batch2-a@example.invalid",
+       "size": 10
+      },
+      {
+       "text": "Level 1: Getting Started",
+       "size": 10
+      },
+      {
+       "text": "0-day Daily Action Streak",
+       "size": 11
+      },
+      {
+       "text": "Lv 1 : The Starter",
+       "size": 10
+      },
+      {
+       "text": "Today's Action",
+       "size": 11
+      },
+      {
+       "text": "Water",
+       "size": 9
+      },
+      {
+       "text": "Food",
+       "size": 9
+      }
+     ],
+     "small_font_count": 34,
+     "small_targets": [
+      {
+       "label": "Skip to main content",
+       "w": 1,
+       "h": 1
+      },
+      {
+       "label": "Sign out",
+       "w": 208,
+       "h": 36
+      },
+      {
+       "label": "0",
+       "w": 46,
+       "h": 20
+      },
+      {
+       "label": "Find it",
+       "w": 50,
+       "h": 16
+      },
+      {
+       "label": "Find it",
+       "w": 50,
+       "h": 16
+      }
+     ],
+     "small_target_count": 5,
+     "tables_with_headers": [],
+     "canvas_or_svg_charts": 0,
+     "chart_text_alternative": false,
+     "screenshot": "screenshots/today-1280.png"
+    }
+   },
+   "zoom_200": {
+    "h1_count": 1,
+    "h1": "friend.",
+    "landmarks": {
+     "main": 1,
+     "nav": 3,
+     "banner_or_header": 0,
+     "skip_link": true
+    },
+    "horizontal_overflow": true,
+    "scroll_width": 1344,
+    "client_width": 1280,
+    "low_contrast": [],
+    "low_contrast_count": 0,
+    "small_fonts": [
+     {
+      "text": "Diabetes Reset",
+      "size": 10
+     },
+     {
+      "text": "Learn & tools",
+      "size": 11
+     },
+     {
+      "text": "Account & help",
+      "size": 11
+     },
+     {
+      "text": "batch2-a@example.invalid",
+      "size": 10
+     },
+     {
+      "text": "Level 1: Getting Started",
+      "size": 10
+     },
+     {
+      "text": "0-day Daily Action Streak",
+      "size": 11
+     },
+     {
+      "text": "Lv 1 : The Starter",
+      "size": 10
+     },
+     {
+      "text": "Today's Action",
+      "size": 11
+     },
+     {
+      "text": "Water",
+      "size": 9
+     },
+     {
+      "text": "Food",
+      "size": 9
+     }
+    ],
+    "small_font_count": 34,
+    "small_targets": [
+     {
+      "label": "Skip to main content",
+      "w": 2,
+      "h": 2
+     },
+     {
+      "label": "0",
+      "w": 91,
+      "h": 40
+     },
+     {
+      "label": "Find it",
+      "w": 101,
+      "h": 32
+     },
+     {
+      "label": "Find it",
+      "w": 101,
+      "h": 32
+     }
+    ],
+    "small_target_count": 4,
+    "tables_with_headers": [],
+    "canvas_or_svg_charts": 0,
+    "chart_text_alternative": false,
+    "screenshot": "screenshots/today-zoom200.png"
+   }
+  },
+  {
+   "route": "Meals",
+   "path": "/app/meals",
+   "viewports": {
+    "320": {
+     "h1_count": 1,
+     "h1": "My Meals",
+     "landmarks": {
+      "main": 1,
+      "nav": 2,
+      "banner_or_header": 0,
+      "skip_link": true
+     },
+     "horizontal_overflow": false,
+     "scroll_width": 320,
+     "client_width": 320,
+     "low_contrast": [],
+     "low_contrast_count": 0,
+     "small_fonts": [
+      {
+       "text": "Today",
+       "size": 10
+      },
+      {
+       "text": "Meals",
+       "size": 10
+      },
+      {
+       "text": "Progress",
+       "size": 10
+      },
+      {
+       "text": "Ask",
+       "size": 10
+      },
+      {
+       "text": "More",
+       "size": 10
+      }
+     ],
+     "small_font_count": 5,
+     "small_targets": [
+      {
+       "label": "Skip to main content",
+       "w": 1,
+       "h": 1
+      }
+     ],
+     "small_target_count": 1,
+     "tables_with_headers": [],
+     "canvas_or_svg_charts": 0,
+     "chart_text_alternative": false,
+     "screenshot": "screenshots/meals-320.png"
+    },
+    "390": {
+     "h1_count": 1,
+     "h1": "My Meals",
+     "landmarks": {
+      "main": 1,
+      "nav": 2,
+      "banner_or_header": 0,
+      "skip_link": true
+     },
+     "horizontal_overflow": false,
+     "scroll_width": 390,
+     "client_width": 390,
+     "low_contrast": [],
+     "low_contrast_count": 0,
+     "small_fonts": [
+      {
+       "text": "Today",
+       "size": 10
+      },
+      {
+       "text": "Meals",
+       "size": 10
+      },
+      {
+       "text": "Progress",
+       "size": 10
+      },
+      {
+       "text": "Ask",
+       "size": 10
+      },
+      {
+       "text": "More",
+       "size": 10
+      }
+     ],
+     "small_font_count": 5,
+     "small_targets": [
+      {
+       "label": "Skip to main content",
+       "w": 1,
+       "h": 1
+      }
+     ],
+     "small_target_count": 1,
+     "tables_with_headers": [],
+     "canvas_or_svg_charts": 0,
+     "chart_text_alternative": false,
+     "screenshot": "screenshots/meals-390.png"
+    },
+    "768": {
+     "h1_count": 1,
+     "h1": "My Meals",
+     "landmarks": {
+      "main": 1,
+      "nav": 2,
+      "banner_or_header": 0,
+      "skip_link": true
+     },
+     "horizontal_overflow": false,
+     "scroll_width": 768,
+     "client_width": 768,
+     "low_contrast": [],
+     "low_contrast_count": 0,
+     "small_fonts": [
+      {
+       "text": "Today",
+       "size": 10
+      },
+      {
+       "text": "Meals",
+       "size": 10
+      },
+      {
+       "text": "Progress",
+       "size": 10
+      },
+      {
+       "text": "Ask",
+       "size": 10
+      },
+      {
+       "text": "More",
+       "size": 10
+      }
+     ],
+     "small_font_count": 5,
+     "small_targets": [
+      {
+       "label": "Skip to main content",
+       "w": 1,
+       "h": 1
+      }
+     ],
+     "small_target_count": 1,
+     "tables_with_headers": [],
+     "canvas_or_svg_charts": 0,
+     "chart_text_alternative": false,
+     "screenshot": "screenshots/meals-768.png"
+    },
+    "1280": {
+     "h1_count": 1,
+     "h1": "My Meals",
+     "landmarks": {
+      "main": 1,
+      "nav": 2,
+      "banner_or_header": 0,
+      "skip_link": true
+     },
+     "horizontal_overflow": false,
+     "scroll_width": 1280,
+     "client_width": 1280,
+     "low_contrast": [],
+     "low_contrast_count": 0,
+     "small_fonts": [
+      {
+       "text": "Diabetes Reset",
+       "size": 10
+      },
+      {
+       "text": "Learn & tools",
+       "size": 11
+      },
+      {
+       "text": "Account & help",
+       "size": 11
+      },
+      {
+       "text": "batch2-a@example.invalid",
+       "size": 10
+      },
+      {
+       "text": "Level 1: Getting Started",
+       "size": 10
+      }
+     ],
+     "small_font_count": 5,
+     "small_targets": [
+      {
+       "label": "Skip to main content",
+       "w": 1,
+       "h": 1
+      },
+      {
+       "label": "Sign out",
+       "w": 208,
+       "h": 36
+      },
+      {
+       "label": "Generate my plan",
+       "w": 149,
+       "h": 40
+      }
+     ],
+     "small_target_count": 3,
+     "tables_with_headers": [],
+     "canvas_or_svg_charts": 0,
+     "chart_text_alternative": false,
+     "screenshot": "screenshots/meals-1280.png"
+    }
+   },
+   "zoom_200": {
+    "h1_count": 1,
+    "h1": "My Meals",
+    "landmarks": {
+     "main": 1,
+     "nav": 2,
+     "banner_or_header": 0,
+     "skip_link": true
+    },
+    "horizontal_overflow": false,
+    "scroll_width": 1280,
+    "client_width": 1280,
+    "low_contrast": [],
+    "low_contrast_count": 0,
+    "small_fonts": [
+     {
+      "text": "Diabetes Reset",
+      "size": 10
+     },
+     {
+      "text": "Learn & tools",
+      "size": 11
+     },
+     {
+      "text": "Account & help",
+      "size": 11
+     },
+     {
+      "text": "batch2-a@example.invalid",
+      "size": 10
+     },
+     {
+      "text": "Level 1: Getting Started",
+      "size": 10
+     }
+    ],
+    "small_font_count": 5,
+    "small_targets": [
+     {
+      "label": "Skip to main content",
+      "w": 2,
+      "h": 2
+     }
+    ],
+    "small_target_count": 1,
+    "tables_with_headers": [],
+    "canvas_or_svg_charts": 0,
+    "chart_text_alternative": false,
+    "screenshot": "screenshots/meals-zoom200.png"
+   }
+  },
+  {
+   "route": "Progress",
+   "path": "/app/progress",
+   "viewports": {
+    "320": {
+     "h1_count": 1,
+     "h1": "Progress",
+     "landmarks": {
+      "main": 1,
+      "nav": 2,
+      "banner_or_header": 0,
+      "skip_link": true
+     },
+     "horizontal_overflow": false,
+     "scroll_width": 320,
+     "client_width": 320,
+     "low_contrast": [],
+     "low_contrast_count": 0,
+     "small_fonts": [
+      {
+       "text": "Today",
+       "size": 10
+      },
+      {
+       "text": "Meals",
+       "size": 10
+      },
+      {
+       "text": "Progress",
+       "size": 10
+      },
+      {
+       "text": "Ask",
+       "size": 10
+      },
+      {
+       "text": "More",
+       "size": 10
+      },
+      {
+       "text": "Low < 70",
+       "size": 10
+      },
+      {
+       "text": "In range < 100",
+       "size": 10
+      },
+      {
+       "text": "High \u2265 126",
+       "size": 10
+      },
+      {
+       "text": "200",
+       "size": 10
+      },
+      {
+       "text": "These ranges are for reference only and ",
+       "size": 11
+      }
+     ],
+     "small_font_count": 10,
+     "small_targets": [
+      {
+       "label": "Skip to main content",
+       "w": 1,
+       "h": 1
+      }
+     ],
+     "small_target_count": 1,
+     "tables_with_headers": [],
+     "canvas_or_svg_charts": 0,
+     "chart_text_alternative": false,
+     "screenshot": "screenshots/progress-320.png"
+    },
+    "390": {
+     "h1_count": 1,
+     "h1": "Progress",
+     "landmarks": {
+      "main": 1,
+      "nav": 2,
+      "banner_or_header": 0,
+      "skip_link": true
+     },
+     "horizontal_overflow": false,
+     "scroll_width": 390,
+     "client_width": 390,
+     "low_contrast": [],
+     "low_contrast_count": 0,
+     "small_fonts": [
+      {
+       "text": "Today",
+       "size": 10
+      },
+      {
+       "text": "Meals",
+       "size": 10
+      },
+      {
+       "text": "Progress",
+       "size": 10
+      },
+      {
+       "text": "Ask",
+       "size": 10
+      },
+      {
+       "text": "More",
+       "size": 10
+      },
+      {
+       "text": "Low < 70",
+       "size": 10
+      },
+      {
+       "text": "In range < 100",
+       "size": 10
+      },
+      {
+       "text": "High \u2265 126",
+       "size": 10
+      },
+      {
+       "text": "200",
+       "size": 10
+      },
+      {
+       "text": "These ranges are for reference only and ",
+       "size": 11
+      }
+     ],
+     "small_font_count": 10,
+     "small_targets": [
+      {
+       "label": "Skip to main content",
+       "w": 1,
+       "h": 1
+      }
+     ],
+     "small_target_count": 1,
+     "tables_with_headers": [],
+     "canvas_or_svg_charts": 0,
+     "chart_text_alternative": false,
+     "screenshot": "screenshots/progress-390.png"
+    },
+    "768": {
+     "h1_count": 1,
+     "h1": "Progress",
+     "landmarks": {
+      "main": 1,
+      "nav": 2,
+      "banner_or_header": 0,
+      "skip_link": true
+     },
+     "horizontal_overflow": false,
+     "scroll_width": 768,
+     "client_width": 768,
+     "low_contrast": [],
+     "low_contrast_count": 0,
+     "small_fonts": [
+      {
+       "text": "Today",
+       "size": 10
+      },
+      {
+       "text": "Meals",
+       "size": 10
+      },
+      {
+       "text": "Progress",
+       "size": 10
+      },
+      {
+       "text": "Ask",
+       "size": 10
+      },
+      {
+       "text": "More",
+       "size": 10
+      },
+      {
+       "text": "Low < 70",
+       "size": 10
+      },
+      {
+       "text": "In range < 100",
+       "size": 10
+      },
+      {
+       "text": "High \u2265 126",
+       "size": 10
+      },
+      {
+       "text": "200",
+       "size": 10
+      },
+      {
+       "text": "These ranges are for reference only and ",
+       "size": 11
+      }
+     ],
+     "small_font_count": 10,
+     "small_targets": [
+      {
+       "label": "Skip to main content",
+       "w": 1,
+       "h": 1
+      }
+     ],
+     "small_target_count": 1,
+     "tables_with_headers": [],
+     "canvas_or_svg_charts": 0,
+     "chart_text_alternative": false,
+     "screenshot": "screenshots/progress-768.png"
+    },
+    "1280": {
+     "h1_count": 1,
+     "h1": "Progress",
+     "landmarks": {
+      "main": 1,
+      "nav": 2,
+      "banner_or_header": 0,
+      "skip_link": true
+     },
+     "horizontal_overflow": false,
+     "scroll_width": 1280,
+     "client_width": 1280,
+     "low_contrast": [],
+     "low_contrast_count": 0,
+     "small_fonts": [
+      {
+       "text": "Diabetes Reset",
+       "size": 10
+      },
+      {
+       "text": "Learn & tools",
+       "size": 11
+      },
+      {
+       "text": "Account & help",
+       "size": 11
+      },
+      {
+       "text": "batch2-a@example.invalid",
+       "size": 10
+      },
+      {
+       "text": "Level 1: Getting Started",
+       "size": 10
+      },
+      {
+       "text": "Low < 70",
+       "size": 10
+      },
+      {
+       "text": "In range < 100",
+       "size": 10
+      },
+      {
+       "text": "High \u2265 126",
+       "size": 10
+      },
+      {
+       "text": "200",
+       "size": 10
+      },
+      {
+       "text": "These ranges are for reference only and ",
+       "size": 11
+      }
+     ],
+     "small_font_count": 10,
+     "small_targets": [
+      {
+       "label": "Skip to main content",
+       "w": 1,
+       "h": 1
+      },
+      {
+       "label": "Sign out",
+       "w": 208,
+       "h": 36
+      },
+      {
+       "label": "Blood Sugar",
+       "w": 105,
+       "h": 38
+      },
+      {
+       "label": "Weight",
+       "w": 70,
+       "h": 38
+      },
+      {
+       "label": "Measurements",
+       "w": 121,
+       "h": 38
+      },
+      {
+       "label": "Habits",
+       "w": 66,
+       "h": 38
+      },
+      {
+       "label": "A1C",
+       "w": 50,
+       "h": 38
+      },
+      {
+       "label": "mg/dL",
+       "w": 58,
+       "h": 26
+      },
+      {
+       "label": "mmol/L",
+       "w": 65,
+       "h": 26
+      },
+      {
+       "label": "Fasting",
+       "w": 463,
+       "h": 34
+      },
+      {
+       "label": "Post-meal (2 hrs after eating)",
+       "w": 463,
+       "h": 34
+      },
+      {
+       "label": "Bedtime",
+       "w": 463,
+       "h": 34
+      },
+      {
+       "label": "Other",
+       "w": 463,
+       "h": 34
+      },
+      {
+       "label": "2026-08-29T16:11",
+       "w": 461,
+       "h": 40
+      }
+     ],
+     "small_target_count": 14,
+     "tables_with_headers": [],
+     "canvas_or_svg_charts": 0,
+     "chart_text_alternative": false,
+     "screenshot": "screenshots/progress-1280.png"
+    }
+   },
+   "zoom_200": {
+    "h1_count": 1,
+    "h1": "Progress",
+    "landmarks": {
+     "main": 1,
+     "nav": 2,
+     "banner_or_header": 0,
+     "skip_link": true
+    },
+    "horizontal_overflow": true,
+    "scroll_width": 1467,
+    "client_width": 1280,
+    "low_contrast": [],
+    "low_contrast_count": 0,
+    "small_fonts": [
+     {
+      "text": "Diabetes Reset",
+      "size": 10
+     },
+     {
+      "text": "Learn & tools",
+      "size": 11
+     },
+     {
+      "text": "Account & help",
+      "size": 11
+     },
+     {
+      "text": "batch2-a@example.invalid",
+      "size": 10
+     },
+     {
+      "text": "Level 1: Getting Started",
+      "size": 10
+     },
+     {
+      "text": "Low < 70",
+      "size": 10
+     },
+     {
+      "text": "In range < 100",
+      "size": 10
+     },
+     {
+      "text": "High \u2265 126",
+      "size": 10
+     },
+     {
+      "text": "200",
+      "size": 10
+     },
+     {
+      "text": "These ranges are for reference only and ",
+      "size": 11
+     }
+    ],
+    "small_font_count": 10,
+    "small_targets": [
+     {
+      "label": "Skip to main content",
+      "w": 2,
+      "h": 2
+     }
+    ],
+    "small_target_count": 1,
+    "tables_with_headers": [],
+    "canvas_or_svg_charts": 0,
+    "chart_text_alternative": false,
+    "screenshot": "screenshots/progress-zoom200.png"
+   }
+  },
+  {
+   "route": "Workouts",
+   "path": "/app/workouts",
+   "viewports": {
+    "320": {
+     "h1_count": 1,
+     "h1": "Workouts unlock at Day 29",
+     "landmarks": {
+      "main": 1,
+      "nav": 2,
+      "banner_or_header": 0,
+      "skip_link": true
+     },
+     "horizontal_overflow": false,
+     "scroll_width": 320,
+     "client_width": 320,
+     "low_contrast": [],
+     "low_contrast_count": 0,
+     "small_fonts": [
+      {
+       "text": "Today",
+       "size": 10
+      },
+      {
+       "text": "Meals",
+       "size": 10
+      },
+      {
+       "text": "Progress",
+       "size": 10
+      },
+      {
+       "text": "Ask",
+       "size": 10
+      },
+      {
+       "text": "More",
+       "size": 10
+      }
+     ],
+     "small_font_count": 5,
+     "small_targets": [
+      {
+       "label": "Skip to main content",
+       "w": 1,
+       "h": 1
+      },
+      {
+       "label": "Back to today",
+       "w": 126,
+       "h": 40
+      }
+     ],
+     "small_target_count": 2,
+     "tables_with_headers": [],
+     "canvas_or_svg_charts": 0,
+     "chart_text_alternative": false,
+     "screenshot": "screenshots/workouts-320.png"
+    },
+    "390": {
+     "h1_count": 1,
+     "h1": "Workouts unlock at Day 29",
+     "landmarks": {
+      "main": 1,
+      "nav": 2,
+      "banner_or_header": 0,
+      "skip_link": true
+     },
+     "horizontal_overflow": false,
+     "scroll_width": 390,
+     "client_width": 390,
+     "low_contrast": [],
+     "low_contrast_count": 0,
+     "small_fonts": [
+      {
+       "text": "Today",
+       "size": 10
+      },
+      {
+       "text": "Meals",
+       "size": 10
+      },
+      {
+       "text": "Progress",
+       "size": 10
+      },
+      {
+       "text": "Ask",
+       "size": 10
+      },
+      {
+       "text": "More",
+       "size": 10
+      }
+     ],
+     "small_font_count": 5,
+     "small_targets": [
+      {
+       "label": "Skip to main content",
+       "w": 1,
+       "h": 1
+      },
+      {
+       "label": "Back to today",
+       "w": 126,
+       "h": 40
+      }
+     ],
+     "small_target_count": 2,
+     "tables_with_headers": [],
+     "canvas_or_svg_charts": 0,
+     "chart_text_alternative": false,
+     "screenshot": "screenshots/workouts-390.png"
+    },
+    "768": {
+     "h1_count": 1,
+     "h1": "Workouts unlock at Day 29",
+     "landmarks": {
+      "main": 1,
+      "nav": 2,
+      "banner_or_header": 0,
+      "skip_link": true
+     },
+     "horizontal_overflow": false,
+     "scroll_width": 768,
+     "client_width": 768,
+     "low_contrast": [],
+     "low_contrast_count": 0,
+     "small_fonts": [
+      {
+       "text": "Today",
+       "size": 10
+      },
+      {
+       "text": "Meals",
+       "size": 10
+      },
+      {
+       "text": "Progress",
+       "size": 10
+      },
+      {
+       "text": "Ask",
+       "size": 10
+      },
+      {
+       "text": "More",
+       "size": 10
+      }
+     ],
+     "small_font_count": 5,
+     "small_targets": [
+      {
+       "label": "Skip to main content",
+       "w": 1,
+       "h": 1
+      },
+      {
+       "label": "Back to today",
+       "w": 126,
+       "h": 40
+      }
+     ],
+     "small_target_count": 2,
+     "tables_with_headers": [],
+     "canvas_or_svg_charts": 0,
+     "chart_text_alternative": false,
+     "screenshot": "screenshots/workouts-768.png"
+    },
+    "1280": {
+     "h1_count": 1,
+     "h1": "Workouts unlock at Day 29",
+     "landmarks": {
+      "main": 1,
+      "nav": 2,
+      "banner_or_header": 0,
+      "skip_link": true
+     },
+     "horizontal_overflow": false,
+     "scroll_width": 1280,
+     "client_width": 1280,
+     "low_contrast": [],
+     "low_contrast_count": 0,
+     "small_fonts": [
+      {
+       "text": "Diabetes Reset",
+       "size": 10
+      },
+      {
+       "text": "Learn & tools",
+       "size": 11
+      },
+      {
+       "text": "Account & help",
+       "size": 11
+      },
+      {
+       "text": "batch2-a@example.invalid",
+       "size": 10
+      },
+      {
+       "text": "Level 1: Getting Started",
+       "size": 10
+      }
+     ],
+     "small_font_count": 5,
+     "small_targets": [
+      {
+       "label": "Skip to main content",
+       "w": 1,
+       "h": 1
+      },
+      {
+       "label": "Sign out",
+       "w": 208,
+       "h": 36
+      },
+      {
+       "label": "Back to today",
+       "w": 126,
+       "h": 40
+      }
+     ],
+     "small_target_count": 3,
+     "tables_with_headers": [],
+     "canvas_or_svg_charts": 0,
+     "chart_text_alternative": false,
+     "screenshot": "screenshots/workouts-1280.png"
+    }
+   },
+   "zoom_200": {
+    "h1_count": 1,
+    "h1": "Workouts unlock at Day 29",
+    "landmarks": {
+     "main": 1,
+     "nav": 2,
+     "banner_or_header": 0,
+     "skip_link": true
+    },
+    "horizontal_overflow": false,
+    "scroll_width": 1280,
+    "client_width": 1280,
+    "low_contrast": [],
+    "low_contrast_count": 0,
+    "small_fonts": [
+     {
+      "text": "Diabetes Reset",
+      "size": 10
+     },
+     {
+      "text": "Learn & tools",
+      "size": 11
+     },
+     {
+      "text": "Account & help",
+      "size": 11
+     },
+     {
+      "text": "batch2-a@example.invalid",
+      "size": 10
+     },
+     {
+      "text": "Level 1: Getting Started",
+      "size": 10
+     }
+    ],
+    "small_font_count": 5,
+    "small_targets": [
+     {
+      "label": "Skip to main content",
+      "w": 2,
+      "h": 2
+     }
+    ],
+    "small_target_count": 1,
+    "tables_with_headers": [],
+    "canvas_or_svg_charts": 0,
+    "chart_text_alternative": false,
+    "screenshot": "screenshots/workouts-zoom200.png"
+   }
+  },
+  {
+   "route": "Learn",
+   "path": "/app/learn",
+   "viewports": {
+    "320": {
+     "h1_count": 1,
+     "h1": "Learn",
+     "landmarks": {
+      "main": 1,
+      "nav": 2,
+      "banner_or_header": 0,
+      "skip_link": true
+     },
+     "horizontal_overflow": false,
+     "scroll_width": 320,
+     "client_width": 320,
+     "low_contrast": [],
+     "low_contrast_count": 0,
+     "small_fonts": [
+      {
+       "text": "Today",
+       "size": 10
+      },
+      {
+       "text": "Meals",
+       "size": 10
+      },
+      {
+       "text": "Progress",
+       "size": 10
+      },
+      {
+       "text": "Ask",
+       "size": 10
+      },
+      {
+       "text": "More",
+       "size": 10
+      },
+      {
+       "text": "Week 1",
+       "size": 11
+      },
+      {
+       "text": "Week 2",
+       "size": 11
+      },
+      {
+       "text": "Week 3",
+       "size": 11
+      },
+      {
+       "text": "Day 15",
+       "size": 11
+      },
+      {
+       "text": "Week 4",
+       "size": 11
+      }
+     ],
+     "small_font_count": 15,
+     "small_targets": [
+      {
+       "label": "Skip to main content",
+       "w": 1,
+       "h": 1
+      }
+     ],
+     "small_target_count": 1,
+     "tables_with_headers": [],
+     "canvas_or_svg_charts": 0,
+     "chart_text_alternative": false,
+     "screenshot": "screenshots/learn-320.png"
+    },
+    "390": {
+     "h1_count": 1,
+     "h1": "Learn",
+     "landmarks": {
+      "main": 1,
+      "nav": 2,
+      "banner_or_header": 0,
+      "skip_link": true
+     },
+     "horizontal_overflow": false,
+     "scroll_width": 390,
+     "client_width": 390,
+     "low_contrast": [],
+     "low_contrast_count": 0,
+     "small_fonts": [
+      {
+       "text": "Today",
+       "size": 10
+      },
+      {
+       "text": "Meals",
+       "size": 10
+      },
+      {
+       "text": "Progress",
+       "size": 10
+      },
+      {
+       "text": "Ask",
+       "size": 10
+      },
+      {
+       "text": "More",
+       "size": 10
+      },
+      {
+       "text": "Week 1",
+       "size": 11
+      },
+      {
+       "text": "Week 2",
+       "size": 11
+      },
+      {
+       "text": "Week 3",
+       "size": 11
+      },
+      {
+       "text": "Day 15",
+       "size": 11
+      },
+      {
+       "text": "Week 4",
+       "size": 11
+      }
+     ],
+     "small_font_count": 15,
+     "small_targets": [
+      {
+       "label": "Skip to main content",
+       "w": 1,
+       "h": 1
+      }
+     ],
+     "small_target_count": 1,
+     "tables_with_headers": [],
+     "canvas_or_svg_charts": 0,
+     "chart_text_alternative": false,
+     "screenshot": "screenshots/learn-390.png"
+    },
+    "768": {
+     "h1_count": 1,
+     "h1": "Learn",
+     "landmarks": {
+      "main": 1,
+      "nav": 2,
+      "banner_or_header": 0,
+      "skip_link": true
+     },
+     "horizontal_overflow": false,
+     "scroll_width": 768,
+     "client_width": 768,
+     "low_contrast": [],
+     "low_contrast_count": 0,
+     "small_fonts": [
+      {
+       "text": "Today",
+       "size": 10
+      },
+      {
+       "text": "Meals",
+       "size": 10
+      },
+      {
+       "text": "Progress",
+       "size": 10
+      },
+      {
+       "text": "Ask",
+       "size": 10
+      },
+      {
+       "text": "More",
+       "size": 10
+      },
+      {
+       "text": "Week 1",
+       "size": 11
+      },
+      {
+       "text": "Week 2",
+       "size": 11
+      },
+      {
+       "text": "Week 3",
+       "size": 11
+      },
+      {
+       "text": "Day 15",
+       "size": 11
+      },
+      {
+       "text": "Week 4",
+       "size": 11
+      }
+     ],
+     "small_font_count": 15,
+     "small_targets": [
+      {
+       "label": "Skip to main content",
+       "w": 1,
+       "h": 1
+      }
+     ],
+     "small_target_count": 1,
+     "tables_with_headers": [],
+     "canvas_or_svg_charts": 0,
+     "chart_text_alternative": false,
+     "screenshot": "screenshots/learn-768.png"
+    },
+    "1280": {
+     "h1_count": 1,
+     "h1": "Learn",
+     "landmarks": {
+      "main": 1,
+      "nav": 2,
+      "banner_or_header": 0,
+      "skip_link": true
+     },
+     "horizontal_overflow": false,
+     "scroll_width": 1280,
+     "client_width": 1280,
+     "low_contrast": [],
+     "low_contrast_count": 0,
+     "small_fonts": [
+      {
+       "text": "Diabetes Reset",
+       "size": 10
+      },
+      {
+       "text": "Learn & tools",
+       "size": 11
+      },
+      {
+       "text": "Account & help",
+       "size": 11
+      },
+      {
+       "text": "batch2-a@example.invalid",
+       "size": 10
+      },
+      {
+       "text": "Level 1: Getting Started",
+       "size": 10
+      },
+      {
+       "text": "Week 1",
+       "size": 11
+      },
+      {
+       "text": "Week 2",
+       "size": 11
+      },
+      {
+       "text": "Week 3",
+       "size": 11
+      },
+      {
+       "text": "Day 15",
+       "size": 11
+      },
+      {
+       "text": "Week 4",
+       "size": 11
+      }
+     ],
+     "small_font_count": 15,
+     "small_targets": [
+      {
+       "label": "Skip to main content",
+       "w": 1,
+       "h": 1
+      },
+      {
+       "label": "Sign out",
+       "w": 208,
+       "h": 36
+      }
+     ],
+     "small_target_count": 2,
+     "tables_with_headers": [],
+     "canvas_or_svg_charts": 0,
+     "chart_text_alternative": false,
+     "screenshot": "screenshots/learn-1280.png"
+    }
+   },
+   "zoom_200": {
+    "h1_count": 1,
+    "h1": "Learn",
+    "landmarks": {
+     "main": 1,
+     "nav": 2,
+     "banner_or_header": 0,
+     "skip_link": true
+    },
+    "horizontal_overflow": false,
+    "scroll_width": 1280,
+    "client_width": 1280,
+    "low_contrast": [],
+    "low_contrast_count": 0,
+    "small_fonts": [
+     {
+      "text": "Diabetes Reset",
+      "size": 10
+     },
+     {
+      "text": "Learn & tools",
+      "size": 11
+     },
+     {
+      "text": "Account & help",
+      "size": 11
+     },
+     {
+      "text": "batch2-a@example.invalid",
+      "size": 10
+     },
+     {
+      "text": "Level 1: Getting Started",
+      "size": 10
+     },
+     {
+      "text": "Week 1",
+      "size": 11
+     },
+     {
+      "text": "Week 2",
+      "size": 11
+     },
+     {
+      "text": "Week 3",
+      "size": 11
+     },
+     {
+      "text": "Day 15",
+      "size": 11
+     },
+     {
+      "text": "Week 4",
+      "size": 11
+     }
+    ],
+    "small_font_count": 15,
+    "small_targets": [
+     {
+      "label": "Skip to main content",
+      "w": 2,
+      "h": 2
+     }
+    ],
+    "small_target_count": 1,
+    "tables_with_headers": [],
+    "canvas_or_svg_charts": 0,
+    "chart_text_alternative": false,
+    "screenshot": "screenshots/learn-zoom200.png"
+   }
+  },
+  {
+   "route": "Ask",
+   "path": "/app/ask",
+   "viewports": {
+    "320": {
+     "h1_count": 1,
+     "h1": "Ask",
+     "landmarks": {
+      "main": 1,
+      "nav": 2,
+      "banner_or_header": 0,
+      "skip_link": true
+     },
+     "horizontal_overflow": false,
+     "scroll_width": 320,
+     "client_width": 320,
+     "low_contrast": [],
+     "low_contrast_count": 0,
+     "small_fonts": [
+      {
+       "text": "Today",
+       "size": 10
+      },
+      {
+       "text": "Meals",
+       "size": 10
+      },
+      {
+       "text": "Progress",
+       "size": 10
+      },
+      {
+       "text": "Ask",
+       "size": 10
+      },
+      {
+       "text": "More",
+       "size": 10
+      }
+     ],
+     "small_font_count": 5,
+     "small_targets": [
+      {
+       "label": "Skip to main content",
+       "w": 1,
+       "h": 1
+      }
+     ],
+     "small_target_count": 1,
+     "tables_with_headers": [],
+     "canvas_or_svg_charts": 0,
+     "chart_text_alternative": false,
+     "screenshot": "screenshots/ask-320.png"
+    },
+    "390": {
+     "h1_count": 1,
+     "h1": "Ask",
+     "landmarks": {
+      "main": 1,
+      "nav": 2,
+      "banner_or_header": 0,
+      "skip_link": true
+     },
+     "horizontal_overflow": false,
+     "scroll_width": 390,
+     "client_width": 390,
+     "low_contrast": [],
+     "low_contrast_count": 0,
+     "small_fonts": [
+      {
+       "text": "Today",
+       "size": 10
+      },
+      {
+       "text": "Meals",
+       "size": 10
+      },
+      {
+       "text": "Progress",
+       "size": 10
+      },
+      {
+       "text": "Ask",
+       "size": 10
+      },
+      {
+       "text": "More",
+       "size": 10
+      }
+     ],
+     "small_font_count": 5,
+     "small_targets": [
+      {
+       "label": "Skip to main content",
+       "w": 1,
+       "h": 1
+      }
+     ],
+     "small_target_count": 1,
+     "tables_with_headers": [],
+     "canvas_or_svg_charts": 0,
+     "chart_text_alternative": false,
+     "screenshot": "screenshots/ask-390.png"
+    },
+    "768": {
+     "h1_count": 1,
+     "h1": "Ask",
+     "landmarks": {
+      "main": 1,
+      "nav": 2,
+      "banner_or_header": 0,
+      "skip_link": true
+     },
+     "horizontal_overflow": false,
+     "scroll_width": 768,
+     "client_width": 768,
+     "low_contrast": [],
+     "low_contrast_count": 0,
+     "small_fonts": [
+      {
+       "text": "Today",
+       "size": 10
+      },
+      {
+       "text": "Meals",
+       "size": 10
+      },
+      {
+       "text": "Progress",
+       "size": 10
+      },
+      {
+       "text": "Ask",
+       "size": 10
+      },
+      {
+       "text": "More",
+       "size": 10
+      }
+     ],
+     "small_font_count": 5,
+     "small_targets": [
+      {
+       "label": "Skip to main content",
+       "w": 1,
+       "h": 1
+      }
+     ],
+     "small_target_count": 1,
+     "tables_with_headers": [],
+     "canvas_or_svg_charts": 0,
+     "chart_text_alternative": false,
+     "screenshot": "screenshots/ask-768.png"
+    },
+    "1280": {
+     "h1_count": 1,
+     "h1": "Ask",
+     "landmarks": {
+      "main": 1,
+      "nav": 2,
+      "banner_or_header": 0,
+      "skip_link": true
+     },
+     "horizontal_overflow": false,
+     "scroll_width": 1280,
+     "client_width": 1280,
+     "low_contrast": [],
+     "low_contrast_count": 0,
+     "small_fonts": [
+      {
+       "text": "Diabetes Reset",
+       "size": 10
+      },
+      {
+       "text": "Learn & tools",
+       "size": 11
+      },
+      {
+       "text": "Account & help",
+       "size": 11
+      },
+      {
+       "text": "batch2-a@example.invalid",
+       "size": 10
+      },
+      {
+       "text": "Level 1: Getting Started",
+       "size": 10
+      }
+     ],
+     "small_font_count": 5,
+     "small_targets": [
+      {
+       "label": "Skip to main content",
+       "w": 1,
+       "h": 1
+      },
+      {
+       "label": "Sign out",
+       "w": 208,
+       "h": 36
+      },
+      {
+       "label": "input",
+       "w": 824,
+       "h": 40
+      },
+      {
+       "label": "Ask",
+       "w": 58,
+       "h": 40
+      },
+      {
+       "label": "Post to community",
+       "w": 148,
+       "h": 36
+      }
+     ],
+     "small_target_count": 5,
+     "tables_with_headers": [],
+     "canvas_or_svg_charts": 0,
+     "chart_text_alternative": false,
+     "screenshot": "screenshots/ask-1280.png"
+    }
+   },
+   "zoom_200": {
+    "h1_count": 1,
+    "h1": "Ask",
+    "landmarks": {
+     "main": 1,
+     "nav": 2,
+     "banner_or_header": 0,
+     "skip_link": true
+    },
+    "horizontal_overflow": true,
+    "scroll_width": 1758,
+    "client_width": 1280,
+    "low_contrast": [],
+    "low_contrast_count": 0,
+    "small_fonts": [
+     {
+      "text": "Diabetes Reset",
+      "size": 10
+     },
+     {
+      "text": "Learn & tools",
+      "size": 11
+     },
+     {
+      "text": "Account & help",
+      "size": 11
+     },
+     {
+      "text": "batch2-a@example.invalid",
+      "size": 10
+     },
+     {
+      "text": "Level 1: Getting Started",
+      "size": 10
+     }
+    ],
+    "small_font_count": 5,
+    "small_targets": [
+     {
+      "label": "Skip to main content",
+      "w": 2,
+      "h": 2
+     }
+    ],
+    "small_target_count": 1,
+    "tables_with_headers": [],
+    "canvas_or_svg_charts": 0,
+    "chart_text_alternative": false,
+    "screenshot": "screenshots/ask-zoom200.png"
+   }
+  },
+  {
+   "route": "Profile",
+   "path": "/app/profile",
+   "viewports": {
+    "320": {
+     "h1_count": 1,
+     "h1": "batch2-a",
+     "landmarks": {
+      "main": 1,
+      "nav": 2,
+      "banner_or_header": 0,
+      "skip_link": true
+     },
+     "horizontal_overflow": false,
+     "scroll_width": 320,
+     "client_width": 320,
+     "low_contrast": [],
+     "low_contrast_count": 0,
+     "small_fonts": [
+      {
+       "text": "Today",
+       "size": 10
+      },
+      {
+       "text": "Meals",
+       "size": 10
+      },
+      {
+       "text": "Progress",
+       "size": 10
+      },
+      {
+       "text": "Ask",
+       "size": 10
+      },
+      {
+       "text": "More",
+       "size": 10
+      },
+      {
+       "text": "Level 1",
+       "size": 11
+      },
+      {
+       "text": "day streak",
+       "size": 11
+      },
+      {
+       "text": "activity score",
+       "size": 11
+      },
+      {
+       "text": "helpful pts",
+       "size": 11
+      },
+      {
+       "text": "days completed",
+       "size": 11
+      }
+     ],
+     "small_font_count": 22,
+     "small_targets": [
+      {
+       "label": "Skip to main content",
+       "w": 1,
+       "h": 1
+      }
+     ],
+     "small_target_count": 1,
+     "tables_with_headers": [],
+     "canvas_or_svg_charts": 0,
+     "chart_text_alternative": false,
+     "screenshot": "screenshots/profile-320.png"
+    },
+    "390": {
+     "h1_count": 1,
+     "h1": "batch2-a",
+     "landmarks": {
+      "main": 1,
+      "nav": 2,
+      "banner_or_header": 0,
+      "skip_link": true
+     },
+     "horizontal_overflow": false,
+     "scroll_width": 390,
+     "client_width": 390,
+     "low_contrast": [],
+     "low_contrast_count": 0,
+     "small_fonts": [
+      {
+       "text": "Today",
+       "size": 10
+      },
+      {
+       "text": "Meals",
+       "size": 10
+      },
+      {
+       "text": "Progress",
+       "size": 10
+      },
+      {
+       "text": "Ask",
+       "size": 10
+      },
+      {
+       "text": "More",
+       "size": 10
+      },
+      {
+       "text": "Level 1",
+       "size": 11
+      },
+      {
+       "text": "day streak",
+       "size": 11
+      },
+      {
+       "text": "activity score",
+       "size": 11
+      },
+      {
+       "text": "helpful pts",
+       "size": 11
+      },
+      {
+       "text": "days completed",
+       "size": 11
+      }
+     ],
+     "small_font_count": 22,
+     "small_targets": [
+      {
+       "label": "Skip to main content",
+       "w": 1,
+       "h": 1
+      }
+     ],
+     "small_target_count": 1,
+     "tables_with_headers": [],
+     "canvas_or_svg_charts": 0,
+     "chart_text_alternative": false,
+     "screenshot": "screenshots/profile-390.png"
+    },
+    "768": {
+     "h1_count": 1,
+     "h1": "batch2-a",
+     "landmarks": {
+      "main": 1,
+      "nav": 2,
+      "banner_or_header": 0,
+      "skip_link": true
+     },
+     "horizontal_overflow": false,
+     "scroll_width": 768,
+     "client_width": 768,
+     "low_contrast": [],
+     "low_contrast_count": 0,
+     "small_fonts": [
+      {
+       "text": "Today",
+       "size": 10
+      },
+      {
+       "text": "Meals",
+       "size": 10
+      },
+      {
+       "text": "Progress",
+       "size": 10
+      },
+      {
+       "text": "Ask",
+       "size": 10
+      },
+      {
+       "text": "More",
+       "size": 10
+      },
+      {
+       "text": "Level 1",
+       "size": 11
+      },
+      {
+       "text": "day streak",
+       "size": 11
+      },
+      {
+       "text": "activity score",
+       "size": 11
+      },
+      {
+       "text": "helpful pts",
+       "size": 11
+      },
+      {
+       "text": "days completed",
+       "size": 11
+      }
+     ],
+     "small_font_count": 22,
+     "small_targets": [
+      {
+       "label": "Skip to main content",
+       "w": 1,
+       "h": 1
+      }
+     ],
+     "small_target_count": 1,
+     "tables_with_headers": [],
+     "canvas_or_svg_charts": 0,
+     "chart_text_alternative": false,
+     "screenshot": "screenshots/profile-768.png"
+    },
+    "1280": {
+     "h1_count": 1,
+     "h1": "batch2-a",
+     "landmarks": {
+      "main": 1,
+      "nav": 2,
+      "banner_or_header": 0,
+      "skip_link": true
+     },
+     "horizontal_overflow": false,
+     "scroll_width": 1280,
+     "client_width": 1280,
+     "low_contrast": [],
+     "low_contrast_count": 0,
+     "small_fonts": [
+      {
+       "text": "Diabetes Reset",
+       "size": 10
+      },
+      {
+       "text": "Learn & tools",
+       "size": 11
+      },
+      {
+       "text": "Account & help",
+       "size": 11
+      },
+      {
+       "text": "batch2-a@example.invalid",
+       "size": 10
+      },
+      {
+       "text": "Level 1: Getting Started",
+       "size": 10
+      },
+      {
+       "text": "Level 1",
+       "size": 11
+      },
+      {
+       "text": "day streak",
+       "size": 11
+      },
+      {
+       "text": "activity score",
+       "size": 11
+      },
+      {
+       "text": "helpful pts",
+       "size": 11
+      },
+      {
+       "text": "days completed",
+       "size": 11
+      }
+     ],
+     "small_font_count": 22,
+     "small_targets": [
+      {
+       "label": "Skip to main content",
+       "w": 1,
+       "h": 1
+      },
+      {
+       "label": "Sign out",
+       "w": 208,
+       "h": 36
+      },
+      {
+       "label": "Edit profile",
+       "w": 99,
+       "h": 36
+      },
+      {
+       "label": "Edit profile",
+       "w": 99,
+       "h": 36
+      }
+     ],
+     "small_target_count": 4,
+     "tables_with_headers": [],
+     "canvas_or_svg_charts": 0,
+     "chart_text_alternative": false,
+     "screenshot": "screenshots/profile-1280.png"
+    }
+   },
+   "zoom_200": {
+    "h1_count": 1,
+    "h1": "batch2-a",
+    "landmarks": {
+     "main": 1,
+     "nav": 2,
+     "banner_or_header": 0,
+     "skip_link": true
+    },
+    "horizontal_overflow": false,
+    "scroll_width": 1280,
+    "client_width": 1280,
+    "low_contrast": [],
+    "low_contrast_count": 0,
+    "small_fonts": [
+     {
+      "text": "Diabetes Reset",
+      "size": 10
+     },
+     {
+      "text": "Learn & tools",
+      "size": 11
+     },
+     {
+      "text": "Account & help",
+      "size": 11
+     },
+     {
+      "text": "batch2-a@example.invalid",
+      "size": 10
+     },
+     {
+      "text": "Level 1: Getting Started",
+      "size": 10
+     },
+     {
+      "text": "Level 1",
+      "size": 11
+     },
+     {
+      "text": "day streak",
+      "size": 11
+     },
+     {
+      "text": "activity score",
+      "size": 11
+     },
+     {
+      "text": "helpful pts",
+      "size": 11
+     },
+     {
+      "text": "days completed",
+      "size": 11
+     }
+    ],
+    "small_font_count": 22,
+    "small_targets": [
+     {
+      "label": "Skip to main content",
+      "w": 2,
+      "h": 2
+     }
+    ],
+    "small_target_count": 1,
+    "tables_with_headers": [],
+    "canvas_or_svg_charts": 0,
+    "chart_text_alternative": false,
+    "screenshot": "screenshots/profile-zoom200.png"
+   }
+  },
+  {
+   "route": "Settings",
+   "path": "/app/settings",
+   "viewports": {
+    "320": {
+     "h1_count": 1,
+     "h1": "Settings",
+     "landmarks": {
+      "main": 1,
+      "nav": 2,
+      "banner_or_header": 0,
+      "skip_link": true
+     },
+     "horizontal_overflow": false,
+     "scroll_width": 320,
+     "client_width": 320,
+     "low_contrast": [],
+     "low_contrast_count": 0,
+     "small_fonts": [
+      {
+       "text": "Today",
+       "size": 10
+      },
+      {
+       "text": "Meals",
+       "size": 10
+      },
+      {
+       "text": "Progress",
+       "size": 10
+      },
+      {
+       "text": "Ask",
+       "size": 10
+      },
+      {
+       "text": "More",
+       "size": 10
+      },
+      {
+       "text": "Shown on questions, answers, and wins. D",
+       "size": 11
+      },
+      {
+       "text": "Comma-separate. We'll skip these in ever",
+       "size": 11
+      },
+      {
+       "text": "Developer format (JSON)",
+       "size": 11
+      },
+      {
+       "text": "Deletion is permanent and purges within ",
+       "size": 11
+      },
+      {
+       "text": "privacy policy",
+       "size": 11
+      }
+     ],
+     "small_font_count": 10,
+     "small_targets": [
+      {
+       "label": "Skip to main content",
+       "w": 1,
+       "h": 1
+      },
+      {
+       "label": "Record my interest in future coa",
+       "w": 16,
+       "h": 44
+      },
+      {
+       "label": "privacy policy",
+       "w": 73,
+       "h": 14
+      }
+     ],
+     "small_target_count": 3,
+     "tables_with_headers": [],
+     "canvas_or_svg_charts": 0,
+     "chart_text_alternative": false,
+     "screenshot": "screenshots/settings-320.png"
+    },
+    "390": {
+     "h1_count": 1,
+     "h1": "Settings",
+     "landmarks": {
+      "main": 1,
+      "nav": 2,
+      "banner_or_header": 0,
+      "skip_link": true
+     },
+     "horizontal_overflow": false,
+     "scroll_width": 390,
+     "client_width": 390,
+     "low_contrast": [],
+     "low_contrast_count": 0,
+     "small_fonts": [
+      {
+       "text": "Today",
+       "size": 10
+      },
+      {
+       "text": "Meals",
+       "size": 10
+      },
+      {
+       "text": "Progress",
+       "size": 10
+      },
+      {
+       "text": "Ask",
+       "size": 10
+      },
+      {
+       "text": "More",
+       "size": 10
+      },
+      {
+       "text": "Shown on questions, answers, and wins. D",
+       "size": 11
+      },
+      {
+       "text": "Comma-separate. We'll skip these in ever",
+       "size": 11
+      },
+      {
+       "text": "Developer format (JSON)",
+       "size": 11
+      },
+      {
+       "text": "Deletion is permanent and purges within ",
+       "size": 11
+      },
+      {
+       "text": "privacy policy",
+       "size": 11
+      }
+     ],
+     "small_font_count": 10,
+     "small_targets": [
+      {
+       "label": "Skip to main content",
+       "w": 1,
+       "h": 1
+      },
+      {
+       "label": "Record my interest in future coa",
+       "w": 16,
+       "h": 44
+      },
+      {
+       "label": "privacy policy",
+       "w": 73,
+       "h": 14
+      }
+     ],
+     "small_target_count": 3,
+     "tables_with_headers": [],
+     "canvas_or_svg_charts": 0,
+     "chart_text_alternative": false,
+     "screenshot": "screenshots/settings-390.png"
+    },
+    "768": {
+     "h1_count": 1,
+     "h1": "Settings",
+     "landmarks": {
+      "main": 1,
+      "nav": 2,
+      "banner_or_header": 0,
+      "skip_link": true
+     },
+     "horizontal_overflow": false,
+     "scroll_width": 768,
+     "client_width": 768,
+     "low_contrast": [],
+     "low_contrast_count": 0,
+     "small_fonts": [
+      {
+       "text": "Today",
+       "size": 10
+      },
+      {
+       "text": "Meals",
+       "size": 10
+      },
+      {
+       "text": "Progress",
+       "size": 10
+      },
+      {
+       "text": "Ask",
+       "size": 10
+      },
+      {
+       "text": "More",
+       "size": 10
+      },
+      {
+       "text": "Shown on questions, answers, and wins. D",
+       "size": 11
+      },
+      {
+       "text": "Comma-separate. We'll skip these in ever",
+       "size": 11
+      },
+      {
+       "text": "Developer format (JSON)",
+       "size": 11
+      },
+      {
+       "text": "Deletion is permanent and purges within ",
+       "size": 11
+      },
+      {
+       "text": "privacy policy",
+       "size": 11
+      }
+     ],
+     "small_font_count": 10,
+     "small_targets": [
+      {
+       "label": "Skip to main content",
+       "w": 1,
+       "h": 1
+      },
+      {
+       "label": "Record my interest in future coa",
+       "w": 16,
+       "h": 44
+      },
+      {
+       "label": "privacy policy",
+       "w": 73,
+       "h": 14
+      }
+     ],
+     "small_target_count": 3,
+     "tables_with_headers": [],
+     "canvas_or_svg_charts": 0,
+     "chart_text_alternative": false,
+     "screenshot": "screenshots/settings-768.png"
+    },
+    "1280": {
+     "h1_count": 1,
+     "h1": "Settings",
+     "landmarks": {
+      "main": 1,
+      "nav": 2,
+      "banner_or_header": 0,
+      "skip_link": true
+     },
+     "horizontal_overflow": false,
+     "scroll_width": 1280,
+     "client_width": 1280,
+     "low_contrast": [],
+     "low_contrast_count": 0,
+     "small_fonts": [
+      {
+       "text": "Diabetes Reset",
+       "size": 10
+      },
+      {
+       "text": "Learn & tools",
+       "size": 11
+      },
+      {
+       "text": "Account & help",
+       "size": 11
+      },
+      {
+       "text": "batch2-a@example.invalid",
+       "size": 10
+      },
+      {
+       "text": "Level 1: Getting Started",
+       "size": 10
+      },
+      {
+       "text": "Shown on questions, answers, and wins. D",
+       "size": 11
+      },
+      {
+       "text": "Comma-separate. We'll skip these in ever",
+       "size": 11
+      },
+      {
+       "text": "Developer format (JSON)",
+       "size": 11
+      },
+      {
+       "text": "Deletion is permanent and purges within ",
+       "size": 11
+      },
+      {
+       "text": "privacy policy",
+       "size": 11
+      }
+     ],
+     "small_font_count": 10,
+     "small_targets": [
+      {
+       "label": "Skip to main content",
+       "w": 1,
+       "h": 1
+      },
+      {
+       "label": "Sign out",
+       "w": 208,
+       "h": 36
+      },
+      {
+       "label": "Batch2",
+       "w": 630,
+       "h": 40
+      },
+      {
+       "label": "America/New_York",
+       "w": 630,
+       "h": 40
+      },
+      {
+       "label": "on",
+       "w": 44,
+       "h": 24
+      },
+      {
+       "label": "on",
+       "w": 44,
+       "h": 24
+      },
+      {
+       "label": "on",
+       "w": 44,
+       "h": 24
+      },
+      {
+       "label": "on",
+       "w": 44,
+       "h": 24
+      },
+      {
+       "label": "on",
+       "w": 44,
+       "h": 24
+      },
+      {
+       "label": "on",
+       "w": 44,
+       "h": 24
+      },
+      {
+       "label": "on",
+       "w": 44,
+       "h": 24
+      },
+      {
+       "label": "on",
+       "w": 44,
+       "h": 24
+      },
+      {
+       "label": "on",
+       "w": 44,
+       "h": 24
+      },
+      {
+       "label": "on",
+       "w": 44,
+       "h": 24
+      },
+      {
+       "label": "on",
+       "w": 44,
+       "h": 24
+      }
+     ],
+     "small_target_count": 39,
+     "tables_with_headers": [],
+     "canvas_or_svg_charts": 0,
+     "chart_text_alternative": false,
+     "screenshot": "screenshots/settings-1280.png"
+    }
+   },
+   "zoom_200": {
+    "h1_count": 1,
+    "h1": "Settings",
+    "landmarks": {
+     "main": 1,
+     "nav": 2,
+     "banner_or_header": 0,
+     "skip_link": true
+    },
+    "horizontal_overflow": false,
+    "scroll_width": 1280,
+    "client_width": 1280,
+    "low_contrast": [],
+    "low_contrast_count": 0,
+    "small_fonts": [
+     {
+      "text": "Diabetes Reset",
+      "size": 10
+     },
+     {
+      "text": "Learn & tools",
+      "size": 11
+     },
+     {
+      "text": "Account & help",
+      "size": 11
+     },
+     {
+      "text": "batch2-a@example.invalid",
+      "size": 10
+     },
+     {
+      "text": "Level 1: Getting Started",
+      "size": 10
+     },
+     {
+      "text": "Shown on questions, answers, and wins. D",
+      "size": 11
+     },
+     {
+      "text": "Comma-separate. We'll skip these in ever",
+      "size": 11
+     },
+     {
+      "text": "Developer format (JSON)",
+      "size": 11
+     },
+     {
+      "text": "Deletion is permanent and purges within ",
+      "size": 11
+     },
+     {
+      "text": "privacy policy",
+      "size": 11
+     }
+    ],
+    "small_font_count": 10,
+    "small_targets": [
+     {
+      "label": "Skip to main content",
+      "w": 2,
+      "h": 2
+     },
+     {
+      "label": "Record my interest in future coa",
+      "w": 32,
+      "h": 32
+     },
+     {
+      "label": "Developer format (JSON)",
+      "w": 261,
+      "h": 33
+     },
+     {
+      "label": "privacy policy",
+      "w": 141,
+      "h": 26
+     }
+    ],
+    "small_target_count": 4,
+    "tables_with_headers": [],
+    "canvas_or_svg_charts": 0,
+    "chart_text_alternative": false,
+    "screenshot": "screenshots/settings-zoom200.png"
+   }
+  },
+  {
+   "route": "Billing",
+   "path": "/app/billing",
+   "viewports": {
+    "320": {
+     "h1_count": 1,
+     "h1": "Your Subscription",
+     "landmarks": {
+      "main": 1,
+      "nav": 2,
+      "banner_or_header": 0,
+      "skip_link": true
+     },
+     "horizontal_overflow": false,
+     "scroll_width": 320,
+     "client_width": 320,
+     "low_contrast": [],
+     "low_contrast_count": 0,
+     "small_fonts": [
+      {
+       "text": "Today",
+       "size": 10
+      },
+      {
+       "text": "Meals",
+       "size": 10
+      },
+      {
+       "text": "Progress",
+       "size": 10
+      },
+      {
+       "text": "Ask",
+       "size": 10
+      },
+      {
+       "text": "More",
+       "size": 10
+      }
+     ],
+     "small_font_count": 5,
+     "small_targets": [
+      {
+       "label": "Skip to main content",
+       "w": 1,
+       "h": 1
+      },
+      {
+       "label": "support@diabetesresetmethod.com",
+       "w": 203,
+       "h": 15
+      }
+     ],
+     "small_target_count": 2,
+     "tables_with_headers": [],
+     "canvas_or_svg_charts": 0,
+     "chart_text_alternative": false,
+     "screenshot": "screenshots/billing-320.png"
+    },
+    "390": {
+     "h1_count": 1,
+     "h1": "Your Subscription",
+     "landmarks": {
+      "main": 1,
+      "nav": 2,
+      "banner_or_header": 0,
+      "skip_link": true
+     },
+     "horizontal_overflow": false,
+     "scroll_width": 390,
+     "client_width": 390,
+     "low_contrast": [],
+     "low_contrast_count": 0,
+     "small_fonts": [
+      {
+       "text": "Today",
+       "size": 10
+      },
+      {
+       "text": "Meals",
+       "size": 10
+      },
+      {
+       "text": "Progress",
+       "size": 10
+      },
+      {
+       "text": "Ask",
+       "size": 10
+      },
+      {
+       "text": "More",
+       "size": 10
+      }
+     ],
+     "small_font_count": 5,
+     "small_targets": [
+      {
+       "label": "Skip to main content",
+       "w": 1,
+       "h": 1
+      },
+      {
+       "label": "support@diabetesresetmethod.com",
+       "w": 203,
+       "h": 15
+      }
+     ],
+     "small_target_count": 2,
+     "tables_with_headers": [],
+     "canvas_or_svg_charts": 0,
+     "chart_text_alternative": false,
+     "screenshot": "screenshots/billing-390.png"
+    },
+    "768": {
+     "h1_count": 1,
+     "h1": "Your Subscription",
+     "landmarks": {
+      "main": 1,
+      "nav": 2,
+      "banner_or_header": 0,
+      "skip_link": true
+     },
+     "horizontal_overflow": false,
+     "scroll_width": 768,
+     "client_width": 768,
+     "low_contrast": [],
+     "low_contrast_count": 0,
+     "small_fonts": [
+      {
+       "text": "Today",
+       "size": 10
+      },
+      {
+       "text": "Meals",
+       "size": 10
+      },
+      {
+       "text": "Progress",
+       "size": 10
+      },
+      {
+       "text": "Ask",
+       "size": 10
+      },
+      {
+       "text": "More",
+       "size": 10
+      }
+     ],
+     "small_font_count": 5,
+     "small_targets": [
+      {
+       "label": "Skip to main content",
+       "w": 1,
+       "h": 1
+      },
+      {
+       "label": "support@diabetesresetmethod.com",
+       "w": 203,
+       "h": 15
+      }
+     ],
+     "small_target_count": 2,
+     "tables_with_headers": [],
+     "canvas_or_svg_charts": 0,
+     "chart_text_alternative": false,
+     "screenshot": "screenshots/billing-768.png"
+    },
+    "1280": {
+     "h1_count": 1,
+     "h1": "Your Subscription",
+     "landmarks": {
+      "main": 1,
+      "nav": 2,
+      "banner_or_header": 0,
+      "skip_link": true
+     },
+     "horizontal_overflow": false,
+     "scroll_width": 1280,
+     "client_width": 1280,
+     "low_contrast": [],
+     "low_contrast_count": 0,
+     "small_fonts": [
+      {
+       "text": "Diabetes Reset",
+       "size": 10
+      },
+      {
+       "text": "Learn & tools",
+       "size": 11
+      },
+      {
+       "text": "Account & help",
+       "size": 11
+      },
+      {
+       "text": "batch2-a@example.invalid",
+       "size": 10
+      },
+      {
+       "text": "Level 1: Getting Started",
+       "size": 10
+      }
+     ],
+     "small_font_count": 5,
+     "small_targets": [
+      {
+       "label": "Skip to main content",
+       "w": 1,
+       "h": 1
+      },
+      {
+       "label": "Sign out",
+       "w": 208,
+       "h": 36
+      },
+      {
+       "label": "Try again",
+       "w": 96,
+       "h": 40
+      },
+      {
+       "label": "Cancel subscription",
+       "w": 129,
+       "h": 20
+      },
+      {
+       "label": "support@diabetesresetmethod.com",
+       "w": 203,
+       "h": 15
+      }
+     ],
+     "small_target_count": 5,
+     "tables_with_headers": [],
+     "canvas_or_svg_charts": 0,
+     "chart_text_alternative": false,
+     "screenshot": "screenshots/billing-1280.png"
+    }
+   },
+   "zoom_200": {
+    "h1_count": 1,
+    "h1": "Your Subscription",
+    "landmarks": {
+     "main": 1,
+     "nav": 2,
+     "banner_or_header": 0,
+     "skip_link": true
+    },
+    "horizontal_overflow": false,
+    "scroll_width": 1280,
+    "client_width": 1280,
+    "low_contrast": [],
+    "low_contrast_count": 0,
+    "small_fonts": [
+     {
+      "text": "Diabetes Reset",
+      "size": 10
+     },
+     {
+      "text": "Learn & tools",
+      "size": 11
+     },
+     {
+      "text": "Account & help",
+      "size": 11
+     },
+     {
+      "text": "batch2-a@example.invalid",
+      "size": 10
+     },
+     {
+      "text": "Level 1: Getting Started",
+      "size": 10
+     }
+    ],
+    "small_font_count": 5,
+    "small_targets": [
+     {
+      "label": "Skip to main content",
+      "w": 2,
+      "h": 2
+     },
+     {
+      "label": "Cancel subscription",
+      "w": 265,
+      "h": 40
+     },
+     {
+      "label": "support@diabetesresetmethod.com",
+      "w": 409,
+      "h": 29
+     }
+    ],
+    "small_target_count": 3,
+    "tables_with_headers": [],
+    "canvas_or_svg_charts": 0,
+    "chart_text_alternative": false,
+    "screenshot": "screenshots/billing-zoom200.png"
+   }
+  },
+  {
+   "route": "Support",
+   "path": "/app/support",
+   "viewports": {
+    "320": {
+     "h1_count": 1,
+     "h1": "We're here to help.",
+     "landmarks": {
+      "main": 1,
+      "nav": 2,
+      "banner_or_header": 0,
+      "skip_link": true
+     },
+     "horizontal_overflow": false,
+     "scroll_width": 320,
+     "client_width": 320,
+     "low_contrast": [],
+     "low_contrast_count": 0,
+     "small_fonts": [
+      {
+       "text": "Today",
+       "size": 10
+      },
+      {
+       "text": "Meals",
+       "size": 10
+      },
+      {
+       "text": "Progress",
+       "size": 10
+      },
+      {
+       "text": "Ask",
+       "size": 10
+      },
+      {
+       "text": "More",
+       "size": 10
+      },
+      {
+       "text": "Support assistant",
+       "size": 11
+      },
+      {
+       "text": "App Issues",
+       "size": 11
+      },
+      {
+       "text": "Program Questions",
+       "size": 11
+      }
+     ],
+     "small_font_count": 8,
+     "small_targets": [
+      {
+       "label": "Skip to main content",
+       "w": 1,
+       "h": 1
+      },
+      {
+       "label": "Send question",
+       "w": 35,
+       "h": 44
+      }
+     ],
+     "small_target_count": 2,
+     "tables_with_headers": [],
+     "canvas_or_svg_charts": 0,
+     "chart_text_alternative": false,
+     "screenshot": "screenshots/support-320.png"
+    },
+    "390": {
+     "h1_count": 1,
+     "h1": "We're here to help.",
+     "landmarks": {
+      "main": 1,
+      "nav": 2,
+      "banner_or_header": 0,
+      "skip_link": true
+     },
+     "horizontal_overflow": false,
+     "scroll_width": 390,
+     "client_width": 390,
+     "low_contrast": [],
+     "low_contrast_count": 0,
+     "small_fonts": [
+      {
+       "text": "Today",
+       "size": 10
+      },
+      {
+       "text": "Meals",
+       "size": 10
+      },
+      {
+       "text": "Progress",
+       "size": 10
+      },
+      {
+       "text": "Ask",
+       "size": 10
+      },
+      {
+       "text": "More",
+       "size": 10
+      },
+      {
+       "text": "Support assistant",
+       "size": 11
+      },
+      {
+       "text": "App Issues",
+       "size": 11
+      },
+      {
+       "text": "Program Questions",
+       "size": 11
+      }
+     ],
+     "small_font_count": 8,
+     "small_targets": [
+      {
+       "label": "Skip to main content",
+       "w": 1,
+       "h": 1
+      },
+      {
+       "label": "Send question",
+       "w": 37,
+       "h": 44
+      }
+     ],
+     "small_target_count": 2,
+     "tables_with_headers": [],
+     "canvas_or_svg_charts": 0,
+     "chart_text_alternative": false,
+     "screenshot": "screenshots/support-390.png"
+    },
+    "768": {
+     "h1_count": 1,
+     "h1": "We're here to help.",
+     "landmarks": {
+      "main": 1,
+      "nav": 2,
+      "banner_or_header": 0,
+      "skip_link": true
+     },
+     "horizontal_overflow": false,
+     "scroll_width": 768,
+     "client_width": 768,
+     "low_contrast": [],
+     "low_contrast_count": 0,
+     "small_fonts": [
+      {
+       "text": "Today",
+       "size": 10
+      },
+      {
+       "text": "Meals",
+       "size": 10
+      },
+      {
+       "text": "Progress",
+       "size": 10
+      },
+      {
+       "text": "Ask",
+       "size": 10
+      },
+      {
+       "text": "More",
+       "size": 10
+      },
+      {
+       "text": "Support assistant",
+       "size": 11
+      },
+      {
+       "text": "App Issues",
+       "size": 11
+      },
+      {
+       "text": "Program Questions",
+       "size": 11
+      }
+     ],
+     "small_font_count": 8,
+     "small_targets": [
+      {
+       "label": "Skip to main content",
+       "w": 1,
+       "h": 1
+      },
+      {
+       "label": "Send question",
+       "w": 41,
+       "h": 44
+      }
+     ],
+     "small_target_count": 2,
+     "tables_with_headers": [],
+     "canvas_or_svg_charts": 0,
+     "chart_text_alternative": false,
+     "screenshot": "screenshots/support-768.png"
+    },
+    "1280": {
+     "h1_count": 1,
+     "h1": "We're here to help.",
+     "landmarks": {
+      "main": 1,
+      "nav": 2,
+      "banner_or_header": 0,
+      "skip_link": true
+     },
+     "horizontal_overflow": false,
+     "scroll_width": 1280,
+     "client_width": 1280,
+     "low_contrast": [],
+     "low_contrast_count": 0,
+     "small_fonts": [
+      {
+       "text": "Diabetes Reset",
+       "size": 10
+      },
+      {
+       "text": "Learn & tools",
+       "size": 11
+      },
+      {
+       "text": "Account & help",
+       "size": 11
+      },
+      {
+       "text": "batch2-a@example.invalid",
+       "size": 10
+      },
+      {
+       "text": "Level 1: Getting Started",
+       "size": 10
+      },
+      {
+       "text": "Support assistant",
+       "size": 11
+      },
+      {
+       "text": "App Issues",
+       "size": 11
+      },
+      {
+       "text": "Program Questions",
+       "size": 11
+      }
+     ],
+     "small_font_count": 8,
+     "small_targets": [
+      {
+       "label": "Skip to main content",
+       "w": 1,
+       "h": 1
+      },
+      {
+       "label": "Sign out",
+       "w": 208,
+       "h": 36
+      },
+      {
+       "label": "input",
+       "w": 884,
+       "h": 40
+      },
+      {
+       "label": "Send question",
+       "w": 42,
+       "h": 44
+      },
+      {
+       "label": "Report an issue \u2192",
+       "w": 934,
+       "h": 40
+      },
+      {
+       "label": "Ask the community \u2192",
+       "w": 934,
+       "h": 40
+      }
+     ],
+     "small_target_count": 6,
+     "tables_with_headers": [],
+     "canvas_or_svg_charts": 0,
+     "chart_text_alternative": false,
+     "screenshot": "screenshots/support-1280.png"
+    }
+   },
+   "zoom_200": {
+    "h1_count": 1,
+    "h1": "We're here to help.",
+    "landmarks": {
+     "main": 1,
+     "nav": 2,
+     "banner_or_header": 0,
+     "skip_link": true
+    },
+    "horizontal_overflow": false,
+    "scroll_width": 1280,
+    "client_width": 1280,
+    "low_contrast": [],
+    "low_contrast_count": 0,
+    "small_fonts": [
+     {
+      "text": "Diabetes Reset",
+      "size": 10
+     },
+     {
+      "text": "Learn & tools",
+      "size": 11
+     },
+     {
+      "text": "Account & help",
+      "size": 11
+     },
+     {
+      "text": "batch2-a@example.invalid",
+      "size": 10
+     },
+     {
+      "text": "Level 1: Getting Started",
+      "size": 10
+     },
+     {
+      "text": "Support assistant",
+      "size": 11
+     },
+     {
+      "text": "App Issues",
+      "size": 11
+     },
+     {
+      "text": "Program Questions",
+      "size": 11
+     }
+    ],
+    "small_font_count": 8,
+    "small_targets": [
+     {
+      "label": "Skip to main content",
+      "w": 2,
+      "h": 2
+     }
+    ],
+    "small_target_count": 1,
+    "tables_with_headers": [],
+    "canvas_or_svg_charts": 0,
+    "chart_text_alternative": false,
+    "screenshot": "screenshots/support-zoom200.png"
+   }
+  },
+  {
+   "route": "Admin: Subscriptions",
+   "path": "/admin/subscriptions",
+   "viewports": {
+    "320": {
+     "h1_count": 1,
+     "h1": "Admin",
+     "landmarks": {
+      "main": 1,
+      "nav": 1,
+      "banner_or_header": 1,
+      "skip_link": false
+     },
+     "horizontal_overflow": true,
+     "scroll_width": 531,
+     "client_width": 320,
+     "low_contrast": [],
+     "low_contrast_count": 0,
+     "small_fonts": [
+      {
+       "text": "Admin Console \u2014 Internal Use Only",
+       "size": 11
+      }
+     ],
+     "small_font_count": 1,
+     "small_targets": [
+      {
+       "label": "Dismiss",
+       "w": 32,
+       "h": 44
+      },
+      {
+       "label": "Legacy",
+       "w": 97,
+       "h": 36
+      },
+      {
+       "label": "Daily Digest",
+       "w": 130,
+       "h": 36
+      },
+      {
+       "label": "Subscriptions",
+       "w": 141,
+       "h": 36
+      },
+      {
+       "label": "Q&A Queue",
+       "w": 125,
+       "h": 36
+      },
+      {
+       "label": "Support Queue",
+       "w": 148,
+       "h": 36
+      },
+      {
+       "label": "Community",
+       "w": 123,
+       "h": 36
+      },
+      {
+       "label": "Content",
+       "w": 100,
+       "h": 36
+      },
+      {
+       "label": "Broadcasts",
+       "w": 124,
+       "h": 36
+      },
+      {
+       "label": "Coaching Interest",
+       "w": 166,
+       "h": 36
+      },
+      {
+       "label": "Coaching Waitlist",
+       "w": 166,
+       "h": 36
+      },
+      {
+       "label": "PHI Audit",
+       "w": 111,
+       "h": 36
+      }
+     ],
+     "small_target_count": 12,
+     "tables_with_headers": [
+      8
+     ],
+     "canvas_or_svg_charts": 0,
+     "chart_text_alternative": true,
+     "screenshot": "screenshots/admin-subscriptions-320.png"
+    },
+    "390": {
+     "h1_count": 1,
+     "h1": "Admin",
+     "landmarks": {
+      "main": 1,
+      "nav": 1,
+      "banner_or_header": 1,
+      "skip_link": false
+     },
+     "horizontal_overflow": true,
+     "scroll_width": 531,
+     "client_width": 390,
+     "low_contrast": [],
+     "low_contrast_count": 0,
+     "small_fonts": [
+      {
+       "text": "Admin Console \u2014 Internal Use Only",
+       "size": 11
+      }
+     ],
+     "small_font_count": 1,
+     "small_targets": [
+      {
+       "label": "Dismiss",
+       "w": 32,
+       "h": 44
+      },
+      {
+       "label": "Legacy",
+       "w": 97,
+       "h": 36
+      },
+      {
+       "label": "Daily Digest",
+       "w": 130,
+       "h": 36
+      },
+      {
+       "label": "Subscriptions",
+       "w": 141,
+       "h": 36
+      },
+      {
+       "label": "Q&A Queue",
+       "w": 125,
+       "h": 36
+      },
+      {
+       "label": "Support Queue",
+       "w": 148,
+       "h": 36
+      },
+      {
+       "label": "Community",
+       "w": 123,
+       "h": 36
+      },
+      {
+       "label": "Content",
+       "w": 100,
+       "h": 36
+      },
+      {
+       "label": "Broadcasts",
+       "w": 124,
+       "h": 36
+      },
+      {
+       "label": "Coaching Interest",
+       "w": 166,
+       "h": 36
+      },
+      {
+       "label": "Coaching Waitlist",
+       "w": 166,
+       "h": 36
+      },
+      {
+       "label": "PHI Audit",
+       "w": 111,
+       "h": 36
+      }
+     ],
+     "small_target_count": 12,
+     "tables_with_headers": [
+      8
+     ],
+     "canvas_or_svg_charts": 0,
+     "chart_text_alternative": true,
+     "screenshot": "screenshots/admin-subscriptions-390.png"
+    },
+    "768": {
+     "h1_count": 1,
+     "h1": "Admin",
+     "landmarks": {
+      "main": 1,
+      "nav": 1,
+      "banner_or_header": 1,
+      "skip_link": false
+     },
+     "horizontal_overflow": false,
+     "scroll_width": 768,
+     "client_width": 768,
+     "low_contrast": [],
+     "low_contrast_count": 0,
+     "small_fonts": [
+      {
+       "text": "Admin Console \u2014 Internal Use Only",
+       "size": 11
+      },
+      {
+       "text": "Handle member data with care",
+       "size": 11
+      }
+     ],
+     "small_font_count": 2,
+     "small_targets": [
+      {
+       "label": "Dismiss",
+       "w": 32,
+       "h": 44
+      },
+      {
+       "label": "Legacy",
+       "w": 97,
+       "h": 36
+      },
+      {
+       "label": "Daily Digest",
+       "w": 130,
+       "h": 36
+      },
+      {
+       "label": "Subscriptions",
+       "w": 141,
+       "h": 36
+      },
+      {
+       "label": "Q&A Queue",
+       "w": 125,
+       "h": 36
+      },
+      {
+       "label": "Support Queue",
+       "w": 148,
+       "h": 36
+      },
+      {
+       "label": "Community",
+       "w": 123,
+       "h": 36
+      },
+      {
+       "label": "Content",
+       "w": 100,
+       "h": 36
+      },
+      {
+       "label": "Broadcasts",
+       "w": 124,
+       "h": 36
+      },
+      {
+       "label": "Coaching Interest",
+       "w": 166,
+       "h": 36
+      },
+      {
+       "label": "Coaching Waitlist",
+       "w": 166,
+       "h": 36
+      },
+      {
+       "label": "PHI Audit",
+       "w": 111,
+       "h": 36
+      }
+     ],
+     "small_target_count": 12,
+     "tables_with_headers": [
+      8
+     ],
+     "canvas_or_svg_charts": 0,
+     "chart_text_alternative": true,
+     "screenshot": "screenshots/admin-subscriptions-768.png"
+    },
+    "1280": {
+     "h1_count": 1,
+     "h1": "Admin",
+     "landmarks": {
+      "main": 1,
+      "nav": 1,
+      "banner_or_header": 1,
+      "skip_link": false
+     },
+     "horizontal_overflow": false,
+     "scroll_width": 1280,
+     "client_width": 1280,
+     "low_contrast": [],
+     "low_contrast_count": 0,
+     "small_fonts": [
+      {
+       "text": "Admin Console \u2014 Internal Use Only",
+       "size": 11
+      },
+      {
+       "text": "Handle member data with care",
+       "size": 11
+      }
+     ],
+     "small_font_count": 2,
+     "small_targets": [
+      {
+       "label": "Legacy",
+       "w": 97,
+       "h": 36
+      },
+      {
+       "label": "Daily Digest",
+       "w": 130,
+       "h": 36
+      },
+      {
+       "label": "Subscriptions",
+       "w": 141,
+       "h": 36
+      },
+      {
+       "label": "Q&A Queue",
+       "w": 125,
+       "h": 36
+      },
+      {
+       "label": "Support Queue",
+       "w": 148,
+       "h": 36
+      },
+      {
+       "label": "Community",
+       "w": 123,
+       "h": 36
+      },
+      {
+       "label": "Content",
+       "w": 100,
+       "h": 36
+      },
+      {
+       "label": "Broadcasts",
+       "w": 124,
+       "h": 36
+      },
+      {
+       "label": "Coaching Interest",
+       "w": 166,
+       "h": 36
+      },
+      {
+       "label": "Coaching Waitlist",
+       "w": 166,
+       "h": 36
+      },
+      {
+       "label": "PHI Audit",
+       "w": 111,
+       "h": 36
+      },
+      {
+       "label": "input",
+       "w": 1248,
+       "h": 40
+      }
+     ],
+     "small_target_count": 12,
+     "tables_with_headers": [
+      8
+     ],
+     "canvas_or_svg_charts": 0,
+     "chart_text_alternative": true,
+     "screenshot": "screenshots/admin-subscriptions-1280.png"
+    }
+   },
+   "zoom_200": {
+    "h1_count": 1,
+    "h1": "Admin",
+    "landmarks": {
+     "main": 1,
+     "nav": 1,
+     "banner_or_header": 1,
+     "skip_link": false
+    },
+    "horizontal_overflow": false,
+    "scroll_width": 1280,
+    "client_width": 1280,
+    "low_contrast": [],
+    "low_contrast_count": 0,
+    "small_fonts": [
+     {
+      "text": "Admin Console \u2014 Internal Use Only",
+      "size": 11
+     },
+     {
+      "text": "Handle member data with care",
+      "size": 11
+     }
+    ],
+    "small_font_count": 2,
+    "small_targets": [],
+    "small_target_count": 0,
+    "tables_with_headers": [
+     8
+    ],
+    "canvas_or_svg_charts": 0,
+    "chart_text_alternative": true,
+    "screenshot": "screenshots/admin-subscriptions-zoom200.png"
+   }
+  }
+ ],
+ "reduced_motion": {
+  "media_matches": true,
+  "still_animating": 0
+ },
+ "keyboard": [
+  {
+   "route": "Today",
+   "focusable_reached": 18,
+   "without_visible_focus_indicator": 0,
+   "first_stops": [
+    {
+     "tag": "a",
+     "label": "Skip to main content",
+     "outline": true,
+     "ring": true,
+     "visible": true
+    },
+    {
+     "tag": "a",
+     "label": "DIABETES RESET\n\nMethod",
+     "outline": true,
+     "ring": false,
+     "visible": true
+    },
+    {
+     "tag": "button",
+     "label": "Notifications",
+     "outline": true,
+     "ring": false,
+     "visible": true
+    },
+    {
+     "tag": "a",
+     "label": "Today",
+     "outline": true,
+     "ring": false,
+     "visible": true
+    },
+    {
+     "tag": "a",
+     "label": "Meals",
+     "outline": true,
+     "ring": false,
+     "visible": true
+    }
+   ]
+  },
+  {
+   "route": "Meals",
+   "focusable_reached": 17,
+   "without_visible_focus_indicator": 0,
+   "first_stops": [
+    {
+     "tag": "a",
+     "label": "Skip to main content",
+     "outline": true,
+     "ring": true,
+     "visible": true
+    },
+    {
+     "tag": "a",
+     "label": "DIABETES RESET\n\nMethod",
+     "outline": true,
+     "ring": false,
+     "visible": true
+    },
+    {
+     "tag": "button",
+     "label": "Notifications",
+     "outline": true,
+     "ring": false,
+     "visible": true
+    },
+    {
+     "tag": "a",
+     "label": "Today",
+     "outline": true,
+     "ring": false,
+     "visible": true
+    },
+    {
+     "tag": "a",
+     "label": "Meals",
+     "outline": true,
+     "ring": false,
+     "visible": true
+    }
+   ]
+  },
+  {
+   "route": "Progress",
+   "focusable_reached": 18,
+   "without_visible_focus_indicator": 0,
+   "first_stops": [
+    {
+     "tag": "a",
+     "label": "Skip to main content",
+     "outline": true,
+     "ring": true,
+     "visible": true
+    },
+    {
+     "tag": "a",
+     "label": "DIABETES RESET\n\nMethod",
+     "outline": true,
+     "ring": false,
+     "visible": true
+    },
+    {
+     "tag": "button",
+     "label": "Notifications",
+     "outline": true,
+     "ring": false,
+     "visible": true
+    },
+    {
+     "tag": "a",
+     "label": "Today",
+     "outline": true,
+     "ring": false,
+     "visible": true
+    },
+    {
+     "tag": "a",
+     "label": "Meals",
+     "outline": true,
+     "ring": false,
+     "visible": true
+    }
+   ]
+  },
+  {
+   "route": "Workouts",
+   "focusable_reached": 17,
+   "without_visible_focus_indicator": 0,
+   "first_stops": [
+    {
+     "tag": "a",
+     "label": "Skip to main content",
+     "outline": true,
+     "ring": true,
+     "visible": true
+    },
+    {
+     "tag": "a",
+     "label": "DIABETES RESET\n\nMethod",
+     "outline": true,
+     "ring": false,
+     "visible": true
+    },
+    {
+     "tag": "button",
+     "label": "Notifications",
+     "outline": true,
+     "ring": false,
+     "visible": true
+    },
+    {
+     "tag": "a",
+     "label": "Today",
+     "outline": true,
+     "ring": false,
+     "visible": true
+    },
+    {
+     "tag": "a",
+     "label": "Meals",
+     "outline": true,
+     "ring": false,
+     "visible": true
+    }
+   ]
+  },
+  {
+   "route": "Learn",
+   "focusable_reached": 17,
+   "without_visible_focus_indicator": 0,
+   "first_stops": [
+    {
+     "tag": "a",
+     "label": "Skip to main content",
+     "outline": true,
+     "ring": true,
+     "visible": true
+    },
+    {
+     "tag": "a",
+     "label": "DIABETES RESET\n\nMethod",
+     "outline": true,
+     "ring": false,
+     "visible": true
+    },
+    {
+     "tag": "button",
+     "label": "Notifications",
+     "outline": true,
+     "ring": false,
+     "visible": true
+    },
+    {
+     "tag": "a",
+     "label": "Today",
+     "outline": true,
+     "ring": false,
+     "visible": true
+    },
+    {
+     "tag": "a",
+     "label": "Meals",
+     "outline": true,
+     "ring": false,
+     "visible": true
+    }
+   ]
+  },
+  {
+   "route": "Ask",
+   "focusable_reached": 18,
+   "without_visible_focus_indicator": 0,
+   "first_stops": [
+    {
+     "tag": "a",
+     "label": "Skip to main content",
+     "outline": true,
+     "ring": true,
+     "visible": true
+    },
+    {
+     "tag": "a",
+     "label": "DIABETES RESET\n\nMethod",
+     "outline": true,
+     "ring": false,
+     "visible": true
+    },
+    {
+     "tag": "button",
+     "label": "Notifications",
+     "outline": true,
+     "ring": false,
+     "visible": true
+    },
+    {
+     "tag": "a",
+     "label": "Today",
+     "outline": true,
+     "ring": false,
+     "visible": true
+    },
+    {
+     "tag": "a",
+     "label": "Meals",
+     "outline": true,
+     "ring": false,
+     "visible": true
+    }
+   ]
+  },
+  {
+   "route": "Profile",
+   "focusable_reached": 18,
+   "without_visible_focus_indicator": 0,
+   "first_stops": [
+    {
+     "tag": "a",
+     "label": "Skip to main content",
+     "outline": true,
+     "ring": true,
+     "visible": true
+    },
+    {
+     "tag": "a",
+     "label": "DIABETES RESET\n\nMethod",
+     "outline": true,
+     "ring": false,
+     "visible": true
+    },
+    {
+     "tag": "button",
+     "label": "Notifications",
+     "outline": true,
+     "ring": false,
+     "visible": true
+    },
+    {
+     "tag": "a",
+     "label": "Today",
+     "outline": true,
+     "ring": false,
+     "visible": true
+    },
+    {
+     "tag": "a",
+     "label": "Meals",
+     "outline": true,
+     "ring": false,
+     "visible": true
+    }
+   ]
+  },
+  {
+   "route": "Settings",
+   "focusable_reached": 18,
+   "without_visible_focus_indicator": 0,
+   "first_stops": [
+    {
+     "tag": "a",
+     "label": "Skip to main content",
+     "outline": true,
+     "ring": true,
+     "visible": true
+    },
+    {
+     "tag": "a",
+     "label": "DIABETES RESET\n\nMethod",
+     "outline": true,
+     "ring": false,
+     "visible": true
+    },
+    {
+     "tag": "button",
+     "label": "Notifications",
+     "outline": true,
+     "ring": false,
+     "visible": true
+    },
+    {
+     "tag": "a",
+     "label": "Today",
+     "outline": true,
+     "ring": false,
+     "visible": true
+    },
+    {
+     "tag": "a",
+     "label": "Meals",
+     "outline": true,
+     "ring": false,
+     "visible": true
+    }
+   ]
+  },
+  {
+   "route": "Billing",
+   "focusable_reached": 18,
+   "without_visible_focus_indicator": 0,
+   "first_stops": [
+    {
+     "tag": "a",
+     "label": "Skip to main content",
+     "outline": true,
+     "ring": true,
+     "visible": true
+    },
+    {
+     "tag": "a",
+     "label": "DIABETES RESET\n\nMethod",
+     "outline": true,
+     "ring": false,
+     "visible": true
+    },
+    {
+     "tag": "button",
+     "label": "Notifications",
+     "outline": true,
+     "ring": false,
+     "visible": true
+    },
+    {
+     "tag": "a",
+     "label": "Today",
+     "outline": true,
+     "ring": false,
+     "visible": true
+    },
+    {
+     "tag": "a",
+     "label": "Meals",
+     "outline": true,
+     "ring": false,
+     "visible": true
+    }
+   ]
+  },
+  {
+   "route": "Support",
+   "focusable_reached": 18,
+   "without_visible_focus_indicator": 0,
+   "first_stops": [
+    {
+     "tag": "a",
+     "label": "Skip to main content",
+     "outline": true,
+     "ring": true,
+     "visible": true
+    },
+    {
+     "tag": "a",
+     "label": "DIABETES RESET\n\nMethod",
+     "outline": true,
+     "ring": false,
+     "visible": true
+    },
+    {
+     "tag": "button",
+     "label": "Notifications",
+     "outline": true,
+     "ring": false,
+     "visible": true
+    },
+    {
+     "tag": "a",
+     "label": "Today",
+     "outline": true,
+     "ring": false,
+     "visible": true
+    },
+    {
+     "tag": "a",
+     "label": "Meals",
+     "outline": true,
+     "ring": false,
+     "visible": true
+    }
+   ]
+  },
+  {
+   "route": "Admin: Subscriptions",
+   "focusable_reached": 17,
+   "without_visible_focus_indicator": 0,
+   "first_stops": [
+    {
+     "tag": "a",
+     "label": "Back to member app",
+     "outline": true,
+     "ring": true,
+     "visible": true
+    },
+    {
+     "tag": "button",
+     "label": "Sign out",
+     "outline": true,
+     "ring": true,
+     "visible": true
+    },
+    {
+     "tag": "a",
+     "label": "Legacy",
+     "outline": true,
+     "ring": true,
+     "visible": true
+    },
+    {
+     "tag": "a",
+     "label": "Daily Digest",
+     "outline": true,
+     "ring": true,
+     "visible": true
+    },
+    {
+     "tag": "a",
+     "label": "Subscriptions",
+     "outline": true,
+     "ring": true,
+     "visible": true
+    }
+   ]
+  }
+ ]
+}

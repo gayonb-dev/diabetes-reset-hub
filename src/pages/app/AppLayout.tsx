@@ -254,8 +254,8 @@ export default function AppLayout() {
 
 
           <div className="border-t border-white/10 pt-3 mt-3 space-y-2">
-            <p className="text-[10px] text-white/40 truncate">{user?.email}</p>
-            <span className="inline-block bg-accent/15 border border-accent/30 text-accent text-[10px] px-2 py-0.5 rounded-full">
+            <p className="text-[10px] text-white/75 truncate">{user?.email}</p>
+            <span className="inline-block bg-accent/20 border border-accent/40 text-accent-on-dark text-[10px] px-2 py-0.5 rounded-full">
               {levelName}
             </span>
             <Button

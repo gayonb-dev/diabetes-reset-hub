@@ -626,7 +626,7 @@ export default function Settings() {
           disabled={displayNameSaving || !displayNameDirty}
           variant="outline"
           size="sm"
-          className="mt-3"
+          className="mt-3 min-h-11"
         >
           {displayNameSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           Save display name
@@ -695,7 +695,7 @@ export default function Settings() {
           disabled={tzSaving || !timezone || timezone === initialTimezone}
           variant="outline"
           size="sm"
-          className="mt-3"
+          className="mt-3 min-h-11"
         >
           {tzSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           Save timezone
@@ -942,14 +942,14 @@ export default function Settings() {
           Your data stays yours. Export or delete anytime.
         </p>
         <div className="flex flex-wrap gap-2">
-          <Button onClick={exportData} variant="outline" size="sm">
+          <Button onClick={exportData} variant="outline" size="sm" className="min-h-11">
             <Download className="mr-1.5 h-3.5 w-3.5" /> Export my data (CSV)
           </Button>
           <Button
             onClick={() => setDeleteOpen(true)}
             variant="outline"
             size="sm"
-            className="text-destructive border-destructive/40 hover:bg-destructive/5"
+            className="min-h-11 text-destructive border-destructive/40 hover:bg-destructive/5"
           >
             <Trash2 className="mr-1.5 h-3.5 w-3.5" /> Delete my data
           </Button>
@@ -1029,7 +1029,7 @@ function Chip({ active, onClick, children }: { active: boolean; onClick: () => v
     <button
       type="button"
       onClick={onClick}
-      className={`py-2 rounded-lg border text-sm font-medium transition-colors ${
+      className={`min-h-11 py-2 rounded-lg border text-sm font-medium transition-colors ${
         active
           ? "border-primary bg-primary text-primary-foreground"
           : "border-border bg-background hover:border-primary/40"

@@ -41,7 +41,7 @@ export default function StreakBadge({ streak, freezeAvailable, onClick }: Streak
           </defs>
         </svg>
       </span>
-      <span className={`text-lg ${weightClass} text-accent leading-none tabular-nums`}>
+      <span className={`text-lg ${weightClass} text-accent-ink leading-none tabular-nums`}>
         {streak}
       </span>
       {freezeAvailable && (

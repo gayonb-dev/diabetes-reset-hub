@@ -135,7 +135,7 @@ export function CoachingInterestCard() {
               checked={consent}
               onCheckedChange={(v) => setConsent(v === true)}
               aria-label="Record my interest in future coaching"
-              className="mt-0.5"
+              className="mt-0.5 h-6 w-6"
             />
             <span>
               Record my interest using my account email ({user?.email}). I understand this

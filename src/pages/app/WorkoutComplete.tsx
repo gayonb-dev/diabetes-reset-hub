@@ -154,7 +154,7 @@ export default function WorkoutComplete() {
           <Button
             asChild
             variant="outline"
-            className="w-full"
+            className="w-full min-h-11"
           >
             <Link to="/app">Back to today</Link>
           </Button>
