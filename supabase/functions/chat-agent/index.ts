@@ -336,7 +336,7 @@ Deno.serve(async (req) => {
 
     const userId = session.user_id;
     const authedEmail: string | null = null;
-    const authedName: string | null = null;
+    const authedName = null as string | null;
 
     // ---- Conversation: a caller-supplied id is only honoured when it belongs
     //      to this session's visitor profile. It is never authorization. ----
