@@ -8,7 +8,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ArrowLeft, Users, ShoppingCart, ClipboardList, RefreshCw, Search, Eye, Trophy } from "lucide-react";
 import { toast } from "sonner";
 
-type Tab = "orders" | "leads" | "intakes" | "progress";
+// Batch 2 task 22 — Intake Forms and Challenge Progress are retired surfaces
+// and are no longer part of active Admin.
+type Tab = "orders" | "leads";
 
 type OrderRow = Tables<"orders">;
 type LeadRow = Tables<"leads">;
@@ -141,13 +143,6 @@ const AdminDashboard = () => {
           </div>
           <div className="bg-card border border-border rounded-xl p-4">
             <div className="flex items-center gap-2 text-muted-foreground mb-1">
-              <Trophy className="h-4 w-4 text-primary" />
-              <span className="text-xs font-medium">Active Challengers</span>
-            </div>
-            <p className="font-heading font-bold text-2xl text-foreground">{uniqueProgressEmails.length}</p>
-          </div>
-          <div className="bg-card border border-border rounded-xl p-4">
-            <div className="flex items-center gap-2 text-muted-foreground mb-1">
               <span className="text-xs font-medium">Revenue</span>
             </div>
             <p className="font-heading font-bold text-2xl text-foreground">${totalRevenue.toFixed(2)}</p>
@@ -159,8 +154,6 @@ const AdminDashboard = () => {
           {([
             { key: "orders" as Tab, label: "Orders", icon: ShoppingCart, count: orders.length },
             { key: "leads" as Tab, label: "Leads", icon: Users, count: leads.length },
-            { key: "intakes" as Tab, label: "Intake Forms", icon: ClipboardList, count: intakes.length },
-            { key: "progress" as Tab, label: "Challenge Progress", icon: Trophy, count: uniqueProgressEmails.length },
           ]).map((tab) => (
             <button
               key={tab.key}
@@ -182,7 +175,7 @@ const AdminDashboard = () => {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} placeholder="Search..." className="pl-10" />
           </div>
-          {(activeTab === "orders" || activeTab === "intakes") && (
+          {activeTab === "orders" && (
             <Select value={statusFilter} onValueChange={setStatusFilter}>
               <SelectTrigger className="w-40">
                 <SelectValue placeholder="Status" />
