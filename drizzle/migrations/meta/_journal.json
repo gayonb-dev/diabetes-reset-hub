@@ -22,6 +22,13 @@
       "when": 1787974177169,
       "tag": "0002_orders_member_read_without_auth_users",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1787974207341,
+      "tag": "0003_email_policies_use_jwt_not_auth_users",
+      "breakpoints": true
     }
   ]
 }
