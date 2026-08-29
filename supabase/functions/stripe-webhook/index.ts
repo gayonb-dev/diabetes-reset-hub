@@ -3,6 +3,7 @@ import Stripe from "https://esm.sh/stripe@18.5.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
 
 import { corsFor } from "../_shared/cors.ts";
+import { assignImmutableOwner } from "../_shared/orderOwnership.ts";
 import { sendEmail as sendGatedEmail } from "../_shared/email.ts";
 
 const ADMIN_EMAIL = "support@diabetesresetmethod.com";
