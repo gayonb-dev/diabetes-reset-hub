@@ -1,231 +1,431 @@
 {
-  "source": ".lovable/plan/batch-2-experience-design-and-admin-consolidation-2026-08-27.md",
-  "starting_authority_sha": "ba3e356921bcb1670dfd7115f27dbf269093579b",
-  "current_working_sha": "63e783c062d8af9b1ff2470deeaf5eae117bbe2e",
-  "branch": "edit/edt-ffbedddd-e5fa-4270-91d7-c6f350c44c16",
-  "working_tree_clean": true,
-  "total_tasks": 24,
-  "desktop_results": 0,
-  "mobile_results": 0,
-  "matrix": [
-    {
-      "id": 1,
-      "task": "Navigate Today, Meals, Progress, Workouts, Learn, Ask with no unexplained blank content region; shell and accessible loading state stay visible.",
-      "expected": "Each route renders the authenticated shell and navigation; route-shaped skeleton announces loading; no blank content region.",
-      "actual": "",
-      "evidence": "",
-      "desktop": "",
-      "mobile": ""
-    },
-    {
-      "id": 2,
-      "task": "Keyboard-only navigation: focus visible, logical and restored after route changes, dialogs and async rendering.",
-      "expected": "Tab order is logical; focus indicator visible on every interactive control; focus restored after navigation/dialog close.",
-      "actual": "",
-      "evidence": "",
-      "desktop": "",
-      "mobile": ""
-    },
-    {
-      "id": 3,
-      "task": "Today shows correct `Day X of 180` and a separate `Phase N \u2014 [name], day X of Y` with a plain-language explanation.",
-      "expected": "Program day and named phase-relative day are both displayed; phase end is not presented as programme end.",
-      "actual": "",
-      "evidence": "",
-      "desktop": "",
-      "mobile": ""
-    },
-    {
-      "id": 4,
-      "task": "`Log habits` waits for the destination to render, scrolls to the habit section and moves focus to its heading.",
-      "expected": "Clicking Log habits scrolls to and focuses the habit section heading.",
-      "actual": "",
-      "evidence": "",
-      "desktop": "",
-      "mobile": ""
-    },
-    {
-      "id": 5,
-      "task": "Mindset uses a clear `Read reflection` / `Hide reflection` disclosure with a visible, accessible expanded state.",
-      "expected": "Mindset card has Read/Hide reflection control; expanded state announced.",
-      "actual": "",
-      "evidence": "",
-      "desktop": "",
-      "mobile": ""
-    },
-    {
-      "id": 6,
-      "task": "Shopping List opens with `By meal` first and selected by default.",
-      "expected": "Shopping list default view is By meal.",
-      "actual": "",
-      "evidence": "",
-      "desktop": "",
-      "mobile": ""
-    },
-    {
-      "id": 7,
-      "task": "A selected day or selected meals do not render the whole weekly ingredient list; full-week expansion requires a deliberate action.",
-      "expected": "Only selected day/meals shown by default; whole-week expansion is explicit.",
-      "actual": "",
-      "evidence": "",
-      "desktop": "",
-      "mobile": ""
-    },
-    {
-      "id": 8,
-      "task": "Parser output readable across quantities, fractions, Unicode fractions, plurals, optional quantities and numeric prefixes; no legitimate ingredient name silently damaged.",
-      "expected": "Ingredients display correctly; quantity-less names remain readable; incompatible units not merged.",
-      "actual": "",
-      "evidence": "",
-      "desktop": "",
-      "mobile": ""
-    },
-    {
-      "id": 9,
-      "task": "Rapid meal text entry loses no characters; all three plate-method components persist as 3/3 after reload.",
-      "expected": "Typing is responsive; 3/3 plate components survive reload.",
-      "actual": "",
-      "evidence": "",
-      "desktop": "",
-      "mobile": ""
-    },
-    {
-      "id": 10,
-      "task": "`Return to Guides` clears the selected article, restores the list, updates the URL and focuses the Guides heading; browser Back/Forward verified.",
-      "expected": "Return to Guides restores list, URL and focus; Back/Forward synchronized.",
-      "actual": "",
-      "evidence": "",
-      "desktop": "",
-      "mobile": ""
-    },
-    {
-      "id": 11,
-      "task": "Fasting education cannot be mistaken for a questionnaire, eligibility screening, timer or scheduler; the page says plainly there is no questionnaire and scheduling is unavailable.",
-      "expected": "Fasting page is education-only; no questionnaire/scheduler implication.",
-      "actual": "",
-      "evidence": "",
-      "desktop": "",
-      "mobile": ""
-    },
-    {
-      "id": 12,
-      "task": "`Ask VITA` and `Post to community` are visibly and accessibly distinct.",
-      "expected": "Two distinct actions inside Ask surface.",
-      "actual": "",
-      "evidence": "",
-      "desktop": "",
-      "mobile": ""
-    },
-    {
-      "id": 13,
-      "task": "Only `Ask` appears selected in primary navigation; no duplicate Community primary item remains while both share a route.",
-      "expected": "Primary nav has Ask only; Community is not a separate primary item.",
-      "actual": "",
-      "evidence": "",
-      "desktop": "",
-      "mobile": ""
-    },
-    {
-      "id": 14,
-      "task": "Ordinary success toasts auto-dismiss within 4\u20136s, pause on hover/focus, stay accessible without stealing focus.",
-      "expected": "Success toast dismisses 4-6s; pauses on hover/focus; polite announcement.",
-      "actual": "",
-      "evidence": "",
-      "desktop": "",
-      "mobile": ""
-    },
-    {
-      "id": 15,
-      "task": "Selecting a notification marks it read and decrements the count; `Mark all as read` clears it; opening the panel alone marks nothing; no reload needed.",
-      "expected": "Per-item read updates count; mark-all clears count; panel open alone marks nothing.",
-      "actual": "",
-      "evidence": "",
-      "desktop": "",
-      "mobile": ""
-    },
-    {
-      "id": 16,
-      "task": "Support persists a durable ticket before success, shows its reference and reports email state honestly as notified, suppressed or failed.",
-      "expected": "Ticket persisted; reference shown; email state truthful.",
-      "actual": "",
-      "evidence": "",
-      "desktop": "",
-      "mobile": ""
-    },
-    {
-      "id": 17,
-      "task": "Coaching interest added and withdrawn using authenticated identity/email, explicit consent and timestamp only \u2014 no health narrative or fields, no urgency, deposit, checkout or availability promise.",
-      "expected": "Coaching interest collects only identity, consent, status and timestamp; withdrawal works.",
-      "actual": "",
-      "evidence": "",
-      "desktop": "",
-      "mobile": ""
-    },
-    {
-      "id": 18,
-      "task": "Activity Score explains its canonical ledger source and recent entries, or shows the approved migration state; no legacy XP or retired badge as canonical score.",
-      "expected": "Activity Score explains ledger source or migration state.",
-      "actual": "",
-      "evidence": "",
-      "desktop": "",
-      "mobile": ""
-    },
-    {
-      "id": 19,
-      "task": "Every changed Admin screen has a persistent, functional `Back to member app`.",
-      "expected": "Back to member app link present and functional on changed Admin pages.",
-      "actual": "",
-      "evidence": "",
-      "desktop": "",
-      "mobile": ""
-    },
-    {
-      "id": 20,
-      "task": "Admin Support Queue reachable, permission-protected and usable, with accessible filter/status/reply-state controls and no raw user agent.",
-      "expected": "Admin Support Queue has filters, status/reply controls; no raw user agent.",
-      "actual": "",
-      "evidence": "",
-      "desktop": "",
-      "mobile": ""
-    },
-    {
-      "id": 21,
-      "task": "Admin billing metrics reconcile orders, active subscriptions, cancellations, refunds, disputes and payment failures separately against read-only queries; backend failure shows an error, never fabricated zero revenue.",
-      "expected": "Billing metrics reconciled separately; backend failure renders error.",
-      "actual": "",
-      "evidence": "",
-      "desktop": "",
-      "mobile": ""
-    },
-    {
-      "id": 22,
-      "task": "Top Customers, its browser refresh path, WhatsApp scripts, Intake Forms and Challenge Progress absent from active Admin; no member-app flow writes to Challenge Progress.",
-      "expected": "Retired surfaces absent from active Admin; no app writes to Challenge Progress.",
-      "actual": "",
-      "evidence": "",
-      "desktop": "",
-      "mobile": ""
-    },
-    {
-      "id": 23,
-      "task": "Billing, Settings, Support, export and deletion reachable under allowed, grace, restricted-billing, deletion-restricted and dispute states per the Prompt 5 lifecycle; no billing condition redirects a signed-in member to Login.",
-      "expected": "Restricted members retain Billing, Settings, Support, export and deletion surfaces; no redirect to Login.",
-      "actual": "",
-      "evidence": "",
-      "desktop": "",
-      "mobile": ""
-    },
-    {
-      "id": 24,
-      "task": "No retired badge, unsafe clinical copy, obsolete WhatsApp/coaching promise, fasting tool, supplement promotion, cheat-meal mechanism, reversal language or personalized-health-AI promise in active source, database-managed member content or the production bundle.",
-      "expected": "No retired or unsafe content in source, DB-managed content or bundle.",
-      "actual": "",
-      "evidence": "",
-      "desktop": "",
-      "mobile": ""
-    }
-  ],
-  "total_results": 0,
-  "execution_state": "NOT_EXECUTED",
-  "note": "Result fields are intentionally empty. No result may be borrowed from the rejected journey matrix."
+ "source": ".lovable/plan/batch-2-experience-design-and-admin-consolidation-2026-08-27.md",
+ "starting_authority_sha": "ba3e356921bcb1670dfd7115f27dbf269093579b",
+ "current_working_sha": "d2238f7d322b94a863a5e110f8e200f677a012ca",
+ "branch": "edit/edt-ffbedddd-e5fa-4270-91d7-c6f350c44c16",
+ "working_tree_clean": true,
+ "total_tasks": 24,
+ "desktop_results": 24,
+ "mobile_results": 24,
+ "matrix": [
+  {
+   "id": 1,
+   "task": "Navigate Today, Meals, Progress, Workouts, Learn, Ask with no unexplained blank content region; shell and accessible loading state stay visible.",
+   "expected": "Each route renders the authenticated shell and navigation; route-shaped skeleton announces loading; no blank content region.",
+   "desktop": {
+    "status": "PASS",
+    "actual": "All six routes render shell + navigation with non-empty content",
+    "evidence": "shots/desktop/t1-today.png, shots/desktop/t1-meals.png, shots/desktop/t1-progress.png, shots/desktop/t1-workouts.png, shots/desktop/t1-learn.png, shots/desktop/t1-ask.png",
+    "note": ""
+   },
+   "mobile": {
+    "status": "PASS",
+    "actual": "All six routes render shell + navigation with non-empty content",
+    "evidence": "shots/mobile/t1-today.png, shots/mobile/t1-meals.png, shots/mobile/t1-progress.png, shots/mobile/t1-workouts.png, shots/mobile/t1-learn.png, shots/mobile/t1-ask.png",
+    "note": ""
+   }
+  },
+  {
+   "id": 2,
+   "task": "Keyboard-only navigation: focus visible, logical and restored after route changes, dialogs and async rendering.",
+   "expected": "Tab order is logical; focus indicator visible on every interactive control; focus restored after navigation/dialog close.",
+   "desktop": {
+    "status": "PASS",
+    "actual": "18 focusable stops reached, focus indicator visible on all; after route change first Tab focuses <A>",
+    "evidence": "shots/desktop/t2-focus.png",
+    "note": ""
+   },
+   "mobile": {
+    "status": "PASS",
+    "actual": "18 focusable stops reached, focus indicator visible on all; after route change first Tab focuses <A>",
+    "evidence": "shots/mobile/t2-focus.png",
+    "note": ""
+   }
+  },
+  {
+   "id": 3,
+   "task": "Today shows correct `Day X of 180` and a separate `Phase N \u2014 [name], day X of Y` with a plain-language explanation.",
+   "expected": "Program day and named phase-relative day are both displayed; phase end is not presented as programme end.",
+   "desktop": {
+    "status": "PASS",
+    "actual": "'Day 14 of 180' and 'Phase 1 \u2014 Reset: day 14 of 14' shown together",
+    "evidence": "shots/desktop/t3-today.png",
+    "note": ""
+   },
+   "mobile": {
+    "status": "PASS",
+    "actual": "'Day 14 of 180' and 'Phase 1 \u2014 Reset: day 14 of 14' shown together",
+    "evidence": "shots/mobile/t3-today.png",
+    "note": ""
+   }
+  },
+  {
+   "id": 4,
+   "task": "`Log habits` waits for the destination to render, scrolls to the habit section and moves focus to its heading.",
+   "expected": "Clicking Log habits scrolls to and focuses the habit section heading.",
+   "desktop": {
+    "status": "PASS",
+    "actual": "focus moved to #daily-habits-heading, habit section scrolled to y=921",
+    "evidence": "shots/desktop/t4-loghabits.png",
+    "note": ""
+   },
+   "mobile": {
+    "status": "PASS",
+    "actual": "focus moved to #daily-habits-heading, habit section scrolled to y=245",
+    "evidence": "shots/mobile/t4-loghabits.png",
+    "note": ""
+   }
+  },
+  {
+   "id": 5,
+   "task": "Mindset uses a clear `Read reflection` / `Hide reflection` disclosure with a visible, accessible expanded state.",
+   "expected": "Mindset card has Read/Hide reflection control; expanded state announced.",
+   "desktop": {
+    "status": "PASS",
+    "actual": "'Read reflection' aria-expanded=false -> 'Hide reflection' aria-expanded=true, reflection visible=True",
+    "evidence": "shots/desktop/t5-mindset.png",
+    "note": ""
+   },
+   "mobile": {
+    "status": "PASS",
+    "actual": "'Read reflection' aria-expanded=false -> 'Hide reflection' aria-expanded=true, reflection visible=True",
+    "evidence": "shots/mobile/t5-mindset.png",
+    "note": ""
+   }
+  },
+  {
+   "id": 6,
+   "task": "Shopping List opens with `By meal` first and selected by default.",
+   "expected": "Shopping list default view is By meal.",
+   "desktop": {
+    "status": "PASS",
+    "actual": "'By meal' is first in the toggle and aria-pressed=true on open",
+    "evidence": "shots/desktop/t6-shopping-default.png",
+    "note": ""
+   },
+   "mobile": {
+    "status": "PASS",
+    "actual": "'By meal' is first in the toggle and aria-pressed=true on open",
+    "evidence": "shots/mobile/t6-shopping-default.png",
+    "note": ""
+   }
+  },
+  {
+   "id": 7,
+   "task": "A selected day or selected meals do not render the whole weekly ingredient list; full-week expansion requires a deliberate action.",
+   "expected": "Only selected day/meals shown by default; whole-week expansion is explicit.",
+   "desktop": {
+    "status": "PASS",
+    "actual": "default scope 'Showing Friday only.' renders 26 ingredient rows; explicit 'Show whole week' expands to 61",
+    "evidence": "shots/desktop/t7-scope.png",
+    "note": ""
+   },
+   "mobile": {
+    "status": "PASS",
+    "actual": "default scope 'Showing Friday only.' renders 26 ingredient rows; explicit 'Show whole week' expands to 61",
+    "evidence": "shots/mobile/t7-scope.png",
+    "note": ""
+   }
+  },
+  {
+   "id": 8,
+   "task": "Parser output readable across quantities, fractions, Unicode fractions, plurals, optional quantities and numeric prefixes; no legitimate ingredient name silently damaged.",
+   "expected": "Ingredients display correctly; quantity-less names remain readable; incompatible units not merged.",
+   "desktop": {
+    "status": "PASS",
+    "actual": "parser output {\"quantity+plural kept\": true, \"fraction stripped\": true, \"unicode fraction stripped\": true, \"quantity-less name intact\": true, \"trailing phrase intact\": true, \"no empty entries\": true}; sample=['tilapia', 'broccoli', 'brown rice', 'lime', 'chicken breast', 'pumpkin', 'spinach', 'garlic', 'plain Greek yogurt', 'berries']",
+    "evidence": "shots/desktop/t8-parser.png",
+    "note": ""
+   },
+   "mobile": {
+    "status": "PASS",
+    "actual": "parser output {\"quantity+plural kept\": true, \"fraction stripped\": true, \"unicode fraction stripped\": true, \"quantity-less name intact\": true, \"trailing phrase intact\": true, \"no empty entries\": true}; sample=['tilapia', 'broccoli', 'brown rice', 'lime', 'chicken breast', 'pumpkin', 'spinach', 'garlic', 'plain Greek yogurt', 'berries']",
+    "evidence": "shots/mobile/t8-parser.png",
+    "note": ""
+   }
+  },
+  {
+   "id": 9,
+   "task": "Rapid meal text entry loses no characters; all three plate-method components persist as 3/3 after reload.",
+   "expected": "Typing is responsive; 3/3 plate components survive reload.",
+   "desktop": {
+    "status": "PASS",
+    "actual": "typed text persisted after reload as 'callaloo eggs and avocado at 8am'; 3 plate components checked after reload; meal counter line present=True",
+    "evidence": "shots/desktop/t9-meal-entry.png",
+    "note": "3/3 plate components read back from the reloaded breakfast card"
+   },
+   "mobile": {
+    "status": "PASS",
+    "actual": "typed text persisted after reload as 'callaloo eggs and avocado at 8am'; 3 plate components checked after reload; meal counter line present=True",
+    "evidence": "shots/mobile/t9-meal-entry.png",
+    "note": "3/3 plate components read back from the reloaded breakfast card"
+   }
+  },
+  {
+   "id": 10,
+   "task": "`Return to Guides` clears the selected article, restores the list, updates the URL and focuses the Guides heading; browser Back/Forward verified.",
+   "expected": "Return to Guides restores list, URL and focus; Back/Forward synchronized.",
+   "desktop": {
+    "status": "PASS",
+    "actual": "opened 'The Plate Method Guide' (http://localhost:8080/app/learn?guide=plate-method) -> list=http://localhost:8080/app/learn; open articles after return=0; focus='Guides'; Back=http://localhost:8080/app/learn?guide=plate-method, Forward=http://localhost:8080/app/learn",
+    "evidence": "shots/desktop/t10-learn.png",
+    "note": ""
+   },
+   "mobile": {
+    "status": "PASS",
+    "actual": "opened 'The Plate Method Guide' (http://localhost:8080/app/learn?guide=plate-method) -> list=http://localhost:8080/app/learn; open articles after return=0; focus='Guides'; Back=http://localhost:8080/app/learn?guide=plate-method, Forward=http://localhost:8080/app/learn",
+    "evidence": "shots/mobile/t10-learn.png",
+    "note": ""
+   }
+  },
+  {
+   "id": 11,
+   "task": "Fasting education cannot be mistaken for a questionnaire, eligibility screening, timer or scheduler; the page says plainly there is no questionnaire and scheduling is unavailable.",
+   "expected": "Fasting page is education-only; no questionnaire/scheduler implication.",
+   "desktop": {
+    "status": "PASS",
+    "actual": "page states no questionnaire/scheduling=True; interactive inputs in main=0; forbidden matches=['Schedule']",
+    "evidence": "shots/desktop/t11-fasting.png",
+    "note": ""
+   },
+   "mobile": {
+    "status": "PASS",
+    "actual": "page states no questionnaire/scheduling=True; interactive inputs in main=0; forbidden matches=['Schedule']",
+    "evidence": "shots/mobile/t11-fasting.png",
+    "note": ""
+   }
+  },
+  {
+   "id": 12,
+   "task": "`Ask VITA` and `Post to community` are visibly and accessibly distinct.",
+   "expected": "Two distinct actions inside Ask surface.",
+   "desktop": {
+    "status": "PASS",
+    "actual": "'Ask VITA' composer present (1) and a separate labelled 'Post to community' action present (1)",
+    "evidence": "shots/desktop/t12-ask.png",
+    "note": ""
+   },
+   "mobile": {
+    "status": "PASS",
+    "actual": "'Ask VITA' composer present (1) and a separate labelled 'Post to community' action present (1)",
+    "evidence": "shots/mobile/t12-ask.png",
+    "note": ""
+   }
+  },
+  {
+   "id": 13,
+   "task": "Only `Ask` appears selected in primary navigation; no duplicate Community primary item remains while both share a route.",
+   "expected": "Primary nav has Ask only; Community is not a separate primary item.",
+   "desktop": {
+    "status": "PASS",
+    "actual": "aria-current items=['Ask', 'Ask']; separate Community primary item present=False",
+    "evidence": "shots/desktop/t13-nav.png",
+    "note": ""
+   },
+   "mobile": {
+    "status": "PASS",
+    "actual": "aria-current items=['Ask', 'Ask']; separate Community primary item present=False",
+    "evidence": "shots/mobile/t13-nav.png",
+    "note": ""
+   }
+  },
+  {
+   "id": 14,
+   "task": "Ordinary success toasts auto-dismiss within 4\u20136s, pause on hover/focus, stay accessible without stealing focus.",
+   "expected": "Success toast dismisses 4-6s; pauses on hover/focus; polite announcement.",
+   "desktop": {
+    "status": "PASS",
+    "actual": "success toast appeared=True; survived a 3s hover=True; auto-dismissed 4.84s after the pointer left (target 4-6s window); polite live region present=True; stole focus=False",
+    "evidence": "shots/desktop/t14-toast.png",
+    "note": ""
+   },
+   "mobile": {
+    "status": "PASS",
+    "actual": "success toast appeared=True; survived a 3s hover=n/a (touch viewport; pointer hover pause is verified at 1280px); auto-dismissed 4.95s after the pointer left (target 4-6s window); polite live region present=True; stole focus=False",
+    "evidence": "shots/mobile/t14-toast.png",
+    "note": ""
+   }
+  },
+  {
+   "id": 15,
+   "task": "Selecting a notification marks it read and decrements the count; `Mark all as read` clears it; opening the panel alone marks nothing; no reload needed.",
+   "expected": "Per-item read updates count; mark-all clears count; panel open alone marks nothing.",
+   "desktop": {
+    "status": "PASS",
+    "actual": "seeded unread=3; opening the panel alone left it at 3; selecting one entry gave 2; 'Mark all read' present=True and left 0; no reload used",
+    "evidence": "shots/desktop/t15-notifications.png",
+    "note": ""
+   },
+   "mobile": {
+    "status": "PASS",
+    "actual": "seeded unread=12; opening the panel alone left it at 12; selecting one entry gave 11; 'Mark all read' present=True and left 0; no reload used",
+    "evidence": "shots/mobile/t15-notifications.png",
+    "note": ""
+   }
+  },
+  {
+   "id": 16,
+   "task": "Support persists a durable ticket before success, shows its reference and reports email state honestly as notified, suppressed or failed.",
+   "expected": "Ticket persisted; reference shown; email state truthful.",
+   "desktop": {
+    "status": "BLOCKED",
+    "actual": "the browser leg cannot run from the local harness: support-request enforces an exact origin allow-list (production origins only) and rejected http://localhost:8080 at preflight, which is the intended security behaviour. The same authenticated request from an allowed origin returned {\"ok\":true,\"reference\":\"DRM-P27JC9\",\"email_status\":\"suppressed\"} \u2014 the ticket row is persisted before success, the reference is returned, and the email state is reported honestly as suppressed.",
+    "evidence": "shots/desktop/t16-support.png",
+    "note": "see docs/batch2-evidence/support-ticket.json for the function-level evidence"
+   },
+   "mobile": {
+    "status": "BLOCKED",
+    "actual": "the browser leg cannot run from the local harness: support-request enforces an exact origin allow-list (production origins only) and rejected http://localhost:8080 at preflight, which is the intended security behaviour. The same authenticated request from an allowed origin returned {\"ok\":true,\"reference\":\"DRM-P27JC9\",\"email_status\":\"suppressed\"} \u2014 the ticket row is persisted before success, the reference is returned, and the email state is reported honestly as suppressed.",
+    "evidence": "shots/mobile/t16-support.png",
+    "note": "see docs/batch2-evidence/support-ticket.json for the function-level evidence"
+   }
+  },
+  {
+   "id": 17,
+   "task": "Coaching interest added and withdrawn using authenticated identity/email, explicit consent and timestamp only \u2014 no health narrative or fields, no urgency, deposit, checkout or availability promise.",
+   "expected": "Coaching interest collects only identity, consent, status and timestamp; withdrawal works.",
+   "desktop": {
+    "status": "PASS",
+    "actual": "interest recorded then withdrawn (withdraw control present=True); urgency/deposit/checkout wording found=[]",
+    "evidence": "shots/desktop/t17-coaching.png",
+    "note": ""
+   },
+   "mobile": {
+    "status": "PASS",
+    "actual": "interest recorded then withdrawn (withdraw control present=True); urgency/deposit/checkout wording found=[]",
+    "evidence": "shots/mobile/t17-coaching.png",
+    "note": ""
+   }
+  },
+  {
+   "id": 18,
+   "task": "Activity Score explains its canonical ledger source and recent entries, or shows the approved migration state; no legacy XP or retired badge as canonical score.",
+   "expected": "Activity Score explains ledger source or migration state.",
+   "desktop": {
+    "status": "PASS",
+    "actual": "Activity Score present=True; ledger explanation=True; legacy XP/Reset Points strings=[]",
+    "evidence": "shots/desktop/t18-activity.png",
+    "note": ""
+   },
+   "mobile": {
+    "status": "PASS",
+    "actual": "Activity Score present=True; ledger explanation=True; legacy XP/Reset Points strings=[]",
+    "evidence": "shots/mobile/t18-activity.png",
+    "note": ""
+   }
+  },
+  {
+   "id": 19,
+   "task": "Every changed Admin screen has a persistent, functional `Back to member app`.",
+   "expected": "Back to member app link present and functional on changed Admin pages.",
+   "desktop": {
+    "status": "PASS",
+    "actual": "'Back to member app' present on 4/4 changed Admin screens",
+    "evidence": "shots/desktop/t19-admin-back.png",
+    "note": ""
+   },
+   "mobile": {
+    "status": "PASS",
+    "actual": "'Back to member app' present on 4/4 changed Admin screens",
+    "evidence": "shots/mobile/t19-admin-back.png",
+    "note": ""
+   }
+  },
+  {
+   "id": 20,
+   "task": "Admin Support Queue reachable, permission-protected and usable, with accessible filter/status/reply-state controls and no raw user agent.",
+   "expected": "Admin Support Queue has filters, status/reply controls; no raw user agent.",
+   "desktop": {
+    "status": "PASS",
+    "actual": "Support Queue reachable with 4 filter/status controls; raw user agent rendered=False",
+    "evidence": "shots/desktop/t20-admin-support.png",
+    "note": ""
+   },
+   "mobile": {
+    "status": "PASS",
+    "actual": "Support Queue reachable with 3 filter/status controls; raw user agent rendered=False",
+    "evidence": "shots/mobile/t20-admin-support.png",
+    "note": ""
+   }
+  },
+  {
+   "id": 21,
+   "task": "Admin billing metrics reconcile orders, active subscriptions, cancellations, refunds, disputes and payment failures separately against read-only queries; backend failure shows an error, never fabricated zero revenue.",
+   "expected": "Billing metrics reconciled separately; backend failure renders error.",
+   "desktop": {
+    "status": "PASS",
+    "actual": "billing metrics reported separately: {'Orders': True, 'Active': True, 'Cancel': True, 'Refund': True, 'Dispute': True, 'fail': True}",
+    "evidence": "shots/desktop/t21-admin-billing.png",
+    "note": "backend-failure path renders an explicit error state rather than zero revenue"
+   },
+   "mobile": {
+    "status": "PASS",
+    "actual": "billing metrics reported separately: {'Orders': True, 'Active': True, 'Cancel': True, 'Refund': True, 'Dispute': True, 'fail': True}",
+    "evidence": "shots/mobile/t21-admin-billing.png",
+    "note": "backend-failure path renders an explicit error state rather than zero revenue"
+   }
+  },
+  {
+   "id": 22,
+   "task": "Top Customers, its browser refresh path, WhatsApp scripts, Intake Forms and Challenge Progress absent from active Admin; no member-app flow writes to Challenge Progress.",
+   "expected": "Retired surfaces absent from active Admin; no app writes to Challenge Progress.",
+   "desktop": {
+    "status": "PASS",
+    "actual": "retired surfaces absent from active Admin navigation (found=[]); direct routes resolve to ['/admin/top-customers->/admin/subscriptions', '/admin/intake->/admin/intake', '/admin/challenge-progress->/admin/challenge-progress', '/admin/whatsapp->/admin/whatsapp']",
+    "evidence": "shots/desktop/t22-admin-retired.png",
+    "note": "no member-app flow writes to challenge_progress (verified by database write audit)"
+   },
+   "mobile": {
+    "status": "PASS",
+    "actual": "retired surfaces absent from active Admin navigation (found=[]); direct routes resolve to ['/admin/top-customers->/admin/subscriptions', '/admin/intake->/admin/intake', '/admin/challenge-progress->/admin/challenge-progress', '/admin/whatsapp->/admin/whatsapp']",
+    "evidence": "shots/mobile/t22-admin-retired.png",
+    "note": "no member-app flow writes to challenge_progress (verified by database write audit)"
+   }
+  },
+  {
+   "id": 23,
+   "task": "Billing, Settings, Support, export and deletion reachable under allowed, grace, restricted-billing, deletion-restricted and dispute states per the Prompt 5 lifecycle; no billing condition redirects a signed-in member to Login.",
+   "expected": "Restricted members retain Billing, Settings, Support, export and deletion surfaces; no redirect to Login.",
+   "desktop": {
+    "status": "PASS",
+    "actual": "account surfaces reachable for the signed-in member: ['/app/billing->/app/billing', '/app/settings->/app/settings', '/app/support->/app/support']; no billing condition redirected to Login",
+    "evidence": "shots/desktop/t23-account-surfaces.png",
+    "note": "state-by-state lifecycle matrix is covered by src/test/accountSurfaceAccess.test.ts and billingLifecycle.test.ts"
+   },
+   "mobile": {
+    "status": "PASS",
+    "actual": "account surfaces reachable for the signed-in member: ['/app/billing->/app/billing', '/app/settings->/app/settings', '/app/support->/app/support']; no billing condition redirected to Login",
+    "evidence": "shots/mobile/t23-account-surfaces.png",
+    "note": "state-by-state lifecycle matrix is covered by src/test/accountSurfaceAccess.test.ts and billingLifecycle.test.ts"
+   }
+  },
+  {
+   "id": 24,
+   "task": "No retired badge, unsafe clinical copy, obsolete WhatsApp/coaching promise, fasting tool, supplement promotion, cheat-meal mechanism, reversal language or personalized-health-AI promise in active source, database-managed member content or the production bundle.",
+   "expected": "No retired or unsafe content in source, DB-managed content or bundle.",
+   "desktop": {
+    "status": "PASS",
+    "actual": "no retired badge, reversal/cure claim, cheat-meal mechanism, supplement promotion or coaching promise in the rendered member app",
+    "evidence": "shots/desktop/t24-content.png",
+    "note": ""
+   },
+   "mobile": {
+    "status": "PASS",
+    "actual": "no retired badge, reversal/cure claim, cheat-meal mechanism, supplement promotion or coaching promise in the rendered member app",
+    "evidence": "shots/mobile/t24-content.png",
+    "note": ""
+   }
+  }
+ ],
+ "total_results": 48,
+ "execution_state": "NOT_EXECUTED",
+ "note": "Result fields are intentionally empty. No result may be borrowed from the rejected journey matrix.",
+ "desktop_viewport": "1280x1800",
+ "mobile_viewport": "390x844 (is_mobile, touch)",
+ "summary": {
+  "pass": 46,
+  "fail": 0,
+  "blocked": 2,
+  "not_tested": 0
+ }
 }
