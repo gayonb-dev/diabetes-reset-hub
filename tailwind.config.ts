@@ -46,6 +46,7 @@ export default {
           foreground: "hsl(var(--accent-foreground))",
           muted: "hsl(var(--accent-muted))",
           ink: "hsl(var(--accent-ink))",
+          "on-dark": "hsl(var(--accent-on-dark))",
 
         },
         popover: {

@@ -38,7 +38,7 @@ export function QuickStats({ stats, className }: QuickStatsProps) {
             {empty ? (
               <>
                 <p className="stat-value text-tertiary-fg">—</p>
-                <p className="text-[10px] text-accent mt-1">{s.emptyHint ?? "Tap to log"}</p>
+                <p className="text-[10px] text-accent-ink mt-1">{s.emptyHint ?? "Tap to log"}</p>
               </>
             ) : (
               <>

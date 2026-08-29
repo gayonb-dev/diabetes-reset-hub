@@ -640,7 +640,7 @@ function QuestionCard({
             <span>· {timeAgo(q.created_at)}</span>
             {q.is_verified_answered && <CheckCircle2 className="h-3.5 w-3.5 text-status-normal" />}
           </div>
-          {unanswered && <p className="text-[10px] text-accent mt-1">Be first to answer →</p>}
+          {unanswered && <p className="text-[10px] text-accent-ink mt-1">Be first to answer →</p>}
         </div>
         <div className="flex flex-col items-end gap-1 shrink-0">
           <span className="bg-primary text-primary-foreground text-[11px] rounded-full px-2 py-0.5 min-w-[1.5rem] text-center">{q.answer_count}</span>

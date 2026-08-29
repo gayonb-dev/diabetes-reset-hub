@@ -229,7 +229,7 @@ export default function Support() {
             onClick={askAssistant}
             disabled={chatSending || !chatInput.trim()}
             size="icon"
-            className="h-11 w-11"
+            className="h-11 w-11 shrink-0"
             aria-label="Send question"
           >
             <Send className="h-4 w-4" />

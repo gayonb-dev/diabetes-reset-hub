@@ -35,6 +35,8 @@
     --accent-foreground: 0 0% 10%;
     /* accent-ink: deep amber for small text on light surfaces (AA) */
     --accent-ink: 33 88% 27%;
+    /* accent-on-dark: light amber for small text on the dark green rail (AA) */
+    --accent-on-dark: 38 95% 78%;
 
     /* accent-muted #FDF3E3 */
     --accent-muted: 39 82% 94%;
@@ -43,11 +45,13 @@
     --muted: 36 20% 94%;
     --muted-foreground: 33 7% 34%;
 
-    --destructive: 0 84% 60%;
+    /* Batch 2 accessibility: deepened so destructive text meets AA on cream. */
+    --destructive: 0 74% 42%;
     --destructive-foreground: 0 0% 100%;
 
     /* status */
-    --status-normal: 142 71% 45%;
+    /* status-normal deepened for AA when used as text or a small dot. */
+    --status-normal: 142 72% 27%;
     --status-warning: 38 92% 50%;
     --status-danger: 0 84% 60%;
 
@@ -101,6 +105,7 @@
     --accent: 36 81% 53%;
     --accent-foreground: 0 0% 10%;
     --accent-ink: 36 85% 68%;
+    --accent-on-dark: 38 95% 78%;
     --accent-muted: 36 30% 18%;
 
     /* bg-subtle #141B13 */

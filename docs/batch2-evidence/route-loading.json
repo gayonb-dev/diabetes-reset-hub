@@ -1,0 +1,118 @@
+{
+ "generated_utc": "2026-08-29T15:49:44Z",
+ "note": "cold-client observation of skeleton, shell and heading before useful content",
+ "routes": [
+  {
+   "route": "Today",
+   "path": "/app",
+   "skeleton_before_content": true,
+   "heading_rendered": true,
+   "useful_content_reached": true,
+   "blank_content_region": false
+  },
+  {
+   "route": "Meals",
+   "path": "/app/meals",
+   "skeleton_before_content": true,
+   "heading_rendered": true,
+   "useful_content_reached": false,
+   "blank_content_region": false
+  },
+  {
+   "route": "Progress",
+   "path": "/app/progress",
+   "skeleton_before_content": true,
+   "heading_rendered": true,
+   "useful_content_reached": true,
+   "blank_content_region": false
+  },
+  {
+   "route": "Workouts",
+   "path": "/app/workouts",
+   "skeleton_before_content": true,
+   "heading_rendered": true,
+   "useful_content_reached": true,
+   "blank_content_region": false
+  },
+  {
+   "route": "Learn",
+   "path": "/app/learn",
+   "skeleton_before_content": true,
+   "heading_rendered": true,
+   "useful_content_reached": true,
+   "blank_content_region": false
+  },
+  {
+   "route": "Ask",
+   "path": "/app/ask",
+   "skeleton_before_content": true,
+   "heading_rendered": true,
+   "useful_content_reached": true,
+   "blank_content_region": false
+  },
+  {
+   "route": "Profile",
+   "path": "/app/profile",
+   "skeleton_before_content": true,
+   "heading_rendered": true,
+   "useful_content_reached": true,
+   "blank_content_region": false
+  },
+  {
+   "route": "Settings",
+   "path": "/app/settings",
+   "skeleton_before_content": true,
+   "heading_rendered": true,
+   "useful_content_reached": true,
+   "blank_content_region": false
+  },
+  {
+   "route": "Billing",
+   "path": "/app/billing",
+   "skeleton_before_content": true,
+   "heading_rendered": true,
+   "useful_content_reached": true,
+   "blank_content_region": false
+  },
+  {
+   "route": "Support",
+   "path": "/app/support",
+   "skeleton_before_content": true,
+   "heading_rendered": true,
+   "useful_content_reached": true,
+   "blank_content_region": false
+  },
+  {
+   "route": "Admin: Overview",
+   "path": "/admin",
+   "skeleton_before_content": true,
+   "heading_rendered": true,
+   "useful_content_reached": true,
+   "blank_content_region": false
+  },
+  {
+   "route": "Admin: Subscriptions",
+   "path": "/admin/subscriptions",
+   "skeleton_before_content": true,
+   "heading_rendered": true,
+   "useful_content_reached": true,
+   "blank_content_region": false
+  },
+  {
+   "route": "Admin: Support",
+   "path": "/admin/support",
+   "skeleton_before_content": true,
+   "heading_rendered": true,
+   "useful_content_reached": true,
+   "blank_content_region": false
+  },
+  {
+   "route": "Admin: Coaching interest",
+   "path": "/admin/coaching-interest",
+   "skeleton_before_content": true,
+   "heading_rendered": true,
+   "useful_content_reached": false,
+   "blank_content_region": false
+  }
+ ]
+}

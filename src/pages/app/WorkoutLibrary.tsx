@@ -153,7 +153,7 @@ export default function WorkoutLibrary() {
             </p>
           )}
         </Card>
-        <Button asChild variant="outline">
+        <Button asChild variant="outline" className="min-h-11">
           <Link to="/app">Back to today</Link>
         </Button>
       </div>

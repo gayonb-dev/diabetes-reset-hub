@@ -39,11 +39,30 @@ is superseded and must not be cited as evidence. Nothing has been published.
   email claim instead of subquerying `auth.users`, which was causing the Admin
   subscriptions billing error.
 
+## Evidence completed since the matrix run
+
+- **Performance** — `docs/batch2-evidence/performance.json` and
+  `route-loading.json`: 14 routes measured against the local production build,
+  five first-load and five return-navigation runs each.
+- **Accessibility** — `docs/batch2-evidence/accessibility.json`,
+  `zoom-200-reflow.json` and `screenshots/index.md`: 11 routes at
+  320/390/768/1280 plus both 200% zoom methods, keyboard focus and
+  reduced motion. Final result: 0 low-contrast findings, 0 routes with
+  horizontal overflow, 0 focusable elements without a visible focus
+  indicator, reduced motion honoured (0 still-animating elements).
+  Remaining sub-44px items are documented as accepted deviations
+  (collapsed skip link, switches with full-width labels, inline text links,
+  internal admin tab strip).
+- Contrast and target fixes applied this pass are listed in
+  `accessibility.json → fixes_applied_this_pass`.
+- Gates re-run after those fixes: TypeScript clean, Vitest 438/438,
+  production build 429.47 kB.
+
 ## Still outstanding before Batch 2 can be called complete
 
-- `performance.json` and `route-loading.json` (11 routes, ≥5 runs each).
-- `accessibility.json` and `screenshots/index.md` at 320/390/768/1280 and real 200% zoom.
 - Deno check/tests and CORS boot smoke for changed Edge Functions.
 - Prompt 3 inventory run and `rls-principal-matrix.md` / `data-lifecycle.json`.
 - `auto_confirm_email` audit for the 2026-08-28 window.
+- Redaction sweep, exact synthetic cleanup proof.
 - Final `docs/BATCH-2-COMPLETION-REPORT.md`, written only after the above pass.
+

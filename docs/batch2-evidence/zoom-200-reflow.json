@@ -1,0 +1,116 @@
+{
+  "method": "200% zoom emulated as a 640x450 CSS viewport at deviceScaleFactor 2, which reproduces browser-zoom reflow including media-query breakpoints",
+  "limitation": "Chromium DevTools page zoom cannot be driven from Playwright; the CSS `zoom: 2` pass in accessibility.json keeps 1280px media queries and is reported separately",
+  "routes": [
+    {
+      "route": "Today",
+      "scroll_width": 640,
+      "client_width": 640,
+      "horizontal_overflow": false,
+      "h1": "friend.",
+      "main_visible": true,
+      "nav_visible": true,
+      "screenshot": "screenshots/today-zoom200-reflow.png"
+    },
+    {
+      "route": "Meals",
+      "scroll_width": 640,
+      "client_width": 640,
+      "horizontal_overflow": false,
+      "h1": "My Meals",
+      "main_visible": true,
+      "nav_visible": true,
+      "screenshot": "screenshots/meals-zoom200-reflow.png"
+    },
+    {
+      "route": "Progress",
+      "scroll_width": 640,
+      "client_width": 640,
+      "horizontal_overflow": false,
+      "h1": "Progress",
+      "main_visible": true,
+      "nav_visible": true,
+      "screenshot": "screenshots/progress-zoom200-reflow.png"
+    },
+    {
+      "route": "Workouts",
+      "scroll_width": 640,
+      "client_width": 640,
+      "horizontal_overflow": false,
+      "h1": "Workouts unlock at Day 29",
+      "main_visible": true,
+      "nav_visible": true,
+      "screenshot": "screenshots/workouts-zoom200-reflow.png"
+    },
+    {
+      "route": "Learn",
+      "scroll_width": 640,
+      "client_width": 640,
+      "horizontal_overflow": false,
+      "h1": "Learn",
+      "main_visible": true,
+      "nav_visible": true,
+      "screenshot": "screenshots/learn-zoom200-reflow.png"
+    },
+    {
+      "route": "Ask",
+      "scroll_width": 640,
+      "client_width": 640,
+      "horizontal_overflow": false,
+      "h1": "Ask",
+      "main_visible": true,
+      "nav_visible": true,
+      "screenshot": "screenshots/ask-zoom200-reflow.png"
+    },
+    {
+      "route": "Profile",
+      "scroll_width": 640,
+      "client_width": 640,
+      "horizontal_overflow": false,
+      "h1": "batch2-a",
+      "main_visible": true,
+      "nav_visible": true,
+      "screenshot": "screenshots/profile-zoom200-reflow.png"
+    },
+    {
+      "route": "Settings",
+      "scroll_width": 640,
+      "client_width": 640,
+      "horizontal_overflow": false,
+      "h1": "Settings",
+      "main_visible": true,
+      "nav_visible": true,
+      "screenshot": "screenshots/settings-zoom200-reflow.png"
+    },
+    {
+      "route": "Billing",
+      "scroll_width": 640,
+      "client_width": 640,
+      "horizontal_overflow": false,
+      "h1": "Your Subscription",
+      "main_visible": true,
+      "nav_visible": true,
+      "screenshot": "screenshots/billing-zoom200-reflow.png"
+    },
+    {
+      "route": "Support",
+      "scroll_width": 640,
+      "client_width": 640,
+      "horizontal_overflow": false,
+      "h1": "We're here to help.",
+      "main_visible": true,
+      "nav_visible": true,
+      "screenshot": "screenshots/support-zoom200-reflow.png"
+    },
+    {
+      "route": "Admin: Subscriptions",
+      "scroll_width": 640,
+      "client_width": 640,
+      "horizontal_overflow": false,
+      "h1": "Admin",
+      "main_visible": true,
+      "nav_visible": true,
+      "screenshot": "screenshots/admin-subscriptions-zoom200-reflow.png"
+    }
+  ]
+}

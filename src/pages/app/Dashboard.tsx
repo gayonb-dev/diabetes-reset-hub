@@ -536,7 +536,7 @@ export default function Dashboard() {
                   className="flex items-center justify-between gap-3 min-h-11 rounded-lg border border-border px-3 py-2 hover:bg-muted/50 transition-colors"
                 >
                   <span className="flex items-center gap-3 min-w-0">
-                    <span className="text-[13px] font-semibold tabular-nums text-accent shrink-0">
+                    <span className="text-[13px] font-semibold tabular-nums text-accent-ink shrink-0">
                       Day {a.day_number}
                     </span>
                     <span className="text-sm text-foreground truncate">{a.action_title}</span>
