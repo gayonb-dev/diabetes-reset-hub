@@ -1,5 +1,5 @@
 {
- "generated_utc": "2026-08-29T16:10:59Z",
+ "generated_utc": "2026-08-29T16:17:54Z",
  "server": "local production build served by vite preview on :4173",
  "zoom_technique": "200% applied with CSS `zoom: 2` on document.documentElement at a 1280px viewport; Chromium reflows CSS zoom like browser zoom. deviceScaleFactor was NOT used as a zoom substitute.",
  "contrast_method": "computed foreground colour against the nearest ancestor with an opaque background; gradients, images and semi-transparent overlays are approximated and are reported as review items rather than definitive failures",
@@ -999,7 +999,7 @@
        "h": 34
       },
       {
-       "label": "2026-08-29T16:11",
+       "label": "2026-08-29T16:18",
        "w": 461,
        "h": 40
       }
@@ -1128,14 +1128,9 @@
        "label": "Skip to main content",
        "w": 1,
        "h": 1
-      },
-      {
-       "label": "Back to today",
-       "w": 126,
-       "h": 40
       }
      ],
-     "small_target_count": 2,
+     "small_target_count": 1,
      "tables_with_headers": [],
      "canvas_or_svg_charts": 0,
      "chart_text_alternative": false,
@@ -1183,14 +1178,9 @@
        "label": "Skip to main content",
        "w": 1,
        "h": 1
-      },
-      {
-       "label": "Back to today",
-       "w": 126,
-       "h": 40
       }
      ],
-     "small_target_count": 2,
+     "small_target_count": 1,
      "tables_with_headers": [],
      "canvas_or_svg_charts": 0,
      "chart_text_alternative": false,
@@ -1238,14 +1228,9 @@
        "label": "Skip to main content",
        "w": 1,
        "h": 1
-      },
-      {
-       "label": "Back to today",
-       "w": 126,
-       "h": 40
       }
      ],
-     "small_target_count": 2,
+     "small_target_count": 1,
      "tables_with_headers": [],
      "canvas_or_svg_charts": 0,
      "chart_text_alternative": false,
@@ -1298,14 +1283,9 @@
        "label": "Sign out",
        "w": 208,
        "h": 36
-      },
-      {
-       "label": "Back to today",
-       "w": 126,
-       "h": 40
       }
      ],
-     "small_target_count": 3,
+     "small_target_count": 2,
      "tables_with_headers": [],
      "canvas_or_svg_charts": 0,
      "chart_text_alternative": false,
@@ -2440,7 +2420,7 @@
       },
       {
        "label": "Record my interest in future coa",
-       "w": 16,
+       "w": 24,
        "h": 44
       },
       {
@@ -2520,7 +2500,7 @@
       },
       {
        "label": "Record my interest in future coa",
-       "w": 16,
+       "w": 24,
        "h": 44
       },
       {
@@ -2600,7 +2580,7 @@
       },
       {
        "label": "Record my interest in future coa",
-       "w": 16,
+       "w": 24,
        "h": 44
       },
       {
@@ -2820,11 +2800,6 @@
       "h": 2
      },
      {
-      "label": "Record my interest in future coa",
-      "w": 32,
-      "h": 32
-     },
-     {
       "label": "Developer format (JSON)",
       "w": 261,
       "h": 33
@@ -2835,7 +2810,7 @@
       "h": 26
      }
     ],
-    "small_target_count": 4,
+    "small_target_count": 3,
     "tables_with_headers": [],
     "canvas_or_svg_charts": 0,
     "chart_text_alternative": false,
@@ -3201,14 +3176,9 @@
        "label": "Skip to main content",
        "w": 1,
        "h": 1
-      },
-      {
-       "label": "Send question",
-       "w": 35,
-       "h": 44
       }
      ],
-     "small_target_count": 2,
+     "small_target_count": 1,
      "tables_with_headers": [],
      "canvas_or_svg_charts": 0,
      "chart_text_alternative": false,
@@ -3268,14 +3238,9 @@
        "label": "Skip to main content",
        "w": 1,
        "h": 1
-      },
-      {
-       "label": "Send question",
-       "w": 37,
-       "h": 44
       }
      ],
-     "small_target_count": 2,
+     "small_target_count": 1,
      "tables_with_headers": [],
      "canvas_or_svg_charts": 0,
      "chart_text_alternative": false,
@@ -3335,14 +3300,9 @@
        "label": "Skip to main content",
        "w": 1,
        "h": 1
-      },
-      {
-       "label": "Send question",
-       "w": 41,
-       "h": 44
       }
      ],
-     "small_target_count": 2,
+     "small_target_count": 1,
      "tables_with_headers": [],
      "canvas_or_svg_charts": 0,
      "chart_text_alternative": false,
@@ -3410,13 +3370,8 @@
       },
       {
        "label": "input",
-       "w": 884,
+       "w": 882,
        "h": 40
-      },
-      {
-       "label": "Send question",
-       "w": 42,
-       "h": 44
       },
       {
        "label": "Report an issue \u2192",
@@ -3429,7 +3384,7 @@
        "h": 40
       }
      ],
-     "small_target_count": 6,
+     "small_target_count": 5,
      "tables_with_headers": [],
      "canvas_or_svg_charts": 0,
      "chart_text_alternative": false,
@@ -3512,8 +3467,8 @@
       "banner_or_header": 1,
       "skip_link": false
      },
-     "horizontal_overflow": true,
-     "scroll_width": 531,
+     "horizontal_overflow": false,
+     "scroll_width": 320,
      "client_width": 320,
      "low_contrast": [],
      "low_contrast_count": 0,
@@ -3603,8 +3558,8 @@
       "banner_or_header": 1,
       "skip_link": false
      },
-     "horizontal_overflow": true,
-     "scroll_width": 531,
+     "horizontal_overflow": false,
+     "scroll_width": 390,
      "client_width": 390,
      "low_contrast": [],
      "low_contrast_count": 0,
