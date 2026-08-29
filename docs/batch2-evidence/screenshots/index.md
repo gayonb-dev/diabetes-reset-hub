@@ -7,17 +7,17 @@ Viewports are CSS pixels. Every member route is captured at 320 / 390 / 768 / 12
 
 | Route | 320 | 390 | 768 | 1280 | 200% (CSS zoom) | 200% (reflow) |
 |---|---|---|---|---|---|---|
-| Today | [png](screenshots/today-320.png) | [png](screenshots/today-390.png) | [png](screenshots/today-768.png) | [png](screenshots/today-1280.png) | [png](screenshots/today-zoom200.png) | [png](screenshots/today-zoom200-reflow.png) |
-| Meals | [png](screenshots/meals-320.png) | [png](screenshots/meals-390.png) | [png](screenshots/meals-768.png) | [png](screenshots/meals-1280.png) | [png](screenshots/meals-zoom200.png) | [png](screenshots/meals-zoom200-reflow.png) |
-| Progress | [png](screenshots/progress-320.png) | [png](screenshots/progress-390.png) | [png](screenshots/progress-768.png) | [png](screenshots/progress-1280.png) | [png](screenshots/progress-zoom200.png) | [png](screenshots/progress-zoom200-reflow.png) |
-| Workouts | [png](screenshots/workouts-320.png) | [png](screenshots/workouts-390.png) | [png](screenshots/workouts-768.png) | [png](screenshots/workouts-1280.png) | [png](screenshots/workouts-zoom200.png) | [png](screenshots/workouts-zoom200-reflow.png) |
-| Learn | [png](screenshots/learn-320.png) | [png](screenshots/learn-390.png) | [png](screenshots/learn-768.png) | [png](screenshots/learn-1280.png) | [png](screenshots/learn-zoom200.png) | [png](screenshots/learn-zoom200-reflow.png) |
-| Ask | [png](screenshots/ask-320.png) | [png](screenshots/ask-390.png) | [png](screenshots/ask-768.png) | [png](screenshots/ask-1280.png) | [png](screenshots/ask-zoom200.png) | [png](screenshots/ask-zoom200-reflow.png) |
-| Profile | [png](screenshots/profile-320.png) | [png](screenshots/profile-390.png) | [png](screenshots/profile-768.png) | [png](screenshots/profile-1280.png) | [png](screenshots/profile-zoom200.png) | [png](screenshots/profile-zoom200-reflow.png) |
-| Settings | [png](screenshots/settings-320.png) | [png](screenshots/settings-390.png) | [png](screenshots/settings-768.png) | [png](screenshots/settings-1280.png) | [png](screenshots/settings-zoom200.png) | [png](screenshots/settings-zoom200-reflow.png) |
-| Billing | [png](screenshots/billing-320.png) | [png](screenshots/billing-390.png) | [png](screenshots/billing-768.png) | [png](screenshots/billing-1280.png) | [png](screenshots/billing-zoom200.png) | [png](screenshots/billing-zoom200-reflow.png) |
-| Support | [png](screenshots/support-320.png) | [png](screenshots/support-390.png) | [png](screenshots/support-768.png) | [png](screenshots/support-1280.png) | [png](screenshots/support-zoom200.png) | [png](screenshots/support-zoom200-reflow.png) |
-| Admin: Subscriptions | [png](screenshots/admin-subscriptions-320.png) | [png](screenshots/admin-subscriptions-390.png) | [png](screenshots/admin-subscriptions-768.png) | [png](screenshots/admin-subscriptions-1280.png) | [png](screenshots/admin-subscriptions-zoom200.png) | [png](screenshots/admin-subscriptions-zoom200-reflow.png) |
+| Today | [png](./today-320.png) | [png](./today-390.png) | [png](./today-768.png) | [png](./today-1280.png) | [png](./today-zoom200.png) | [png](./today-zoom200-reflow.png) |
+| Meals | [png](./meals-320.png) | [png](./meals-390.png) | [png](./meals-768.png) | [png](./meals-1280.png) | [png](./meals-zoom200.png) | [png](./meals-zoom200-reflow.png) |
+| Progress | [png](./progress-320.png) | [png](./progress-390.png) | [png](./progress-768.png) | [png](./progress-1280.png) | [png](./progress-zoom200.png) | [png](./progress-zoom200-reflow.png) |
+| Workouts | [png](./workouts-320.png) | [png](./workouts-390.png) | [png](./workouts-768.png) | [png](./workouts-1280.png) | [png](./workouts-zoom200.png) | [png](./workouts-zoom200-reflow.png) |
+| Learn | [png](./learn-320.png) | [png](./learn-390.png) | [png](./learn-768.png) | [png](./learn-1280.png) | [png](./learn-zoom200.png) | [png](./learn-zoom200-reflow.png) |
+| Ask | [png](./ask-320.png) | [png](./ask-390.png) | [png](./ask-768.png) | [png](./ask-1280.png) | [png](./ask-zoom200.png) | [png](./ask-zoom200-reflow.png) |
+| Profile | [png](./profile-320.png) | [png](./profile-390.png) | [png](./profile-768.png) | [png](./profile-1280.png) | [png](./profile-zoom200.png) | [png](./profile-zoom200-reflow.png) |
+| Settings | [png](./settings-320.png) | [png](./settings-390.png) | [png](./settings-768.png) | [png](./settings-1280.png) | [png](./settings-zoom200.png) | [png](./settings-zoom200-reflow.png) |
+| Billing | [png](./billing-320.png) | [png](./billing-390.png) | [png](./billing-768.png) | [png](./billing-1280.png) | [png](./billing-zoom200.png) | [png](./billing-zoom200-reflow.png) |
+| Support | [png](./support-320.png) | [png](./support-390.png) | [png](./support-768.png) | [png](./support-1280.png) | [png](./support-zoom200.png) | [png](./support-zoom200-reflow.png) |
+| Admin: Subscriptions | [png](./admin-subscriptions-320.png) | [png](./admin-subscriptions-390.png) | [png](./admin-subscriptions-768.png) | [png](./admin-subscriptions-1280.png) | [png](./admin-subscriptions-zoom200.png) | [png](./admin-subscriptions-zoom200-reflow.png) |
 
 ## Other captures
 
