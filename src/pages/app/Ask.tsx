@@ -377,7 +377,7 @@ export default function Ask() {
               <Trophy className="h-3.5 w-3.5 mr-1" /> Share a win
             </Button>
           ) : (
-            <Button size="sm" onClick={() => setComposeOpen(true)}>+ Ask</Button>
+            <Button size="sm" onClick={() => setComposeOpen(true)}>Post to community</Button>
           )}
         </div>
       </div>

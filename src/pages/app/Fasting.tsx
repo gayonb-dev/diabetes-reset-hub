@@ -35,9 +35,10 @@ export default function Fasting() {
           Fasting schedules are not available right now
         </h2>
         <p className="text-sm text-secondary-fg mt-2 leading-relaxed">
-          We are keeping the fasting timer and scheduling tools off while the safety
-          screening and instructions are reviewed. The app cannot decide whether fasting
-          is safe for you.
+          There is no fasting questionnaire, eligibility screening, timer or scheduler in
+          this app, and scheduling is unavailable. This page is education only. We are
+          keeping the fasting timer and scheduling tools off while the safety screening and
+          instructions are reviewed. The app cannot decide whether fasting is safe for you.
         </p>
       </Card>
 
