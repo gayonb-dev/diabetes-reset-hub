@@ -36,6 +36,13 @@
       "when": 1787980411626,
       "tag": "0004_orders_prefer_immutable_ownership_and_tighten_grants",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1788046548169,
+      "tag": "0005_orders_immutable_ownership_only",
+      "breakpoints": true
     }
   ]
 }

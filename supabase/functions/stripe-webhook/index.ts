@@ -3,6 +3,7 @@ import Stripe from "https://esm.sh/stripe@18.5.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
 
 import { corsFor } from "../_shared/cors.ts";
+import { assignImmutableOwner } from "../_shared/orderOwnership.ts";
 import { sendEmail as sendGatedEmail } from "../_shared/email.ts";
 
 const ADMIN_EMAIL = "support@diabetesresetmethod.com";
@@ -212,6 +213,22 @@ serve(async (req) => {
         // is processor-side residue: it is not read, logged, copied, exported
         // or claimed erased. Order completion above is driven solely by the
         // Stripe session -> order relationship.
+
+        // Batch 2 closeout: bind the order to its member through an immutable
+        // owner column so `orders` RLS never has to fall back to an email
+        // comparison. The address comes from the signed Stripe session or the
+        // stored order row; caller metadata is never consulted. The write is
+        // conditional on user_id IS NULL, so a replay changes nothing.
+        {
+          const ownership = await assignImmutableOwner(
+            supabaseAdmin as unknown as Parameters<typeof assignImmutableOwner>[0],
+            session.id,
+            session.customer_email ?? session.customer_details?.email ?? null,
+          );
+          console.log("[payment-webhook] order ownership:", ownership.reason);
+        }
+
+
 
 
         // Get customer details from order (for emails)

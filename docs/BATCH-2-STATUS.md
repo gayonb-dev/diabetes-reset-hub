@@ -58,11 +58,37 @@ is superseded and must not be cited as evidence. Nothing has been published.
 - Gates re-run after those fixes: TypeScript clean, Vitest 438/438,
   production build 429.47 kB.
 
+## Immutable order ownership (this pass)
+
+See `docs/batch2-evidence/orders-immutable-ownership.md` for the full record.
+
+- Migration `0005_orders_immutable_ownership_only.sql` removed the legacy
+  email-claim fallback from the member `orders` SELECT policy. A member now
+  reads an order only through `orders.user_id = auth.uid()` or an owned
+  `orders.subscription_id`. Member writes revoked; Admin and service role
+  unchanged; no order data written or backfilled.
+- Future orders get an owner on both paths: the subscription webhook already
+  bound `user_id`/`subscription_id`; `stripe-webhook` now calls
+  `_shared/orderOwnership.ts#assignImmutableOwner`, resolving the account from
+  the signed Stripe session address only, writing conditionally on
+  `user_id IS NULL` (replay- and concurrency-safe), and leaving the order
+  ownerless when no account matches.
+- Synthetic-principal proof against production RLS: owner sees exactly its own
+  order (1), cross-member sees 0, email-claim attack sees 0. The 7 legacy
+  ownerless orders are member-inaccessible and Admin-visible.
+- Deployed `stripe-webhook` only, from the exact tested source (SHA-256 in the
+  evidence file); safe smoke returned HTTP 400 "No signature provided".
+- Focused regression: `src/test/orderOwnership.test.ts` 8/8; full suite
+  39 files / 446 tests; TypeScript clean; build 429.47 kB. Admin Billing is the
+  only client surface reading `orders`, and its policy is unchanged.
+- Synthetic cleanup: before 10 orders (3 synthetic), created 0, deleted 3 by
+  exact id, remaining 7 with 0 synthetic. Safety flags re-read unchanged.
+
 ## Still outstanding before Batch 2 can be called complete
 
-- Deno check/tests and CORS boot smoke for changed Edge Functions.
 - Prompt 3 inventory run and `rls-principal-matrix.md` / `data-lifecycle.json`.
 - `auto_confirm_email` audit for the 2026-08-28 window.
-- Redaction sweep, exact synthetic cleanup proof.
+- Redaction sweep across all evidence artifacts.
 - Final `docs/BATCH-2-COMPLETION-REPORT.md`, written only after the above pass.
+
 
