@@ -9,11 +9,13 @@ published and no ZIP is produced.
 ## 0. Production preflight (before any synthetic principal or database change)
 
 Confirm the production project ref `wqennhjdojjqmmqzjhti` and the domain
-`https://diabetesresetmethod.com`; record the current safety flags (email delivery,
-transactional automation, marketing email, retention mode, `stripe_deletion_enabled`) and the
-production Auth auto-confirm state as the pre-run baseline. Stop on a project mismatch or if
-synthetic records cannot be isolated safely. Global Auth auto-confirm, secrets, origins,
-Stripe flags, email flags and retention mode are not changed at any point.
+`https://diabetesresetmethod.com`; record the pre-run baseline of `ai_health_enabled`,
+`dexcom_enabled`, `email_delivery_enabled`, `transactional_automation_enabled`,
+`marketing_email_enabled`, `retention_mode`, `stripe_deletion_enabled` and the production Auth
+auto-confirm state. The identical set is re-recorded after cleanup and must retain the same
+values. Stop on a project mismatch or if synthetic records cannot be isolated safely. Global
+Auth auto-confirm, secrets, origins, Stripe flags, email flags and retention mode are not
+changed at any point.
 
 
 
