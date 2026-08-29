@@ -49,13 +49,24 @@ Programme-day proofs: unlocked own day succeeds; future day fails; missing/NULL 
 state fails closed; cross-member write fails; deletion-restricted write fails; service-role
 behaviour deliberately separate.
 
-Order/email proofs: anonymous denied; A cannot reach B and B cannot reach A; authorization
-never trusts request-body, URL or browser-supplied email; any JWT email is verified-identity
-and normalized; member access read-only unless an existing authorized operation requires
-otherwise; deletion restrictions effective; Admin uses the application admin predicate;
-immutable `user_id` ownership preferred where safely available. Where email remains part of
-authorization (legacy NULL-owner orders), the reason is documented as a follow-up risk.
-Output: `rls-principal-matrix.md`.
+### Order ownership must fail closed
+
+Email-only RLS is not accepted as a follow-up risk. A new source-controlled migration replaces
+the JWT-email fallback so a member may read an order only through an immutable,
+server-established ownership relationship — `orders.user_id = auth.uid()`, or an immutable
+order-to-subscription relationship whose subscription belongs to `auth.uid()`. Request-body
+email, URL email, browser state and bare JWT-email comparison are removed as authorization
+rules. Legacy orders with no immutable owner become inaccessible to ordinary members while
+Admin access is preserved; Billing/Support show an honest state; a separate authenticated
+claim/reconciliation path is documented for later. No real legacy order is backfilled or
+mutated during this closeout.
+
+Proofs recorded in the matrix: anonymous denied; A cannot reach B and B cannot reach A; a
+changed, recycled or newly registered matching email cannot expose a legacy order; member
+access read-only unless an existing authorized operation requires otherwise; deletion
+restrictions effective; Admin uses the application admin predicate; service role separate.
+Output: `rls-principal-matrix.md`, plus rollback notes and the migration source hash.
+
 
 ## 4. Export, deletion and retention execution
 
