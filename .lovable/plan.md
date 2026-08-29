@@ -6,6 +6,17 @@ stand, with their original execution dates. No Playwright, no performance or acc
 reruns unless a backend defect found here changes visible client behaviour. Nothing is
 published and no ZIP is produced.
 
+## 0. Production preflight (before any synthetic principal or database change)
+
+Confirm the production project ref `wqennhjdojjqmmqzjhti` and the domain
+`https://diabetesresetmethod.com`; record the current safety flags (email delivery,
+transactional automation, marketing email, retention mode, `stripe_deletion_enabled`) and the
+production Auth auto-confirm state as the pre-run baseline. Stop on a project mismatch or if
+synthetic records cannot be isolated safely. Global Auth auto-confirm, secrets, origins,
+Stripe flags, email flags and retention mode are not changed at any point.
+
+
+
 ## 1. Changed-function verification
 
 - Reconcile every Edge Function and shared Deno module changed from the resolved Batch 2
@@ -38,13 +49,24 @@ Programme-day proofs: unlocked own day succeeds; future day fails; missing/NULL 
 state fails closed; cross-member write fails; deletion-restricted write fails; service-role
 behaviour deliberately separate.
 
-Order/email proofs: anonymous denied; A cannot reach B and B cannot reach A; authorization
-never trusts request-body, URL or browser-supplied email; any JWT email is verified-identity
-and normalized; member access read-only unless an existing authorized operation requires
-otherwise; deletion restrictions effective; Admin uses the application admin predicate;
-immutable `user_id` ownership preferred where safely available. Where email remains part of
-authorization (legacy NULL-owner orders), the reason is documented as a follow-up risk.
-Output: `rls-principal-matrix.md`.
+### Order ownership must fail closed
+
+Email-only RLS is not accepted as a follow-up risk. A new source-controlled migration replaces
+the JWT-email fallback so a member may read an order only through an immutable,
+server-established ownership relationship — `orders.user_id = auth.uid()`, or an immutable
+order-to-subscription relationship whose subscription belongs to `auth.uid()`. Request-body
+email, URL email, browser state and bare JWT-email comparison are removed as authorization
+rules. Legacy orders with no immutable owner become inaccessible to ordinary members while
+Admin access is preserved; Billing/Support show an honest state; a separate authenticated
+claim/reconciliation path is documented for later. No real legacy order is backfilled or
+mutated during this closeout.
+
+Proofs recorded in the matrix: anonymous denied; A cannot reach B and B cannot reach A; a
+changed, recycled or newly registered matching email cannot expose a legacy order; member
+access read-only unless an existing authorized operation requires otherwise; deletion
+restrictions effective; Admin uses the application admin predicate; service role separate.
+Output: `rls-principal-matrix.md`, plus rollback notes and the migration source hash.
+
 
 ## 4. Export, deletion and retention execution
 
@@ -75,22 +97,31 @@ refactoring or dependency upgrades.
 
 Downloadable evidence carries no real email, auth UUID, member identifier, session token,
 cookie, magic link, IP, secret, or real health/support text — aggregate statements only
-(`real_accounts_remaining: 1`, `real_member_rows_unchanged: true`). Exact synthetic IDs live
-only in the internal cleanup manifest. Every new synthetic record and identity is deleted by
-exact ID, every affected surface re-queried, zero run-specific residue proven, and all safety
-flags confirmed at their recorded pre-run values. Output: `synthetic-cleanup.json`.
+(`real_accounts_remaining: 1`, `real_member_rows_unchanged: true`). Cleanup evidence reports
+before / created / deleted / remaining counts for every synthetic surface, redacted in the
+downloadable copy; exact synthetic IDs live only in the internal manifest. Every new synthetic
+record and identity is deleted by exact ID, every affected surface re-queried, zero
+run-specific residue proven, and all safety flags confirmed at their recorded pre-run values.
+Output: `synthetic-cleanup.json`.
 
-## 8. Final artifacts
+## 8. Final artifacts and reconciliation
 
-`gates.json`, `prompt3-inventory-reconciliation.json`, `rls-principal-matrix.md`,
-`data-lifecycle.json`, `auth-audit.md`, `synthetic-cleanup.json` and an authoritative
-`docs/BATCH-2-COMPLETION-REPORT.md` that preserves the approved matrix result, carries
-original dates for reused evidence, separates reused evidence from gates executed now,
-clearly retires every superseded report (including
-`BATCH-2-COMPLETION-REPORT-REJECTED-WRONG-MATRIX.md` and the interim `BATCH-2-STATUS.md`),
-distinguishes code changes / applied migrations / deployed functions / unpublished client
-changes, reports every gate as PASS / FAIL / BLOCKED / NOT TESTED with references resolving
-to real files, and confirms nothing was published.
+Final inventory hashes both the reused client evidence and the new backend evidence:
+`task-matrix.json`, `performance.json`, `accessibility.json`, `route-loading.json`,
+`screenshots/index.md`, `gates.json`, `prompt3-inventory-reconciliation.json`,
+`rls-principal-matrix.md`, `data-lifecycle.json`, `auth-audit.md`, redacted
+`synthetic-cleanup.json` and the authoritative `docs/BATCH-2-COMPLETION-REPORT.md`.
+
+The report additionally records the full 40-character Batch 2 starting SHA, the full tested
+final SHA (or an honest working-tree digest if uncommitted), the complete changed-file list,
+every applied migration with its source hash, every deployed Edge Function with its source
+hash, the current live client bundle, the tested unpublished bundle, original execution dates
+for reused evidence, and SHA-256 for every final artifact. It preserves the approved matrix
+result, separates reused evidence from gates executed in this pass, clearly retires every
+superseded report (including `BATCH-2-COMPLETION-REPORT-REJECTED-WRONG-MATRIX.md` and the
+interim `BATCH-2-STATUS.md`), distinguishes code changes / applied migrations / deployed
+functions / unpublished client changes, reports every gate as PASS / FAIL / BLOCKED / NOT
+TESTED with references resolving to real files, and confirms nothing was published.
 
 Batch 2 closes only when no in-scope FAIL or NOT TESTED remains; independent platform
 limitations may stay BLOCKED with their exact consequence and post-publication step.
