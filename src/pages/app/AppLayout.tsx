@@ -336,6 +336,11 @@ export default function AppLayout() {
         </nav>
 
 
+        {/* Mobile top bar — the notifications entry point below the lg rail. */}
+        <div className="lg:hidden fixed top-0 right-0 z-40 p-2 pt-[calc(env(safe-area-inset-top)+0.25rem)] pr-[calc(env(safe-area-inset-right)+0.25rem)]">
+          <NotificationsBell />
+        </div>
+
         {/* Main */}
         <main id="app-main" tabIndex={-1} className="flex-1 px-4 lg:px-8 py-6 lg:py-8 pb-[calc(env(safe-area-inset-bottom)+5.5rem)] lg:pb-10 max-w-3xl lg:max-w-6xl xl:max-w-7xl mx-auto w-full safe-x">
           {/* A lazily loaded page renders a page-shaped skeleton, never a blank
