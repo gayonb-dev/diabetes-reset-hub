@@ -49,7 +49,7 @@ function skeletonVariantFor(pathname: string): RouteSkeletonVariant {
 }
 
 function navClass({ isActive }: { isActive: boolean }) {
-  return `flex items-center gap-2.5 pl-[10px] pr-3 py-2 rounded-lg text-[13px] border-l-2 transition-colors ${
+  return `flex items-center gap-2.5 min-h-[44px] pl-[10px] pr-3 py-2 rounded-lg text-[13px] border-l-2 transition-colors ${
     isActive
       ? "border-accent bg-white/5 text-white font-medium"
       : "border-transparent text-white/60 hover:text-white hover:bg-white/8"
