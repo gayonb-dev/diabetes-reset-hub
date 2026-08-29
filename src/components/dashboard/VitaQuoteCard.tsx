@@ -49,7 +49,7 @@ export function VitaQuoteCard({
     >
       <Vita posture="neutral" size={44} className="shrink-0" />
       <div className="flex-1 min-w-0">
-        <p className="label-caps text-accent mb-1">
+        <p className="label-caps text-accent-ink mb-1">
           {(current.speaker ?? speaker) === "FOUNDER" ? "FROM THE FOUNDER" : "VITA says"}
         </p>
         <p className="text-sm text-foreground leading-relaxed">{current.text}</p>

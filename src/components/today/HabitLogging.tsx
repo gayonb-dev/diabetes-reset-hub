@@ -318,7 +318,7 @@ export default function HabitLogging({ currentProgramDay }: Props) {
       >
         <p className="text-xs text-tertiary-fg mt-3">{SNACK_TIMING_COPY}</p>
         {lowersMeds && (
-          <p className="text-xs text-accent bg-accent-muted border border-accent/40 rounded-md p-2 mt-3">
+          <p className="text-xs text-accent-ink bg-accent-muted border border-accent/40 rounded-md p-2 mt-3">
             Note: skipping snacks while on medication that lowers blood sugar can cause levels to drop. Check
             with your doctor about what spacing is right for you.
           </p>
@@ -396,13 +396,13 @@ export default function HabitLogging({ currentProgramDay }: Props) {
         {snacksScheduled && (
         <div className="mt-3">
           <button
-            className="text-xs text-accent underline"
+            className="text-xs text-accent-ink underline"
             onClick={() => setSnackOverflow("snack_3")}
           >
             Add another snack
           </button>
           {snackOverflow === "snack_3" && (
-            <p className="text-xs text-accent bg-accent-muted border border-accent/40 rounded-md p-2 mt-2">
+            <p className="text-xs text-accent-ink bg-accent-muted border border-accent/40 rounded-md p-2 mt-2">
               VITA says: You're at your two-snack limit for today. Worth knowing — the timing matters more than
               you think.
             </p>

@@ -29,6 +29,13 @@
       "when": 1787974207341,
       "tag": "0003_email_policies_use_jwt_not_auth_users",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1787980411626,
+      "tag": "0004_orders_prefer_immutable_ownership_and_tighten_grants",
+      "breakpoints": true
     }
   ]
 }

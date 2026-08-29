@@ -417,7 +417,7 @@ export default function Dashboard() {
             }`}
           >
             <div className="flex items-center justify-between mb-3">
-              <p className="label-caps text-accent">Today's Action</p>
+              <p className="label-caps text-accent-ink">Today's Action</p>
               <span className="flex items-center gap-2 text-[12px] text-tertiary-fg">
                 Day {currentProgramDay} of {PROGRAM_TOTAL_DAYS}
                 {actionDoneToday && <CheckCircle2 className="h-4 w-4 text-primary" />}
@@ -444,7 +444,7 @@ export default function Dashboard() {
               </Button>
             </Link>
             {subTasksTotal > 0 && (
-              <p className="text-[11px] text-accent font-medium mt-2 text-center">
+              <p className="text-[11px] text-accent-ink font-medium mt-2 text-center">
                 {subTasksDone} of {subTasksTotal} sub-tasks completed
               </p>
             )}
@@ -603,7 +603,7 @@ function UpcomingActions({ actions }: { actions: DailyAction[] }) {
           <div key={a.id} className="flex items-start gap-2">
             <Lock className="h-3.5 w-3.5 text-tertiary-fg mt-1 shrink-0" aria-hidden />
             <div className="min-w-0">
-              <p className="text-[11px] text-accent font-medium">Day {a.day_number}</p>
+              <p className="text-[11px] text-accent-ink font-medium">Day {a.day_number}</p>
               <p className="text-sm text-foreground font-medium leading-snug truncate">
                 {a.action_title}
               </p>

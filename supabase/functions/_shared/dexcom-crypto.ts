@@ -34,18 +34,27 @@ export function coerceBytea(v: unknown): Uint8Array {
 
 export async function aesGcmEncrypt(plain: string): Promise<{ ct: Uint8Array; iv: Uint8Array }> {
   const keyBytes = hexToBytes(TOKEN_ENC_KEY.slice(0, 64));
-  const key = await crypto.subtle.importKey("raw", keyBytes, "AES-GCM", false, ["encrypt"]);
+  const key = await crypto.subtle.importKey("raw", keyBytes as unknown as BufferSource, "AES-GCM", false, ["encrypt"]);
   const iv = crypto.getRandomValues(new Uint8Array(12));
   const ct = new Uint8Array(
-    await crypto.subtle.encrypt({ name: "AES-GCM", iv }, key, new TextEncoder().encode(plain)),
+    await crypto.subtle.encrypt(
+      { name: "AES-GCM", iv: iv as unknown as BufferSource },
+      key,
+      new TextEncoder().encode(plain) as unknown as BufferSource,
+    ),
   );
   return { ct, iv };
 }
 
 export async function aesGcmDecrypt(ct: Uint8Array, iv: Uint8Array): Promise<string> {
   const keyBytes = hexToBytes(TOKEN_ENC_KEY.slice(0, 64));
-  const key = await crypto.subtle.importKey("raw", keyBytes, "AES-GCM", false, ["decrypt"]);
-  const pt = await crypto.subtle.decrypt({ name: "AES-GCM", iv }, key, ct);
+  const key = await crypto.subtle.importKey("raw", keyBytes as unknown as BufferSource, "AES-GCM", false, ["decrypt"]);
+  const pt = await crypto.subtle.decrypt(
+    { name: "AES-GCM", iv: iv as unknown as BufferSource },
+    key,
+    ct as unknown as BufferSource,
+  );
+
   return new TextDecoder().decode(pt);
 }
 

@@ -238,7 +238,7 @@ function MealCard({ slot, meal, planId, day, weekIdx, onSwap, onUndoSwap }: {
                 <button
                   type="button"
                   onClick={() => onUndoSwap(slot, day, weekIdx)}
-                  className="text-xs text-accent font-medium shrink-0"
+                  className="text-xs text-accent-ink font-medium shrink-0"
                 >
                   Undo swap
                 </button>
@@ -247,7 +247,7 @@ function MealCard({ slot, meal, planId, day, weekIdx, onSwap, onUndoSwap }: {
             <button
               type="button"
               onClick={() => setShowAlts((s) => !s)}
-              className="text-xs text-accent inline-flex items-center gap-1.5 font-medium"
+              className="text-xs text-accent-ink inline-flex items-center gap-1.5 font-medium"
             >
               <Repeat2 className="h-3.5 w-3.5" />
               Don't like this? Swap →
@@ -651,7 +651,9 @@ export default function Meals() {
     return (
       <div className="max-w-md mx-auto py-12 text-center space-y-4">
         <Vita posture="encouraging" size={64} />
+        <h1 className="font-heading font-semibold text-2xl text-foreground">My Meals</h1>
         <p className="text-sm text-muted-foreground">You don't have a meal plan yet.</p>
+
         <Button onClick={() => regenerate()} disabled={regenerating}>
           Generate my plan
         </Button>
