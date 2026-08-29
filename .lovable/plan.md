@@ -86,14 +86,23 @@ subscriptions; request-body or metadata email cannot select the owner; Member A 
 Member B's order; a legacy NULL-owner order stays inaccessible to ordinary members; Admin can
 still investigate a legacy order; no real legacy order is backfilled or changed.
 
-### Focused visible regression (only if Billing behaviour changes)
+### Deployment of the ownership correction
 
-Rerun only the affected client evidence: Task 23 on desktop and mobile across its five
-canonical lifecycle states; Billing loading, owned-order, no-owned-order and backend-error
-states; Settings, Support, export and deletion reachability where Task 23 requires them; and
-proof that no authenticated billing condition redirects to Login. The other 23 matrix tasks,
-the performance suite, the accessibility sweep and unrelated screenshots are not rerun.
-Preserved matrix totals are updated only from this focused evidence.
+After the immutable-ownership migration and any required checkout/webhook correction: run the
+focused ownership, replay, concurrency and RLS tests; run Deno checks/tests for every changed
+function and shared module; deploy only the materially changed Edge Functions from the exact
+tested source; record source SHA-256 and deployment receipts; run safe boot/auth/CORS smoke
+that creates no Stripe object; and prove through synthetic mocked provisioning that the
+deployed server path assigns immutable ownership to future orders.
+
+### Focused visible regression (mandatory, not conditional)
+
+The ownership correction always triggers this rerun. Rerun only: Task 23 on desktop and mobile
+across its five canonical lifecycle states; Billing loading, owned-order,
+legacy-unowned-order and backend-error states; required Settings, Support, export and deletion
+reachability; and proof that no authenticated billing state redirects to Login. The other 23
+matrix tasks, broad performance testing, accessibility testing and unrelated screenshots are
+not rerun. Preserved matrix totals are updated only from this focused evidence.
 
 
 
