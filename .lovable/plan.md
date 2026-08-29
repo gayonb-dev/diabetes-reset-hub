@@ -97,22 +97,31 @@ refactoring or dependency upgrades.
 
 Downloadable evidence carries no real email, auth UUID, member identifier, session token,
 cookie, magic link, IP, secret, or real health/support text — aggregate statements only
-(`real_accounts_remaining: 1`, `real_member_rows_unchanged: true`). Exact synthetic IDs live
-only in the internal cleanup manifest. Every new synthetic record and identity is deleted by
-exact ID, every affected surface re-queried, zero run-specific residue proven, and all safety
-flags confirmed at their recorded pre-run values. Output: `synthetic-cleanup.json`.
+(`real_accounts_remaining: 1`, `real_member_rows_unchanged: true`). Cleanup evidence reports
+before / created / deleted / remaining counts for every synthetic surface, redacted in the
+downloadable copy; exact synthetic IDs live only in the internal manifest. Every new synthetic
+record and identity is deleted by exact ID, every affected surface re-queried, zero
+run-specific residue proven, and all safety flags confirmed at their recorded pre-run values.
+Output: `synthetic-cleanup.json`.
 
-## 8. Final artifacts
+## 8. Final artifacts and reconciliation
 
-`gates.json`, `prompt3-inventory-reconciliation.json`, `rls-principal-matrix.md`,
-`data-lifecycle.json`, `auth-audit.md`, `synthetic-cleanup.json` and an authoritative
-`docs/BATCH-2-COMPLETION-REPORT.md` that preserves the approved matrix result, carries
-original dates for reused evidence, separates reused evidence from gates executed now,
-clearly retires every superseded report (including
-`BATCH-2-COMPLETION-REPORT-REJECTED-WRONG-MATRIX.md` and the interim `BATCH-2-STATUS.md`),
-distinguishes code changes / applied migrations / deployed functions / unpublished client
-changes, reports every gate as PASS / FAIL / BLOCKED / NOT TESTED with references resolving
-to real files, and confirms nothing was published.
+Final inventory hashes both the reused client evidence and the new backend evidence:
+`task-matrix.json`, `performance.json`, `accessibility.json`, `route-loading.json`,
+`screenshots/index.md`, `gates.json`, `prompt3-inventory-reconciliation.json`,
+`rls-principal-matrix.md`, `data-lifecycle.json`, `auth-audit.md`, redacted
+`synthetic-cleanup.json` and the authoritative `docs/BATCH-2-COMPLETION-REPORT.md`.
+
+The report additionally records the full 40-character Batch 2 starting SHA, the full tested
+final SHA (or an honest working-tree digest if uncommitted), the complete changed-file list,
+every applied migration with its source hash, every deployed Edge Function with its source
+hash, the current live client bundle, the tested unpublished bundle, original execution dates
+for reused evidence, and SHA-256 for every final artifact. It preserves the approved matrix
+result, separates reused evidence from gates executed in this pass, clearly retires every
+superseded report (including `BATCH-2-COMPLETION-REPORT-REJECTED-WRONG-MATRIX.md` and the
+interim `BATCH-2-STATUS.md`), distinguishes code changes / applied migrations / deployed
+functions / unpublished client changes, reports every gate as PASS / FAIL / BLOCKED / NOT
+TESTED with references resolving to real files, and confirms nothing was published.
 
 Batch 2 closes only when no in-scope FAIL or NOT TESTED remains; independent platform
 limitations may stay BLOCKED with their exact consequence and post-publication step.
