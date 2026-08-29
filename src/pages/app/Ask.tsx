@@ -614,7 +614,7 @@ function QuestionCard({
   return (
     <Card id={`q-${q.id}`} className={`p-3 ${unanswered ? "border-l-4 border-l-accent" : ""}`}>
       {q.is_question_of_day && (
-        <div className="text-[11px] text-accent font-medium mb-1">⭐ Today's question</div>
+        <div className="text-[11px] text-accent-ink font-medium mb-1">⭐ Today's question</div>
       )}
       <div className="flex gap-3">
         <div className="flex flex-col items-center gap-0.5 shrink-0">

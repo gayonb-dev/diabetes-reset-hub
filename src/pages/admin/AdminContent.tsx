@@ -470,7 +470,7 @@ function DailyActionEditor({
         <div>
           <Label>Preview — dashboard card</Label>
           <div className="mt-2 rounded-2xl border-[1.5px] border-accent/60 bg-accent-muted p-5">
-            <p className="label-caps text-accent mb-2">Today's Action</p>
+            <p className="label-caps text-accent-ink mb-2">Today's Action</p>
             <h4 className="font-heading text-xl font-bold text-foreground">
               {editing.action_title || "Untitled action"}
             </h4>
@@ -478,7 +478,7 @@ function DailyActionEditor({
               {editing.action_description || "No description yet."}
             </p>
             {(editing.sub_tasks?.length ?? 0) > 0 && (
-              <p className="text-[11px] text-accent font-medium mt-2">
+              <p className="text-[11px] text-accent-ink font-medium mt-2">
                 0 of {editing.sub_tasks?.length} sub-tasks completed
               </p>
             )}
@@ -759,7 +759,7 @@ function NotificationsPreviewTab() {
       <div className="space-y-2">
         {NOTIFICATION_TEMPLATES.map((n) => (
           <Card key={n.name} className="p-4 border border-border">
-            <p className="label-caps text-accent mb-1">{n.name}</p>
+            <p className="label-caps text-accent-ink mb-1">{n.name}</p>
             <p className="text-sm text-foreground">{fillTemplate(n.template)}</p>
           </Card>
         ))}

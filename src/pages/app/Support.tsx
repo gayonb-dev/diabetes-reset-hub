@@ -243,7 +243,7 @@ export default function Support() {
         <p className="text-sm text-muted-foreground">
           Report bugs, crashes, billing questions, or anything behaving unexpectedly.
         </p>
-        <p className="text-xs text-accent">We aim to respond within one business day.</p>
+        <p className="text-xs text-accent-ink">We aim to respond within one business day.</p>
         <Button
           className="w-full max-lg:h-[52px] bg-primary hover:bg-primary/90 text-primary-foreground"
           onClick={() => openDialog("Bug")}

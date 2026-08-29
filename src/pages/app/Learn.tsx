@@ -156,7 +156,7 @@ export default function Learn() {
                 >
                   <div className="flex items-start justify-between">
                     <div>
-                      <p className="label-caps text-accent">
+                      <p className="label-caps text-accent-ink">
                         Week {w.weekNumber}
                       </p>
                       <h3 className="font-heading font-semibold text-foreground mt-0.5">
@@ -225,7 +225,7 @@ export default function Learn() {
                         {g.title}
                       </span>
                       {g.category && (
-                        <span className="text-[11px] text-accent border border-accent/40 rounded px-1.5 py-0.5">
+                        <span className="text-[11px] text-accent-ink border border-accent/40 rounded px-1.5 py-0.5">
                           {g.category}
                         </span>
                       )}
@@ -303,7 +303,7 @@ export default function Learn() {
                       {p.title}
                     </h3>
                     {source && (
-                      <p className="text-xs text-accent mt-0.5">{source}</p>
+                      <p className="text-xs text-accent-ink mt-0.5">{source}</p>
                     )}
                     {p.summary && (
                       <p className="text-[13px] text-secondary-fg mt-2">
@@ -400,7 +400,7 @@ function MindsetReader({
     <Dialog open onOpenChange={(v) => !v && onClose()}>
       <DialogContent className="sm:max-w-lg p-6 bg-card rounded-2xl">
         <div className="flex items-center justify-between mb-4">
-          <p className="label-caps text-accent">{week.title}</p>
+          <p className="label-caps text-accent-ink">{week.title}</p>
           <p className="text-[11px] text-tertiary-fg">
             {idx + 1} / {totalCards}
           </p>

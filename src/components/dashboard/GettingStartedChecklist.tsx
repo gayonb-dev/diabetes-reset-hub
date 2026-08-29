@@ -116,7 +116,7 @@ export default function GettingStartedChecklist({ currentProgramDay }: Props) {
         <span className="text-sm font-semibold text-foreground">Getting Ready</span>
         <span className="flex items-center gap-2">
           {isCompleteCollapsedMode ? (
-            <span className="text-[11px] text-accent font-semibold">✓ complete</span>
+            <span className="text-[11px] text-accent-ink font-semibold">✓ complete</span>
           ) : (
             <span className="text-[11px] text-tertiary-fg font-medium">
               {acquired} of {totalUnlocked} items acquired
@@ -164,7 +164,7 @@ export default function GettingStartedChecklist({ currentProgramDay }: Props) {
                       href={item.searchUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 text-xs text-accent font-medium mt-1"
+                      className="inline-flex items-center gap-1 text-xs text-accent-ink font-medium mt-1"
                     >
                       Find it <ExternalLink className="h-3 w-3" />
                     </a>

@@ -33,6 +33,9 @@
     /* accent amber #E8A029 */
     --accent: 36 81% 53%;
     --accent-foreground: 0 0% 10%;
+    /* accent-ink: deep amber for small text on light surfaces (AA) */
+    --accent-ink: 33 88% 27%;
+
     /* accent-muted #FDF3E3 */
     --accent-muted: 39 82% 94%;
 
@@ -97,6 +100,7 @@
     --secondary-foreground: 0 0% 10%;
     --accent: 36 81% 53%;
     --accent-foreground: 0 0% 10%;
+    --accent-ink: 36 85% 68%;
     --accent-muted: 36 30% 18%;
 
     /* bg-subtle #141B13 */

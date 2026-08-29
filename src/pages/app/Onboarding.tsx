@@ -300,7 +300,7 @@ export default function Onboarding() {
                 <button
                   type="button"
                   onClick={() => setFasting("")}
-                  className="text-xs text-accent mt-1.5"
+                  className="text-xs text-accent-ink mt-1.5"
                 >
                   Skip for now
                 </button>

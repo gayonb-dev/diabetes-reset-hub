@@ -238,7 +238,7 @@ function MealCard({ slot, meal, planId, day, weekIdx, onSwap, onUndoSwap }: {
                 <button
                   type="button"
                   onClick={() => onUndoSwap(slot, day, weekIdx)}
-                  className="text-xs text-accent font-medium shrink-0"
+                  className="text-xs text-accent-ink font-medium shrink-0"
                 >
                   Undo swap
                 </button>
@@ -247,7 +247,7 @@ function MealCard({ slot, meal, planId, day, weekIdx, onSwap, onUndoSwap }: {
             <button
               type="button"
               onClick={() => setShowAlts((s) => !s)}
-              className="text-xs text-accent inline-flex items-center gap-1.5 font-medium"
+              className="text-xs text-accent-ink inline-flex items-center gap-1.5 font-medium"
             >
               <Repeat2 className="h-3.5 w-3.5" />
               Don't like this? Swap →
