@@ -651,7 +651,9 @@ export default function Meals() {
     return (
       <div className="max-w-md mx-auto py-12 text-center space-y-4">
         <Vita posture="encouraging" size={64} />
+        <h1 className="font-heading font-semibold text-2xl text-foreground">My Meals</h1>
         <p className="text-sm text-muted-foreground">You don't have a meal plan yet.</p>
+
         <Button onClick={() => regenerate()} disabled={regenerating}>
           Generate my plan
         </Button>
