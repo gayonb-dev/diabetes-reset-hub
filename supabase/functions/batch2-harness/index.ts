@@ -11,7 +11,7 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY")!;
-const HARNESS_SECRET = Deno.env.get("BATCH2_HARNESS_SECRET")!;
+const HARNESS_SECRET = Deno.env.get("BATCH2_HARNESS_SECRET_V2") ?? Deno.env.get("BATCH2_HARNESS_SECRET")!;
 
 const admin = createClient(SUPABASE_URL, SERVICE_KEY, {
   auth: { autoRefreshToken: false, persistSession: false },
@@ -170,18 +170,60 @@ async function auditWindow() {
   });
 }
 
+
+async function seedOrders(specs: { user_id: string; email: string; own_uid?: boolean }[]) {
+  const rows = specs.map((s) => ({
+    customer_name: "Batch2 Synthetic",
+    customer_email: s.email,
+    amount: 2700,
+    currency: "usd",
+    status: "paid",
+    product_name: "SYNTHETIC-BATCH2-VERIFICATION",
+    product_id: "synthetic-batch2",
+    user_id: s.own_uid ? s.user_id : null,
+  }));
+  const { data, error } = await admin.from("orders").insert(rows).select("id,customer_email,user_id");
+  if (error) return json({ error: error.message }, 500);
+  return json({ ok: true, orders: data });
+}
+
+async function cleanupOrders() {
+  const { data } = await admin.from("orders").delete()
+    .eq("product_id", "synthetic-batch2").select("id");
+  return json({ orders_removed: data?.length ?? 0 });
+}
+
+async function setDeletionLock(userId: string, state: string) {
+  if (state === "clear") {
+    await admin.from("deletion_jobs").delete().eq("user_id", userId);
+    await admin.from("profiles").update({ deletion_pending: false, deletion_restricted: false })
+      .eq("user_id", userId);
+    return json({ ok: true, state: "clear" });
+  }
+  const { data, error } = await admin.from("deletion_jobs").insert({
+    user_id: userId, state, identity_verified_at: new Date().toISOString(),
+  }).select("id").maybeSingle();
+  if (error) return json({ error: error.message }, 500);
+  return json({ ok: true, job: data?.id, state });
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
   if (req.headers.get("x-harness-secret") !== HARNESS_SECRET) {
     return json({ error: "forbidden" }, 403);
   }
-  let body: { action?: string; ids?: string[]; user_id?: string } = {};
+  let body: { action?: string; ids?: string[]; user_id?: string; state?: string; specs?: { user_id: string; email: string; own_uid?: boolean }[] } = {};
   try { body = await req.json(); } catch { /* boot smoke sends no body */ }
 
   switch (body.action) {
     case "provision": return await provision();
     case "service_probe": return await serviceProbe(body.user_id!);
     case "cleanup": return await cleanup(body.ids ?? []);
+    case "cleanup_all_synthetic": {
+      const { data } = await admin.auth.admin.listUsers({ page: 1, perPage: 200 });
+      const ids = (data?.users ?? []).filter((u) => (u.email ?? "").endsWith("@example.invalid")).map((u) => u.id);
+      return await cleanup(ids);
+    }
     case "audit": return await auditWindow();
     case "clear_locks": {
       const { data } = await admin.from("deletion_jobs").delete().in("user_id", body.ids ?? []).select("id");
@@ -194,6 +236,9 @@ Deno.serve(async (req) => {
       await admin.from("member_daily_progress").delete().in("member_id", body.ids ?? []);
       return json({ ok: true });
     }
+    case "seed_orders": return await seedOrders(body.specs ?? []);
+    case "cleanup_orders": return await cleanupOrders();
+    case "deletion_lock": return await setDeletionLock(body.user_id!, body.state ?? "clear");
     case "ping": return json({ ok: true });
     default: return json({ error: "unknown action" }, 400);
   }
