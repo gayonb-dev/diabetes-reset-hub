@@ -525,31 +525,52 @@ export default function HabitLogging({ currentProgramDay }: Props) {
   );
 }
 
+// Batch 2 task 5 — the reflection is a plain disclosure. The control says
+// exactly what it does ("Read reflection" / "Hide reflection"), exposes its
+// expanded state to assistive technology, and the reflection text itself is
+// the region it controls. The 30-second read timer only gates the *logging*
+// button, never the ability to read.
 function MindsetCard({ read, onRead }: { read: boolean; onRead: () => void }) {
   const [elapsed, setElapsed] = useState(0);
+  const [expanded, setExpanded] = useState(false);
   useEffect(() => {
-    if (read) return;
+    if (read || !expanded) return;
     const t = setInterval(() => setElapsed((e) => e + 1), 1000);
     return () => clearInterval(t);
-  }, [read]);
+  }, [read, expanded]);
   const canRead = elapsed >= 30 || read;
   return (
     <div className="rounded-xl border border-border bg-primary-muted p-4 mt-3">
-      <p className="text-sm text-foreground leading-relaxed italic">
-        "Progress is not linear. Trust the trend, not the day. The body you're rebuilding doesn't care about a
-        single reading — it responds to consistency."
-      </p>
       <Button
+        type="button"
         size="sm"
-        className="mt-3 bg-primary hover:bg-primary/90 text-primary-foreground"
-        disabled={!canRead}
-        onClick={onRead}
+        variant="outline"
+        aria-expanded={expanded}
+        aria-controls="mindset-reflection"
+        onClick={() => setExpanded((v) => !v)}
+        className="min-h-11"
       >
-        {read ? "Read ✓" : canRead ? "I read this" : `I read this (${30 - elapsed}s)`}
+        {expanded ? "Hide reflection" : "Read reflection"}
       </Button>
+
+      <div id="mindset-reflection" hidden={!expanded}>
+        <p className="text-sm text-foreground leading-relaxed italic mt-3">
+          "Progress is not linear. Trust the trend, not the day. The body you're rebuilding doesn't care about a
+          single reading — it responds to consistency."
+        </p>
+        <Button
+          size="sm"
+          className="mt-3 min-h-11 bg-primary hover:bg-primary/90 text-primary-foreground"
+          disabled={!canRead}
+          onClick={onRead}
+        >
+          {read ? "Read ✓" : canRead ? "I read this" : `I read this (${30 - elapsed}s)`}
+        </Button>
+      </div>
     </div>
   );
 }
+
 
 
 // Labelled, keyboard-operable meal toggles with an exposed checked state and

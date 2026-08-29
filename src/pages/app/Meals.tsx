@@ -96,6 +96,11 @@ const SLOT_LABEL: Record<string, string> = {
   meal_2: "Meal 2",
 };
 
+const SHOPPING_DAY_LABEL: Record<string, string> = {
+  monday: "Monday", tuesday: "Tuesday", wednesday: "Wednesday", thursday: "Thursday",
+  friday: "Friday", saturday: "Saturday", sunday: "Sunday",
+};
+
 const PLAN_PENDING_TIMEOUT_MS = 4 * 60 * 1000; // 4-min ceiling — AI gen often needs 60–120s per week
 
 function isStalePending(plan: PlanRow | null) {
@@ -281,6 +286,9 @@ export default function Meals() {
   const [cuisines, setCuisines] = useState<string[]>([]);
   const [shoppingChecked, setShoppingChecked] = useState<Record<string, boolean>>({});
   const [shoppingView, setShoppingView] = useState<"category" | "meal">("meal");
+  // Batch 2 task 7 — the shopping list opens scoped to one day. A whole-week
+  // list is a deliberate, separate action, never the default render.
+  const [shoppingScope, setShoppingScope] = useState<"day" | "week">("day");
   const [excludedMeals, setExcludedMeals] = useState<Record<string, boolean>>({});
   const [toolsSheetOpen, setToolsSheetOpen] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -533,9 +541,37 @@ export default function Meals() {
     return { byCat, uniqueCount: seen.size, mealCount: meals.length, meals };
   }, [current]);
 
+  // Day scoping. `shopping` above is the whole week; everything rendered below
+  // works from `scoped`, which is one day unless the member asks for the week.
+  const shoppingDayKey = useMemo(() => {
+    const today = dayKeys[new Date().getDay() === 0 ? 6 : new Date().getDay() - 1] ?? dayKeys[0];
+    const present = new Set(shopping.meals.map((m) => m.key.split(".")[0]));
+    return present.has(today) ? today : [...present][0] ?? today;
+  }, [dayKeys, shopping.meals]);
+
+  const scoped = useMemo(() => {
+    const meals =
+      shoppingScope === "week"
+        ? shopping.meals
+        : shopping.meals.filter((m) => m.key.split(".")[0] === shoppingDayKey);
+    const byCat = new Map<string, string[]>();
+    const seen = new Set<string>();
+    for (const m of meals) {
+      for (const item of m.items) {
+        const k = item.toLowerCase().trim();
+        if (!k || seen.has(k)) continue;
+        seen.add(k);
+        const cat = categorize(item);
+        if (!byCat.has(cat)) byCat.set(cat, []);
+        byCat.get(cat)!.push(item);
+      }
+    }
+    return { meals, byCat, uniqueCount: seen.size, mealCount: meals.length };
+  }, [shopping.meals, shoppingScope, shoppingDayKey]);
+
   // By-meal view: only included meals contribute ingredients.
   const byMeal = useMemo(() => {
-    const included = shopping.meals.filter((m) => !excludedMeals[m.key]);
+    const included = scoped.meals.filter((m) => !excludedMeals[m.key]);
     const unique = new Set<string>();
     const groups = included.map((m) => {
       const items: string[] = [];
@@ -548,7 +584,7 @@ export default function Meals() {
       return { ...m, items };
     });
     return { groups, ingredientCount: unique.size, mealCount: included.length };
-  }, [shopping.meals, excludedMeals]);
+  }, [scoped.meals, excludedMeals]);
 
   // Shopping list print/share (M9) — same underlying data, presentational entry points only.
   const shoppingText = useMemo(() => {
@@ -559,13 +595,13 @@ export default function Meals() {
         for (const item of g.items) lines.push(`- ${item}`);
       }
     } else {
-      for (const [cat, items] of shopping.byCat.entries()) {
+      for (const [cat, items] of scoped.byCat.entries()) {
         lines.push(`\n${cat}`);
         for (const item of items) lines.push(`- ${item}`);
       }
     }
     return lines.join("\n");
-  }, [shopping, byMeal, shoppingView, weekIdx]);
+  }, [scoped, byMeal, shoppingView, weekIdx]);
 
 
   function handlePrintList() {
@@ -792,6 +828,24 @@ export default function Meals() {
             Generated from Week {weekIdx}'s meals. Checked items move to the bottom.
           </p>
 
+          <div className="flex flex-wrap items-center gap-2">
+            <p className="text-xs text-muted-foreground">
+              {shoppingScope === "day"
+                ? `Showing ${SHOPPING_DAY_LABEL[shoppingDayKey] ?? shoppingDayKey} only.`
+                : "Showing the whole week."}
+            </p>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="min-h-9"
+              aria-pressed={shoppingScope === "week"}
+              onClick={() => setShoppingScope((v) => (v === "day" ? "week" : "day"))}
+            >
+              {shoppingScope === "day" ? "Show whole week" : "Show today only"}
+            </Button>
+          </div>
+
           <div className="inline-flex rounded-lg border border-border p-1 bg-muted/40">
             {(["meal", "category"] as const).map((v) => (
               <button
@@ -812,9 +866,10 @@ export default function Meals() {
           </div>
 
           {shoppingView === "category"
-            ? shopping.mealCount > 0 && shopping.uniqueCount > 0 && (
+            ? scoped.mealCount > 0 && scoped.uniqueCount > 0 && (
                 <p className="text-sm font-medium text-foreground">
-                  {shopping.uniqueCount} ingredients cover all {shopping.mealCount} meals this week.
+                  {scoped.uniqueCount} ingredients for {scoped.mealCount} meals
+                  {shoppingScope === "week" ? " this week" : " today"}.
                 </p>
               )
             : (
@@ -841,7 +896,7 @@ export default function Meals() {
 
           {shoppingView === "meal" && (
             <div className="space-y-3">
-              {shopping.meals.map((m) => {
+              {scoped.meals.map((m) => {
                 const included = !excludedMeals[m.key];
                 const group = byMeal.groups.find((g) => g.key === m.key);
                 return (
@@ -894,7 +949,7 @@ export default function Meals() {
                   </Card>
                 );
               })}
-              {shopping.meals.length === 0 && (
+              {scoped.meals.length === 0 && (
                 <p className="text-sm text-muted-foreground">No meals found in this week.</p>
               )}
             </div>
@@ -902,7 +957,7 @@ export default function Meals() {
 
           <div className={cn("grid lg:grid-cols-1 gap-4", shoppingView !== "category" && "hidden")}>
 
-            {[...shopping.byCat.entries()].map(([cat, items]) => {
+            {[...scoped.byCat.entries()].map(([cat, items]) => {
               const tip = CATEGORY_RULES.find((c) => c.category === cat)?.tip;
               const sorted = [...items].sort((a, b) => Number(!!shoppingChecked[a]) - Number(!!shoppingChecked[b]));
               return (
@@ -941,7 +996,7 @@ export default function Meals() {
               );
             })}
           </div>
-          {shoppingView === "category" && shopping.byCat.size === 0 && (
+          {shoppingView === "category" && scoped.byCat.size === 0 && (
             <p className="text-sm text-muted-foreground">No ingredients found in this week.</p>
           )}
 

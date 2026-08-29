@@ -5,8 +5,8 @@
   "branch": "edit/edt-ffbedddd-e5fa-4270-91d7-c6f350c44c16",
   "working_tree_clean": true,
   "total_tasks": 24,
-  "desktop_results": 24,
-  "mobile_results": 24,
+  "desktop_results": 0,
+  "mobile_results": 0,
   "matrix": [
     {
       "id": 1,
@@ -28,7 +28,7 @@
     },
     {
       "id": 3,
-      "task": "Today shows correct `Day X of 180` and a separate `Phase N — [name], day X of Y` with a plain-language explanation.",
+      "task": "Today shows correct `Day X of 180` and a separate `Phase N \u2014 [name], day X of Y` with a plain-language explanation.",
       "expected": "Program day and named phase-relative day are both displayed; phase end is not presented as programme end.",
       "actual": "",
       "evidence": "",
@@ -127,7 +127,7 @@
     },
     {
       "id": 14,
-      "task": "Ordinary success toasts auto-dismiss within 4–6s, pause on hover/focus, stay accessible without stealing focus.",
+      "task": "Ordinary success toasts auto-dismiss within 4\u20136s, pause on hover/focus, stay accessible without stealing focus.",
       "expected": "Success toast dismisses 4-6s; pauses on hover/focus; polite announcement.",
       "actual": "",
       "evidence": "",
@@ -154,7 +154,7 @@
     },
     {
       "id": 17,
-      "task": "Coaching interest added and withdrawn using authenticated identity/email, explicit consent and timestamp only — no health narrative or fields, no urgency, deposit, checkout or availability promise.",
+      "task": "Coaching interest added and withdrawn using authenticated identity/email, explicit consent and timestamp only \u2014 no health narrative or fields, no urgency, deposit, checkout or availability promise.",
       "expected": "Coaching interest collects only identity, consent, status and timestamp; withdrawal works.",
       "actual": "",
       "evidence": "",
@@ -224,5 +224,8 @@
       "desktop": "",
       "mobile": ""
     }
-  ]
+  ],
+  "total_results": 0,
+  "execution_state": "NOT_EXECUTED",
+  "note": "Result fields are intentionally empty. No result may be borrowed from the rejected journey matrix."
 }

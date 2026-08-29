@@ -1,0 +1,182 @@
+[
+ {
+  "test": "member_progress unlocked day 13",
+  "principal": "anonymous",
+  "expected": "denied",
+  "http": 401,
+  "actual": "{\"code\":\"42501\",\"details\":null,\"hint\":null,\"message\":\"permission denied for function has_role\"}",
+  "result": "PASS",
+  "note": ""
+ },
+ {
+  "test": "member_daily_progress unlocked day 13",
+  "principal": "anonymous",
+  "expected": "denied",
+  "http": 401,
+  "actual": "{\"code\":\"42501\",\"details\":null,\"hint\":null,\"message\":\"permission denied for function has_role\"}",
+  "result": "PASS",
+  "note": ""
+ },
+ {
+  "test": "member_progress unlocked day 13 (own)",
+  "principal": "Member A",
+  "expected": "accepted",
+  "http": 201,
+  "actual": "[{\"id\":\"673d2adb-5571-4bc2-a3c2-12d86f099af9\",\"user_id\":\"f4c3921b-a4b6-421b-b52f-cf47d34b92de\",\"day_number\":13,\"completed_at\":\"2026-08-29T03:12:25.570012+00:00\",\"notes\":null,\"metadata\":{},\"created_at\"",
+  "result": "PASS",
+  "note": ""
+ },
+ {
+  "test": "member_progress future day 14 (own)",
+  "principal": "Member A",
+  "expected": "denied",
+  "http": 403,
+  "actual": "{\"code\":\"42501\",\"details\":null,\"hint\":null,\"message\":\"Day 14 has not unlocked yet (currently on day 13).\"}",
+  "result": "PASS",
+  "note": ""
+ },
+ {
+  "test": "member_progress day 999 (own)",
+  "principal": "Member A",
+  "expected": "denied",
+  "http": 403,
+  "actual": "{\"code\":\"42501\",\"details\":null,\"hint\":null,\"message\":\"Day 999 has not unlocked yet (currently on day 13).\"}",
+  "result": "PASS",
+  "note": ""
+ },
+ {
+  "test": "member_progress day 0 (own, invalid)",
+  "principal": "Member A",
+  "expected": "denied",
+  "http": 403,
+  "actual": "{\"code\":\"42501\",\"details\":null,\"hint\":null,\"message\":\"Progress write refused: day_number must be a positive integer.\"}",
+  "result": "PASS",
+  "note": ""
+ },
+ {
+  "test": "member_progress unlocked day for Member B (cross-member)",
+  "principal": "Member A",
+  "expected": "denied",
+  "http": 403,
+  "actual": "{\"code\":\"42501\",\"details\":null,\"hint\":null,\"message\":\"new row violates row-level security policy for table \\\"member_progress\\\"\"}",
+  "result": "PASS",
+  "note": ""
+ },
+ {
+  "test": "member_daily_progress unlocked day 13 (member_id column, own)",
+  "principal": "Member A",
+  "expected": "accepted",
+  "http": 201,
+  "actual": "[{\"id\":\"cc5b05bd-05dc-4fa8-8413-e692fa506ff6\",\"member_id\":\"f4c3921b-a4b6-421b-b52f-cf47d34b92de\",\"day_number\":13,\"action_id\":\"202aa6ac-f058-47cc-964d-e96da0babfe4\",\"status\":\"completed\",\"completed_at\":",
+  "result": "PASS",
+  "note": ""
+ },
+ {
+  "test": "member_daily_progress future day 14 (member_id column, own)",
+  "principal": "Member A",
+  "expected": "denied",
+  "http": 403,
+  "actual": "{\"code\":\"42501\",\"details\":null,\"hint\":null,\"message\":\"Day 14 has not unlocked yet (currently on day 13).\"}",
+  "result": "PASS",
+  "note": ""
+ },
+ {
+  "test": "member_progress unlocked day 13 (own)",
+  "principal": "Member B",
+  "expected": "accepted",
+  "http": 201,
+  "actual": "[{\"id\":\"0e99b805-fc62-427a-bc32-de6f6c8ad4db\",\"user_id\":\"43798334-cc32-44c9-aeaa-5b14d21cb54e\",\"day_number\":13,\"completed_at\":\"2026-08-29T03:12:26.145527+00:00\",\"notes\":null,\"metadata\":{},\"created_at\"",
+  "result": "PASS",
+  "note": ""
+ },
+ {
+  "test": "member_progress unlocked day for Member A (cross-member)",
+  "principal": "Member B",
+  "expected": "denied",
+  "http": 403,
+  "actual": "{\"code\":\"42501\",\"details\":null,\"hint\":null,\"message\":\"new row violates row-level security policy for table \\\"member_progress\\\"\"}",
+  "result": "PASS",
+  "note": ""
+ },
+ {
+  "test": "member_daily_progress unlocked day for Member A (cross-member)",
+  "principal": "Member B",
+  "expected": "denied",
+  "http": 403,
+  "actual": "{\"code\":\"42501\",\"details\":null,\"hint\":null,\"message\":\"new row violates row-level security policy for table \\\"member_daily_progress\\\"\"}",
+  "result": "PASS",
+  "note": ""
+ },
+ {
+  "test": "member_progress day 1 with no programme anchor (own)",
+  "principal": "Member C (no programme state)",
+  "expected": "denied",
+  "http": 403,
+  "actual": "{\"code\":\"42501\",\"details\":null,\"hint\":null,\"message\":\"Progress write refused: no valid programme-day state for this member.\"}",
+  "result": "PASS",
+  "note": ""
+ },
+ {
+  "test": "member_daily_progress day 1 with no programme anchor (own)",
+  "principal": "Member C (no programme state)",
+  "expected": "denied",
+  "http": 403,
+  "actual": "{\"code\":\"42501\",\"details\":null,\"hint\":null,\"message\":\"Progress write refused: no valid programme-day state for this member.\"}",
+  "result": "PASS",
+  "note": ""
+ },
+ {
+  "test": "member_progress unlocked day 13 (own)",
+  "principal": "synthetic Admin JWT",
+  "expected": "accepted",
+  "http": 201,
+  "actual": "[{\"id\":\"ccaed442-7690-4a74-a680-d3651815ac68\",\"user_id\":\"702fc550-21cd-4bf9-b33f-70b6bdb58c96\",\"day_number\":13,\"completed_at\":\"2026-08-29T03:12:26.455331+00:00\",\"notes\":null,\"metadata\":{},\"created_at\"",
+  "result": "PASS",
+  "note": ""
+ },
+ {
+  "test": "member_progress future day 14 (own)",
+  "principal": "synthetic Admin JWT",
+  "expected": "denied",
+  "http": 403,
+  "actual": "{\"code\":\"42501\",\"details\":null,\"hint\":null,\"message\":\"Day 14 has not unlocked yet (currently on day 13).\"}",
+  "result": "PASS",
+  "note": ""
+ },
+ {
+  "test": "member_progress future day 14 for Member A",
+  "principal": "synthetic Admin JWT",
+  "expected": "denied",
+  "http": 403,
+  "actual": "{\"code\":\"42501\",\"details\":null,\"hint\":null,\"message\":\"Day 14 has not unlocked yet (currently on day 13).\"}",
+  "result": "PASS",
+  "note": ""
+ },
+ {
+  "test": "member_progress unlocked day during active deletion lock",
+  "principal": "Member B (deletion-restricted)",
+  "expected": "denied",
+  "http": 403,
+  "actual": "{\"code\":\"42501\",\"details\":null,\"hint\":null,\"message\":\"new row violates row-level security policy \\\"deletion_lock_member_progress\\\" for table \\\"member_progress\\\"\"}",
+  "result": "PASS",
+  "note": "deletion_jobs.state='access_blocked'; 'blocked_on_processor' is unreachable under deletion_jobs_state_check"
+ },
+ {
+  "test": "member_daily_progress unlocked day during active deletion lock",
+  "principal": "Member B (deletion-restricted)",
+  "expected": "denied",
+  "http": 403,
+  "actual": "{\"code\":\"42501\",\"details\":null,\"hint\":null,\"message\":\"new row violates row-level security policy \\\"deletion_lock_member_daily_progress\\\" for table \\\"member_daily_progress\\\"\"}",
+  "result": "PASS",
+  "note": ""
+ },
+ {
+  "test": "member_progress day 999 (far-future) via administrative API",
+  "principal": "service_role",
+  "expected": "accepted - deliberately exempt",
+  "http": 200,
+  "actual": "{\"service_role_future_day_insert\": \"ACCEPTED\", \"inserted_then_removed\": \"acde9920-11c5-4993-b55a-6c22c13db5fd\"}",
+  "result": "PASS",
+  "note": "row inserted then removed; proves service_role remains deliberately separate"
+ }
+]
