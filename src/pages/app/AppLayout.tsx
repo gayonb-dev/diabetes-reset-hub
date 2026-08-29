@@ -337,7 +337,7 @@ export default function AppLayout() {
 
 
         {/* Mobile top bar — the notifications entry point below the lg rail. */}
-        <div className="lg:hidden fixed top-0 right-0 z-40 p-2 pt-[calc(env(safe-area-inset-top)+0.25rem)] pr-[calc(env(safe-area-inset-right)+0.25rem)]">
+        <div className="lg:hidden sticky top-0 z-30 flex justify-end bg-background/95 backdrop-blur border-b border-border px-3 py-1.5 pt-[calc(env(safe-area-inset-top)+0.375rem)]">
           <NotificationsBell />
         </div>
 
