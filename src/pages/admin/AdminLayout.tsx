@@ -76,7 +76,7 @@ export default function AdminLayout() {
       </div>
 
       <header className="bg-slate-50 dark:bg-slate-900/40 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-30 backdrop-blur supports-[backdrop-filter]:bg-slate-50/85">
-        <div className="container mx-auto px-4 py-3 flex items-center justify-between gap-4">
+        <div className="container mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <div className="h-9 w-9 rounded-lg bg-slate-900 text-slate-100 flex items-center justify-center shadow-sm">
               <ShieldCheck className="h-5 w-5 text-amber-400" />
@@ -88,7 +88,7 @@ export default function AdminLayout() {
               <p className="text-xs text-slate-500 dark:text-slate-400">{user?.email}</p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             {/* Batch 2 F19 — persistent, functional return to the member app. */}
             <Button asChild variant="outline" size="sm" className="min-h-11">
               <Link to="/app">
