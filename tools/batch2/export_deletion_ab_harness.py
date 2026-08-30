@@ -100,11 +100,15 @@ class Harness:
         self.results: dict[str, Any] = {}
 
     def seed(self) -> None:
+        print("[harness] cleaning prior synthetic fixtures...")
+        harness("cleanup_all_synthetic")
         print("[harness] provisioning A/B members via batch2-harness...")
         out = harness("provision")
         if not out.get("ok"):
             raise RuntimeError(f"provision failed: {out}")
-        self.a = out["principals"]["memberA"]
+        # A = deletion/export subject (memberC is never-billed; no Stripe calls).
+        # B = untouched control (memberB has an active subscription).
+        self.a = out["principals"]["memberC"]
         self.b = out["principals"]["memberB"]
         a_id, b_id = self.a["id"], self.b["id"]
 
