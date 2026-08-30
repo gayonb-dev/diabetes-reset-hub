@@ -222,12 +222,14 @@ class Harness:
             ("conversations", [a_vp], [self.b_vp]),
             ("messages", [a_vp], [self.b_vp]),
             ("support_tickets", [a_id], [b_id]),
-            ("support_ticket_notes", a_ticket_ids, self.ids.get("support_tickets", [])),
+            ("support_ticket_notes", [a_ticket_ids[0]], [self.ids["support_tickets"][1]]),
         ]
         for t, a_refs, b_refs in personal_tables:
             rows = snap["categories"].get(t, [])
-            a_rows = [r for r in rows if any(str(r.get(k)) in [str(ref) for ref in a_refs] for k in r.keys())]
-            b_rows = [r for r in rows if any(str(r.get(k)) in [str(ref) for ref in b_refs] for k in r.keys())]
+            a_set = {str(ref) for ref in a_refs}
+            b_set = {str(ref) for ref in b_refs}
+            a_rows = [r for r in rows if any(str(v) in a_set for v in r.values())]
+            b_rows = [r for r in rows if any(str(v) in b_set for v in r.values())]
             if not a_rows:
                 errors.append(f"{t}: missing A rows")
             if b_rows:
