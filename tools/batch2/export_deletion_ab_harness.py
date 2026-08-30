@@ -211,15 +211,23 @@ class Harness:
         errors: list[str] = []
         a_id = self.a["id"]
         b_id = self.b["id"]
+        a_vp = self.a_vp
+        a_ticket_ids = self.ids.get("support_tickets", [])
 
         personal_tables = [
-            "community_questions", "community_answers", "community_votes",
-            "win_posts", "conversations", "messages", "support_tickets", "support_ticket_notes",
+            ("community_questions", [a_id], [b_id]),
+            ("community_answers", [a_id], [b_id]),
+            ("community_votes", [a_id], [b_id]),
+            ("win_posts", [a_id], [b_id]),
+            ("conversations", [a_vp], [self.b_vp]),
+            ("messages", [a_vp], [self.b_vp]),
+            ("support_tickets", [a_id], [b_id]),
+            ("support_ticket_notes", a_ticket_ids, self.ids.get("support_tickets", [])),
         ]
-        for t in personal_tables:
+        for t, a_refs, b_refs in personal_tables:
             rows = snap["categories"].get(t, [])
-            a_rows = [r for r in rows if any(str(v) == a_id for v in r.values())]
-            b_rows = [r for r in rows if any(str(v) == b_id for v in r.values())]
+            a_rows = [r for r in rows if any(str(r.get(k)) in [str(ref) for ref in a_refs] for k in r.keys())]
+            b_rows = [r for r in rows if any(str(r.get(k)) in [str(ref) for ref in b_refs] for k in r.keys())]
             if not a_rows:
                 errors.append(f"{t}: missing A rows")
             if b_rows:
