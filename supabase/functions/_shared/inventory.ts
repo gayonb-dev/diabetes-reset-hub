@@ -129,7 +129,17 @@ export const INVENTORY: InventoryEntry[] = [
   // ---- commerce ----
   { table: "subscriptions", match: "user_id", column: "user_id", disposition: "export_and_delete", order: 25, category: "commerce" },
   { table: "dunning_attempts", match: "user_id", column: "user_id", disposition: "export_and_delete", order: 25, category: "commerce" },
-  { table: "orders", match: "customer_email", column: "customer_email", disposition: "export_and_delete", order: 25, category: "commerce" },
+  // Ownership is resolved ONLY from immutable relationships: orders.user_id or
+  // an order attached to a subscription owned by the member. customer_email is
+  // never used to claim an order.
+  { table: "orders", match: "order_ownership", column: "id", disposition: "export_and_delete", order: 25, category: "commerce" },
+  // Dispute / chargeback holds: personal (user_id) but retained under financial
+  // and anti-fraud retention. Exported redacted, never deleted with the account.
+  {
+    table: "billing_holds", match: "user_id", column: "user_id",
+    disposition: "export_redacted_and_retain", order: 25, category: "commerce",
+    redact: ["stripe_dispute_id", "stripe_charge_id"],
+  },
   { table: "intake_submissions", match: "email", column: "email", disposition: "export_and_delete", order: 25, category: "commerce" },
   { table: "challenge_progress", match: "email", column: "email", disposition: "export_and_delete", order: 25, category: "legacy_challenge" },
   { table: "leads", match: "email", column: "email", disposition: "export_and_delete", order: 25, category: "marketing" },
