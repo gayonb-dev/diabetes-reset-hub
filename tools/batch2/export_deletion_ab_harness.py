@@ -178,7 +178,7 @@ class Run:
             f"INSERT INTO public.messages (id, conversation_id, visitor_profile_id, role, content, created_at) VALUES ('{msg_a}','{conv_a}','{self.a_vp}','user','A msg','{now}'),('{msg_b}','{conv_b}','{self.b_vp}','user','B msg','{now}')",
             f"INSERT INTO public.support_tickets (id, user_id, reference, category, message, created_at) VALUES ('{tk_a}','{a_id}','HARNESS-A-{secrets.token_hex(4)}','Question','A ticket message','{now}'),('{tk_b}','{b_id}','HARNESS-B-{secrets.token_hex(4)}','Question','B ticket message','{now}')",
             f"INSERT INTO public.support_ticket_notes (id, ticket_id, author_id, body, created_at) VALUES ('{note_a}','{tk_a}','{a_id}','A note body','{now}'),('{note_b}','{tk_b}','{b_id}','B note body','{now}')",
-            f"INSERT INTO public.billing_holds (id, user_id, hold_type, stripe_dispute_id, stripe_charge_id, dispute_status, review_only, opened_at) VALUES ('{hold_a}','{a_id}','dispute','dp_synthetic_batch2','ch_synthetic_batch2','warning_closed',true,'{now}')",
+            f"INSERT INTO public.billing_holds (id, user_id, hold_type, stripe_dispute_id, stripe_charge_id, dispute_status, review_only, opened_at) VALUES ('{hold_a}','{a_id}','dispute','dp_synthetic_batch2_{secrets.token_hex(4)}','ch_synthetic_batch2_{secrets.token_hex(4)}','warning_closed',true,'{now}')",
         ]
         for stmt in stmts:
             psql_exec(stmt)
