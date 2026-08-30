@@ -1,0 +1,4661 @@
+{
+ "generated_utc": "2026-08-30",
+ "project_ref": "wqennhjdojjqmmqzjhti",
+ "domain": "https://diabetesresetmethod.com",
+ "method": "live read-only catalogue introspection (pg_tables, pg_policies, information_schema.columns, has_table_privilege, pg_proc, storage.buckets). No member-generated content read or exported.",
+ "totals": {
+  "tables": 73,
+  "personal_data_tables": 53,
+  "tables_without_rls": 0,
+  "policies": 268,
+  "public_functions": 47,
+  "security_definer_functions": 41,
+  "functions_executable_by_anon": 5,
+  "storage_buckets": 1
+ },
+ "tables_without_rls": [],
+ "storage_buckets": [
+  {
+   "id": "member-uploads",
+   "name": "member-uploads",
+   "public": false
+  }
+ ],
+ "security_definer_functions": [
+  {
+   "name": "award_helpful_points",
+   "args": "p_user_id uuid, p_amount integer",
+   "anon_execute": false,
+   "authenticated_execute": true
+  },
+  {
+   "name": "award_points",
+   "args": "p_user_id uuid, p_kind text, p_points integer, p_idempotency_key text, p_detail text",
+   "anon_execute": false,
+   "authenticated_execute": false
+  },
+  {
+   "name": "award_xp",
+   "args": "p_user_id uuid, p_amount integer",
+   "anon_execute": false,
+   "authenticated_execute": true
+  },
+  {
+   "name": "block_phi_consent_writes",
+   "args": "",
+   "anon_execute": false,
+   "authenticated_execute": false
+  },
+  {
+   "name": "bump_streak",
+   "args": "p_user_id uuid",
+   "anon_execute": false,
+   "authenticated_execute": true
+  },
+  {
+   "name": "claim_billing_event",
+   "args": "p_event_id text, p_event_type text, p_created timestamp with time zone, p_object_id text, p_object_type text, p_livemode boolean, p_synthetic boolean",
+   "anon_execute": false,
+   "authenticated_execute": false
+  },
+  {
+   "name": "complete_workout_session",
+   "args": "p_session_id uuid, p_idempotency_key text, p_duration_seconds integer",
+   "anon_execute": false,
+   "authenticated_execute": true
+  },
+  {
+   "name": "consume_export_artifact",
+   "args": "p_token_hash text",
+   "anon_execute": false,
+   "authenticated_execute": false
+  },
+  {
+   "name": "consume_rate_limit",
+   "args": "p_bucket text, p_window_seconds integer, p_limit integer",
+   "anon_execute": false,
+   "authenticated_execute": false
+  },
+  {
+   "name": "consume_reauth_ticket",
+   "args": "p_token_hash text, p_user_id uuid, p_action text",
+   "anon_execute": false,
+   "authenticated_execute": false
+  },
+  {
+   "name": "current_program_day",
+   "args": "p_user_id uuid",
+   "anon_execute": false,
+   "authenticated_execute": true
+  },
+  {
+   "name": "delete_visitor_session_data",
+   "args": "p_session_id uuid",
+   "anon_execute": false,
+   "authenticated_execute": false
+  },
+  {
+   "name": "deletion_lock_active",
+   "args": "p_user_id uuid",
+   "anon_execute": false,
+   "authenticated_execute": true
+  },
+  {
+   "name": "deletion_restricted_active",
+   "args": "p_user_id uuid",
+   "anon_execute": false,
+   "authenticated_execute": true
+  },
+  {
+   "name": "enforce_member_progress_day_unlocked",
+   "args": "",
+   "anon_execute": false,
+   "authenticated_execute": false
+  },
+  {
+   "name": "finalize_billing_event",
+   "args": "p_event_id text, p_state text, p_reason text, p_order_status text, p_sub_status text, p_conditions jsonb",
+   "anon_execute": false,
+   "authenticated_execute": false
+  },
+  {
+   "name": "get_app_config",
+   "args": "p_key text",
+   "anon_execute": false,
+   "authenticated_execute": false
+  },
+  {
+   "name": "guard_community_answer_insert",
+   "args": "",
+   "anon_execute": false,
+   "authenticated_execute": false
+  },
+  {
+   "name": "guard_community_answer_update",
+   "args": "",
+   "anon_execute": false,
+   "authenticated_execute": false
+  },
+  {
+   "name": "guard_community_question_insert",
+   "args": "",
+   "anon_execute": false,
+   "authenticated_execute": false
+  },
+  {
+   "name": "guard_community_question_update",
+   "args": "",
+   "anon_execute": false,
+   "authenticated_execute": false
+  },
+  {
+   "name": "guard_profile_deletion_flags",
+   "args": "",
+   "anon_execute": false,
+   "authenticated_execute": false
+  },
+  {
+   "name": "guard_qa_submission_insert",
+   "args": "",
+   "anon_execute": false,
+   "authenticated_execute": false
+  },
+  {
+   "name": "guard_qa_submission_update",
+   "args": "",
+   "anon_execute": false,
+   "authenticated_execute": false
+  },
+  {
+   "name": "guard_win_post_insert",
+   "args": "",
+   "anon_execute": false,
+   "authenticated_execute": false
+  },
+  {
+   "name": "guard_win_post_update",
+   "args": "",
+   "anon_execute": false,
+   "authenticated_execute": false
+  },
+  {
+   "name": "handle_new_user_profile",
+   "args": "",
+   "anon_execute": false,
+   "authenticated_execute": false
+  },
+  {
+   "name": "has_role",
+   "args": "p_user_id uuid, p_role text",
+   "anon_execute": false,
+   "authenticated_execute": true
+  },
+  {
+   "name": "member_access_allowed",
+   "args": "",
+   "anon_execute": false,
+   "authenticated_execute": true
+  },
+  {
+   "name": "member_write_allowed",
+   "args": "",
+   "anon_execute": false,
+   "authenticated_execute": true
+  },
+  {
+   "name": "membership_access_state",
+   "args": "p_user_id uuid",
+   "anon_execute": false,
+   "authenticated_execute": true
+  },
+  {
+   "name": "membership_write_allowed",
+   "args": "",
+   "anon_execute": false,
+   "authenticated_execute": true
+  },
+  {
+   "name": "merge_visitor_session_into_member",
+   "args": "p_session_id uuid, p_user_id uuid",
+   "anon_execute": false,
+   "authenticated_execute": false
+  },
+  {
+   "name": "my_deletion_status",
+   "args": "",
+   "anon_execute": false,
+   "authenticated_execute": true
+  },
+  {
+   "name": "purge_expired_export_artifacts",
+   "args": "",
+   "anon_execute": false,
+   "authenticated_execute": false
+  },
+  {
+   "name": "purge_expired_rate_limits",
+   "args": "",
+   "anon_execute": false,
+   "authenticated_execute": false
+  },
+  {
+   "name": "search_verified_answers",
+   "args": "query_embedding extensions.vector, similarity_threshold double precision, match_count integer",
+   "anon_execute": false,
+   "authenticated_execute": true
+  },
+  {
+   "name": "sync_community_vote_counts",
+   "args": "",
+   "anon_execute": false,
+   "authenticated_execute": false
+  },
+  {
+   "name": "sync_deletion_pending",
+   "args": "",
+   "anon_execute": false,
+   "authenticated_execute": false
+  },
+  {
+   "name": "sync_question_answer_count",
+   "args": "",
+   "anon_execute": false,
+   "authenticated_execute": false
+  },
+  {
+   "name": "sync_win_post_reactions",
+   "args": "",
+   "anon_execute": false,
+   "authenticated_execute": false
+  }
+ ],
+ "inventory": [
+  {
+   "table": "a1c_logs",
+   "rls_enabled": true,
+   "classification": "personal_data",
+   "owner_columns": [
+    "member_id"
+   ],
+   "column_count": 8,
+   "policies": [
+    {
+     "name": "Admins read a1c",
+     "cmd": "SELECT",
+     "roles": "{public}",
+     "using": "has_role(auth.uid(), 'admin'::text)",
+     "check": null
+    },
+    {
+     "name": "Members manage own a1c",
+     "cmd": "ALL",
+     "roles": "{public}",
+     "using": "(auth.uid() = member_id)",
+     "check": "(auth.uid() = member_id)"
+    },
+    {
+     "name": "deletion_lock_a1c_logs",
+     "cmd": "ALL",
+     "roles": "{authenticated}",
+     "using": "member_access_allowed()",
+     "check": "member_write_allowed()"
+    },
+    {
+     "name": "membership_gate_insert",
+     "cmd": "INSERT",
+     "roles": "{authenticated}",
+     "using": null,
+     "check": "membership_write_allowed()"
+    },
+    {
+     "name": "membership_gate_update",
+     "cmd": "UPDATE",
+     "roles": "{authenticated}",
+     "using": "membership_write_allowed()",
+     "check": null
+    }
+   ],
+   "grants": {
+    "anon": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "authenticated": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "service_role": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    }
+   },
+   "export_disposition": "included_in_member_export",
+   "deletion_disposition": "deleted_with_account",
+   "retention_disposition": "report_only (retention_mode=report_only)"
+  },
+  {
+   "table": "activity_events",
+   "rls_enabled": true,
+   "classification": "personal_data",
+   "owner_columns": [
+    "user_id"
+   ],
+   "column_count": 7,
+   "policies": [
+    {
+     "name": "Admins read activity_events",
+     "cmd": "SELECT",
+     "roles": "{public}",
+     "using": "has_role(auth.uid(), 'admin'::text)",
+     "check": null
+    },
+    {
+     "name": "Members manage own activity_events",
+     "cmd": "INSERT",
+     "roles": "{authenticated}",
+     "using": null,
+     "check": "(user_id = auth.uid())"
+    },
+    {
+     "name": "Members read own activity_events",
+     "cmd": "SELECT",
+     "roles": "{authenticated}",
+     "using": "(user_id = auth.uid())",
+     "check": null
+    },
+    {
+     "name": "Service role manages activity_events",
+     "cmd": "ALL",
+     "roles": "{service_role}",
+     "using": "true",
+     "check": "true"
+    },
+    {
+     "name": "deletion_lock_activity_events",
+     "cmd": "ALL",
+     "roles": "{authenticated}",
+     "using": "member_access_allowed()",
+     "check": "member_write_allowed()"
+    }
+   ],
+   "grants": {
+    "anon": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "authenticated": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "service_role": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    }
+   },
+   "export_disposition": "included_in_member_export",
+   "deletion_disposition": "deleted_with_account",
+   "retention_disposition": "report_only (retention_mode=report_only)"
+  },
+  {
+   "table": "app_config",
+   "rls_enabled": true,
+   "classification": "configuration_or_content",
+   "owner_columns": [],
+   "column_count": 4,
+   "policies": [],
+   "grants": {
+    "anon": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "authenticated": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "service_role": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    }
+   },
+   "export_disposition": "excluded_non_personal",
+   "deletion_disposition": "retained_non_personal",
+   "retention_disposition": "report_only (retention_mode=report_only)"
+  },
+  {
+   "table": "badges",
+   "rls_enabled": true,
+   "classification": "configuration_or_content",
+   "owner_columns": [],
+   "column_count": 12,
+   "policies": [
+    {
+     "name": "Admins manage badges",
+     "cmd": "ALL",
+     "roles": "{public}",
+     "using": "has_role(auth.uid(), 'admin'::text)",
+     "check": "has_role(auth.uid(), 'admin'::text)"
+    },
+    {
+     "name": "Anyone authenticated reads badges",
+     "cmd": "SELECT",
+     "roles": "{authenticated}",
+     "using": "true",
+     "check": null
+    }
+   ],
+   "grants": {
+    "anon": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "authenticated": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "service_role": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    }
+   },
+   "export_disposition": "excluded_non_personal",
+   "deletion_disposition": "retained_non_personal",
+   "retention_disposition": "report_only (retention_mode=report_only)"
+  },
+  {
+   "table": "billing_events",
+   "rls_enabled": true,
+   "classification": "configuration_or_content",
+   "owner_columns": [],
+   "column_count": 15,
+   "policies": [
+    {
+     "name": "billing_events_admin_read",
+     "cmd": "SELECT",
+     "roles": "{authenticated}",
+     "using": "has_role(auth.uid(), 'admin'::text)",
+     "check": null
+    }
+   ],
+   "grants": {
+    "anon": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "authenticated": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "service_role": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    }
+   },
+   "export_disposition": "excluded_non_personal",
+   "deletion_disposition": "retained_non_personal",
+   "retention_disposition": "report_only (retention_mode=report_only)"
+  },
+  {
+   "table": "billing_holds",
+   "rls_enabled": true,
+   "classification": "personal_data",
+   "owner_columns": [
+    "user_id"
+   ],
+   "column_count": 13,
+   "policies": [
+    {
+     "name": "billing_holds admin read",
+     "cmd": "SELECT",
+     "roles": "{authenticated}",
+     "using": "has_role(auth.uid(), 'admin'::text)",
+     "check": null
+    },
+    {
+     "name": "billing_holds service role only",
+     "cmd": "ALL",
+     "roles": "{public}",
+     "using": "(auth.role() = 'service_role'::text)",
+     "check": "(auth.role() = 'service_role'::text)"
+    }
+   ],
+   "grants": {
+    "anon": {
+     "select": false,
+     "insert": false,
+     "update": false,
+     "delete": false
+    },
+    "authenticated": {
+     "select": false,
+     "insert": false,
+     "update": false,
+     "delete": false
+    },
+    "service_role": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    }
+   },
+   "export_disposition": "included_in_member_export",
+   "deletion_disposition": "deleted_with_account",
+   "retention_disposition": "report_only (retention_mode=report_only)"
+  },
+  {
+   "table": "blood_sugar_readings",
+   "rls_enabled": true,
+   "classification": "personal_data",
+   "owner_columns": [
+    "member_id"
+   ],
+   "column_count": 9,
+   "policies": [
+    {
+     "name": "Members manage own bs_readings",
+     "cmd": "ALL",
+     "roles": "{public}",
+     "using": "(auth.uid() = member_id)",
+     "check": "(auth.uid() = member_id)"
+    },
+    {
+     "name": "deletion_lock_blood_sugar_readings",
+     "cmd": "ALL",
+     "roles": "{authenticated}",
+     "using": "member_access_allowed()",
+     "check": "member_write_allowed()"
+    },
+    {
+     "name": "membership_gate_insert",
+     "cmd": "INSERT",
+     "roles": "{authenticated}",
+     "using": null,
+     "check": "membership_write_allowed()"
+    },
+    {
+     "name": "membership_gate_update",
+     "cmd": "UPDATE",
+     "roles": "{authenticated}",
+     "using": "membership_write_allowed()",
+     "check": null
+    }
+   ],
+   "grants": {
+    "anon": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "authenticated": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "service_role": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    }
+   },
+   "export_disposition": "included_in_member_export",
+   "deletion_disposition": "deleted_with_account",
+   "retention_disposition": "report_only (retention_mode=report_only)"
+  },
+  {
+   "table": "broadcast_log",
+   "rls_enabled": true,
+   "classification": "configuration_or_content",
+   "owner_columns": [],
+   "column_count": 10,
+   "policies": [
+    {
+     "name": "Admin all broadcast_log",
+     "cmd": "ALL",
+     "roles": "{public}",
+     "using": "has_role(auth.uid(), 'admin'::text)",
+     "check": null
+    },
+    {
+     "name": "Admins manage broadcast log",
+     "cmd": "ALL",
+     "roles": "{public}",
+     "using": "has_role(auth.uid(), 'admin'::text)",
+     "check": "has_role(auth.uid(), 'admin'::text)"
+    }
+   ],
+   "grants": {
+    "anon": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "authenticated": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "service_role": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    }
+   },
+   "export_disposition": "excluded_non_personal",
+   "deletion_disposition": "retained_non_personal",
+   "retention_disposition": "report_only (retention_mode=report_only)"
+  },
+  {
+   "table": "challenge_progress",
+   "rls_enabled": true,
+   "classification": "personal_data",
+   "owner_columns": [
+    "email"
+   ],
+   "column_count": 8,
+   "policies": [
+    {
+     "name": "Admins all challenge_progress",
+     "cmd": "ALL",
+     "roles": "{public}",
+     "using": "has_role(auth.uid(), 'admin'::text)",
+     "check": "has_role(auth.uid(), 'admin'::text)"
+    },
+    {
+     "name": "Members read own challenge progress",
+     "cmd": "SELECT",
+     "roles": "{authenticated}",
+     "using": "((auth.uid() IS NOT NULL) AND (email IS NOT NULL) AND (lower(email) = lower(COALESCE((auth.jwt() ->> 'email'::text), ''::text))))",
+     "check": null
+    }
+   ],
+   "grants": {
+    "anon": {
+     "select": false,
+     "insert": false,
+     "update": false,
+     "delete": false
+    },
+    "authenticated": {
+     "select": true,
+     "insert": false,
+     "update": false,
+     "delete": false
+    },
+    "service_role": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    }
+   },
+   "export_disposition": "included_in_member_export",
+   "deletion_disposition": "deleted_with_account",
+   "retention_disposition": "report_only (retention_mode=report_only)"
+  },
+  {
+   "table": "cheat_meals",
+   "rls_enabled": true,
+   "classification": "personal_data",
+   "owner_columns": [
+    "member_id"
+   ],
+   "column_count": 7,
+   "policies": [
+    {
+     "name": "Admins read cheat_meals",
+     "cmd": "SELECT",
+     "roles": "{public}",
+     "using": "has_role(auth.uid(), 'admin'::text)",
+     "check": null
+    },
+    {
+     "name": "Members manage own cheat_meals",
+     "cmd": "ALL",
+     "roles": "{public}",
+     "using": "(auth.uid() = member_id)",
+     "check": "(auth.uid() = member_id)"
+    },
+    {
+     "name": "deletion_lock_cheat_meals",
+     "cmd": "ALL",
+     "roles": "{authenticated}",
+     "using": "member_access_allowed()",
+     "check": "member_write_allowed()"
+    },
+    {
+     "name": "membership_gate_insert",
+     "cmd": "INSERT",
+     "roles": "{authenticated}",
+     "using": null,
+     "check": "membership_write_allowed()"
+    },
+    {
+     "name": "membership_gate_update",
+     "cmd": "UPDATE",
+     "roles": "{authenticated}",
+     "using": "membership_write_allowed()",
+     "check": null
+    }
+   ],
+   "grants": {
+    "anon": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "authenticated": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "service_role": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    }
+   },
+   "export_disposition": "included_in_member_export",
+   "deletion_disposition": "deleted_with_account",
+   "retention_disposition": "report_only (retention_mode=report_only)"
+  },
+  {
+   "table": "coaching_interest",
+   "rls_enabled": true,
+   "classification": "personal_data",
+   "owner_columns": [
+    "email",
+    "user_id"
+   ],
+   "column_count": 8,
+   "policies": [
+    {
+     "name": "coaching_interest_admin_manage",
+     "cmd": "ALL",
+     "roles": "{authenticated}",
+     "using": "has_role(auth.uid(), 'admin'::text)",
+     "check": "has_role(auth.uid(), 'admin'::text)"
+    },
+    {
+     "name": "coaching_interest_self_manage",
+     "cmd": "ALL",
+     "roles": "{authenticated}",
+     "using": "(user_id = auth.uid())",
+     "check": "(user_id = auth.uid())"
+    }
+   ],
+   "grants": {
+    "anon": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "authenticated": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "service_role": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    }
+   },
+   "export_disposition": "included_in_member_export",
+   "deletion_disposition": "deleted_with_account",
+   "retention_disposition": "report_only (retention_mode=report_only)"
+  },
+  {
+   "table": "coaching_waitlist",
+   "rls_enabled": true,
+   "classification": "personal_data",
+   "owner_columns": [
+    "email",
+    "user_id"
+   ],
+   "column_count": 10,
+   "policies": [
+    {
+     "name": "Admin full access to waitlist",
+     "cmd": "ALL",
+     "roles": "{public}",
+     "using": "has_role(auth.uid(), 'admin'::text)",
+     "check": null
+    },
+    {
+     "name": "Members insert own waitlist row",
+     "cmd": "INSERT",
+     "roles": "{public}",
+     "using": null,
+     "check": "(user_id = auth.uid())"
+    },
+    {
+     "name": "Members see own waitlist row",
+     "cmd": "SELECT",
+     "roles": "{public}",
+     "using": "(user_id = auth.uid())",
+     "check": null
+    },
+    {
+     "name": "Members update own waitlist row",
+     "cmd": "UPDATE",
+     "roles": "{public}",
+     "using": "(user_id = auth.uid())",
+     "check": null
+    },
+    {
+     "name": "deletion_lock_coaching_waitlist",
+     "cmd": "ALL",
+     "roles": "{authenticated}",
+     "using": "member_access_allowed()",
+     "check": "member_write_allowed()"
+    }
+   ],
+   "grants": {
+    "anon": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "authenticated": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "service_role": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    }
+   },
+   "export_disposition": "included_in_member_export",
+   "deletion_disposition": "deleted_with_account",
+   "retention_disposition": "report_only (retention_mode=report_only)"
+  },
+  {
+   "table": "community_answer_embeddings",
+   "rls_enabled": true,
+   "classification": "configuration_or_content",
+   "owner_columns": [],
+   "column_count": 6,
+   "policies": [
+    {
+     "name": "Active members read embeddings",
+     "cmd": "SELECT",
+     "roles": "{public}",
+     "using": "(EXISTS ( SELECT 1\n   FROM subscriptions s\n  WHERE ((s.user_id = auth.uid()) AND (s.status = ANY (ARRAY['trialing'::text, 'active'::text, 'past_due'::text])))))",
+     "check": null
+    },
+    {
+     "name": "Admins manage embeddings",
+     "cmd": "ALL",
+     "roles": "{public}",
+     "using": "has_role(auth.uid(), 'admin'::text)",
+     "check": "has_role(auth.uid(), 'admin'::text)"
+    }
+   ],
+   "grants": {
+    "anon": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "authenticated": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "service_role": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    }
+   },
+   "export_disposition": "excluded_non_personal",
+   "deletion_disposition": "retained_non_personal",
+   "retention_disposition": "report_only (retention_mode=report_only)"
+  },
+  {
+   "table": "community_answers",
+   "rls_enabled": true,
+   "classification": "configuration_or_content",
+   "owner_columns": [],
+   "column_count": 15,
+   "policies": [
+    {
+     "name": "Active members read community_answers",
+     "cmd": "SELECT",
+     "roles": "{public}",
+     "using": "(EXISTS ( SELECT 1\n   FROM subscriptions s\n  WHERE ((s.user_id = auth.uid()) AND (s.status = ANY (ARRAY['trialing'::text, 'active'::text, 'past_due'::text])))))",
+     "check": null
+    },
+    {
+     "name": "Admins manage community_answers",
+     "cmd": "ALL",
+     "roles": "{public}",
+     "using": "has_role(auth.uid(), 'admin'::text)",
+     "check": "has_role(auth.uid(), 'admin'::text)"
+    },
+    {
+     "name": "Authors update own answers",
+     "cmd": "UPDATE",
+     "roles": "{public}",
+     "using": "(auth.uid() = author_id)",
+     "check": null
+    },
+    {
+     "name": "Members insert own answers",
+     "cmd": "INSERT",
+     "roles": "{public}",
+     "using": null,
+     "check": "((auth.uid() = author_id) OR has_role(auth.uid(), 'admin'::text))"
+    },
+    {
+     "name": "deletion_lock_community_answers",
+     "cmd": "ALL",
+     "roles": "{authenticated}",
+     "using": "member_access_allowed()",
+     "check": "member_write_allowed()"
+    },
+    {
+     "name": "membership_gate_insert",
+     "cmd": "INSERT",
+     "roles": "{authenticated}",
+     "using": null,
+     "check": "membership_write_allowed()"
+    },
+    {
+     "name": "membership_gate_update",
+     "cmd": "UPDATE",
+     "roles": "{authenticated}",
+     "using": "membership_write_allowed()",
+     "check": null
+    }
+   ],
+   "grants": {
+    "anon": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "authenticated": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "service_role": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    }
+   },
+   "export_disposition": "excluded_non_personal",
+   "deletion_disposition": "retained_non_personal",
+   "retention_disposition": "report_only (retention_mode=report_only)"
+  },
+  {
+   "table": "community_questions",
+   "rls_enabled": true,
+   "classification": "configuration_or_content",
+   "owner_columns": [],
+   "column_count": 15,
+   "policies": [
+    {
+     "name": "Active members read community_questions",
+     "cmd": "SELECT",
+     "roles": "{public}",
+     "using": "(EXISTS ( SELECT 1\n   FROM subscriptions s\n  WHERE ((s.user_id = auth.uid()) AND (s.status = ANY (ARRAY['trialing'::text, 'active'::text, 'past_due'::text])))))",
+     "check": null
+    },
+    {
+     "name": "Admins manage community_questions",
+     "cmd": "ALL",
+     "roles": "{public}",
+     "using": "has_role(auth.uid(), 'admin'::text)",
+     "check": "has_role(auth.uid(), 'admin'::text)"
+    },
+    {
+     "name": "Authors update own questions",
+     "cmd": "UPDATE",
+     "roles": "{public}",
+     "using": "(auth.uid() = author_id)",
+     "check": null
+    },
+    {
+     "name": "Members insert own questions",
+     "cmd": "INSERT",
+     "roles": "{public}",
+     "using": null,
+     "check": "(auth.uid() = author_id)"
+    },
+    {
+     "name": "deletion_lock_community_questions",
+     "cmd": "ALL",
+     "roles": "{authenticated}",
+     "using": "member_access_allowed()",
+     "check": "member_write_allowed()"
+    },
+    {
+     "name": "membership_gate_insert",
+     "cmd": "INSERT",
+     "roles": "{authenticated}",
+     "using": null,
+     "check": "membership_write_allowed()"
+    },
+    {
+     "name": "membership_gate_update",
+     "cmd": "UPDATE",
+     "roles": "{authenticated}",
+     "using": "membership_write_allowed()",
+     "check": null
+    }
+   ],
+   "grants": {
+    "anon": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "authenticated": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "service_role": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    }
+   },
+   "export_disposition": "excluded_non_personal",
+   "deletion_disposition": "retained_non_personal",
+   "retention_disposition": "report_only (retention_mode=report_only)"
+  },
+  {
+   "table": "community_votes",
+   "rls_enabled": true,
+   "classification": "configuration_or_content",
+   "owner_columns": [],
+   "column_count": 7,
+   "policies": [
+    {
+     "name": "Active members read community_votes",
+     "cmd": "SELECT",
+     "roles": "{public}",
+     "using": "(EXISTS ( SELECT 1\n   FROM subscriptions s\n  WHERE ((s.user_id = auth.uid()) AND (s.status = ANY (ARRAY['trialing'::text, 'active'::text, 'past_due'::text])))))",
+     "check": null
+    },
+    {
+     "name": "Admins manage community_votes",
+     "cmd": "ALL",
+     "roles": "{public}",
+     "using": "has_role(auth.uid(), 'admin'::text)",
+     "check": "has_role(auth.uid(), 'admin'::text)"
+    },
+    {
+     "name": "Members manage own votes",
+     "cmd": "ALL",
+     "roles": "{public}",
+     "using": "(auth.uid() = voter_id)",
+     "check": "(auth.uid() = voter_id)"
+    },
+    {
+     "name": "deletion_lock_community_votes",
+     "cmd": "ALL",
+     "roles": "{authenticated}",
+     "using": "member_access_allowed()",
+     "check": "member_write_allowed()"
+    },
+    {
+     "name": "membership_gate_insert",
+     "cmd": "INSERT",
+     "roles": "{authenticated}",
+     "using": null,
+     "check": "membership_write_allowed()"
+    },
+    {
+     "name": "membership_gate_update",
+     "cmd": "UPDATE",
+     "roles": "{authenticated}",
+     "using": "membership_write_allowed()",
+     "check": null
+    }
+   ],
+   "grants": {
+    "anon": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "authenticated": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "service_role": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    }
+   },
+   "export_disposition": "excluded_non_personal",
+   "deletion_disposition": "retained_non_personal",
+   "retention_disposition": "report_only (retention_mode=report_only)"
+  },
+  {
+   "table": "consent_records",
+   "rls_enabled": true,
+   "classification": "personal_data",
+   "owner_columns": [
+    "user_id"
+   ],
+   "column_count": 11,
+   "policies": [
+    {
+     "name": "deletion_lock_consent_records",
+     "cmd": "ALL",
+     "roles": "{authenticated}",
+     "using": "member_access_allowed()",
+     "check": "member_write_allowed()"
+    },
+    {
+     "name": "members read own consent records",
+     "cmd": "SELECT",
+     "roles": "{authenticated}",
+     "using": "(user_id = auth.uid())",
+     "check": null
+    }
+   ],
+   "grants": {
+    "anon": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "authenticated": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "service_role": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    }
+   },
+   "export_disposition": "included_in_member_export",
+   "deletion_disposition": "deleted_with_account",
+   "retention_disposition": "report_only (retention_mode=report_only)"
+  },
+  {
+   "table": "content_containment_log",
+   "rls_enabled": true,
+   "classification": "configuration_or_content",
+   "owner_columns": [],
+   "column_count": 8,
+   "policies": [
+    {
+     "name": "Admins read containment log",
+     "cmd": "SELECT",
+     "roles": "{authenticated}",
+     "using": "has_role(auth.uid(), 'admin'::text)",
+     "check": null
+    }
+   ],
+   "grants": {
+    "anon": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "authenticated": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "service_role": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    }
+   },
+   "export_disposition": "excluded_non_personal",
+   "deletion_disposition": "retained_non_personal",
+   "retention_disposition": "report_only (retention_mode=report_only)"
+  },
+  {
+   "table": "content_items",
+   "rls_enabled": true,
+   "classification": "configuration_or_content",
+   "owner_columns": [],
+   "column_count": 13,
+   "policies": [
+    {
+     "name": "Active members read active content",
+     "cmd": "SELECT",
+     "roles": "{public}",
+     "using": "((is_active = true) AND (EXISTS ( SELECT 1\n   FROM subscriptions s\n  WHERE ((s.user_id = auth.uid()) AND (s.status = ANY (ARRAY['trialing'::text, 'active'::text, 'past_due'::text]))))))",
+     "check": null
+    },
+    {
+     "name": "Admin all content_items",
+     "cmd": "ALL",
+     "roles": "{public}",
+     "using": "has_role(auth.uid(), 'admin'::text)",
+     "check": null
+    },
+    {
+     "name": "Admins manage content",
+     "cmd": "ALL",
+     "roles": "{public}",
+     "using": "has_role(auth.uid(), 'admin'::text)",
+     "check": "has_role(auth.uid(), 'admin'::text)"
+    }
+   ],
+   "grants": {
+    "anon": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "authenticated": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "service_role": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    }
+   },
+   "export_disposition": "excluded_non_personal",
+   "deletion_disposition": "retained_non_personal",
+   "retention_disposition": "report_only (retention_mode=report_only)"
+  },
+  {
+   "table": "conversations",
+   "rls_enabled": true,
+   "classification": "configuration_or_content",
+   "owner_columns": [],
+   "column_count": 8,
+   "policies": [
+    {
+     "name": "Admins manage conversations",
+     "cmd": "ALL",
+     "roles": "{public}",
+     "using": "has_role(auth.uid(), 'admin'::text)",
+     "check": "has_role(auth.uid(), 'admin'::text)"
+    },
+    {
+     "name": "Members read own conversations",
+     "cmd": "SELECT",
+     "roles": "{public}",
+     "using": "((auth.uid() IS NOT NULL) AND (EXISTS ( SELECT 1\n   FROM visitor_profiles vp\n  WHERE ((vp.id = conversations.visitor_profile_id) AND (vp.user_id = auth.uid())))))",
+     "check": null
+    },
+    {
+     "name": "Service role manages conversations",
+     "cmd": "ALL",
+     "roles": "{service_role}",
+     "using": "true",
+     "check": "true"
+    },
+    {
+     "name": "deletion_lock_conversations",
+     "cmd": "ALL",
+     "roles": "{authenticated}",
+     "using": "member_access_allowed()",
+     "check": "member_write_allowed()"
+    }
+   ],
+   "grants": {
+    "anon": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "authenticated": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "service_role": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    }
+   },
+   "export_disposition": "excluded_non_personal",
+   "deletion_disposition": "retained_non_personal",
+   "retention_disposition": "report_only (retention_mode=report_only)"
+  },
+  {
+   "table": "daily_actions",
+   "rls_enabled": true,
+   "classification": "configuration_or_content",
+   "owner_columns": [],
+   "column_count": 14,
+   "policies": [
+    {
+     "name": "Active members read daily_actions",
+     "cmd": "SELECT",
+     "roles": "{public}",
+     "using": "(EXISTS ( SELECT 1\n   FROM subscriptions s\n  WHERE ((s.user_id = auth.uid()) AND (s.status = ANY (ARRAY['trialing'::text, 'active'::text, 'past_due'::text])))))",
+     "check": null
+    },
+    {
+     "name": "Admins manage daily_actions",
+     "cmd": "ALL",
+     "roles": "{public}",
+     "using": "has_role(auth.uid(), 'admin'::text)",
+     "check": "has_role(auth.uid(), 'admin'::text)"
+    }
+   ],
+   "grants": {
+    "anon": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "authenticated": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "service_role": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    }
+   },
+   "export_disposition": "excluded_non_personal",
+   "deletion_disposition": "retained_non_personal",
+   "retention_disposition": "report_only (retention_mode=report_only)"
+  },
+  {
+   "table": "daily_digest",
+   "rls_enabled": true,
+   "classification": "configuration_or_content",
+   "owner_columns": [],
+   "column_count": 9,
+   "policies": [
+    {
+     "name": "Admins read daily_digest",
+     "cmd": "SELECT",
+     "roles": "{public}",
+     "using": "has_role(auth.uid(), 'admin'::text)",
+     "check": null
+    },
+    {
+     "name": "Service role manages daily_digest",
+     "cmd": "ALL",
+     "roles": "{service_role}",
+     "using": "true",
+     "check": "true"
+    }
+   ],
+   "grants": {
+    "anon": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "authenticated": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "service_role": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    }
+   },
+   "export_disposition": "excluded_non_personal",
+   "deletion_disposition": "retained_non_personal",
+   "retention_disposition": "report_only (retention_mode=report_only)"
+  },
+  {
+   "table": "deletion_jobs",
+   "rls_enabled": true,
+   "classification": "personal_data",
+   "owner_columns": [
+    "user_id"
+   ],
+   "column_count": 17,
+   "policies": [],
+   "grants": {
+    "anon": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "authenticated": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "service_role": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    }
+   },
+   "export_disposition": "included_in_member_export",
+   "deletion_disposition": "deleted_with_account",
+   "retention_disposition": "report_only (retention_mode=report_only)"
+  },
+  {
+   "table": "deletion_requests",
+   "rls_enabled": true,
+   "classification": "personal_data",
+   "owner_columns": [
+    "user_id"
+   ],
+   "column_count": 10,
+   "policies": [
+    {
+     "name": "Admins manage deletion_requests",
+     "cmd": "ALL",
+     "roles": "{public}",
+     "using": "has_role(auth.uid(), 'admin'::text)",
+     "check": "has_role(auth.uid(), 'admin'::text)"
+    },
+    {
+     "name": "Members read own deletion requests",
+     "cmd": "SELECT",
+     "roles": "{public}",
+     "using": "((auth.uid() IS NOT NULL) AND (user_id = auth.uid()))",
+     "check": null
+    },
+    {
+     "name": "Service role manages deletion_requests",
+     "cmd": "ALL",
+     "roles": "{service_role}",
+     "using": "true",
+     "check": "true"
+    },
+    {
+     "name": "Users insert own deletion request",
+     "cmd": "INSERT",
+     "roles": "{authenticated}",
+     "using": null,
+     "check": "(auth.uid() = user_id)"
+    },
+    {
+     "name": "deletion_lock_deletion_requests",
+     "cmd": "ALL",
+     "roles": "{authenticated}",
+     "using": "member_access_allowed()",
+     "check": "member_write_allowed()"
+    }
+   ],
+   "grants": {
+    "anon": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "authenticated": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "service_role": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    }
+   },
+   "export_disposition": "included_in_member_export",
+   "deletion_disposition": "deleted_with_account",
+   "retention_disposition": "report_only (retention_mode=report_only)"
+  },
+  {
+   "table": "dexcom_connections",
+   "rls_enabled": true,
+   "classification": "personal_data",
+   "owner_columns": [
+    "member_id"
+   ],
+   "column_count": 14,
+   "policies": [
+    {
+     "name": "Members read own dexcom connection",
+     "cmd": "SELECT",
+     "roles": "{authenticated}",
+     "using": "(auth.uid() = member_id)",
+     "check": null
+    },
+    {
+     "name": "deletion_lock_dexcom_connections",
+     "cmd": "ALL",
+     "roles": "{authenticated}",
+     "using": "member_access_allowed()",
+     "check": "member_write_allowed()"
+    }
+   ],
+   "grants": {
+    "anon": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "authenticated": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "service_role": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    }
+   },
+   "export_disposition": "included_in_member_export",
+   "deletion_disposition": "deleted_with_account",
+   "retention_disposition": "report_only (retention_mode=report_only)"
+  },
+  {
+   "table": "dunning_attempts",
+   "rls_enabled": true,
+   "classification": "personal_data",
+   "owner_columns": [
+    "user_id"
+   ],
+   "column_count": 8,
+   "policies": [
+    {
+     "name": "Admin read dunning_attempts",
+     "cmd": "SELECT",
+     "roles": "{public}",
+     "using": "has_role(auth.uid(), 'admin'::text)",
+     "check": null
+    },
+    {
+     "name": "Admins manage dunning",
+     "cmd": "ALL",
+     "roles": "{public}",
+     "using": "has_role(auth.uid(), 'admin'::text)",
+     "check": "has_role(auth.uid(), 'admin'::text)"
+    },
+    {
+     "name": "Members read own dunning",
+     "cmd": "SELECT",
+     "roles": "{public}",
+     "using": "(auth.uid() = user_id)",
+     "check": null
+    },
+    {
+     "name": "deletion_lock_dunning_attempts",
+     "cmd": "ALL",
+     "roles": "{authenticated}",
+     "using": "member_access_allowed()",
+     "check": "member_write_allowed()"
+    }
+   ],
+   "grants": {
+    "anon": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "authenticated": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "service_role": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    }
+   },
+   "export_disposition": "included_in_member_export",
+   "deletion_disposition": "deleted_with_account",
+   "retention_disposition": "report_only (retention_mode=report_only)"
+  },
+  {
+   "table": "export_artifacts",
+   "rls_enabled": true,
+   "classification": "personal_data",
+   "owner_columns": [
+    "user_id"
+   ],
+   "column_count": 9,
+   "policies": [
+    {
+     "name": "export_artifacts_no_client_access",
+     "cmd": "SELECT",
+     "roles": "{anon,authenticated}",
+     "using": "false",
+     "check": null
+    }
+   ],
+   "grants": {
+    "anon": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "authenticated": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "service_role": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    }
+   },
+   "export_disposition": "included_in_member_export",
+   "deletion_disposition": "deleted_with_account",
+   "retention_disposition": "report_only (retention_mode=report_only)"
+  },
+  {
+   "table": "health_logs",
+   "rls_enabled": true,
+   "classification": "personal_data",
+   "owner_columns": [
+    "user_id"
+   ],
+   "column_count": 9,
+   "policies": [
+    {
+     "name": "Members delete own logs",
+     "cmd": "DELETE",
+     "roles": "{public}",
+     "using": "(auth.uid() = user_id)",
+     "check": null
+    },
+    {
+     "name": "Members insert own logs",
+     "cmd": "INSERT",
+     "roles": "{public}",
+     "using": null,
+     "check": "(auth.uid() = user_id)"
+    },
+    {
+     "name": "Members read own logs",
+     "cmd": "SELECT",
+     "roles": "{public}",
+     "using": "(auth.uid() = user_id)",
+     "check": null
+    },
+    {
+     "name": "Members update own logs",
+     "cmd": "UPDATE",
+     "roles": "{public}",
+     "using": "(auth.uid() = user_id)",
+     "check": null
+    },
+    {
+     "name": "deletion_lock_health_logs",
+     "cmd": "ALL",
+     "roles": "{authenticated}",
+     "using": "member_access_allowed()",
+     "check": "member_write_allowed()"
+    },
+    {
+     "name": "membership_gate_insert",
+     "cmd": "INSERT",
+     "roles": "{authenticated}",
+     "using": null,
+     "check": "membership_write_allowed()"
+    },
+    {
+     "name": "membership_gate_update",
+     "cmd": "UPDATE",
+     "roles": "{authenticated}",
+     "using": "membership_write_allowed()",
+     "check": null
+    }
+   ],
+   "grants": {
+    "anon": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "authenticated": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "service_role": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    }
+   },
+   "export_disposition": "included_in_member_export",
+   "deletion_disposition": "deleted_with_account",
+   "retention_disposition": "report_only (retention_mode=report_only)"
+  },
+  {
+   "table": "if_fasting_log",
+   "rls_enabled": true,
+   "classification": "personal_data",
+   "owner_columns": [
+    "member_id"
+   ],
+   "column_count": 10,
+   "policies": [
+    {
+     "name": "Admins read if_fasting_log",
+     "cmd": "SELECT",
+     "roles": "{public}",
+     "using": "has_role(auth.uid(), 'admin'::text)",
+     "check": null
+    },
+    {
+     "name": "Members manage own if_fasting_log",
+     "cmd": "ALL",
+     "roles": "{public}",
+     "using": "(auth.uid() = member_id)",
+     "check": "(auth.uid() = member_id)"
+    },
+    {
+     "name": "deletion_lock_if_fasting_log",
+     "cmd": "ALL",
+     "roles": "{authenticated}",
+     "using": "member_access_allowed()",
+     "check": "member_write_allowed()"
+    },
+    {
+     "name": "membership_gate_insert",
+     "cmd": "INSERT",
+     "roles": "{authenticated}",
+     "using": null,
+     "check": "membership_write_allowed()"
+    },
+    {
+     "name": "membership_gate_update",
+     "cmd": "UPDATE",
+     "roles": "{authenticated}",
+     "using": "membership_write_allowed()",
+     "check": null
+    }
+   ],
+   "grants": {
+    "anon": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "authenticated": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "service_role": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    }
+   },
+   "export_disposition": "included_in_member_export",
+   "deletion_disposition": "deleted_with_account",
+   "retention_disposition": "report_only (retention_mode=report_only)"
+  },
+  {
+   "table": "intake_submissions",
+   "rls_enabled": true,
+   "classification": "personal_data",
+   "owner_columns": [
+    "email"
+   ],
+   "column_count": 23,
+   "policies": [
+    {
+     "name": "Admins read intake",
+     "cmd": "SELECT",
+     "roles": "{public}",
+     "using": "has_role(auth.uid(), 'admin'::text)",
+     "check": null
+    },
+    {
+     "name": "Authenticated insert own intake",
+     "cmd": "INSERT",
+     "roles": "{authenticated}",
+     "using": null,
+     "check": "((auth.uid() IS NOT NULL) AND (email IS NOT NULL) AND (lower(email) = lower(COALESCE((auth.jwt() ->> 'email'::text), ''::text))))"
+    },
+    {
+     "name": "Members read own intake",
+     "cmd": "SELECT",
+     "roles": "{authenticated}",
+     "using": "((auth.uid() IS NOT NULL) AND (email IS NOT NULL) AND (lower(email) = lower(COALESCE((auth.jwt() ->> 'email'::text), ''::text))))",
+     "check": null
+    },
+    {
+     "name": "Service role can manage intake submissions",
+     "cmd": "ALL",
+     "roles": "{service_role}",
+     "using": "true",
+     "check": "true"
+    },
+    {
+     "name": "deletion_lock_intake_submissions",
+     "cmd": "ALL",
+     "roles": "{authenticated}",
+     "using": "member_access_allowed()",
+     "check": "member_write_allowed()"
+    }
+   ],
+   "grants": {
+    "anon": {
+     "select": false,
+     "insert": false,
+     "update": false,
+     "delete": false
+    },
+    "authenticated": {
+     "select": true,
+     "insert": true,
+     "update": false,
+     "delete": false
+    },
+    "service_role": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    }
+   },
+   "export_disposition": "included_in_member_export",
+   "deletion_disposition": "deleted_with_account",
+   "retention_disposition": "report_only (retention_mode=report_only)"
+  },
+  {
+   "table": "leads",
+   "rls_enabled": true,
+   "classification": "personal_data",
+   "owner_columns": [
+    "email"
+   ],
+   "column_count": 5,
+   "policies": [
+    {
+     "name": "Admins read leads",
+     "cmd": "SELECT",
+     "roles": "{public}",
+     "using": "has_role(auth.uid(), 'admin'::text)",
+     "check": null
+    },
+    {
+     "name": "Service role can manage leads",
+     "cmd": "ALL",
+     "roles": "{service_role}",
+     "using": "true",
+     "check": "true"
+    }
+   ],
+   "grants": {
+    "anon": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "authenticated": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "service_role": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    }
+   },
+   "export_disposition": "included_in_member_export",
+   "deletion_disposition": "deleted_with_account",
+   "retention_disposition": "report_only (retention_mode=report_only)"
+  },
+  {
+   "table": "meal_logs",
+   "rls_enabled": true,
+   "classification": "personal_data",
+   "owner_columns": [
+    "member_id"
+   ],
+   "column_count": 10,
+   "policies": [
+    {
+     "name": "Admins read meal_logs",
+     "cmd": "SELECT",
+     "roles": "{public}",
+     "using": "has_role(auth.uid(), 'admin'::text)",
+     "check": null
+    },
+    {
+     "name": "Members manage own meal_logs",
+     "cmd": "ALL",
+     "roles": "{public}",
+     "using": "(auth.uid() = member_id)",
+     "check": "(auth.uid() = member_id)"
+    },
+    {
+     "name": "deletion_lock_meal_logs",
+     "cmd": "ALL",
+     "roles": "{authenticated}",
+     "using": "member_access_allowed()",
+     "check": "member_write_allowed()"
+    },
+    {
+     "name": "membership_gate_insert",
+     "cmd": "INSERT",
+     "roles": "{authenticated}",
+     "using": null,
+     "check": "membership_write_allowed()"
+    },
+    {
+     "name": "membership_gate_update",
+     "cmd": "UPDATE",
+     "roles": "{authenticated}",
+     "using": "membership_write_allowed()",
+     "check": null
+    }
+   ],
+   "grants": {
+    "anon": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "authenticated": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "service_role": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    }
+   },
+   "export_disposition": "included_in_member_export",
+   "deletion_disposition": "deleted_with_account",
+   "retention_disposition": "report_only (retention_mode=report_only)"
+  },
+  {
+   "table": "meal_plans",
+   "rls_enabled": true,
+   "classification": "personal_data",
+   "owner_columns": [
+    "member_id"
+   ],
+   "column_count": 11,
+   "policies": [
+    {
+     "name": "Admins manage meal_plans",
+     "cmd": "ALL",
+     "roles": "{public}",
+     "using": "has_role(auth.uid(), 'admin'::text)",
+     "check": "has_role(auth.uid(), 'admin'::text)"
+    },
+    {
+     "name": "Members delete own meal_plans",
+     "cmd": "DELETE",
+     "roles": "{authenticated}",
+     "using": "(auth.uid() = member_id)",
+     "check": null
+    },
+    {
+     "name": "Members insert own meal_plans",
+     "cmd": "INSERT",
+     "roles": "{authenticated}",
+     "using": null,
+     "check": "(auth.uid() = member_id)"
+    },
+    {
+     "name": "Members read own meal_plans",
+     "cmd": "SELECT",
+     "roles": "{public}",
+     "using": "(auth.uid() = member_id)",
+     "check": null
+    },
+    {
+     "name": "Members update own meal_plans",
+     "cmd": "UPDATE",
+     "roles": "{authenticated}",
+     "using": "(auth.uid() = member_id)",
+     "check": "(auth.uid() = member_id)"
+    },
+    {
+     "name": "Service role manages meal_plans",
+     "cmd": "ALL",
+     "roles": "{service_role}",
+     "using": "true",
+     "check": "true"
+    },
+    {
+     "name": "deletion_lock_meal_plans",
+     "cmd": "ALL",
+     "roles": "{authenticated}",
+     "using": "member_access_allowed()",
+     "check": "member_write_allowed()"
+    },
+    {
+     "name": "membership_gate_insert",
+     "cmd": "INSERT",
+     "roles": "{authenticated}",
+     "using": null,
+     "check": "membership_write_allowed()"
+    },
+    {
+     "name": "membership_gate_update",
+     "cmd": "UPDATE",
+     "roles": "{authenticated}",
+     "using": "membership_write_allowed()",
+     "check": null
+    }
+   ],
+   "grants": {
+    "anon": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "authenticated": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "service_role": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    }
+   },
+   "export_disposition": "included_in_member_export",
+   "deletion_disposition": "deleted_with_account",
+   "retention_disposition": "report_only (retention_mode=report_only)"
+  },
+  {
+   "table": "meal_swaps",
+   "rls_enabled": true,
+   "classification": "personal_data",
+   "owner_columns": [
+    "member_id"
+   ],
+   "column_count": 8,
+   "policies": [
+    {
+     "name": "Admins read meal_swaps",
+     "cmd": "SELECT",
+     "roles": "{public}",
+     "using": "has_role(auth.uid(), 'admin'::text)",
+     "check": null
+    },
+    {
+     "name": "Members manage own meal_swaps",
+     "cmd": "ALL",
+     "roles": "{public}",
+     "using": "(auth.uid() = member_id)",
+     "check": "(auth.uid() = member_id)"
+    },
+    {
+     "name": "deletion_lock_meal_swaps",
+     "cmd": "ALL",
+     "roles": "{authenticated}",
+     "using": "member_access_allowed()",
+     "check": "member_write_allowed()"
+    },
+    {
+     "name": "membership_gate_insert",
+     "cmd": "INSERT",
+     "roles": "{authenticated}",
+     "using": null,
+     "check": "membership_write_allowed()"
+    },
+    {
+     "name": "membership_gate_update",
+     "cmd": "UPDATE",
+     "roles": "{authenticated}",
+     "using": "membership_write_allowed()",
+     "check": null
+    }
+   ],
+   "grants": {
+    "anon": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "authenticated": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "service_role": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    }
+   },
+   "export_disposition": "included_in_member_export",
+   "deletion_disposition": "deleted_with_account",
+   "retention_disposition": "report_only (retention_mode=report_only)"
+  },
+  {
+   "table": "member_daily_progress",
+   "rls_enabled": true,
+   "classification": "personal_data",
+   "owner_columns": [
+    "member_id"
+   ],
+   "column_count": 10,
+   "policies": [
+    {
+     "name": "Admins read all daily_progress",
+     "cmd": "SELECT",
+     "roles": "{public}",
+     "using": "has_role(auth.uid(), 'admin'::text)",
+     "check": null
+    },
+    {
+     "name": "Members manage own daily_progress",
+     "cmd": "ALL",
+     "roles": "{public}",
+     "using": "(auth.uid() = member_id)",
+     "check": "(auth.uid() = member_id)"
+    },
+    {
+     "name": "deletion_lock_member_daily_progress",
+     "cmd": "ALL",
+     "roles": "{authenticated}",
+     "using": "member_access_allowed()",
+     "check": "member_write_allowed()"
+    },
+    {
+     "name": "membership_gate_insert",
+     "cmd": "INSERT",
+     "roles": "{authenticated}",
+     "using": null,
+     "check": "membership_write_allowed()"
+    },
+    {
+     "name": "membership_gate_update",
+     "cmd": "UPDATE",
+     "roles": "{authenticated}",
+     "using": "membership_write_allowed()",
+     "check": null
+    }
+   ],
+   "grants": {
+    "anon": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "authenticated": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "service_role": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    }
+   },
+   "export_disposition": "included_in_member_export",
+   "deletion_disposition": "deleted_with_account",
+   "retention_disposition": "report_only (retention_mode=report_only)"
+  },
+  {
+   "table": "member_measurements",
+   "rls_enabled": true,
+   "classification": "personal_data",
+   "owner_columns": [
+    "member_id"
+   ],
+   "column_count": 12,
+   "policies": [
+    {
+     "name": "Members manage own measurements",
+     "cmd": "ALL",
+     "roles": "{public}",
+     "using": "(auth.uid() = member_id)",
+     "check": "(auth.uid() = member_id)"
+    },
+    {
+     "name": "deletion_lock_member_measurements",
+     "cmd": "ALL",
+     "roles": "{authenticated}",
+     "using": "member_access_allowed()",
+     "check": "member_write_allowed()"
+    },
+    {
+     "name": "membership_gate_insert",
+     "cmd": "INSERT",
+     "roles": "{authenticated}",
+     "using": null,
+     "check": "membership_write_allowed()"
+    },
+    {
+     "name": "membership_gate_update",
+     "cmd": "UPDATE",
+     "roles": "{authenticated}",
+     "using": "membership_write_allowed()",
+     "check": null
+    }
+   ],
+   "grants": {
+    "anon": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "authenticated": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "service_role": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    }
+   },
+   "export_disposition": "included_in_member_export",
+   "deletion_disposition": "deleted_with_account",
+   "retention_disposition": "report_only (retention_mode=report_only)"
+  },
+  {
+   "table": "member_progress",
+   "rls_enabled": true,
+   "classification": "personal_data",
+   "owner_columns": [
+    "user_id"
+   ],
+   "column_count": 7,
+   "policies": [
+    {
+     "name": "Admins manage all progress",
+     "cmd": "ALL",
+     "roles": "{public}",
+     "using": "has_role(auth.uid(), 'admin'::text)",
+     "check": "has_role(auth.uid(), 'admin'::text)"
+    },
+    {
+     "name": "Members insert own progress",
+     "cmd": "INSERT",
+     "roles": "{public}",
+     "using": null,
+     "check": "(auth.uid() = user_id)"
+    },
+    {
+     "name": "Members read own progress",
+     "cmd": "SELECT",
+     "roles": "{public}",
+     "using": "(auth.uid() = user_id)",
+     "check": null
+    },
+    {
+     "name": "Members update own progress",
+     "cmd": "UPDATE",
+     "roles": "{public}",
+     "using": "(auth.uid() = user_id)",
+     "check": null
+    },
+    {
+     "name": "deletion_lock_member_progress",
+     "cmd": "ALL",
+     "roles": "{authenticated}",
+     "using": "member_access_allowed()",
+     "check": "member_write_allowed()"
+    },
+    {
+     "name": "membership_gate_insert",
+     "cmd": "INSERT",
+     "roles": "{authenticated}",
+     "using": null,
+     "check": "membership_write_allowed()"
+    },
+    {
+     "name": "membership_gate_update",
+     "cmd": "UPDATE",
+     "roles": "{authenticated}",
+     "using": "membership_write_allowed()",
+     "check": null
+    }
+   ],
+   "grants": {
+    "anon": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "authenticated": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "service_role": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    }
+   },
+   "export_disposition": "included_in_member_export",
+   "deletion_disposition": "deleted_with_account",
+   "retention_disposition": "report_only (retention_mode=report_only)"
+  },
+  {
+   "table": "messages",
+   "rls_enabled": true,
+   "classification": "configuration_or_content",
+   "owner_columns": [],
+   "column_count": 8,
+   "policies": [
+    {
+     "name": "Admins manage messages",
+     "cmd": "ALL",
+     "roles": "{public}",
+     "using": "has_role(auth.uid(), 'admin'::text)",
+     "check": "has_role(auth.uid(), 'admin'::text)"
+    },
+    {
+     "name": "Members read own messages",
+     "cmd": "SELECT",
+     "roles": "{public}",
+     "using": "((auth.uid() IS NOT NULL) AND (EXISTS ( SELECT 1\n   FROM visitor_profiles vp\n  WHERE ((vp.id = messages.visitor_profile_id) AND (vp.user_id = auth.uid())))))",
+     "check": null
+    },
+    {
+     "name": "Service role manages messages",
+     "cmd": "ALL",
+     "roles": "{service_role}",
+     "using": "true",
+     "check": "true"
+    },
+    {
+     "name": "deletion_lock_messages",
+     "cmd": "ALL",
+     "roles": "{authenticated}",
+     "using": "member_access_allowed()",
+     "check": "member_write_allowed()"
+    }
+   ],
+   "grants": {
+    "anon": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "authenticated": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "service_role": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    }
+   },
+   "export_disposition": "excluded_non_personal",
+   "deletion_disposition": "retained_non_personal",
+   "retention_disposition": "report_only (retention_mode=report_only)"
+  },
+  {
+   "table": "mindset_reads",
+   "rls_enabled": true,
+   "classification": "personal_data",
+   "owner_columns": [
+    "member_id"
+   ],
+   "column_count": 5,
+   "policies": [
+    {
+     "name": "Admins read mindset",
+     "cmd": "SELECT",
+     "roles": "{public}",
+     "using": "has_role(auth.uid(), 'admin'::text)",
+     "check": null
+    },
+    {
+     "name": "Members manage own mindset",
+     "cmd": "ALL",
+     "roles": "{public}",
+     "using": "(auth.uid() = member_id)",
+     "check": "(auth.uid() = member_id)"
+    },
+    {
+     "name": "deletion_lock_mindset_reads",
+     "cmd": "ALL",
+     "roles": "{authenticated}",
+     "using": "member_access_allowed()",
+     "check": "member_write_allowed()"
+    },
+    {
+     "name": "membership_gate_insert",
+     "cmd": "INSERT",
+     "roles": "{authenticated}",
+     "using": null,
+     "check": "membership_write_allowed()"
+    },
+    {
+     "name": "membership_gate_update",
+     "cmd": "UPDATE",
+     "roles": "{authenticated}",
+     "using": "membership_write_allowed()",
+     "check": null
+    }
+   ],
+   "grants": {
+    "anon": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "authenticated": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "service_role": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    }
+   },
+   "export_disposition": "included_in_member_export",
+   "deletion_disposition": "deleted_with_account",
+   "retention_disposition": "report_only (retention_mode=report_only)"
+  },
+  {
+   "table": "mood_logs",
+   "rls_enabled": true,
+   "classification": "personal_data",
+   "owner_columns": [
+    "member_id"
+   ],
+   "column_count": 5,
+   "policies": [
+    {
+     "name": "Admins read mood",
+     "cmd": "SELECT",
+     "roles": "{public}",
+     "using": "has_role(auth.uid(), 'admin'::text)",
+     "check": null
+    },
+    {
+     "name": "Members manage own mood",
+     "cmd": "ALL",
+     "roles": "{public}",
+     "using": "(auth.uid() = member_id)",
+     "check": "(auth.uid() = member_id)"
+    },
+    {
+     "name": "deletion_lock_mood_logs",
+     "cmd": "ALL",
+     "roles": "{authenticated}",
+     "using": "member_access_allowed()",
+     "check": "member_write_allowed()"
+    },
+    {
+     "name": "membership_gate_insert",
+     "cmd": "INSERT",
+     "roles": "{authenticated}",
+     "using": null,
+     "check": "membership_write_allowed()"
+    },
+    {
+     "name": "membership_gate_update",
+     "cmd": "UPDATE",
+     "roles": "{authenticated}",
+     "using": "membership_write_allowed()",
+     "check": null
+    }
+   ],
+   "grants": {
+    "anon": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "authenticated": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "service_role": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    }
+   },
+   "export_disposition": "included_in_member_export",
+   "deletion_disposition": "deleted_with_account",
+   "retention_disposition": "report_only (retention_mode=report_only)"
+  },
+  {
+   "table": "notifications",
+   "rls_enabled": true,
+   "classification": "personal_data",
+   "owner_columns": [
+    "user_id"
+   ],
+   "column_count": 8,
+   "policies": [
+    {
+     "name": "Admins read all notifications",
+     "cmd": "SELECT",
+     "roles": "{public}",
+     "using": "has_role(auth.uid(), 'admin'::text)",
+     "check": null
+    },
+    {
+     "name": "Members mark own notifications read",
+     "cmd": "UPDATE",
+     "roles": "{public}",
+     "using": "(auth.uid() = user_id)",
+     "check": "(auth.uid() = user_id)"
+    },
+    {
+     "name": "Members read own notifications",
+     "cmd": "SELECT",
+     "roles": "{public}",
+     "using": "(auth.uid() = user_id)",
+     "check": null
+    },
+    {
+     "name": "deletion_lock_notifications",
+     "cmd": "ALL",
+     "roles": "{authenticated}",
+     "using": "member_access_allowed()",
+     "check": "member_write_allowed()"
+    }
+   ],
+   "grants": {
+    "anon": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "authenticated": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "service_role": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    }
+   },
+   "export_disposition": "included_in_member_export",
+   "deletion_disposition": "deleted_with_account",
+   "retention_disposition": "report_only (retention_mode=report_only)"
+  },
+  {
+   "table": "oauth_client_grants",
+   "rls_enabled": true,
+   "classification": "personal_data",
+   "owner_columns": [
+    "member_id"
+   ],
+   "column_count": 8,
+   "policies": [
+    {
+     "name": "First-party sessions delete own assistant grants",
+     "cmd": "DELETE",
+     "roles": "{authenticated}",
+     "using": "((auth.uid() = member_id) AND ((auth.jwt() ->> 'client_id'::text) IS NULL) AND ((auth.jwt() ->> 'azp'::text) IS NULL))",
+     "check": null
+    },
+    {
+     "name": "First-party sessions insert own assistant grants",
+     "cmd": "INSERT",
+     "roles": "{authenticated}",
+     "using": null,
+     "check": "((auth.uid() = member_id) AND ((auth.jwt() ->> 'client_id'::text) IS NULL) AND ((auth.jwt() ->> 'azp'::text) IS NULL))"
+    },
+    {
+     "name": "First-party sessions update own assistant grants",
+     "cmd": "UPDATE",
+     "roles": "{authenticated}",
+     "using": "((auth.uid() = member_id) AND ((auth.jwt() ->> 'client_id'::text) IS NULL) AND ((auth.jwt() ->> 'azp'::text) IS NULL))",
+     "check": "((auth.uid() = member_id) AND ((auth.jwt() ->> 'client_id'::text) IS NULL) AND ((auth.jwt() ->> 'azp'::text) IS NULL))"
+    },
+    {
+     "name": "Members view own assistant grants",
+     "cmd": "SELECT",
+     "roles": "{authenticated}",
+     "using": "(auth.uid() = member_id)",
+     "check": null
+    },
+    {
+     "name": "deletion_lock_oauth_client_grants",
+     "cmd": "ALL",
+     "roles": "{authenticated}",
+     "using": "member_access_allowed()",
+     "check": "member_write_allowed()"
+    }
+   ],
+   "grants": {
+    "anon": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "authenticated": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "service_role": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    }
+   },
+   "export_disposition": "included_in_member_export",
+   "deletion_disposition": "deleted_with_account",
+   "retention_disposition": "report_only (retention_mode=report_only)"
+  },
+  {
+   "table": "orders",
+   "rls_enabled": true,
+   "classification": "personal_data",
+   "owner_columns": [
+    "customer_email",
+    "user_id"
+   ],
+   "column_count": 24,
+   "policies": [
+    {
+     "name": "Admins read orders",
+     "cmd": "SELECT",
+     "roles": "{public}",
+     "using": "has_role(auth.uid(), 'admin'::text)",
+     "check": null
+    },
+    {
+     "name": "Members read own orders",
+     "cmd": "SELECT",
+     "roles": "{authenticated}",
+     "using": "((auth.uid() IS NOT NULL) AND ((user_id = auth.uid()) OR ((subscription_id IS NOT NULL) AND (EXISTS ( SELECT 1\n   FROM subscriptions s\n  WHERE ((s.id = orders.subscription_id) AND (s.user_id = auth.uid())))))))",
+     "check": null
+    },
+    {
+     "name": "Service role can manage orders",
+     "cmd": "ALL",
+     "roles": "{service_role}",
+     "using": "true",
+     "check": "true"
+    }
+   ],
+   "grants": {
+    "anon": {
+     "select": false,
+     "insert": false,
+     "update": false,
+     "delete": false
+    },
+    "authenticated": {
+     "select": true,
+     "insert": false,
+     "update": false,
+     "delete": false
+    },
+    "service_role": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    }
+   },
+   "export_disposition": "included_in_member_export",
+   "deletion_disposition": "deleted_with_account",
+   "retention_disposition": "report_only (retention_mode=report_only)"
+  },
+  {
+   "table": "phi_access_log",
+   "rls_enabled": true,
+   "classification": "configuration_or_content",
+   "owner_columns": [],
+   "column_count": 8,
+   "policies": [
+    {
+     "name": "Admins read phi_access_log",
+     "cmd": "SELECT",
+     "roles": "{public}",
+     "using": "has_role(auth.uid(), 'admin'::text)",
+     "check": null
+    },
+    {
+     "name": "Service role writes phi_access_log",
+     "cmd": "ALL",
+     "roles": "{service_role}",
+     "using": "true",
+     "check": "true"
+    },
+    {
+     "name": "deletion_lock_phi_access_log",
+     "cmd": "ALL",
+     "roles": "{authenticated}",
+     "using": "member_access_allowed()",
+     "check": "member_write_allowed()"
+    }
+   ],
+   "grants": {
+    "anon": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "authenticated": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "service_role": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    }
+   },
+   "export_disposition": "excluded_non_personal",
+   "deletion_disposition": "retained_non_personal",
+   "retention_disposition": "report_only (retention_mode=report_only)"
+  },
+  {
+   "table": "phi_consent",
+   "rls_enabled": true,
+   "classification": "personal_data",
+   "owner_columns": [
+    "user_id"
+   ],
+   "column_count": 9,
+   "policies": [
+    {
+     "name": "Admins manage phi_consent",
+     "cmd": "ALL",
+     "roles": "{public}",
+     "using": "has_role(auth.uid(), 'admin'::text)",
+     "check": "has_role(auth.uid(), 'admin'::text)"
+    },
+    {
+     "name": "Members read own consent",
+     "cmd": "SELECT",
+     "roles": "{public}",
+     "using": "((auth.uid() IS NOT NULL) AND (user_id = auth.uid()))",
+     "check": null
+    },
+    {
+     "name": "Service role manages phi_consent",
+     "cmd": "ALL",
+     "roles": "{service_role}",
+     "using": "true",
+     "check": "true"
+    },
+    {
+     "name": "deletion_lock_phi_consent",
+     "cmd": "ALL",
+     "roles": "{authenticated}",
+     "using": "member_access_allowed()",
+     "check": "member_write_allowed()"
+    }
+   ],
+   "grants": {
+    "anon": {
+     "select": true,
+     "insert": false,
+     "update": false,
+     "delete": true
+    },
+    "authenticated": {
+     "select": true,
+     "insert": false,
+     "update": false,
+     "delete": true
+    },
+    "service_role": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    }
+   },
+   "export_disposition": "included_in_member_export",
+   "deletion_disposition": "deleted_with_account",
+   "retention_disposition": "report_only (retention_mode=report_only)"
+  },
+  {
+   "table": "points_ledger",
+   "rls_enabled": true,
+   "classification": "personal_data",
+   "owner_columns": [
+    "user_id"
+   ],
+   "column_count": 7,
+   "policies": [
+    {
+     "name": "points_ledger_own_select",
+     "cmd": "SELECT",
+     "roles": "{authenticated}",
+     "using": "((user_id = auth.uid()) OR has_role(auth.uid(), 'admin'::text))",
+     "check": null
+    }
+   ],
+   "grants": {
+    "anon": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "authenticated": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "service_role": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    }
+   },
+   "export_disposition": "included_in_member_export",
+   "deletion_disposition": "deleted_with_account",
+   "retention_disposition": "report_only (retention_mode=report_only)"
+  },
+  {
+   "table": "post_meal_walks",
+   "rls_enabled": true,
+   "classification": "personal_data",
+   "owner_columns": [
+    "member_id"
+   ],
+   "column_count": 6,
+   "policies": [
+    {
+     "name": "Admins read walks",
+     "cmd": "SELECT",
+     "roles": "{public}",
+     "using": "has_role(auth.uid(), 'admin'::text)",
+     "check": null
+    },
+    {
+     "name": "Members manage own walks",
+     "cmd": "ALL",
+     "roles": "{public}",
+     "using": "(auth.uid() = member_id)",
+     "check": "(auth.uid() = member_id)"
+    },
+    {
+     "name": "deletion_lock_post_meal_walks",
+     "cmd": "ALL",
+     "roles": "{authenticated}",
+     "using": "member_access_allowed()",
+     "check": "member_write_allowed()"
+    },
+    {
+     "name": "membership_gate_insert",
+     "cmd": "INSERT",
+     "roles": "{authenticated}",
+     "using": null,
+     "check": "membership_write_allowed()"
+    },
+    {
+     "name": "membership_gate_update",
+     "cmd": "UPDATE",
+     "roles": "{authenticated}",
+     "using": "membership_write_allowed()",
+     "check": null
+    }
+   ],
+   "grants": {
+    "anon": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "authenticated": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "service_role": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    }
+   },
+   "export_disposition": "included_in_member_export",
+   "deletion_disposition": "deleted_with_account",
+   "retention_disposition": "report_only (retention_mode=report_only)"
+  },
+  {
+   "table": "product_validation_tokens",
+   "rls_enabled": true,
+   "classification": "personal_data",
+   "owner_columns": [
+    "member_id"
+   ],
+   "column_count": 7,
+   "policies": [
+    {
+     "name": "Admins manage validation tokens",
+     "cmd": "ALL",
+     "roles": "{public}",
+     "using": "has_role(auth.uid(), 'admin'::text)",
+     "check": "has_role(auth.uid(), 'admin'::text)"
+    },
+    {
+     "name": "Members read own validation tokens",
+     "cmd": "SELECT",
+     "roles": "{public}",
+     "using": "(auth.uid() = member_id)",
+     "check": null
+    },
+    {
+     "name": "deletion_lock_product_validation_tokens",
+     "cmd": "ALL",
+     "roles": "{authenticated}",
+     "using": "member_access_allowed()",
+     "check": "member_write_allowed()"
+    }
+   ],
+   "grants": {
+    "anon": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "authenticated": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "service_role": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    }
+   },
+   "export_disposition": "included_in_member_export",
+   "deletion_disposition": "deleted_with_account",
+   "retention_disposition": "report_only (retention_mode=report_only)"
+  },
+  {
+   "table": "profiles",
+   "rls_enabled": true,
+   "classification": "personal_data",
+   "owner_columns": [
+    "user_id"
+   ],
+   "column_count": 25,
+   "policies": [
+    {
+     "name": "Admins read all profiles",
+     "cmd": "SELECT",
+     "roles": "{public}",
+     "using": "has_role(auth.uid(), 'admin'::text)",
+     "check": null
+    },
+    {
+     "name": "Members manage own profile",
+     "cmd": "ALL",
+     "roles": "{public}",
+     "using": "(auth.uid() = user_id)",
+     "check": "(auth.uid() = user_id)"
+    },
+    {
+     "name": "deletion_lock_profiles",
+     "cmd": "ALL",
+     "roles": "{authenticated}",
+     "using": "member_access_allowed()",
+     "check": "member_write_allowed()"
+    }
+   ],
+   "grants": {
+    "anon": {
+     "select": false,
+     "insert": false,
+     "update": false,
+     "delete": false
+    },
+    "authenticated": {
+     "select": true,
+     "insert": false,
+     "update": false,
+     "delete": false
+    },
+    "service_role": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    }
+   },
+   "export_disposition": "included_in_member_export",
+   "deletion_disposition": "deleted_with_account",
+   "retention_disposition": "report_only (retention_mode=report_only)"
+  },
+  {
+   "table": "qa_monthly_usage",
+   "rls_enabled": true,
+   "classification": "personal_data",
+   "owner_columns": [
+    "user_id"
+   ],
+   "column_count": 6,
+   "policies": [
+    {
+     "name": "Admins manage Q&A usage",
+     "cmd": "ALL",
+     "roles": "{public}",
+     "using": "has_role(auth.uid(), 'admin'::text)",
+     "check": "has_role(auth.uid(), 'admin'::text)"
+    },
+    {
+     "name": "Members read own Q&A usage",
+     "cmd": "SELECT",
+     "roles": "{public}",
+     "using": "(auth.uid() = user_id)",
+     "check": null
+    },
+    {
+     "name": "deletion_lock_qa_monthly_usage",
+     "cmd": "ALL",
+     "roles": "{authenticated}",
+     "using": "member_access_allowed()",
+     "check": "member_write_allowed()"
+    }
+   ],
+   "grants": {
+    "anon": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "authenticated": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "service_role": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    }
+   },
+   "export_disposition": "included_in_member_export",
+   "deletion_disposition": "deleted_with_account",
+   "retention_disposition": "report_only (retention_mode=report_only)"
+  },
+  {
+   "table": "qa_submissions",
+   "rls_enabled": true,
+   "classification": "personal_data",
+   "owner_columns": [
+    "user_id"
+   ],
+   "column_count": 12,
+   "policies": [
+    {
+     "name": "Active members read published answers",
+     "cmd": "SELECT",
+     "roles": "{public}",
+     "using": "((status = 'published'::text) AND (publish_anonymously = true) AND (EXISTS ( SELECT 1\n   FROM subscriptions s\n  WHERE ((s.user_id = auth.uid()) AND (s.status = ANY (ARRAY['trialing'::text, 'active'::text, 'past_due'::text]))))))",
+     "check": null
+    },
+    {
+     "name": "Admin all qa_submissions",
+     "cmd": "ALL",
+     "roles": "{public}",
+     "using": "has_role(auth.uid(), 'admin'::text)",
+     "check": null
+    },
+    {
+     "name": "Admins manage Q&A",
+     "cmd": "ALL",
+     "roles": "{public}",
+     "using": "has_role(auth.uid(), 'admin'::text)",
+     "check": "has_role(auth.uid(), 'admin'::text)"
+    },
+    {
+     "name": "Members insert own questions",
+     "cmd": "INSERT",
+     "roles": "{public}",
+     "using": null,
+     "check": "(auth.uid() = user_id)"
+    },
+    {
+     "name": "Members read own questions",
+     "cmd": "SELECT",
+     "roles": "{public}",
+     "using": "(auth.uid() = user_id)",
+     "check": null
+    },
+    {
+     "name": "deletion_lock_qa_submissions",
+     "cmd": "ALL",
+     "roles": "{authenticated}",
+     "using": "member_access_allowed()",
+     "check": "member_write_allowed()"
+    },
+    {
+     "name": "membership_gate_insert",
+     "cmd": "INSERT",
+     "roles": "{authenticated}",
+     "using": null,
+     "check": "membership_write_allowed()"
+    },
+    {
+     "name": "membership_gate_update",
+     "cmd": "UPDATE",
+     "roles": "{authenticated}",
+     "using": "membership_write_allowed()",
+     "check": null
+    }
+   ],
+   "grants": {
+    "anon": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "authenticated": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "service_role": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    }
+   },
+   "export_disposition": "included_in_member_export",
+   "deletion_disposition": "deleted_with_account",
+   "retention_disposition": "report_only (retention_mode=report_only)"
+  },
+  {
+   "table": "rate_limits",
+   "rls_enabled": true,
+   "classification": "configuration_or_content",
+   "owner_columns": [],
+   "column_count": 4,
+   "policies": [],
+   "grants": {
+    "anon": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "authenticated": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "service_role": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    }
+   },
+   "export_disposition": "excluded_non_personal",
+   "deletion_disposition": "retained_non_personal",
+   "retention_disposition": "report_only (retention_mode=report_only)"
+  },
+  {
+   "table": "reauth_tickets",
+   "rls_enabled": true,
+   "classification": "personal_data",
+   "owner_columns": [
+    "user_id"
+   ],
+   "column_count": 7,
+   "policies": [],
+   "grants": {
+    "anon": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "authenticated": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "service_role": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    }
+   },
+   "export_disposition": "included_in_member_export",
+   "deletion_disposition": "deleted_with_account",
+   "retention_disposition": "report_only (retention_mode=report_only)"
+  },
+  {
+   "table": "shopping_lists",
+   "rls_enabled": true,
+   "classification": "personal_data",
+   "owner_columns": [
+    "member_id"
+   ],
+   "column_count": 5,
+   "policies": [
+    {
+     "name": "Admins read shopping_lists",
+     "cmd": "SELECT",
+     "roles": "{public}",
+     "using": "has_role(auth.uid(), 'admin'::text)",
+     "check": null
+    },
+    {
+     "name": "Members manage own shopping_lists",
+     "cmd": "ALL",
+     "roles": "{public}",
+     "using": "(auth.uid() = member_id)",
+     "check": "(auth.uid() = member_id)"
+    },
+    {
+     "name": "deletion_lock_shopping_lists",
+     "cmd": "ALL",
+     "roles": "{authenticated}",
+     "using": "member_access_allowed()",
+     "check": "member_write_allowed()"
+    },
+    {
+     "name": "membership_gate_insert",
+     "cmd": "INSERT",
+     "roles": "{authenticated}",
+     "using": null,
+     "check": "membership_write_allowed()"
+    },
+    {
+     "name": "membership_gate_update",
+     "cmd": "UPDATE",
+     "roles": "{authenticated}",
+     "using": "membership_write_allowed()",
+     "check": null
+    }
+   ],
+   "grants": {
+    "anon": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "authenticated": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "service_role": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    }
+   },
+   "export_disposition": "included_in_member_export",
+   "deletion_disposition": "deleted_with_account",
+   "retention_disposition": "report_only (retention_mode=report_only)"
+  },
+  {
+   "table": "snack_library",
+   "rls_enabled": true,
+   "classification": "configuration_or_content",
+   "owner_columns": [],
+   "column_count": 11,
+   "policies": [
+    {
+     "name": "Admins manage snack_library",
+     "cmd": "ALL",
+     "roles": "{public}",
+     "using": "has_role(auth.uid(), 'admin'::text)",
+     "check": "has_role(auth.uid(), 'admin'::text)"
+    },
+    {
+     "name": "Authenticated reads active snacks",
+     "cmd": "SELECT",
+     "roles": "{authenticated}",
+     "using": "(is_active = true)",
+     "check": null
+    }
+   ],
+   "grants": {
+    "anon": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "authenticated": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "service_role": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    }
+   },
+   "export_disposition": "excluded_non_personal",
+   "deletion_disposition": "retained_non_personal",
+   "retention_disposition": "report_only (retention_mode=report_only)"
+  },
+  {
+   "table": "snack_logs",
+   "rls_enabled": true,
+   "classification": "personal_data",
+   "owner_columns": [
+    "member_id"
+   ],
+   "column_count": 8,
+   "policies": [
+    {
+     "name": "Admins read snacks",
+     "cmd": "SELECT",
+     "roles": "{public}",
+     "using": "has_role(auth.uid(), 'admin'::text)",
+     "check": null
+    },
+    {
+     "name": "Members manage own snacks",
+     "cmd": "ALL",
+     "roles": "{public}",
+     "using": "(auth.uid() = member_id)",
+     "check": "(auth.uid() = member_id)"
+    },
+    {
+     "name": "deletion_lock_snack_logs",
+     "cmd": "ALL",
+     "roles": "{authenticated}",
+     "using": "member_access_allowed()",
+     "check": "member_write_allowed()"
+    },
+    {
+     "name": "membership_gate_insert",
+     "cmd": "INSERT",
+     "roles": "{authenticated}",
+     "using": null,
+     "check": "membership_write_allowed()"
+    },
+    {
+     "name": "membership_gate_update",
+     "cmd": "UPDATE",
+     "roles": "{authenticated}",
+     "using": "membership_write_allowed()",
+     "check": null
+    }
+   ],
+   "grants": {
+    "anon": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "authenticated": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "service_role": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    }
+   },
+   "export_disposition": "included_in_member_export",
+   "deletion_disposition": "deleted_with_account",
+   "retention_disposition": "report_only (retention_mode=report_only)"
+  },
+  {
+   "table": "state_nonces",
+   "rls_enabled": true,
+   "classification": "personal_data",
+   "owner_columns": [
+    "member_id"
+   ],
+   "column_count": 6,
+   "policies": [],
+   "grants": {
+    "anon": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "authenticated": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "service_role": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    }
+   },
+   "export_disposition": "included_in_member_export",
+   "deletion_disposition": "deleted_with_account",
+   "retention_disposition": "report_only (retention_mode=report_only)"
+  },
+  {
+   "table": "subscriptions",
+   "rls_enabled": true,
+   "classification": "personal_data",
+   "owner_columns": [
+    "user_id"
+   ],
+   "column_count": 14,
+   "policies": [
+    {
+     "name": "Admin read subscriptions",
+     "cmd": "SELECT",
+     "roles": "{public}",
+     "using": "has_role(auth.uid(), 'admin'::text)",
+     "check": null
+    },
+    {
+     "name": "Admin update subscriptions",
+     "cmd": "UPDATE",
+     "roles": "{public}",
+     "using": "has_role(auth.uid(), 'admin'::text)",
+     "check": null
+    },
+    {
+     "name": "Admins manage all subscriptions",
+     "cmd": "ALL",
+     "roles": "{public}",
+     "using": "has_role(auth.uid(), 'admin'::text)",
+     "check": "has_role(auth.uid(), 'admin'::text)"
+    },
+    {
+     "name": "Members read own subscription",
+     "cmd": "SELECT",
+     "roles": "{public}",
+     "using": "(auth.uid() = user_id)",
+     "check": null
+    },
+    {
+     "name": "deletion_lock_subscriptions",
+     "cmd": "ALL",
+     "roles": "{authenticated}",
+     "using": "member_access_allowed()",
+     "check": "member_write_allowed()"
+    }
+   ],
+   "grants": {
+    "anon": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "authenticated": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "service_role": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    }
+   },
+   "export_disposition": "included_in_member_export",
+   "deletion_disposition": "deleted_with_account",
+   "retention_disposition": "report_only (retention_mode=report_only)"
+  },
+  {
+   "table": "support_ticket_notes",
+   "rls_enabled": true,
+   "classification": "configuration_or_content",
+   "owner_columns": [],
+   "column_count": 5,
+   "policies": [
+    {
+     "name": "support_ticket_notes_admin_insert",
+     "cmd": "INSERT",
+     "roles": "{authenticated}",
+     "using": null,
+     "check": "(has_role(auth.uid(), 'admin'::text) AND (author_id = auth.uid()))"
+    },
+    {
+     "name": "support_ticket_notes_admin_select",
+     "cmd": "SELECT",
+     "roles": "{authenticated}",
+     "using": "has_role(auth.uid(), 'admin'::text)",
+     "check": null
+    }
+   ],
+   "grants": {
+    "anon": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "authenticated": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "service_role": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    }
+   },
+   "export_disposition": "excluded_non_personal",
+   "deletion_disposition": "retained_non_personal",
+   "retention_disposition": "report_only (retention_mode=report_only)"
+  },
+  {
+   "table": "support_tickets",
+   "rls_enabled": true,
+   "classification": "personal_data",
+   "owner_columns": [
+    "user_id"
+   ],
+   "column_count": 15,
+   "policies": [
+    {
+     "name": "support_tickets_admin_update",
+     "cmd": "UPDATE",
+     "roles": "{authenticated}",
+     "using": "has_role(auth.uid(), 'admin'::text)",
+     "check": "has_role(auth.uid(), 'admin'::text)"
+    },
+    {
+     "name": "support_tickets_member_insert",
+     "cmd": "INSERT",
+     "roles": "{authenticated}",
+     "using": null,
+     "check": "(user_id = auth.uid())"
+    },
+    {
+     "name": "support_tickets_member_select",
+     "cmd": "SELECT",
+     "roles": "{authenticated}",
+     "using": "((user_id = auth.uid()) OR has_role(auth.uid(), 'admin'::text))",
+     "check": null
+    }
+   ],
+   "grants": {
+    "anon": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "authenticated": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "service_role": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    }
+   },
+   "export_disposition": "included_in_member_export",
+   "deletion_disposition": "deleted_with_account",
+   "retention_disposition": "report_only (retention_mode=report_only)"
+  },
+  {
+   "table": "user_badges",
+   "rls_enabled": true,
+   "classification": "personal_data",
+   "owner_columns": [
+    "user_id"
+   ],
+   "column_count": 4,
+   "policies": [
+    {
+     "name": "Admins manage user_badges",
+     "cmd": "ALL",
+     "roles": "{public}",
+     "using": "has_role(auth.uid(), 'admin'::text)",
+     "check": "has_role(auth.uid(), 'admin'::text)"
+    },
+    {
+     "name": "Members read own badges",
+     "cmd": "SELECT",
+     "roles": "{public}",
+     "using": "(auth.uid() = user_id)",
+     "check": null
+    },
+    {
+     "name": "Service role manages user_badges",
+     "cmd": "ALL",
+     "roles": "{service_role}",
+     "using": "true",
+     "check": "true"
+    },
+    {
+     "name": "deletion_lock_user_badges",
+     "cmd": "ALL",
+     "roles": "{authenticated}",
+     "using": "member_access_allowed()",
+     "check": "member_write_allowed()"
+    },
+    {
+     "name": "membership_gate_insert",
+     "cmd": "INSERT",
+     "roles": "{authenticated}",
+     "using": null,
+     "check": "membership_write_allowed()"
+    },
+    {
+     "name": "membership_gate_update",
+     "cmd": "UPDATE",
+     "roles": "{authenticated}",
+     "using": "membership_write_allowed()",
+     "check": null
+    }
+   ],
+   "grants": {
+    "anon": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "authenticated": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "service_role": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    }
+   },
+   "export_disposition": "included_in_member_export",
+   "deletion_disposition": "deleted_with_account",
+   "retention_disposition": "report_only (retention_mode=report_only)"
+  },
+  {
+   "table": "user_roles",
+   "rls_enabled": true,
+   "classification": "personal_data",
+   "owner_columns": [
+    "user_id"
+   ],
+   "column_count": 4,
+   "policies": [
+    {
+     "name": "Admins manage roles",
+     "cmd": "ALL",
+     "roles": "{public}",
+     "using": "has_role(auth.uid(), 'admin'::text)",
+     "check": "has_role(auth.uid(), 'admin'::text)"
+    },
+    {
+     "name": "Only admins delete user_roles",
+     "cmd": "DELETE",
+     "roles": "{authenticated}",
+     "using": "has_role(auth.uid(), 'admin'::text)",
+     "check": null
+    },
+    {
+     "name": "Only admins insert user_roles",
+     "cmd": "INSERT",
+     "roles": "{authenticated}",
+     "using": null,
+     "check": "has_role(auth.uid(), 'admin'::text)"
+    },
+    {
+     "name": "Only admins update user_roles",
+     "cmd": "UPDATE",
+     "roles": "{authenticated}",
+     "using": "has_role(auth.uid(), 'admin'::text)",
+     "check": "has_role(auth.uid(), 'admin'::text)"
+    }
+   ],
+   "grants": {
+    "anon": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "authenticated": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "service_role": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    }
+   },
+   "export_disposition": "included_in_member_export",
+   "deletion_disposition": "deleted_with_account",
+   "retention_disposition": "report_only (retention_mode=report_only)"
+  },
+  {
+   "table": "user_streaks",
+   "rls_enabled": true,
+   "classification": "personal_data",
+   "owner_columns": [
+    "user_id"
+   ],
+   "column_count": 11,
+   "policies": [
+    {
+     "name": "Admins manage streaks",
+     "cmd": "ALL",
+     "roles": "{public}",
+     "using": "has_role(auth.uid(), 'admin'::text)",
+     "check": "has_role(auth.uid(), 'admin'::text)"
+    },
+    {
+     "name": "Members read own streak",
+     "cmd": "SELECT",
+     "roles": "{public}",
+     "using": "(auth.uid() = user_id)",
+     "check": null
+    },
+    {
+     "name": "Service role manages streaks",
+     "cmd": "ALL",
+     "roles": "{service_role}",
+     "using": "true",
+     "check": "true"
+    },
+    {
+     "name": "deletion_lock_user_streaks",
+     "cmd": "ALL",
+     "roles": "{authenticated}",
+     "using": "member_access_allowed()",
+     "check": "member_write_allowed()"
+    },
+    {
+     "name": "membership_gate_insert",
+     "cmd": "INSERT",
+     "roles": "{authenticated}",
+     "using": null,
+     "check": "membership_write_allowed()"
+    },
+    {
+     "name": "membership_gate_update",
+     "cmd": "UPDATE",
+     "roles": "{authenticated}",
+     "using": "membership_write_allowed()",
+     "check": null
+    }
+   ],
+   "grants": {
+    "anon": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "authenticated": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "service_role": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    }
+   },
+   "export_disposition": "included_in_member_export",
+   "deletion_disposition": "deleted_with_account",
+   "retention_disposition": "report_only (retention_mode=report_only)"
+  },
+  {
+   "table": "visitor_engagement_scores",
+   "rls_enabled": true,
+   "classification": "personal_data",
+   "owner_columns": [
+    "user_id"
+   ],
+   "column_count": 17,
+   "policies": [
+    {
+     "name": "Admins read engagement scores",
+     "cmd": "SELECT",
+     "roles": "{public}",
+     "using": "has_role(auth.uid(), 'admin'::text)",
+     "check": null
+    },
+    {
+     "name": "Service role manages engagement scores",
+     "cmd": "ALL",
+     "roles": "{service_role}",
+     "using": "true",
+     "check": "true"
+    },
+    {
+     "name": "deletion_lock_visitor_engagement_scores",
+     "cmd": "ALL",
+     "roles": "{authenticated}",
+     "using": "member_access_allowed()",
+     "check": "member_write_allowed()"
+    }
+   ],
+   "grants": {
+    "anon": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "authenticated": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "service_role": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    }
+   },
+   "export_disposition": "included_in_member_export",
+   "deletion_disposition": "deleted_with_account",
+   "retention_disposition": "report_only (retention_mode=report_only)"
+  },
+  {
+   "table": "visitor_profiles",
+   "rls_enabled": true,
+   "classification": "personal_data",
+   "owner_columns": [
+    "user_id"
+   ],
+   "column_count": 32,
+   "policies": [
+    {
+     "name": "Admins manage visitor profiles",
+     "cmd": "ALL",
+     "roles": "{public}",
+     "using": "has_role(auth.uid(), 'admin'::text)",
+     "check": "has_role(auth.uid(), 'admin'::text)"
+    },
+    {
+     "name": "Members read own visitor profile",
+     "cmd": "SELECT",
+     "roles": "{public}",
+     "using": "((auth.uid() IS NOT NULL) AND (user_id = auth.uid()))",
+     "check": null
+    },
+    {
+     "name": "Service role manages visitor profiles",
+     "cmd": "ALL",
+     "roles": "{service_role}",
+     "using": "true",
+     "check": "true"
+    },
+    {
+     "name": "deletion_lock_visitor_profiles",
+     "cmd": "ALL",
+     "roles": "{authenticated}",
+     "using": "member_access_allowed()",
+     "check": "member_write_allowed()"
+    }
+   ],
+   "grants": {
+    "anon": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "authenticated": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "service_role": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    }
+   },
+   "export_disposition": "included_in_member_export",
+   "deletion_disposition": "deleted_with_account",
+   "retention_disposition": "report_only (retention_mode=report_only)"
+  },
+  {
+   "table": "visitor_sessions",
+   "rls_enabled": true,
+   "classification": "personal_data",
+   "owner_columns": [
+    "user_id"
+   ],
+   "column_count": 13,
+   "policies": [],
+   "grants": {
+    "anon": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "authenticated": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "service_role": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    }
+   },
+   "export_disposition": "included_in_member_export",
+   "deletion_disposition": "deleted_with_account",
+   "retention_disposition": "report_only (retention_mode=report_only)"
+  },
+  {
+   "table": "vita_quotes",
+   "rls_enabled": true,
+   "classification": "configuration_or_content",
+   "owner_columns": [],
+   "column_count": 8,
+   "policies": [
+    {
+     "name": "Admins can manage quotes",
+     "cmd": "ALL",
+     "roles": "{authenticated}",
+     "using": "has_role(auth.uid(), 'admin'::text)",
+     "check": "has_role(auth.uid(), 'admin'::text)"
+    },
+    {
+     "name": "Authenticated can read active quotes",
+     "cmd": "SELECT",
+     "roles": "{authenticated}",
+     "using": "(is_active = true)",
+     "check": null
+    }
+   ],
+   "grants": {
+    "anon": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "authenticated": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "service_role": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    }
+   },
+   "export_disposition": "excluded_non_personal",
+   "deletion_disposition": "retained_non_personal",
+   "retention_disposition": "report_only (retention_mode=report_only)"
+  },
+  {
+   "table": "vita_similarity_log",
+   "rls_enabled": true,
+   "classification": "personal_data",
+   "owner_columns": [
+    "user_id"
+   ],
+   "column_count": 8,
+   "policies": [
+    {
+     "name": "Admins read similarity logs",
+     "cmd": "SELECT",
+     "roles": "{authenticated}",
+     "using": "has_role(auth.uid(), 'admin'::text)",
+     "check": null
+    },
+    {
+     "name": "Members insert own similarity logs",
+     "cmd": "INSERT",
+     "roles": "{authenticated}",
+     "using": null,
+     "check": "(auth.uid() = user_id)"
+    },
+    {
+     "name": "deletion_lock_vita_similarity_log",
+     "cmd": "ALL",
+     "roles": "{authenticated}",
+     "using": "member_access_allowed()",
+     "check": "member_write_allowed()"
+    }
+   ],
+   "grants": {
+    "anon": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "authenticated": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "service_role": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    }
+   },
+   "export_disposition": "included_in_member_export",
+   "deletion_disposition": "deleted_with_account",
+   "retention_disposition": "report_only (retention_mode=report_only)"
+  },
+  {
+   "table": "water_logs",
+   "rls_enabled": true,
+   "classification": "personal_data",
+   "owner_columns": [
+    "member_id"
+   ],
+   "column_count": 6,
+   "policies": [
+    {
+     "name": "Admins read water",
+     "cmd": "SELECT",
+     "roles": "{public}",
+     "using": "has_role(auth.uid(), 'admin'::text)",
+     "check": null
+    },
+    {
+     "name": "Members manage own water",
+     "cmd": "ALL",
+     "roles": "{public}",
+     "using": "(auth.uid() = member_id)",
+     "check": "(auth.uid() = member_id)"
+    },
+    {
+     "name": "deletion_lock_water_logs",
+     "cmd": "ALL",
+     "roles": "{authenticated}",
+     "using": "member_access_allowed()",
+     "check": "member_write_allowed()"
+    },
+    {
+     "name": "membership_gate_insert",
+     "cmd": "INSERT",
+     "roles": "{authenticated}",
+     "using": null,
+     "check": "membership_write_allowed()"
+    },
+    {
+     "name": "membership_gate_update",
+     "cmd": "UPDATE",
+     "roles": "{authenticated}",
+     "using": "membership_write_allowed()",
+     "check": null
+    }
+   ],
+   "grants": {
+    "anon": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "authenticated": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "service_role": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    }
+   },
+   "export_disposition": "included_in_member_export",
+   "deletion_disposition": "deleted_with_account",
+   "retention_disposition": "report_only (retention_mode=report_only)"
+  },
+  {
+   "table": "whatsapp_consent",
+   "rls_enabled": true,
+   "classification": "personal_data",
+   "owner_columns": [
+    "user_id"
+   ],
+   "column_count": 8,
+   "policies": [
+    {
+     "name": "Admins manage all consent",
+     "cmd": "ALL",
+     "roles": "{public}",
+     "using": "has_role(auth.uid(), 'admin'::text)",
+     "check": "has_role(auth.uid(), 'admin'::text)"
+    },
+    {
+     "name": "Members insert own consent",
+     "cmd": "INSERT",
+     "roles": "{public}",
+     "using": null,
+     "check": "(auth.uid() = user_id)"
+    },
+    {
+     "name": "Members read own consent",
+     "cmd": "SELECT",
+     "roles": "{public}",
+     "using": "(auth.uid() = user_id)",
+     "check": null
+    },
+    {
+     "name": "Members update own consent",
+     "cmd": "UPDATE",
+     "roles": "{public}",
+     "using": "(auth.uid() = user_id)",
+     "check": null
+    },
+    {
+     "name": "deletion_lock_whatsapp_consent",
+     "cmd": "ALL",
+     "roles": "{authenticated}",
+     "using": "member_access_allowed()",
+     "check": "member_write_allowed()"
+    }
+   ],
+   "grants": {
+    "anon": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "authenticated": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "service_role": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    }
+   },
+   "export_disposition": "included_in_member_export",
+   "deletion_disposition": "deleted_with_account",
+   "retention_disposition": "report_only (retention_mode=report_only)"
+  },
+  {
+   "table": "win_posts",
+   "rls_enabled": true,
+   "classification": "configuration_or_content",
+   "owner_columns": [],
+   "column_count": 11,
+   "policies": [
+    {
+     "name": "Active members read win_posts",
+     "cmd": "SELECT",
+     "roles": "{public}",
+     "using": "(EXISTS ( SELECT 1\n   FROM subscriptions s\n  WHERE ((s.user_id = auth.uid()) AND (s.status = ANY (ARRAY['trialing'::text, 'active'::text, 'past_due'::text])))))",
+     "check": null
+    },
+    {
+     "name": "Admins manage win_posts",
+     "cmd": "ALL",
+     "roles": "{public}",
+     "using": "has_role(auth.uid(), 'admin'::text)",
+     "check": "has_role(auth.uid(), 'admin'::text)"
+    },
+    {
+     "name": "Authors update own wins",
+     "cmd": "UPDATE",
+     "roles": "{public}",
+     "using": "(auth.uid() = author_id)",
+     "check": null
+    },
+    {
+     "name": "Members insert own wins",
+     "cmd": "INSERT",
+     "roles": "{public}",
+     "using": null,
+     "check": "(auth.uid() = author_id)"
+    },
+    {
+     "name": "deletion_lock_win_posts",
+     "cmd": "ALL",
+     "roles": "{authenticated}",
+     "using": "member_access_allowed()",
+     "check": "member_write_allowed()"
+    },
+    {
+     "name": "membership_gate_insert",
+     "cmd": "INSERT",
+     "roles": "{authenticated}",
+     "using": null,
+     "check": "membership_write_allowed()"
+    },
+    {
+     "name": "membership_gate_update",
+     "cmd": "UPDATE",
+     "roles": "{authenticated}",
+     "using": "membership_write_allowed()",
+     "check": null
+    }
+   ],
+   "grants": {
+    "anon": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "authenticated": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "service_role": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    }
+   },
+   "export_disposition": "excluded_non_personal",
+   "deletion_disposition": "retained_non_personal",
+   "retention_disposition": "report_only (retention_mode=report_only)"
+  },
+  {
+   "table": "workout_completion_receipts",
+   "rls_enabled": true,
+   "classification": "personal_data",
+   "owner_columns": [
+    "user_id"
+   ],
+   "column_count": 10,
+   "policies": [
+    {
+     "name": "workout_receipts_own_select",
+     "cmd": "SELECT",
+     "roles": "{authenticated}",
+     "using": "((user_id = auth.uid()) OR has_role(auth.uid(), 'admin'::text))",
+     "check": null
+    }
+   ],
+   "grants": {
+    "anon": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "authenticated": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "service_role": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    }
+   },
+   "export_disposition": "included_in_member_export",
+   "deletion_disposition": "deleted_with_account",
+   "retention_disposition": "report_only (retention_mode=report_only)"
+  },
+  {
+   "table": "workout_sessions",
+   "rls_enabled": true,
+   "classification": "personal_data",
+   "owner_columns": [
+    "user_id"
+   ],
+   "column_count": 15,
+   "policies": [
+    {
+     "name": "Users delete own workout sessions",
+     "cmd": "DELETE",
+     "roles": "{authenticated}",
+     "using": "(auth.uid() = user_id)",
+     "check": null
+    },
+    {
+     "name": "Users insert own workout sessions",
+     "cmd": "INSERT",
+     "roles": "{authenticated}",
+     "using": null,
+     "check": "(auth.uid() = user_id)"
+    },
+    {
+     "name": "Users update own workout sessions",
+     "cmd": "UPDATE",
+     "roles": "{authenticated}",
+     "using": "(auth.uid() = user_id)",
+     "check": null
+    },
+    {
+     "name": "Users view own workout sessions",
+     "cmd": "SELECT",
+     "roles": "{authenticated}",
+     "using": "(auth.uid() = user_id)",
+     "check": null
+    },
+    {
+     "name": "deletion_lock_workout_sessions",
+     "cmd": "ALL",
+     "roles": "{authenticated}",
+     "using": "member_access_allowed()",
+     "check": "member_write_allowed()"
+    },
+    {
+     "name": "membership_gate_insert",
+     "cmd": "INSERT",
+     "roles": "{authenticated}",
+     "using": null,
+     "check": "membership_write_allowed()"
+    },
+    {
+     "name": "membership_gate_update",
+     "cmd": "UPDATE",
+     "roles": "{authenticated}",
+     "using": "membership_write_allowed()",
+     "check": null
+    }
+   ],
+   "grants": {
+    "anon": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "authenticated": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    },
+    "service_role": {
+     "select": true,
+     "insert": true,
+     "update": true,
+     "delete": true
+    }
+   },
+   "export_disposition": "included_in_member_export",
+   "deletion_disposition": "deleted_with_account",
+   "retention_disposition": "report_only (retention_mode=report_only)"
+  }
+ ],
+ "result": "PASS",
+ "tables_with_anon_select_grant": [
+  "a1c_logs",
+  "activity_events",
+  "app_config",
+  "badges",
+  "billing_events",
+  "blood_sugar_readings",
+  "broadcast_log",
+  "cheat_meals",
+  "coaching_interest",
+  "coaching_waitlist",
+  "community_answer_embeddings",
+  "community_answers",
+  "community_questions",
+  "community_votes",
+  "consent_records",
+  "content_containment_log",
+  "content_items",
+  "conversations",
+  "daily_actions",
+  "daily_digest",
+  "deletion_jobs",
+  "deletion_requests",
+  "dexcom_connections",
+  "dunning_attempts",
+  "export_artifacts",
+  "health_logs",
+  "if_fasting_log",
+  "leads",
+  "meal_logs",
+  "meal_plans",
+  "meal_swaps",
+  "member_daily_progress",
+  "member_measurements",
+  "member_progress",
+  "messages",
+  "mindset_reads",
+  "mood_logs",
+  "notifications",
+  "oauth_client_grants",
+  "phi_access_log",
+  "phi_consent",
+  "points_ledger",
+  "post_meal_walks",
+  "product_validation_tokens",
+  "qa_monthly_usage",
+  "qa_submissions",
+  "rate_limits",
+  "reauth_tickets",
+  "shopping_lists",
+  "snack_library",
+  "snack_logs",
+  "state_nonces",
+  "subscriptions",
+  "support_ticket_notes",
+  "support_tickets",
+  "user_badges",
+  "user_roles",
+  "user_streaks",
+  "visitor_engagement_scores",
+  "visitor_profiles",
+  "visitor_sessions",
+  "vita_quotes",
+  "vita_similarity_log",
+  "water_logs",
+  "whatsapp_consent",
+  "win_posts",
+  "workout_completion_receipts",
+  "workout_sessions"
+ ],
+ "note_on_anon_grant": "Grant-level only. Every table has RLS enabled (tables_without_rls = 0); an anon SELECT grant returns rows only where a policy admits role anon. Row-level anon exposure was probed live and denied for orders and member surfaces (see rls-principal-matrix.md)."
+}
