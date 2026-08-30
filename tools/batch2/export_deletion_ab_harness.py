@@ -112,7 +112,7 @@ class Run:
         self.b_vp = ""
         self.ids: dict[str, list[str]] = {}
         self.order_ids: dict[str, str] = {}
-        self._orders_sql: list[str] = []
+        self._order_rows: list[dict] = []
         self.results: dict[str, Any] = {}
         self.errors: list[str] = []
 
@@ -179,19 +179,30 @@ class Run:
             f"INSERT INTO public.support_tickets (id, user_id, reference, category, message, created_at) VALUES ('{tk_a}','{a_id}','HARNESS-A-{secrets.token_hex(4)}','Question','A ticket message','{now}'),('{tk_b}','{b_id}','HARNESS-B-{secrets.token_hex(4)}','Question','B ticket message','{now}')",
             f"INSERT INTO public.support_ticket_notes (id, ticket_id, author_id, body, created_at) VALUES ('{note_a}','{tk_a}','{a_id}','A note body','{now}'),('{note_b}','{tk_b}','{b_id}','B note body','{now}')",
             f"INSERT INTO public.billing_holds (id, user_id, hold_type, stripe_dispute_id, stripe_charge_id, dispute_status, review_only, opened_at) VALUES ('{hold_a}','{a_id}','dispute','dp_synthetic_batch2','ch_synthetic_batch2','warning_closed',true,'{now}')",
-            # Immutable-ownership order cases.
-            f"INSERT INTO public.orders (id, user_id, customer_name, customer_email, amount, status, product_name, product_id, created_at) VALUES "
-            f"('{ord_owned}','{a_id}','Batch2 Synthetic','{a_email}',2700,'paid','SYNTHETIC-BATCH2-VERIFICATION','synthetic-batch2','{now}'),"
-            f"('{ord_ownerless}',NULL,'Batch2 Synthetic Legacy','{a_email}',2700,'paid','SYNTHETIC-BATCH2-VERIFICATION','synthetic-batch2','{now}'),"
-            f"('{ord_b}','{b_id}','Batch2 Synthetic B','{self.b['email']}',2700,'paid','SYNTHETIC-BATCH2-VERIFICATION','synthetic-batch2','{now}')",
         ]
-        if b_sub:
-            stmts.append(f"UPDATE public.orders SET subscription_id = '{b_sub}' WHERE id = '{ord_b}'")
-        # The order statements are replayable so the fixtures can be restored
-        # identically after the deletion-request precondition check.
-        self._orders_sql = [x for x in stmts if "public.orders" in x]
         for stmt in stmts:
             psql_exec(stmt)
+
+        # Orders are written through the service-role harness: the sandbox role
+        # deliberately holds no UPDATE/DELETE privilege on commerce tables.
+        base = {
+            "customer_name": "Batch2 Synthetic",
+            "amount": 2700,
+            "currency": "usd",
+            "status": "paid",
+            "product_name": "SYNTHETIC-BATCH2-VERIFICATION",
+            "product_id": "synthetic-batch2",
+        }
+        self._order_rows = [
+            {**base, "id": ord_owned, "user_id": a_id, "customer_email": a_email},
+            {**base, "id": ord_ownerless, "user_id": None, "customer_email": a_email,
+             "customer_name": "Batch2 Synthetic Legacy"},
+            {**base, "id": ord_b, "user_id": b_id, "customer_email": self.b["email"],
+             "subscription_id": b_sub, "customer_name": "Batch2 Synthetic B"},
+        ]
+        out = harness("seed_orders_explicit", {"rows": self._order_rows})
+        if not out.get("ok"):
+            raise RuntimeError(f"order seeding failed: {out}")
 
     # ---------------- reauthentication ----------------
 
@@ -373,10 +384,9 @@ class Run:
         # ownership matching is still exercised on real rows.
         gate = scalar("SELECT (value)::text AS v FROM public.app_config WHERE key = 'stripe_deletion_enabled'")
         hold_out = str(gate).strip() != "true"
-        held = self._orders_sql if hold_out else []
+        held = self._order_rows if hold_out else []
         if hold_out:
-            arr = ", ".join(f"'{i}'" for i in self.ids["orders"])
-            psql_exec(f"DELETE FROM public.orders WHERE id = ANY(ARRAY[{arr}]::uuid[])")
+            harness("delete_by_ids", {"table": "orders", "ids": self.ids["orders"]})
         hdr = {"Authorization": f"Bearer {self.a['access_token']}", "apikey": ANON_KEY}
         t = self._mint_ticket(self.a["id"], "delete")
         req = function_post("request-account-deletion", {"ticket": t}, hdr)
@@ -384,8 +394,8 @@ class Run:
             self.errors.append(f"deletion request failed: HTTP {req.status_code} {req.text[:200]}")
             req.raise_for_status()
         job_id = req.json()["job"]["id"]
-        for stmt in held:
-            psql_exec(stmt)
+        if held:
+            harness("seed_orders_explicit", {"rows": held})
 
         def worker():
             r = requests.post(
@@ -499,42 +509,42 @@ class Run:
         ids = [i for i in (a_id, b_id) if i]
         report: dict[str, Any] = {}
 
-        for table, row_ids in self.ids.items():
+        def count_ids(table: str, row_ids: list[str]) -> int:
             arr = ", ".join(f"'{i}'" for i in row_ids)
-            before = int(scalar(f"SELECT count(*) AS n FROM public.{table} WHERE id = ANY(ARRAY[{arr}]::uuid[])") or 0)
-            psql_exec(f"DELETE FROM public.{table} WHERE id = ANY(ARRAY[{arr}]::uuid[])")
-            after = int(scalar(f"SELECT count(*) AS n FROM public.{table} WHERE id = ANY(ARRAY[{arr}]::uuid[])") or 0)
-            report[table] = {"before": before, "after": after}
+            return int(scalar(f"SELECT count(*) AS n FROM public.{table} WHERE id = ANY(ARRAY[{arr}]::uuid[])") or 0)
+
+        def count_col(table: str, col: str, values: list[str]) -> int:
+            arr = ", ".join(f"'{i}'" for i in values)
+            return int(scalar(f"SELECT count(*) AS n FROM public.{table} WHERE {col} = ANY(ARRAY[{arr}]::uuid[])") or 0)
+
+        for table, row_ids in self.ids.items():
+            before = count_ids(table, row_ids)
+            harness("delete_by_ids", {"table": table, "ids": row_ids})
+            report[table] = {"before": before, "after": count_ids(table, row_ids)}
 
         if ids:
-            arr = ", ".join(f"'{i}'" for i in ids)
             for table, col in [
                 ("reauth_tickets", "user_id"), ("export_artifacts", "user_id"),
                 ("deletion_jobs", "user_id"), ("visitor_sessions", "user_id"),
                 ("visitor_profiles", "user_id"), ("profiles", "user_id"),
                 ("subscriptions", "user_id"), ("consent_records", "user_id"),
             ]:
-                before = int(scalar(f"SELECT count(*) AS n FROM public.{table} WHERE {col} = ANY(ARRAY[{arr}]::uuid[])") or 0)
-                psql_exec(f"DELETE FROM public.{table} WHERE {col} = ANY(ARRAY[{arr}]::uuid[])")
-                after = int(scalar(f"SELECT count(*) AS n FROM public.{table} WHERE {col} = ANY(ARRAY[{arr}]::uuid[])") or 0)
-                report[table] = {"before": before, "after": after}
+                before = count_col(table, col, ids)
+                harness("delete_by_column", {"table": table, "column": col, "ids": ids})
+                report[table] = {"before": before, "after": count_col(table, col, ids)}
 
-            storage_left = int(scalar(
-                "SELECT count(*) AS n FROM storage.objects WHERE " +
-                " OR ".join(f"name LIKE '{i}/%'" for i in ids)) or 0)
-            report["storage_objects"] = {"before": storage_left, "after": storage_left}
+            report["storage_objects"] = harness("storage_probe", {"ids": ids}).get(
+                "storage_objects_remaining", {})
+            report["retained_security_metadata"] = {
+                "rate_limits": "hashed request buckets only; no synthetic identifier is stored; retained by design",
+                "phi_access_log_rows_for_synthetic_actors": count_col("phi_access_log", "actor_user_id", ids),
+            }
 
         harness("cleanup_orders")
         auth_out = harness("cleanup", {"ids": ids, "extra_deletes": self.ids})
         report["auth_users"] = {
             "deleted": len(auth_out.get("auth_users_deleted", [])),
             "synthetic_remaining": auth_out.get("synthetic_remaining"),
-        }
-        report["retained_security_metadata"] = {
-            "rate_limits": "hashed request buckets only, no synthetic identifiers, retained",
-            "phi_access_log": int(scalar(
-                "SELECT count(*) AS n FROM public.phi_access_log WHERE actor_user_id = ANY(ARRAY[" +
-                ", ".join(f"'{i}'" for i in ids) + "]::uuid[])") or 0) if ids else 0,
         }
         self.results["cleanup"] = report
 
