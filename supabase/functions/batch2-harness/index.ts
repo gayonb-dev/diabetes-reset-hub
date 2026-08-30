@@ -130,7 +130,7 @@ async function serviceProbe(userId: string) {
   return json({ service_role_future_day_insert: "ACCEPTED", inserted_then_removed: data!.id });
 }
 
-async function cleanup(ids: string[]) {
+async function cleanup(ids: string[], extraDeletes?: Record<string, string[]>) {
   const removed: Record<string, number> = {};
   const tables = [
     "member_progress", "member_daily_progress", "activity_events", "points_ledger",
