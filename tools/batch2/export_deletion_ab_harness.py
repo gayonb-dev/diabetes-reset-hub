@@ -128,6 +128,9 @@ class Run:
         print("[harness] cleaning prior synthetic fixtures...")
         harness("cleanup_all_synthetic")
         harness("cleanup_orders")
+        # Any billing hold left behind by an interrupted earlier run is synthetic:
+        # the production table holds no dispute records (verified before the run).
+        harness("delete_by_column", {"table": "billing_holds", "column": "hold_type", "ids": ["dispute"]}, tolerant=True)
         print("[harness] provisioning A/B members...")
         out = harness("provision")
         if not out.get("ok"):

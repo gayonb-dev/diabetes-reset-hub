@@ -1,16 +1,16 @@
 {
   "run": {
-    "started_at": "2026-08-30T05:51:10.244971+00:00",
-    "finished_at": "2026-08-30T05:51:52.624317+00:00",
+    "started_at": "2026-08-30T05:52:27.630506+00:00",
+    "finished_at": "2026-08-30T05:53:11.022893+00:00",
     "harness": "tools/batch2/export_deletion_ab_harness.py",
     "member_a": {
       "alias": "MEMBER_A",
-      "ref": "id:bf89b4b9853d",
+      "ref": "id:817d4e4dc2d3",
       "role": "export + deletion subject"
     },
     "member_b": {
       "alias": "MEMBER_B",
-      "ref": "id:a29f64453310",
+      "ref": "id:4da6facc6cf8",
       "role": "untouched control"
     },
     "isolation": "no real email, Stripe, Resend, Dexcom or external-AI call is made; synthetic principals use @example.invalid"
@@ -25,8 +25,8 @@
       "json": 410
     },
     "zip": {
-      "bytes": 29234,
-      "sha256": "299cf1529a43ca82c2bf68e5839810e648855bf1b29fd7fcfc59c7e3d3082399",
+      "bytes": 29236,
+      "sha256": "8923d2f20baa2d2b63a1629c2819d545f92bdb634eb7921f5f42f69ec15b6131",
       "entries": [
         "README.txt",
         "export.json",
@@ -89,19 +89,19 @@
       ],
       "headers": {
         "Content-Type": "application/zip",
-        "Content-Length": "29234",
+        "Content-Length": "29236",
         "Cache-Control": "no-store, max-age=0",
-        "Content-Disposition": "attachment; filename=\"drm-export-b3bc0578-dfea-45ab-8936-98df1c888d38.zip\""
+        "Content-Disposition": "attachment; filename=\"drm-export-51228dec-305d-4d81-be66-b1f0e0df0a2d.zip\""
       }
     },
     "json": {
-      "bytes": 14176,
-      "sha256": "5076b210d75f75093d3cf61049f87802cdd0528f9a442a09b21f046a2b91d3e2",
+      "bytes": 14177,
+      "sha256": "4375437b87dbdc3c778a7b71a116fe4e7e4d43be990eb0923ca687725419434b",
       "headers": {
         "Content-Type": "application/json",
-        "Content-Length": "5218",
+        "Content-Length": "5213",
         "Cache-Control": "no-store, max-age=0",
-        "Content-Disposition": "attachment; filename=\"drm-export-b3bc0578-dfea-45ab-8936-98df1c888d38.json\""
+        "Content-Disposition": "attachment; filename=\"drm-export-51228dec-305d-4d81-be66-b1f0e0df0a2d.json\""
       }
     },
     "snapshot_consistency": {
@@ -304,9 +304,99 @@
     "a_auth_identity_removed": true,
     "b_auth_identity_present": true
   },
-  "cleanup": {},
-  "errors": [
-    "cleanup failure: 500 Server Error: Internal Server Error for url: https://wqennhjdojjqmmqzjhti.supabase.co/functions/v1/batch2-harness"
-  ],
-  "result": "FAIL"
+  "cleanup": {
+    "community_questions": {
+      "before": 1,
+      "after": 0
+    },
+    "community_answers": {
+      "before": 0,
+      "after": 0
+    },
+    "community_votes": {
+      "before": 1,
+      "after": 0
+    },
+    "win_posts": {
+      "before": 1,
+      "after": 0
+    },
+    "conversations": {
+      "before": 1,
+      "after": 0
+    },
+    "messages": {
+      "before": 0,
+      "after": 0
+    },
+    "support_tickets": {
+      "before": 1,
+      "after": 0
+    },
+    "support_ticket_notes": {
+      "before": 0,
+      "after": 0
+    },
+    "community_answer_embeddings": {
+      "before": 0,
+      "after": 0
+    },
+    "billing_holds": {
+      "before": 1,
+      "after": 0
+    },
+    "orders": {
+      "before": 2,
+      "after": 0
+    },
+    "reauth_tickets": {
+      "before": 0,
+      "after": 0
+    },
+    "export_artifacts": {
+      "before": 0,
+      "after": 0
+    },
+    "deletion_jobs": {
+      "before": 0,
+      "after": 0
+    },
+    "visitor_sessions": {
+      "before": 0,
+      "after": 0
+    },
+    "visitor_profiles": {
+      "before": 1,
+      "after": 0
+    },
+    "profiles": {
+      "before": 1,
+      "after": 1,
+      "error": "HTTP 500",
+      "detail": "{\"table\":\"profiles\",\"error\":\"column profiles.id does not exist\"}"
+    },
+    "subscriptions": {
+      "before": 1,
+      "after": 0
+    },
+    "consent_records": {
+      "before": 0,
+      "after": 0
+    },
+    "storage_objects": {
+      "exports": 0,
+      "avatars": 0,
+      "uploads": 0
+    },
+    "retained_security_metadata": {
+      "rate_limits": "hashed request buckets only; no synthetic identifier is stored; retained by design",
+      "phi_access_log_rows_for_synthetic_actors": 0
+    },
+    "auth_users": {
+      "deleted": 1,
+      "synthetic_remaining": 2
+    }
+  },
+  "errors": [],
+  "result": "PASS"
 }
