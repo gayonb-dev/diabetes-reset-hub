@@ -1,16 +1,16 @@
 {
   "run": {
-    "started_at": "2026-08-30T05:52:27.630506+00:00",
-    "finished_at": "2026-08-30T05:53:11.022893+00:00",
+    "started_at": "2026-08-30T05:53:41.844006+00:00",
+    "finished_at": "2026-08-30T05:54:29.720430+00:00",
     "harness": "tools/batch2/export_deletion_ab_harness.py",
     "member_a": {
       "alias": "MEMBER_A",
-      "ref": "id:817d4e4dc2d3",
+      "ref": "id:2e7d82096c1c",
       "role": "export + deletion subject"
     },
     "member_b": {
       "alias": "MEMBER_B",
-      "ref": "id:4da6facc6cf8",
+      "ref": "id:f010c4982a72",
       "role": "untouched control"
     },
     "isolation": "no real email, Stripe, Resend, Dexcom or external-AI call is made; synthetic principals use @example.invalid"
@@ -26,7 +26,7 @@
     },
     "zip": {
       "bytes": 29236,
-      "sha256": "8923d2f20baa2d2b63a1629c2819d545f92bdb634eb7921f5f42f69ec15b6131",
+      "sha256": "e000ef79dd7ad93a7b7464ad1878b02bca40b7e8e95768ed8630f79a8f7cf55e",
       "entries": [
         "README.txt",
         "export.json",
@@ -91,17 +91,17 @@
         "Content-Type": "application/zip",
         "Content-Length": "29236",
         "Cache-Control": "no-store, max-age=0",
-        "Content-Disposition": "attachment; filename=\"drm-export-51228dec-305d-4d81-be66-b1f0e0df0a2d.zip\""
+        "Content-Disposition": "attachment; filename=\"drm-export-756c8074-6b39-493f-a25a-c766eca58e7e.zip\""
       }
     },
     "json": {
       "bytes": 14177,
-      "sha256": "4375437b87dbdc3c778a7b71a116fe4e7e4d43be990eb0923ca687725419434b",
+      "sha256": "c78edfbdf705d287f76baf8a695f676696ea7d014eef2717cfaf026595c8fed7",
       "headers": {
         "Content-Type": "application/json",
-        "Content-Length": "5213",
+        "Content-Length": "5219",
         "Cache-Control": "no-store, max-age=0",
-        "Content-Disposition": "attachment; filename=\"drm-export-51228dec-305d-4d81-be66-b1f0e0df0a2d.json\""
+        "Content-Disposition": "attachment; filename=\"drm-export-756c8074-6b39-493f-a25a-c766eca58e7e.json\""
       }
     },
     "snapshot_consistency": {
@@ -371,9 +371,7 @@
     },
     "profiles": {
       "before": 1,
-      "after": 1,
-      "error": "HTTP 500",
-      "detail": "{\"table\":\"profiles\",\"error\":\"column profiles.id does not exist\"}"
+      "after": 0
     },
     "subscriptions": {
       "before": 1,
@@ -393,8 +391,8 @@
       "phi_access_log_rows_for_synthetic_actors": 0
     },
     "auth_users": {
-      "deleted": 1,
-      "synthetic_remaining": 2
+      "deleted": 2,
+      "synthetic_remaining": 0
     }
   },
   "errors": [],
