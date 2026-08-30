@@ -171,7 +171,12 @@ export const INVENTORY: InventoryEntry[] = [
 export const REFERENCE_TABLES = [
   "app_config", "badges", "content_items", "daily_actions", "snack_library",
   "vita_quotes", "rate_limits", "daily_digest", "broadcast_log",
-  "community_answer_embeddings",
+  // Stripe event de-duplication / replay ledger. Keyed by stripe_event_id and
+  // object_id only; carries no member column and no FK to any member table.
+  "billing_events",
+  // Content remediation audit of daily_actions / content_items / vita_quotes
+  // copy. Keyed by table_name + record_id of editorial content only.
+  "content_containment_log",
 ];
 
 /** Columns that must never appear in a member export, at any depth. */
@@ -182,9 +187,15 @@ export const PROHIBITED_EXPORT_COLUMNS = [
 ];
 
 export const EXPORTABLE = INVENTORY.filter(
-  (e) => e.disposition === "export_and_delete" || e.disposition === "export_redacted_and_delete",
+  (e) => e.disposition === "export_and_delete" ||
+    e.disposition === "export_redacted_and_delete" ||
+    e.disposition === "export_redacted_and_retain",
 );
 
-export const DELETABLE = INVENTORY.filter((e) => e.disposition !== "reference_only")
+export const DELETABLE = INVENTORY.filter(
+  (e) => e.disposition !== "reference_only" &&
+    e.disposition !== "cascade_only_not_exported" &&
+    e.disposition !== "export_redacted_and_retain",
+)
   .slice()
   .sort((a, b) => a.order - b.order);
