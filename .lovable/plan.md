@@ -37,7 +37,7 @@ Replace every placeholder such as `"recorded in harness artifact"` in `data-life
 
 - actual ZIP and JSON byte sizes and SHA-256 hashes;
 - per-surface inclusion/exclusion results with expected vs actual counts;
-- snapshot consistency proof (both formats from one server snapshot, or two tickets);
+- snapshot consistency: separate tickets prove separate single-use authorization, not snapshot consistency. Compare the ZIP and JSON against the same recorded dataset/snapshot, or use unchanged synthetic fixtures and compare normalized category contents while allowing documented format-specific timestamps. Do not substitute assertions or placeholders for observed results;
 - attachment/response headers (`Content-Disposition`, `Cache-Control: no-store`, `X-Content-Type-Options`);
 - reauthentication ticket single-use, download replay rejection and expiry results;
 - deletion retry/idempotency results;
