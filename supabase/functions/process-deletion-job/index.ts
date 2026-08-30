@@ -313,8 +313,9 @@ Deno.serve(async (req) => {
       const groupSteps = await Promise.all(
         entries.map(async (entry): Promise<StepResult> => {
           const isVp = entry.match === "visitor_profile";
-          const isEmail = entry.match === "email" || entry.match === "customer_email";
+          const isEmail = entry.match === "email";
           const isParent = entry.match === "parent";
+          const isOrder = entry.match === "order_ownership";
           const parentKeys = entry.table === "support_ticket_notes" ? ticketIds : [];
           if (isVp && !vpIds.length) {
             return { step: entry.table, expected: 0, deleted: 0, status: "skipped" };
@@ -323,6 +324,9 @@ Deno.serve(async (req) => {
             return { step: entry.table, expected: 0, deleted: 0, status: "skipped" };
           }
           if (isParent && !parentKeys.length) {
+            return { step: entry.table, expected: 0, deleted: 0, status: "skipped" };
+          }
+          if (isOrder && !ownedOrderIds.length) {
             return { step: entry.table, expected: 0, deleted: 0, status: "skipped" };
           }
 
@@ -336,6 +340,8 @@ Deno.serve(async (req) => {
               expected = await countRows(admin, entry.table, entry.column, vpIds);
             } else if (isParent) {
               expected = await countRows(admin, entry.table, entry.column, parentKeys);
+            } else if (isOrder) {
+              expected = await countRows(admin, entry.table, entry.column, ownedOrderIds);
             } else {
               expected = await countRows(admin, entry.table, entry.column, userId);
             }
@@ -358,6 +364,9 @@ Deno.serve(async (req) => {
               deleted = r.count; error = r.error as Error | null;
             } else if (isParent) {
               const r = await del.in(entry.column, parentKeys);
+              deleted = r.count; error = r.error as Error | null;
+            } else if (isOrder) {
+              const r = await del.in(entry.column, ownedOrderIds);
               deleted = r.count; error = r.error as Error | null;
             } else {
               const r = await del.eq(entry.column, userId);
