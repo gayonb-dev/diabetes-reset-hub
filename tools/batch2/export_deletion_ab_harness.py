@@ -85,13 +85,15 @@ def scalar(sql: str) -> Any:
     return rows[0][list(rows[0].keys())[0]] if rows else None
 
 
-def harness(action: str, body: dict | None = None) -> dict:
+def harness(action: str, body: dict | None = None, tolerant: bool = False) -> dict:
     r = requests.post(
         f"{SUPABASE_URL}/functions/v1/batch2-harness",
         headers={"x-harness-secret": HARNESS_SECRET, "Content-Type": "application/json"},
         json={"action": action, **(body or {})},
         timeout=120,
     )
+    if tolerant and r.status_code >= 400:
+        return {"error": f"HTTP {r.status_code}", "detail": r.text[:300]}
     r.raise_for_status()
     return r.json()
 
@@ -519,8 +521,8 @@ class Run:
 
         for table, row_ids in self.ids.items():
             before = count_ids(table, row_ids)
-            harness("delete_by_ids", {"table": table, "ids": row_ids})
-            report[table] = {"before": before, "after": count_ids(table, row_ids)}
+            out = harness("delete_by_ids", {"table": table, "ids": row_ids}, tolerant=True)
+            report[table] = {"before": before, "after": count_ids(table, row_ids), **({"error": out["error"], "detail": out.get("detail")} if "error" in out else {})}
 
         if ids:
             for table, col in [
@@ -530,8 +532,8 @@ class Run:
                 ("subscriptions", "user_id"), ("consent_records", "user_id"),
             ]:
                 before = count_col(table, col, ids)
-                harness("delete_by_column", {"table": table, "column": col, "ids": ids})
-                report[table] = {"before": before, "after": count_col(table, col, ids)}
+                out = harness("delete_by_column", {"table": table, "column": col, "ids": ids}, tolerant=True)
+                report[table] = {"before": before, "after": count_col(table, col, ids), **({"error": out["error"], "detail": out.get("detail")} if "error" in out else {})}
 
             report["storage_objects"] = harness("storage_probe", {"ids": ids}).get(
                 "storage_objects_remaining", {})
