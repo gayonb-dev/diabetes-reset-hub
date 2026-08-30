@@ -3,15 +3,14 @@
     "generator": "tools/batch2/prompt3_reconcile.py",
     "manifest_source": "structural module load via tools/batch2/dump_inventory.ts",
     "total_tables": 73,
-    "personal": 62,
-    "non_personal": 11,
+    "personal": 63,
+    "non_personal": 10,
     "unclassified": 0,
-    "manifest_tables": 62,
+    "manifest_tables": 63,
     "reference_tables": [
       "app_config",
       "badges",
       "billing_events",
-      "broadcast_log",
       "content_containment_log",
       "content_items",
       "daily_actions",
@@ -139,9 +138,7 @@
       "workout_completion_receipts",
       "workout_sessions"
     ],
-    "fail_closed_failures": [
-      "broadcast_log: declared non-personal but ownership evidence exists (fk_to_owner_root)"
-    ]
+    "fail_closed_failures": []
   },
   "findings": [
     {
@@ -254,15 +251,18 @@
     },
     {
       "table": "broadcast_log",
-      "classification": "non_personal",
-      "source": "reference_tables",
+      "classification": "personal",
+      "source": "canonical_manifest",
       "independent_ownership_evidence": [
         {
           "kind": "fk_to_owner_root",
           "column": "sent_by",
           "foreign_table": "users"
         }
-      ]
+      ],
+      "manifest_disposition": "cascade_only_not_exported",
+      "match_kind": "cascade",
+      "owner_column": "sent_by"
     },
     {
       "table": "challenge_progress",
