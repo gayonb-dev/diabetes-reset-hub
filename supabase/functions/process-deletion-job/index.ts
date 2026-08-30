@@ -96,6 +96,23 @@ Deno.serve(async (req) => {
     .from("support_tickets").select("id").eq("user_id", userId);
   const ticketIds = (parentTickets ?? []).map((t: { id: string }) => t.id);
 
+  // Orders are matched ONLY by immutable ownership: orders.user_id, or an order
+  // attached to a subscription owned by this member. Ownerless legacy orders
+  // and other members' orders can never be selected from an email match.
+  const { data: subsForOrders } = await admin
+    .from("subscriptions").select("id").eq("user_id", userId);
+  const subIdsForOrders = (subsForOrders ?? []).map((s: { id: string }) => s.id);
+  const ownedOrderIdSet = new Set<string>();
+  {
+    const { data: byUser } = await admin.from("orders").select("id").eq("user_id", userId);
+    for (const o of byUser ?? []) ownedOrderIdSet.add((o as { id: string }).id);
+    if (subIdsForOrders.length) {
+      const { data: bySub } = await admin.from("orders").select("id").in("subscription_id", subIdsForOrders);
+      for (const o of bySub ?? []) ownedOrderIdSet.add((o as { id: string }).id);
+    }
+  }
+  const ownedOrderIds = Array.from(ownedOrderIdSet);
+
   // ==== PRECONDITION: processor cancellation gates destructive deletion ====
   // Nothing below this block runs until the member's billing relationship is
   // resolved. No session is revoked, no row is deleted and the auth identity is
@@ -296,8 +313,9 @@ Deno.serve(async (req) => {
       const groupSteps = await Promise.all(
         entries.map(async (entry): Promise<StepResult> => {
           const isVp = entry.match === "visitor_profile";
-          const isEmail = entry.match === "email" || entry.match === "customer_email";
+          const isEmail = entry.match === "email";
           const isParent = entry.match === "parent";
+          const isOrder = entry.match === "order_ownership";
           const parentKeys = entry.table === "support_ticket_notes" ? ticketIds : [];
           if (isVp && !vpIds.length) {
             return { step: entry.table, expected: 0, deleted: 0, status: "skipped" };
@@ -306,6 +324,9 @@ Deno.serve(async (req) => {
             return { step: entry.table, expected: 0, deleted: 0, status: "skipped" };
           }
           if (isParent && !parentKeys.length) {
+            return { step: entry.table, expected: 0, deleted: 0, status: "skipped" };
+          }
+          if (isOrder && !ownedOrderIds.length) {
             return { step: entry.table, expected: 0, deleted: 0, status: "skipped" };
           }
 
@@ -319,6 +340,8 @@ Deno.serve(async (req) => {
               expected = await countRows(admin, entry.table, entry.column, vpIds);
             } else if (isParent) {
               expected = await countRows(admin, entry.table, entry.column, parentKeys);
+            } else if (isOrder) {
+              expected = await countRows(admin, entry.table, entry.column, ownedOrderIds);
             } else {
               expected = await countRows(admin, entry.table, entry.column, userId);
             }
@@ -341,6 +364,9 @@ Deno.serve(async (req) => {
               deleted = r.count; error = r.error as Error | null;
             } else if (isParent) {
               const r = await del.in(entry.column, parentKeys);
+              deleted = r.count; error = r.error as Error | null;
+            } else if (isOrder) {
+              const r = await del.in(entry.column, ownedOrderIds);
               deleted = r.count; error = r.error as Error | null;
             } else {
               const r = await del.eq(entry.column, userId);
@@ -418,13 +444,17 @@ Deno.serve(async (req) => {
         if (!reconcileSet.has(entry.table)) return;
         try {
           const isVp = entry.match === "visitor_profile";
-          const isEmail = entry.match === "email" || entry.match === "customer_email";
+          const isEmail = entry.match === "email";
+          const isOrder = entry.match === "order_ownership";
           if ((isVp && !vpIds.length) || (isEmail && !email)) return;
+          if (isOrder && !ownedOrderIds.length) return;
           let n: number;
           if (isEmail) {
             const { count } = await admin.from(entry.table)
               .select("*", { count: "exact", head: true }).ilike(entry.column, email);
             n = count ?? 0;
+          } else if (isOrder) {
+            n = await countRows(admin, entry.table, entry.column, ownedOrderIds);
           } else {
             n = await countRows(admin, entry.table, entry.column, isVp ? vpIds : userId);
           }

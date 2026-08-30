@@ -205,6 +205,48 @@ async function seedOrders(specs: { user_id: string; email: string; own_uid?: boo
   return json({ ok: true, orders: data });
 }
 
+async function seedOrdersExplicit(rows: Record<string, unknown>[]) {
+  const { data, error } = await admin.from("orders").insert(rows).select("id,user_id,subscription_id");
+  if (error) return json({ error: error.message }, 500);
+  return json({ ok: true, orders: data });
+}
+
+async function deleteByIds(table: string, ids: string[]) {
+  if (!ids.length) return json({ table, removed: 0 });
+  const { data, error } = await admin.from(table).delete().in("id", ids).select("id");
+  if (error) return json({ table, error: error.message }, 500);
+  return json({ table, removed: data?.length ?? 0 });
+}
+
+async function deleteByColumn(table: string, column: string, values: string[]) {
+  if (!values.length) return json({ table, removed: 0 });
+  const { data, error } = await admin.from(table).delete().in(column, values).select("id");
+  if (error) return json({ table, error: error.message }, 500);
+  return json({ table, removed: data?.length ?? 0 });
+}
+
+async function storageProbe(prefixes: string[]) {
+  const out: Record<string, number> = {};
+  for (const bucket of ["exports", "avatars", "uploads"]) {
+    let n = 0;
+    for (const p of prefixes) {
+      const { data } = await admin.storage.from(bucket).list(p, { limit: 100 });
+      n += data?.length ?? 0;
+    }
+    out[bucket] = n;
+  }
+  return json({ storage_objects_remaining: out });
+}
+
+async function usersExist(ids: string[]) {
+  const out: Record<string, boolean> = {};
+  for (const id of ids) {
+    const { data } = await admin.auth.admin.getUserById(id);
+    out[id] = Boolean(data?.user);
+  }
+  return json({ exists: out });
+}
+
 async function cleanupOrders() {
   const { data } = await admin.from("orders").delete()
     .eq("product_id", "synthetic-batch2").select("id");
@@ -230,7 +272,7 @@ Deno.serve(async (req) => {
   if (req.headers.get("x-harness-secret") !== HARNESS_SECRET) {
     return json({ error: "forbidden" }, 403);
   }
-  let body: { action?: string; ids?: string[]; user_id?: string; state?: string; specs?: { user_id: string; email: string; own_uid?: boolean }[] } = {};
+  let body: { action?: string; ids?: string[]; user_id?: string; state?: string; table?: string; column?: string; rows?: Record<string, unknown>[]; extra_deletes?: Record<string, string[]>; specs?: { user_id: string; email: string; own_uid?: boolean }[] } = {};
   try { body = await req.json(); } catch { /* boot smoke sends no body */ }
 
   switch (body.action) {
@@ -255,6 +297,11 @@ Deno.serve(async (req) => {
       return json({ ok: true });
     }
     case "seed_orders": return await seedOrders(body.specs ?? []);
+    case "seed_orders_explicit": return await seedOrdersExplicit(body.rows ?? []);
+    case "delete_by_ids": return await deleteByIds(String(body.table), body.ids ?? []);
+    case "delete_by_column": return await deleteByColumn(String(body.table), String(body.column), body.ids ?? []);
+    case "users_exist": return await usersExist(body.ids ?? []);
+    case "storage_probe": return await storageProbe(body.ids ?? []);
     case "cleanup_orders": return await cleanupOrders();
     case "deletion_lock": return await setDeletionLock(body.user_id!, body.state ?? "clear");
     case "ping": return json({ ok: true });

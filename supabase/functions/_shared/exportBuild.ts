@@ -37,6 +37,23 @@ export async function buildSnapshot(
     .from("support_tickets").select("id").eq("user_id", userId);
   const ticketIds = (parentTickets ?? []).map((t: { id: string }) => t.id);
 
+  // Orders are claimed ONLY through immutable ownership: orders.user_id, or an
+  // order attached to a subscription owned by this member. An order is never
+  // claimed from customer_email or from any JWT email claim.
+  const { data: subs } = await admin
+    .from("subscriptions").select("id").eq("user_id", userId);
+  const subIds = (subs ?? []).map((s: { id: string }) => s.id);
+  const ownedOrderIds = new Set<string>();
+  {
+    const { data: byUser } = await admin.from("orders").select("id").eq("user_id", userId);
+    for (const o of byUser ?? []) ownedOrderIds.add((o as { id: string }).id);
+    if (subIds.length) {
+      const { data: bySub } = await admin.from("orders").select("id").in("subscription_id", subIds);
+      for (const o of bySub ?? []) ownedOrderIds.add((o as { id: string }).id);
+    }
+  }
+  const orderIds = Array.from(ownedOrderIds);
+
   const categories: Record<string, Record<string, unknown>[]> = {};
   const coverage: Record<string, number> = {};
 
@@ -49,8 +66,14 @@ export async function buildSnapshot(
         const { data } = await q.in(entry.column, vpIds);
         rows = data ?? [];
       }
-    } else if (entry.match === "email" || entry.match === "customer_email") {
-      // Case-insensitive email matching.
+    } else if (entry.match === "order_ownership") {
+      if (orderIds.length) {
+        const { data } = await q.in(entry.column, orderIds);
+        rows = data ?? [];
+      }
+    } else if (entry.match === "email") {
+      // Legacy pre-account surfaces whose only subject key is the member's own
+      // email (marketing lead / intake records). Never used for commerce rows.
       const { data } = await q.ilike(entry.column, email);
       rows = data ?? [];
     } else if (entry.match === "parent") {
@@ -90,13 +113,16 @@ export async function buildSnapshot(
   categories.legacy_phi_consent = legacy;
   coverage.legacy_phi_consent = legacy.length;
 
+  // One timestamp for the whole snapshot, so the ZIP and the JSON built from
+  // this snapshot are provably the same generation.
+  const generatedAt = new Date().toISOString();
   return {
     meta: {
-      exported_at: new Date().toISOString(),
-      generated_at: new Date().toISOString(),
+      exported_at: generatedAt,
+      generated_at: generatedAt,
       timestamp_zone: "UTC",
       user_id: userId,
-      schema_version: "p3-1",
+      schema_version: "p3-2",
       units: {
         blood_sugar: "mg/dL",
         a1c: "percent (and mmol/mol where recorded)",
@@ -106,6 +132,14 @@ export async function buildSnapshot(
       },
       categories_included: Object.keys(categories).sort(),
       row_counts: coverage,
+      ownership_basis: {
+        orders: "orders.user_id, or an order attached to a subscription owned by this account. customer_email is never used to claim an order.",
+        support_ticket_notes: "inherited from the member's own support ticket; note body and staff identifiers excluded.",
+      },
+      excluded_surfaces: {
+        billing_holds_columns: "processor dispute and charge identifiers are redacted; the hold record itself is retained under financial and anti-fraud retention and is not deleted with the account.",
+        community_answer_embeddings: "derived search vectors of your community answers; not exported, removed automatically with the answer.",
+      },
       notes: [
         "All timestamps are ISO 8601 in UTC.",
         "Raw IP addresses, full user-agent strings, session tokens, device credentials and one-time security tokens are deliberately excluded.",

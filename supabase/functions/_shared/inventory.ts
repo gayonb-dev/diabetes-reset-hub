@@ -14,7 +14,8 @@ export type MatchKind =
   | "actor_user_id"
   | "visitor_profile"  // column IN (visitor profile ids bound to the user)
   | "email"            // case-insensitive email match
-  | "customer_email"
+  | "order_ownership"  // row id IN (orders owned via orders.user_id or a member-owned subscription)
+  | "cascade"          // no direct subject key; removed by FK cascade with a member-owned parent
   | "parent";          // column is a FK to parentTable.parentColumn; ownership is inherited
 
 export type Disposition =
@@ -22,6 +23,8 @@ export type Disposition =
   | "export_redacted_and_delete" // exported with sensitive columns stripped
   | "delete_only_security"       // never exported: credentials / security records
   | "delete_only_legacy"         // exported as labelled legacy, not valid consent
+  | "export_redacted_and_retain" // personal, exported redacted, RETAINED under financial/anti-fraud retention
+  | "cascade_only_not_exported"  // personal by association; removed only by FK cascade, never exported
   | "reference_only";            // no personal data, never exported or deleted
 
 export interface InventoryEntry {
@@ -44,7 +47,14 @@ export const INVENTORY: InventoryEntry[] = [
   // ---- derived / dependent rows (deleted first) ----
   { table: "meal_swaps", match: "member_id", column: "member_id", disposition: "export_and_delete", order: 10, category: "meals" },
   { table: "community_votes", match: "voter_id", column: "voter_id", disposition: "export_and_delete", order: 10, category: "community" },
-  { table: "community_answer_embeddings", match: "visitor_profile", column: "answer_id", disposition: "reference_only", order: 10, category: "community" },
+  // Derived vector + combined text of a member-authored answer: personal by
+  // association, never exported (derived search artefact), and removed by the
+  // ON DELETE CASCADE from community_answers / community_questions.
+  {
+    table: "community_answer_embeddings", match: "cascade", column: "answer_id",
+    parentTable: "community_answers", parentColumn: "id", parentOwnerColumn: "author_id",
+    disposition: "cascade_only_not_exported", order: 10, category: "community",
+  },
   { table: "messages", match: "visitor_profile", column: "visitor_profile_id", disposition: "export_and_delete", order: 11, category: "chat" },
   { table: "visitor_engagement_scores", match: "visitor_profile", column: "visitor_profile_id", disposition: "export_and_delete", order: 11, category: "derived" },
   { table: "phi_access_log", match: "visitor_profile", column: "visitor_profile_id", disposition: "export_and_delete", order: 11, category: "audit" },
@@ -118,7 +128,17 @@ export const INVENTORY: InventoryEntry[] = [
   // ---- commerce ----
   { table: "subscriptions", match: "user_id", column: "user_id", disposition: "export_and_delete", order: 25, category: "commerce" },
   { table: "dunning_attempts", match: "user_id", column: "user_id", disposition: "export_and_delete", order: 25, category: "commerce" },
-  { table: "orders", match: "customer_email", column: "customer_email", disposition: "export_and_delete", order: 25, category: "commerce" },
+  // Ownership is resolved ONLY from immutable relationships: orders.user_id or
+  // an order attached to a subscription owned by the member. customer_email is
+  // never used to claim an order.
+  { table: "orders", match: "order_ownership", column: "id", disposition: "export_and_delete", order: 25, category: "commerce" },
+  // Dispute / chargeback holds: personal (user_id) but retained under financial
+  // and anti-fraud retention. Exported redacted, never deleted with the account.
+  {
+    table: "billing_holds", match: "user_id", column: "user_id",
+    disposition: "export_redacted_and_retain", order: 25, category: "commerce",
+    redact: ["stripe_dispute_id", "stripe_charge_id"],
+  },
   { table: "intake_submissions", match: "email", column: "email", disposition: "export_and_delete", order: 25, category: "commerce" },
   { table: "challenge_progress", match: "email", column: "email", disposition: "export_and_delete", order: 25, category: "legacy_challenge" },
   { table: "leads", match: "email", column: "email", disposition: "export_and_delete", order: 25, category: "marketing" },
@@ -144,13 +164,27 @@ export const INVENTORY: InventoryEntry[] = [
   { table: "visitor_profiles", match: "user_id", column: "user_id", disposition: "export_and_delete", order: 30, category: "identity" },
   { table: "profiles", match: "user_id", column: "user_id", disposition: "export_and_delete", order: 31, category: "identity" },
   { table: "deletion_jobs", match: "user_id", column: "user_id", disposition: "export_and_delete", order: 99, category: "privacy" },
+
+  // Staff broadcast audit. The only member-linked field is sent_by, the STAFF
+  // account that sent the broadcast; members are never a row subject here. The
+  // FK to auth.users is ON DELETE SET NULL, so deleting that staff account
+  // severs the identifier automatically. Never exported to a member.
+  {
+    table: "broadcast_log", match: "cascade", column: "sent_by",
+    disposition: "cascade_only_not_exported", order: 10, category: "operations",
+  },
 ];
 
 /** Public tables that intentionally hold no personal data. */
 export const REFERENCE_TABLES = [
   "app_config", "badges", "content_items", "daily_actions", "snack_library",
-  "vita_quotes", "rate_limits", "daily_digest", "broadcast_log",
-  "community_answer_embeddings",
+  "vita_quotes", "rate_limits", "daily_digest",
+  // Stripe event de-duplication / replay ledger. Keyed by stripe_event_id and
+  // object_id only; carries no member column and no FK to any member table.
+  "billing_events",
+  // Content remediation audit of daily_actions / content_items / vita_quotes
+  // copy. Keyed by table_name + record_id of editorial content only.
+  "content_containment_log",
 ];
 
 /** Columns that must never appear in a member export, at any depth. */
@@ -161,9 +195,15 @@ export const PROHIBITED_EXPORT_COLUMNS = [
 ];
 
 export const EXPORTABLE = INVENTORY.filter(
-  (e) => e.disposition === "export_and_delete" || e.disposition === "export_redacted_and_delete",
+  (e) => e.disposition === "export_and_delete" ||
+    e.disposition === "export_redacted_and_delete" ||
+    e.disposition === "export_redacted_and_retain",
 );
 
-export const DELETABLE = INVENTORY.filter((e) => e.disposition !== "reference_only")
+export const DELETABLE = INVENTORY.filter(
+  (e) => e.disposition !== "reference_only" &&
+    e.disposition !== "cascade_only_not_exported" &&
+    e.disposition !== "export_redacted_and_retain",
+)
   .slice()
   .sort((a, b) => a.order - b.order);

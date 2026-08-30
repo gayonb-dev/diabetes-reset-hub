@@ -1,653 +1,1707 @@
 {
   "summary": {
+    "generator": "tools/batch2/prompt3_reconcile.py",
+    "manifest_source": "structural module load via tools/batch2/dump_inventory.ts",
     "total_tables": 73,
-    "personal": 60,
-    "non_personal": 13,
-    "fail_closed_failures": [],
-    "manifest_tables": 60,
+    "personal": 63,
+    "non_personal": 10,
+    "unclassified": 0,
+    "manifest_tables": 63,
     "reference_tables": [
       "app_config",
       "badges",
-      "broadcast_log",
-      "community_answer_embeddings",
+      "billing_events",
+      "content_containment_log",
       "content_items",
       "daily_actions",
       "daily_digest",
       "rate_limits",
       "snack_library",
       "vita_quotes"
-    ]
+    ],
+    "exportable_tables": [
+      "a1c_logs",
+      "activity_events",
+      "billing_holds",
+      "blood_sugar_readings",
+      "challenge_progress",
+      "cheat_meals",
+      "coaching_interest",
+      "coaching_waitlist",
+      "community_answers",
+      "community_questions",
+      "community_votes",
+      "consent_records",
+      "conversations",
+      "deletion_jobs",
+      "deletion_requests",
+      "dexcom_connections",
+      "dunning_attempts",
+      "health_logs",
+      "if_fasting_log",
+      "intake_submissions",
+      "leads",
+      "meal_logs",
+      "meal_plans",
+      "meal_swaps",
+      "member_daily_progress",
+      "member_measurements",
+      "member_progress",
+      "messages",
+      "mindset_reads",
+      "mood_logs",
+      "notifications",
+      "oauth_client_grants",
+      "orders",
+      "phi_access_log",
+      "points_ledger",
+      "post_meal_walks",
+      "profiles",
+      "qa_monthly_usage",
+      "qa_submissions",
+      "shopping_lists",
+      "snack_logs",
+      "subscriptions",
+      "support_ticket_notes",
+      "support_tickets",
+      "user_badges",
+      "user_roles",
+      "user_streaks",
+      "visitor_engagement_scores",
+      "visitor_profiles",
+      "vita_similarity_log",
+      "water_logs",
+      "whatsapp_consent",
+      "win_posts",
+      "workout_completion_receipts",
+      "workout_sessions"
+    ],
+    "deletable_tables": [
+      "a1c_logs",
+      "activity_events",
+      "blood_sugar_readings",
+      "challenge_progress",
+      "cheat_meals",
+      "coaching_interest",
+      "coaching_waitlist",
+      "community_answers",
+      "community_questions",
+      "community_votes",
+      "consent_records",
+      "conversations",
+      "deletion_jobs",
+      "deletion_requests",
+      "dexcom_connections",
+      "dunning_attempts",
+      "export_artifacts",
+      "health_logs",
+      "if_fasting_log",
+      "intake_submissions",
+      "leads",
+      "meal_logs",
+      "meal_plans",
+      "meal_swaps",
+      "member_daily_progress",
+      "member_measurements",
+      "member_progress",
+      "messages",
+      "mindset_reads",
+      "mood_logs",
+      "notifications",
+      "oauth_client_grants",
+      "orders",
+      "phi_access_log",
+      "phi_consent",
+      "points_ledger",
+      "post_meal_walks",
+      "product_validation_tokens",
+      "profiles",
+      "qa_monthly_usage",
+      "qa_submissions",
+      "reauth_tickets",
+      "shopping_lists",
+      "snack_logs",
+      "state_nonces",
+      "subscriptions",
+      "support_ticket_notes",
+      "support_tickets",
+      "user_badges",
+      "user_roles",
+      "user_streaks",
+      "visitor_engagement_scores",
+      "visitor_profiles",
+      "visitor_sessions",
+      "vita_similarity_log",
+      "water_logs",
+      "whatsapp_consent",
+      "win_posts",
+      "workout_completion_receipts",
+      "workout_sessions"
+    ],
+    "fail_closed_failures": []
   },
   "findings": [
     {
       "table": "a1c_logs",
-      "status": "classified",
       "classification": "personal",
+      "source": "canonical_manifest",
+      "independent_ownership_evidence": [
+        {
+          "kind": "subject_column",
+          "column": "member_id"
+        },
+        {
+          "kind": "rls_subject_predicate",
+          "column": "member_id",
+          "policy": "Members manage own a1c"
+        }
+      ],
       "manifest_disposition": "export_and_delete",
-      "owner_column": "member_id",
       "match_kind": "member_id",
-      "source": "canonical_manifest"
+      "owner_column": "member_id"
     },
     {
       "table": "activity_events",
-      "status": "classified",
       "classification": "personal",
+      "source": "canonical_manifest",
+      "independent_ownership_evidence": [
+        {
+          "kind": "subject_column",
+          "column": "visitor_profile_id"
+        },
+        {
+          "kind": "subject_column",
+          "column": "user_id"
+        },
+        {
+          "kind": "fk_to_owner_root",
+          "column": "visitor_profile_id",
+          "foreign_table": "visitor_profiles"
+        },
+        {
+          "kind": "rls_subject_predicate",
+          "column": "user_id",
+          "policy": "Members manage own activity_events"
+        },
+        {
+          "kind": "rls_subject_predicate",
+          "column": "user_id",
+          "policy": "Members read own activity_events"
+        }
+      ],
       "manifest_disposition": "export_and_delete",
-      "owner_column": "user_id",
       "match_kind": "user_id",
-      "source": "canonical_manifest"
+      "owner_column": "user_id"
     },
     {
       "table": "app_config",
-      "status": "classified",
       "classification": "non_personal",
-      "source": "reference_tables"
+      "source": "reference_tables",
+      "independent_ownership_evidence": []
     },
     {
       "table": "badges",
-      "status": "classified",
       "classification": "non_personal",
-      "source": "reference_tables"
+      "source": "reference_tables",
+      "independent_ownership_evidence": []
     },
     {
       "table": "billing_events",
-      "status": "classified",
       "classification": "non_personal",
-      "owner_columns": [],
-      "foreign_keys": [],
-      "source": "no_ownership_path_detected"
+      "source": "reference_tables",
+      "independent_ownership_evidence": []
     },
     {
       "table": "billing_holds",
-      "status": "classified",
-      "classification": "non_personal",
-      "owner_columns": [
-        "user_id"
+      "classification": "personal",
+      "source": "canonical_manifest",
+      "independent_ownership_evidence": [
+        {
+          "kind": "subject_column",
+          "column": "user_id"
+        },
+        {
+          "kind": "fk_to_personal_table",
+          "column": "order_id",
+          "foreign_table": "orders"
+        }
       ],
-      "foreign_keys": [],
-      "source": "no_ownership_path_detected"
+      "manifest_disposition": "export_redacted_and_retain",
+      "match_kind": "user_id",
+      "owner_column": "user_id"
     },
     {
       "table": "blood_sugar_readings",
-      "status": "classified",
       "classification": "personal",
+      "source": "canonical_manifest",
+      "independent_ownership_evidence": [
+        {
+          "kind": "subject_column",
+          "column": "member_id"
+        },
+        {
+          "kind": "rls_subject_predicate",
+          "column": "member_id",
+          "policy": "Members manage own bs_readings"
+        }
+      ],
       "manifest_disposition": "export_and_delete",
-      "owner_column": "member_id",
       "match_kind": "member_id",
-      "source": "canonical_manifest"
+      "owner_column": "member_id"
     },
     {
       "table": "broadcast_log",
-      "status": "classified",
-      "classification": "non_personal",
-      "source": "reference_tables"
+      "classification": "personal",
+      "source": "canonical_manifest",
+      "independent_ownership_evidence": [
+        {
+          "kind": "fk_to_owner_root",
+          "column": "sent_by",
+          "foreign_table": "users"
+        }
+      ],
+      "manifest_disposition": "cascade_only_not_exported",
+      "match_kind": "cascade",
+      "owner_column": "sent_by"
     },
     {
       "table": "challenge_progress",
-      "status": "classified",
       "classification": "personal",
+      "source": "canonical_manifest",
+      "independent_ownership_evidence": [],
       "manifest_disposition": "export_and_delete",
-      "owner_column": "email",
       "match_kind": "email",
-      "source": "canonical_manifest"
+      "owner_column": "email"
     },
     {
       "table": "cheat_meals",
-      "status": "classified",
       "classification": "personal",
+      "source": "canonical_manifest",
+      "independent_ownership_evidence": [
+        {
+          "kind": "subject_column",
+          "column": "member_id"
+        },
+        {
+          "kind": "rls_subject_predicate",
+          "column": "member_id",
+          "policy": "Members manage own cheat_meals"
+        }
+      ],
       "manifest_disposition": "export_and_delete",
-      "owner_column": "member_id",
       "match_kind": "member_id",
-      "source": "canonical_manifest"
+      "owner_column": "member_id"
     },
     {
       "table": "coaching_interest",
-      "status": "classified",
       "classification": "personal",
+      "source": "canonical_manifest",
+      "independent_ownership_evidence": [
+        {
+          "kind": "subject_column",
+          "column": "user_id"
+        },
+        {
+          "kind": "fk_to_owner_root",
+          "column": "user_id",
+          "foreign_table": "users"
+        },
+        {
+          "kind": "rls_subject_predicate",
+          "column": "user_id",
+          "policy": "coaching_interest_self_manage"
+        }
+      ],
       "manifest_disposition": "export_and_delete",
-      "owner_column": "user_id",
       "match_kind": "user_id",
-      "source": "canonical_manifest"
+      "owner_column": "user_id"
     },
     {
       "table": "coaching_waitlist",
-      "status": "classified",
       "classification": "personal",
+      "source": "canonical_manifest",
+      "independent_ownership_evidence": [
+        {
+          "kind": "subject_column",
+          "column": "user_id"
+        },
+        {
+          "kind": "fk_to_owner_root",
+          "column": "user_id",
+          "foreign_table": "users"
+        },
+        {
+          "kind": "rls_subject_predicate",
+          "column": "user_id",
+          "policy": "Members see own waitlist row"
+        },
+        {
+          "kind": "rls_subject_predicate",
+          "column": "user_id",
+          "policy": "Members insert own waitlist row"
+        },
+        {
+          "kind": "rls_subject_predicate",
+          "column": "user_id",
+          "policy": "Members update own waitlist row"
+        }
+      ],
       "manifest_disposition": "export_and_delete",
-      "owner_column": "user_id",
       "match_kind": "user_id",
-      "source": "canonical_manifest"
+      "owner_column": "user_id"
     },
     {
       "table": "community_answer_embeddings",
-      "status": "classified",
       "classification": "personal",
-      "manifest_disposition": "reference_only",
-      "owner_column": "answer_id",
-      "match_kind": "visitor_profile",
-      "source": "canonical_manifest"
+      "source": "canonical_manifest",
+      "independent_ownership_evidence": [
+        {
+          "kind": "fk_to_personal_table",
+          "column": "answer_id",
+          "foreign_table": "community_answers"
+        },
+        {
+          "kind": "fk_to_personal_table",
+          "column": "question_id",
+          "foreign_table": "community_questions"
+        }
+      ],
+      "manifest_disposition": "cascade_only_not_exported",
+      "match_kind": "cascade",
+      "owner_column": "answer_id"
     },
     {
       "table": "community_answers",
-      "status": "classified",
       "classification": "personal",
+      "source": "canonical_manifest",
+      "independent_ownership_evidence": [
+        {
+          "kind": "subject_column",
+          "column": "author_id"
+        },
+        {
+          "kind": "fk_to_personal_table",
+          "column": "question_id",
+          "foreign_table": "community_questions"
+        },
+        {
+          "kind": "rls_subject_predicate",
+          "column": "author_id",
+          "policy": "Authors update own answers"
+        },
+        {
+          "kind": "rls_subject_predicate",
+          "column": "author_id",
+          "policy": "Members insert own answers"
+        }
+      ],
       "manifest_disposition": "export_and_delete",
-      "owner_column": "author_id",
       "match_kind": "author_id",
-      "source": "canonical_manifest"
+      "owner_column": "author_id"
     },
     {
       "table": "community_questions",
-      "status": "classified",
       "classification": "personal",
+      "source": "canonical_manifest",
+      "independent_ownership_evidence": [
+        {
+          "kind": "subject_column",
+          "column": "author_id"
+        },
+        {
+          "kind": "rls_subject_predicate",
+          "column": "author_id",
+          "policy": "Members insert own questions"
+        },
+        {
+          "kind": "rls_subject_predicate",
+          "column": "author_id",
+          "policy": "Authors update own questions"
+        }
+      ],
       "manifest_disposition": "export_and_delete",
-      "owner_column": "author_id",
       "match_kind": "author_id",
-      "source": "canonical_manifest"
+      "owner_column": "author_id"
     },
     {
       "table": "community_votes",
-      "status": "classified",
       "classification": "personal",
+      "source": "canonical_manifest",
+      "independent_ownership_evidence": [
+        {
+          "kind": "subject_column",
+          "column": "voter_id"
+        },
+        {
+          "kind": "rls_subject_predicate",
+          "column": "voter_id",
+          "policy": "Members manage own votes"
+        }
+      ],
       "manifest_disposition": "export_and_delete",
-      "owner_column": "voter_id",
       "match_kind": "voter_id",
-      "source": "canonical_manifest"
+      "owner_column": "voter_id"
     },
     {
       "table": "consent_records",
-      "status": "classified",
       "classification": "personal",
+      "source": "canonical_manifest",
+      "independent_ownership_evidence": [
+        {
+          "kind": "subject_column",
+          "column": "user_id"
+        },
+        {
+          "kind": "subject_column",
+          "column": "visitor_profile_id"
+        },
+        {
+          "kind": "fk_to_owner_root",
+          "column": "user_id",
+          "foreign_table": "users"
+        },
+        {
+          "kind": "fk_to_personal_table",
+          "column": "visitor_session_id",
+          "foreign_table": "visitor_sessions"
+        },
+        {
+          "kind": "fk_to_owner_root",
+          "column": "visitor_profile_id",
+          "foreign_table": "visitor_profiles"
+        },
+        {
+          "kind": "rls_subject_predicate",
+          "column": "user_id",
+          "policy": "members read own consent records"
+        }
+      ],
       "manifest_disposition": "export_and_delete",
-      "owner_column": "user_id",
       "match_kind": "user_id",
-      "source": "canonical_manifest"
+      "owner_column": "user_id"
     },
     {
       "table": "content_containment_log",
-      "status": "classified",
       "classification": "non_personal",
-      "owner_columns": [],
-      "foreign_keys": [],
-      "source": "no_ownership_path_detected"
+      "source": "reference_tables",
+      "independent_ownership_evidence": []
     },
     {
       "table": "content_items",
-      "status": "classified",
       "classification": "non_personal",
-      "source": "reference_tables"
+      "source": "reference_tables",
+      "independent_ownership_evidence": []
     },
     {
       "table": "conversations",
-      "status": "classified",
       "classification": "personal",
+      "source": "canonical_manifest",
+      "independent_ownership_evidence": [
+        {
+          "kind": "subject_column",
+          "column": "visitor_profile_id"
+        },
+        {
+          "kind": "fk_to_owner_root",
+          "column": "visitor_profile_id",
+          "foreign_table": "visitor_profiles"
+        },
+        {
+          "kind": "rls_subject_predicate",
+          "column": "visitor_profile_id",
+          "policy": "Members read own conversations"
+        }
+      ],
       "manifest_disposition": "export_and_delete",
-      "owner_column": "visitor_profile_id",
       "match_kind": "visitor_profile",
-      "source": "canonical_manifest"
+      "owner_column": "visitor_profile_id"
     },
     {
       "table": "daily_actions",
-      "status": "classified",
       "classification": "non_personal",
-      "source": "reference_tables"
+      "source": "reference_tables",
+      "independent_ownership_evidence": []
     },
     {
       "table": "daily_digest",
-      "status": "classified",
       "classification": "non_personal",
-      "source": "reference_tables"
+      "source": "reference_tables",
+      "independent_ownership_evidence": []
     },
     {
       "table": "deletion_jobs",
-      "status": "classified",
       "classification": "personal",
+      "source": "canonical_manifest",
+      "independent_ownership_evidence": [
+        {
+          "kind": "subject_column",
+          "column": "user_id"
+        },
+        {
+          "kind": "subject_column",
+          "column": "subject_ref"
+        },
+        {
+          "kind": "fk_to_owner_root",
+          "column": "user_id",
+          "foreign_table": "users"
+        }
+      ],
       "manifest_disposition": "export_and_delete",
-      "owner_column": "user_id",
       "match_kind": "user_id",
-      "source": "canonical_manifest"
+      "owner_column": "user_id"
     },
     {
       "table": "deletion_requests",
-      "status": "classified",
       "classification": "personal",
+      "source": "canonical_manifest",
+      "independent_ownership_evidence": [
+        {
+          "kind": "subject_column",
+          "column": "visitor_profile_id"
+        },
+        {
+          "kind": "subject_column",
+          "column": "user_id"
+        },
+        {
+          "kind": "fk_to_owner_root",
+          "column": "visitor_profile_id",
+          "foreign_table": "visitor_profiles"
+        },
+        {
+          "kind": "fk_to_owner_root",
+          "column": "user_id",
+          "foreign_table": "users"
+        },
+        {
+          "kind": "rls_subject_predicate",
+          "column": "user_id",
+          "policy": "Members read own deletion requests"
+        },
+        {
+          "kind": "rls_subject_predicate",
+          "column": "user_id",
+          "policy": "Users insert own deletion request"
+        }
+      ],
       "manifest_disposition": "export_and_delete",
-      "owner_column": "user_id",
       "match_kind": "user_id",
-      "source": "canonical_manifest"
+      "owner_column": "user_id"
     },
     {
       "table": "dexcom_connections",
-      "status": "classified",
       "classification": "personal",
+      "source": "canonical_manifest",
+      "independent_ownership_evidence": [
+        {
+          "kind": "subject_column",
+          "column": "member_id"
+        },
+        {
+          "kind": "fk_to_owner_root",
+          "column": "member_id",
+          "foreign_table": "users"
+        },
+        {
+          "kind": "rls_subject_predicate",
+          "column": "member_id",
+          "policy": "Members read own dexcom connection"
+        }
+      ],
       "manifest_disposition": "export_redacted_and_delete",
-      "owner_column": "member_id",
       "match_kind": "member_id",
-      "source": "canonical_manifest"
+      "owner_column": "member_id"
     },
     {
       "table": "dunning_attempts",
-      "status": "classified",
       "classification": "personal",
+      "source": "canonical_manifest",
+      "independent_ownership_evidence": [
+        {
+          "kind": "subject_column",
+          "column": "user_id"
+        },
+        {
+          "kind": "fk_to_owner_root",
+          "column": "user_id",
+          "foreign_table": "users"
+        },
+        {
+          "kind": "rls_subject_predicate",
+          "column": "user_id",
+          "policy": "Members read own dunning"
+        }
+      ],
       "manifest_disposition": "export_and_delete",
-      "owner_column": "user_id",
       "match_kind": "user_id",
-      "source": "canonical_manifest"
+      "owner_column": "user_id"
     },
     {
       "table": "export_artifacts",
-      "status": "classified",
       "classification": "personal",
+      "source": "canonical_manifest",
+      "independent_ownership_evidence": [
+        {
+          "kind": "subject_column",
+          "column": "user_id"
+        },
+        {
+          "kind": "fk_to_owner_root",
+          "column": "user_id",
+          "foreign_table": "users"
+        }
+      ],
       "manifest_disposition": "delete_only_security",
-      "owner_column": "user_id",
       "match_kind": "user_id",
-      "source": "canonical_manifest"
+      "owner_column": "user_id"
     },
     {
       "table": "health_logs",
-      "status": "classified",
       "classification": "personal",
+      "source": "canonical_manifest",
+      "independent_ownership_evidence": [
+        {
+          "kind": "subject_column",
+          "column": "user_id"
+        },
+        {
+          "kind": "rls_subject_predicate",
+          "column": "user_id",
+          "policy": "Members read own logs"
+        },
+        {
+          "kind": "rls_subject_predicate",
+          "column": "user_id",
+          "policy": "Members insert own logs"
+        },
+        {
+          "kind": "rls_subject_predicate",
+          "column": "user_id",
+          "policy": "Members update own logs"
+        },
+        {
+          "kind": "rls_subject_predicate",
+          "column": "user_id",
+          "policy": "Members delete own logs"
+        }
+      ],
       "manifest_disposition": "export_and_delete",
-      "owner_column": "user_id",
       "match_kind": "user_id",
-      "source": "canonical_manifest"
+      "owner_column": "user_id"
     },
     {
       "table": "if_fasting_log",
-      "status": "classified",
       "classification": "personal",
+      "source": "canonical_manifest",
+      "independent_ownership_evidence": [
+        {
+          "kind": "subject_column",
+          "column": "member_id"
+        },
+        {
+          "kind": "rls_subject_predicate",
+          "column": "member_id",
+          "policy": "Members manage own if_fasting_log"
+        }
+      ],
       "manifest_disposition": "export_and_delete",
-      "owner_column": "member_id",
       "match_kind": "member_id",
-      "source": "canonical_manifest"
+      "owner_column": "member_id"
     },
     {
       "table": "intake_submissions",
-      "status": "classified",
       "classification": "personal",
+      "source": "canonical_manifest",
+      "independent_ownership_evidence": [
+        {
+          "kind": "fk_to_personal_table",
+          "column": "order_id",
+          "foreign_table": "orders"
+        }
+      ],
       "manifest_disposition": "export_and_delete",
-      "owner_column": "email",
       "match_kind": "email",
-      "source": "canonical_manifest"
+      "owner_column": "email"
     },
     {
       "table": "leads",
-      "status": "classified",
       "classification": "personal",
+      "source": "canonical_manifest",
+      "independent_ownership_evidence": [],
       "manifest_disposition": "export_and_delete",
-      "owner_column": "email",
       "match_kind": "email",
-      "source": "canonical_manifest"
+      "owner_column": "email"
     },
     {
       "table": "meal_logs",
-      "status": "classified",
       "classification": "personal",
+      "source": "canonical_manifest",
+      "independent_ownership_evidence": [
+        {
+          "kind": "subject_column",
+          "column": "member_id"
+        },
+        {
+          "kind": "rls_subject_predicate",
+          "column": "member_id",
+          "policy": "Members manage own meal_logs"
+        }
+      ],
       "manifest_disposition": "export_and_delete",
-      "owner_column": "member_id",
       "match_kind": "member_id",
-      "source": "canonical_manifest"
+      "owner_column": "member_id"
     },
     {
       "table": "meal_plans",
-      "status": "classified",
       "classification": "personal",
+      "source": "canonical_manifest",
+      "independent_ownership_evidence": [
+        {
+          "kind": "subject_column",
+          "column": "member_id"
+        },
+        {
+          "kind": "rls_subject_predicate",
+          "column": "member_id",
+          "policy": "Members read own meal_plans"
+        },
+        {
+          "kind": "rls_subject_predicate",
+          "column": "member_id",
+          "policy": "Members insert own meal_plans"
+        },
+        {
+          "kind": "rls_subject_predicate",
+          "column": "member_id",
+          "policy": "Members update own meal_plans"
+        },
+        {
+          "kind": "rls_subject_predicate",
+          "column": "member_id",
+          "policy": "Members delete own meal_plans"
+        }
+      ],
       "manifest_disposition": "export_and_delete",
-      "owner_column": "member_id",
       "match_kind": "member_id",
-      "source": "canonical_manifest"
+      "owner_column": "member_id"
     },
     {
       "table": "meal_swaps",
-      "status": "classified",
       "classification": "personal",
+      "source": "canonical_manifest",
+      "independent_ownership_evidence": [
+        {
+          "kind": "subject_column",
+          "column": "member_id"
+        },
+        {
+          "kind": "fk_to_personal_table",
+          "column": "plan_id",
+          "foreign_table": "meal_plans"
+        },
+        {
+          "kind": "rls_subject_predicate",
+          "column": "member_id",
+          "policy": "Members manage own meal_swaps"
+        }
+      ],
       "manifest_disposition": "export_and_delete",
-      "owner_column": "member_id",
       "match_kind": "member_id",
-      "source": "canonical_manifest"
+      "owner_column": "member_id"
     },
     {
       "table": "member_daily_progress",
-      "status": "classified",
       "classification": "personal",
+      "source": "canonical_manifest",
+      "independent_ownership_evidence": [
+        {
+          "kind": "subject_column",
+          "column": "member_id"
+        },
+        {
+          "kind": "rls_subject_predicate",
+          "column": "member_id",
+          "policy": "Members manage own daily_progress"
+        }
+      ],
       "manifest_disposition": "export_and_delete",
-      "owner_column": "member_id",
       "match_kind": "member_id",
-      "source": "canonical_manifest"
+      "owner_column": "member_id"
     },
     {
       "table": "member_measurements",
-      "status": "classified",
       "classification": "personal",
+      "source": "canonical_manifest",
+      "independent_ownership_evidence": [
+        {
+          "kind": "subject_column",
+          "column": "member_id"
+        },
+        {
+          "kind": "fk_to_owner_root",
+          "column": "member_id",
+          "foreign_table": "users"
+        },
+        {
+          "kind": "rls_subject_predicate",
+          "column": "member_id",
+          "policy": "Members manage own measurements"
+        }
+      ],
       "manifest_disposition": "export_and_delete",
-      "owner_column": "member_id",
       "match_kind": "member_id",
-      "source": "canonical_manifest"
+      "owner_column": "member_id"
     },
     {
       "table": "member_progress",
-      "status": "classified",
       "classification": "personal",
+      "source": "canonical_manifest",
+      "independent_ownership_evidence": [
+        {
+          "kind": "subject_column",
+          "column": "user_id"
+        },
+        {
+          "kind": "fk_to_owner_root",
+          "column": "user_id",
+          "foreign_table": "users"
+        },
+        {
+          "kind": "rls_subject_predicate",
+          "column": "user_id",
+          "policy": "Members read own progress"
+        },
+        {
+          "kind": "rls_subject_predicate",
+          "column": "user_id",
+          "policy": "Members insert own progress"
+        },
+        {
+          "kind": "rls_subject_predicate",
+          "column": "user_id",
+          "policy": "Members update own progress"
+        }
+      ],
       "manifest_disposition": "export_and_delete",
-      "owner_column": "user_id",
       "match_kind": "user_id",
-      "source": "canonical_manifest"
+      "owner_column": "user_id"
     },
     {
       "table": "messages",
-      "status": "classified",
       "classification": "personal",
+      "source": "canonical_manifest",
+      "independent_ownership_evidence": [
+        {
+          "kind": "subject_column",
+          "column": "visitor_profile_id"
+        },
+        {
+          "kind": "fk_to_personal_table",
+          "column": "conversation_id",
+          "foreign_table": "conversations"
+        },
+        {
+          "kind": "fk_to_owner_root",
+          "column": "visitor_profile_id",
+          "foreign_table": "visitor_profiles"
+        },
+        {
+          "kind": "rls_subject_predicate",
+          "column": "visitor_profile_id",
+          "policy": "Members read own messages"
+        }
+      ],
       "manifest_disposition": "export_and_delete",
-      "owner_column": "visitor_profile_id",
       "match_kind": "visitor_profile",
-      "source": "canonical_manifest"
+      "owner_column": "visitor_profile_id"
     },
     {
       "table": "mindset_reads",
-      "status": "classified",
       "classification": "personal",
+      "source": "canonical_manifest",
+      "independent_ownership_evidence": [
+        {
+          "kind": "subject_column",
+          "column": "member_id"
+        },
+        {
+          "kind": "rls_subject_predicate",
+          "column": "member_id",
+          "policy": "Members manage own mindset"
+        }
+      ],
       "manifest_disposition": "export_and_delete",
-      "owner_column": "member_id",
       "match_kind": "member_id",
-      "source": "canonical_manifest"
+      "owner_column": "member_id"
     },
     {
       "table": "mood_logs",
-      "status": "classified",
       "classification": "personal",
+      "source": "canonical_manifest",
+      "independent_ownership_evidence": [
+        {
+          "kind": "subject_column",
+          "column": "member_id"
+        },
+        {
+          "kind": "rls_subject_predicate",
+          "column": "member_id",
+          "policy": "Members manage own mood"
+        }
+      ],
       "manifest_disposition": "export_and_delete",
-      "owner_column": "member_id",
       "match_kind": "member_id",
-      "source": "canonical_manifest"
+      "owner_column": "member_id"
     },
     {
       "table": "notifications",
-      "status": "classified",
       "classification": "personal",
+      "source": "canonical_manifest",
+      "independent_ownership_evidence": [
+        {
+          "kind": "subject_column",
+          "column": "user_id"
+        },
+        {
+          "kind": "fk_to_owner_root",
+          "column": "user_id",
+          "foreign_table": "users"
+        },
+        {
+          "kind": "rls_subject_predicate",
+          "column": "user_id",
+          "policy": "Members read own notifications"
+        },
+        {
+          "kind": "rls_subject_predicate",
+          "column": "user_id",
+          "policy": "Members mark own notifications read"
+        }
+      ],
       "manifest_disposition": "export_and_delete",
-      "owner_column": "user_id",
       "match_kind": "user_id",
-      "source": "canonical_manifest"
+      "owner_column": "user_id"
     },
     {
       "table": "oauth_client_grants",
-      "status": "classified",
       "classification": "personal",
+      "source": "canonical_manifest",
+      "independent_ownership_evidence": [
+        {
+          "kind": "subject_column",
+          "column": "member_id"
+        },
+        {
+          "kind": "rls_subject_predicate",
+          "column": "member_id",
+          "policy": "Members view own assistant grants"
+        },
+        {
+          "kind": "rls_subject_predicate",
+          "column": "member_id",
+          "policy": "First-party sessions insert own assistant grants"
+        },
+        {
+          "kind": "rls_subject_predicate",
+          "column": "member_id",
+          "policy": "First-party sessions update own assistant grants"
+        },
+        {
+          "kind": "rls_subject_predicate",
+          "column": "member_id",
+          "policy": "First-party sessions delete own assistant grants"
+        }
+      ],
       "manifest_disposition": "export_and_delete",
-      "owner_column": "member_id",
       "match_kind": "member_id",
-      "source": "canonical_manifest"
+      "owner_column": "member_id"
     },
     {
       "table": "orders",
-      "status": "classified",
       "classification": "personal",
+      "source": "canonical_manifest",
+      "independent_ownership_evidence": [
+        {
+          "kind": "subject_column",
+          "column": "user_id"
+        },
+        {
+          "kind": "fk_to_personal_table",
+          "column": "subscription_id",
+          "foreign_table": "subscriptions"
+        },
+        {
+          "kind": "rls_subject_predicate",
+          "column": "user_id",
+          "policy": "Members read own orders"
+        }
+      ],
       "manifest_disposition": "export_and_delete",
-      "owner_column": "customer_email",
-      "match_kind": "customer_email",
-      "source": "canonical_manifest"
+      "match_kind": "order_ownership",
+      "owner_column": "id"
     },
     {
       "table": "phi_access_log",
-      "status": "classified",
       "classification": "personal",
+      "source": "canonical_manifest",
+      "independent_ownership_evidence": [
+        {
+          "kind": "subject_column",
+          "column": "actor_user_id"
+        },
+        {
+          "kind": "subject_column",
+          "column": "visitor_profile_id"
+        },
+        {
+          "kind": "fk_to_owner_root",
+          "column": "actor_user_id",
+          "foreign_table": "users"
+        },
+        {
+          "kind": "fk_to_owner_root",
+          "column": "visitor_profile_id",
+          "foreign_table": "visitor_profiles"
+        }
+      ],
       "manifest_disposition": "export_and_delete",
-      "owner_column": "visitor_profile_id",
       "match_kind": "visitor_profile",
-      "source": "canonical_manifest"
+      "owner_column": "visitor_profile_id"
     },
     {
       "table": "phi_consent",
-      "status": "classified",
       "classification": "personal",
+      "source": "canonical_manifest",
+      "independent_ownership_evidence": [
+        {
+          "kind": "subject_column",
+          "column": "visitor_profile_id"
+        },
+        {
+          "kind": "subject_column",
+          "column": "user_id"
+        },
+        {
+          "kind": "fk_to_owner_root",
+          "column": "visitor_profile_id",
+          "foreign_table": "visitor_profiles"
+        },
+        {
+          "kind": "fk_to_owner_root",
+          "column": "user_id",
+          "foreign_table": "users"
+        },
+        {
+          "kind": "rls_subject_predicate",
+          "column": "user_id",
+          "policy": "Members read own consent"
+        }
+      ],
       "manifest_disposition": "delete_only_legacy",
-      "owner_column": "user_id",
       "match_kind": "user_id",
-      "source": "canonical_manifest"
+      "owner_column": "user_id"
     },
     {
       "table": "points_ledger",
-      "status": "classified",
       "classification": "personal",
+      "source": "canonical_manifest",
+      "independent_ownership_evidence": [
+        {
+          "kind": "subject_column",
+          "column": "user_id"
+        },
+        {
+          "kind": "rls_subject_predicate",
+          "column": "user_id",
+          "policy": "points_ledger_own_select"
+        }
+      ],
       "manifest_disposition": "export_and_delete",
-      "owner_column": "user_id",
       "match_kind": "user_id",
-      "source": "canonical_manifest"
+      "owner_column": "user_id"
     },
     {
       "table": "post_meal_walks",
-      "status": "classified",
       "classification": "personal",
+      "source": "canonical_manifest",
+      "independent_ownership_evidence": [
+        {
+          "kind": "subject_column",
+          "column": "member_id"
+        },
+        {
+          "kind": "rls_subject_predicate",
+          "column": "member_id",
+          "policy": "Members manage own walks"
+        }
+      ],
       "manifest_disposition": "export_and_delete",
-      "owner_column": "member_id",
       "match_kind": "member_id",
-      "source": "canonical_manifest"
+      "owner_column": "member_id"
     },
     {
       "table": "product_validation_tokens",
-      "status": "classified",
       "classification": "personal",
+      "source": "canonical_manifest",
+      "independent_ownership_evidence": [
+        {
+          "kind": "subject_column",
+          "column": "member_id"
+        },
+        {
+          "kind": "rls_subject_predicate",
+          "column": "member_id",
+          "policy": "Members read own validation tokens"
+        }
+      ],
       "manifest_disposition": "delete_only_security",
-      "owner_column": "member_id",
       "match_kind": "member_id",
-      "source": "canonical_manifest"
+      "owner_column": "member_id"
     },
     {
       "table": "profiles",
-      "status": "classified",
       "classification": "personal",
+      "source": "canonical_manifest",
+      "independent_ownership_evidence": [
+        {
+          "kind": "subject_column",
+          "column": "user_id"
+        },
+        {
+          "kind": "fk_to_owner_root",
+          "column": "user_id",
+          "foreign_table": "users"
+        },
+        {
+          "kind": "rls_subject_predicate",
+          "column": "user_id",
+          "policy": "Members manage own profile"
+        }
+      ],
       "manifest_disposition": "export_and_delete",
-      "owner_column": "user_id",
       "match_kind": "user_id",
-      "source": "canonical_manifest"
+      "owner_column": "user_id"
     },
     {
       "table": "qa_monthly_usage",
-      "status": "classified",
       "classification": "personal",
+      "source": "canonical_manifest",
+      "independent_ownership_evidence": [
+        {
+          "kind": "subject_column",
+          "column": "user_id"
+        },
+        {
+          "kind": "fk_to_owner_root",
+          "column": "user_id",
+          "foreign_table": "users"
+        },
+        {
+          "kind": "rls_subject_predicate",
+          "column": "user_id",
+          "policy": "Members read own Q&A usage"
+        }
+      ],
       "manifest_disposition": "export_and_delete",
-      "owner_column": "user_id",
       "match_kind": "user_id",
-      "source": "canonical_manifest"
+      "owner_column": "user_id"
     },
     {
       "table": "qa_submissions",
-      "status": "classified",
       "classification": "personal",
+      "source": "canonical_manifest",
+      "independent_ownership_evidence": [
+        {
+          "kind": "subject_column",
+          "column": "user_id"
+        },
+        {
+          "kind": "fk_to_owner_root",
+          "column": "user_id",
+          "foreign_table": "users"
+        },
+        {
+          "kind": "rls_subject_predicate",
+          "column": "user_id",
+          "policy": "Members read own questions"
+        },
+        {
+          "kind": "rls_subject_predicate",
+          "column": "user_id",
+          "policy": "Members insert own questions"
+        },
+        {
+          "kind": "rls_subject_predicate",
+          "column": "user_id",
+          "policy": "Active members read published answers"
+        }
+      ],
       "manifest_disposition": "export_and_delete",
-      "owner_column": "user_id",
       "match_kind": "user_id",
-      "source": "canonical_manifest"
+      "owner_column": "user_id"
     },
     {
       "table": "rate_limits",
-      "status": "classified",
       "classification": "non_personal",
-      "source": "reference_tables"
+      "source": "reference_tables",
+      "independent_ownership_evidence": []
     },
     {
       "table": "reauth_tickets",
-      "status": "classified",
       "classification": "personal",
+      "source": "canonical_manifest",
+      "independent_ownership_evidence": [
+        {
+          "kind": "subject_column",
+          "column": "user_id"
+        },
+        {
+          "kind": "fk_to_owner_root",
+          "column": "user_id",
+          "foreign_table": "users"
+        }
+      ],
       "manifest_disposition": "delete_only_security",
-      "owner_column": "user_id",
       "match_kind": "user_id",
-      "source": "canonical_manifest"
+      "owner_column": "user_id"
     },
     {
       "table": "shopping_lists",
-      "status": "classified",
       "classification": "personal",
+      "source": "canonical_manifest",
+      "independent_ownership_evidence": [
+        {
+          "kind": "subject_column",
+          "column": "member_id"
+        },
+        {
+          "kind": "rls_subject_predicate",
+          "column": "member_id",
+          "policy": "Members manage own shopping_lists"
+        }
+      ],
       "manifest_disposition": "export_and_delete",
-      "owner_column": "member_id",
       "match_kind": "member_id",
-      "source": "canonical_manifest"
+      "owner_column": "member_id"
     },
     {
       "table": "snack_library",
-      "status": "classified",
       "classification": "non_personal",
-      "source": "reference_tables"
+      "source": "reference_tables",
+      "independent_ownership_evidence": []
     },
     {
       "table": "snack_logs",
-      "status": "classified",
       "classification": "personal",
+      "source": "canonical_manifest",
+      "independent_ownership_evidence": [
+        {
+          "kind": "subject_column",
+          "column": "member_id"
+        },
+        {
+          "kind": "rls_subject_predicate",
+          "column": "member_id",
+          "policy": "Members manage own snacks"
+        }
+      ],
       "manifest_disposition": "export_and_delete",
-      "owner_column": "member_id",
       "match_kind": "member_id",
-      "source": "canonical_manifest"
+      "owner_column": "member_id"
     },
     {
       "table": "state_nonces",
-      "status": "classified",
       "classification": "personal",
+      "source": "canonical_manifest",
+      "independent_ownership_evidence": [
+        {
+          "kind": "subject_column",
+          "column": "member_id"
+        }
+      ],
       "manifest_disposition": "delete_only_security",
-      "owner_column": "member_id",
       "match_kind": "member_id",
-      "source": "canonical_manifest"
+      "owner_column": "member_id"
     },
     {
       "table": "subscriptions",
-      "status": "classified",
       "classification": "personal",
+      "source": "canonical_manifest",
+      "independent_ownership_evidence": [
+        {
+          "kind": "subject_column",
+          "column": "user_id"
+        },
+        {
+          "kind": "fk_to_owner_root",
+          "column": "user_id",
+          "foreign_table": "users"
+        },
+        {
+          "kind": "rls_subject_predicate",
+          "column": "user_id",
+          "policy": "Members read own subscription"
+        }
+      ],
       "manifest_disposition": "export_and_delete",
-      "owner_column": "user_id",
       "match_kind": "user_id",
-      "source": "canonical_manifest"
+      "owner_column": "user_id"
     },
     {
       "table": "support_ticket_notes",
-      "status": "classified",
-      "classification": "non_personal",
-      "owner_columns": [
-        "author_id"
+      "classification": "personal",
+      "source": "canonical_manifest",
+      "independent_ownership_evidence": [
+        {
+          "kind": "subject_column",
+          "column": "author_id"
+        },
+        {
+          "kind": "fk_to_personal_table",
+          "column": "ticket_id",
+          "foreign_table": "support_tickets"
+        },
+        {
+          "kind": "rls_subject_predicate",
+          "column": "author_id",
+          "policy": "support_ticket_notes_admin_insert"
+        }
       ],
-      "foreign_keys": [],
-      "source": "no_ownership_path_detected"
+      "manifest_disposition": "export_redacted_and_delete",
+      "match_kind": "parent",
+      "owner_column": "ticket_id"
     },
     {
       "table": "support_tickets",
-      "status": "classified",
       "classification": "personal",
+      "source": "canonical_manifest",
+      "independent_ownership_evidence": [
+        {
+          "kind": "subject_column",
+          "column": "user_id"
+        },
+        {
+          "kind": "rls_subject_predicate",
+          "column": "user_id",
+          "policy": "support_tickets_member_select"
+        },
+        {
+          "kind": "rls_subject_predicate",
+          "column": "user_id",
+          "policy": "support_tickets_member_insert"
+        }
+      ],
       "manifest_disposition": "export_and_delete",
-      "owner_column": "user_id",
       "match_kind": "user_id",
-      "source": "canonical_manifest"
+      "owner_column": "user_id"
     },
     {
       "table": "user_badges",
-      "status": "classified",
       "classification": "personal",
+      "source": "canonical_manifest",
+      "independent_ownership_evidence": [
+        {
+          "kind": "subject_column",
+          "column": "user_id"
+        },
+        {
+          "kind": "fk_to_owner_root",
+          "column": "user_id",
+          "foreign_table": "users"
+        },
+        {
+          "kind": "rls_subject_predicate",
+          "column": "user_id",
+          "policy": "Members read own badges"
+        }
+      ],
       "manifest_disposition": "export_and_delete",
-      "owner_column": "user_id",
       "match_kind": "user_id",
-      "source": "canonical_manifest"
+      "owner_column": "user_id"
     },
     {
       "table": "user_roles",
-      "status": "classified",
       "classification": "personal",
+      "source": "canonical_manifest",
+      "independent_ownership_evidence": [
+        {
+          "kind": "subject_column",
+          "column": "user_id"
+        },
+        {
+          "kind": "fk_to_owner_root",
+          "column": "user_id",
+          "foreign_table": "users"
+        }
+      ],
       "manifest_disposition": "export_and_delete",
-      "owner_column": "user_id",
       "match_kind": "user_id",
-      "source": "canonical_manifest"
+      "owner_column": "user_id"
     },
     {
       "table": "user_streaks",
-      "status": "classified",
       "classification": "personal",
+      "source": "canonical_manifest",
+      "independent_ownership_evidence": [
+        {
+          "kind": "subject_column",
+          "column": "user_id"
+        },
+        {
+          "kind": "fk_to_owner_root",
+          "column": "user_id",
+          "foreign_table": "users"
+        },
+        {
+          "kind": "rls_subject_predicate",
+          "column": "user_id",
+          "policy": "Members read own streak"
+        }
+      ],
       "manifest_disposition": "export_and_delete",
-      "owner_column": "user_id",
       "match_kind": "user_id",
-      "source": "canonical_manifest"
+      "owner_column": "user_id"
     },
     {
       "table": "visitor_engagement_scores",
-      "status": "classified",
       "classification": "personal",
+      "source": "canonical_manifest",
+      "independent_ownership_evidence": [
+        {
+          "kind": "subject_column",
+          "column": "user_id"
+        },
+        {
+          "kind": "subject_column",
+          "column": "visitor_profile_id"
+        },
+        {
+          "kind": "fk_to_owner_root",
+          "column": "visitor_profile_id",
+          "foreign_table": "visitor_profiles"
+        }
+      ],
       "manifest_disposition": "export_and_delete",
-      "owner_column": "visitor_profile_id",
       "match_kind": "visitor_profile",
-      "source": "canonical_manifest"
+      "owner_column": "visitor_profile_id"
     },
     {
       "table": "visitor_profiles",
-      "status": "classified",
       "classification": "personal",
+      "source": "canonical_manifest",
+      "independent_ownership_evidence": [
+        {
+          "kind": "subject_column",
+          "column": "user_id"
+        },
+        {
+          "kind": "fk_to_owner_root",
+          "column": "user_id",
+          "foreign_table": "users"
+        },
+        {
+          "kind": "rls_subject_predicate",
+          "column": "user_id",
+          "policy": "Members read own visitor profile"
+        }
+      ],
       "manifest_disposition": "export_and_delete",
-      "owner_column": "user_id",
       "match_kind": "user_id",
-      "source": "canonical_manifest"
+      "owner_column": "user_id"
     },
     {
       "table": "visitor_sessions",
-      "status": "classified",
       "classification": "personal",
+      "source": "canonical_manifest",
+      "independent_ownership_evidence": [
+        {
+          "kind": "subject_column",
+          "column": "visitor_profile_id"
+        },
+        {
+          "kind": "subject_column",
+          "column": "user_id"
+        },
+        {
+          "kind": "fk_to_owner_root",
+          "column": "visitor_profile_id",
+          "foreign_table": "visitor_profiles"
+        },
+        {
+          "kind": "fk_to_owner_root",
+          "column": "user_id",
+          "foreign_table": "users"
+        }
+      ],
       "manifest_disposition": "delete_only_security",
-      "owner_column": "user_id",
       "match_kind": "user_id",
-      "source": "canonical_manifest"
+      "owner_column": "user_id"
     },
     {
       "table": "vita_quotes",
-      "status": "classified",
       "classification": "non_personal",
-      "source": "reference_tables"
+      "source": "reference_tables",
+      "independent_ownership_evidence": []
     },
     {
       "table": "vita_similarity_log",
-      "status": "classified",
       "classification": "personal",
+      "source": "canonical_manifest",
+      "independent_ownership_evidence": [
+        {
+          "kind": "subject_column",
+          "column": "user_id"
+        },
+        {
+          "kind": "fk_to_owner_root",
+          "column": "user_id",
+          "foreign_table": "users"
+        },
+        {
+          "kind": "rls_subject_predicate",
+          "column": "user_id",
+          "policy": "Members insert own similarity logs"
+        }
+      ],
       "manifest_disposition": "export_and_delete",
-      "owner_column": "user_id",
       "match_kind": "user_id",
-      "source": "canonical_manifest"
+      "owner_column": "user_id"
     },
     {
       "table": "water_logs",
-      "status": "classified",
       "classification": "personal",
+      "source": "canonical_manifest",
+      "independent_ownership_evidence": [
+        {
+          "kind": "subject_column",
+          "column": "member_id"
+        },
+        {
+          "kind": "rls_subject_predicate",
+          "column": "member_id",
+          "policy": "Members manage own water"
+        }
+      ],
       "manifest_disposition": "export_and_delete",
-      "owner_column": "member_id",
       "match_kind": "member_id",
-      "source": "canonical_manifest"
+      "owner_column": "member_id"
     },
     {
       "table": "whatsapp_consent",
-      "status": "classified",
       "classification": "personal",
+      "source": "canonical_manifest",
+      "independent_ownership_evidence": [
+        {
+          "kind": "subject_column",
+          "column": "user_id"
+        },
+        {
+          "kind": "fk_to_owner_root",
+          "column": "user_id",
+          "foreign_table": "users"
+        },
+        {
+          "kind": "rls_subject_predicate",
+          "column": "user_id",
+          "policy": "Members read own consent"
+        },
+        {
+          "kind": "rls_subject_predicate",
+          "column": "user_id",
+          "policy": "Members insert own consent"
+        },
+        {
+          "kind": "rls_subject_predicate",
+          "column": "user_id",
+          "policy": "Members update own consent"
+        }
+      ],
       "manifest_disposition": "export_and_delete",
-      "owner_column": "user_id",
       "match_kind": "user_id",
-      "source": "canonical_manifest"
+      "owner_column": "user_id"
     },
     {
       "table": "win_posts",
-      "status": "classified",
       "classification": "personal",
+      "source": "canonical_manifest",
+      "independent_ownership_evidence": [
+        {
+          "kind": "subject_column",
+          "column": "author_id"
+        },
+        {
+          "kind": "rls_subject_predicate",
+          "column": "author_id",
+          "policy": "Members insert own wins"
+        },
+        {
+          "kind": "rls_subject_predicate",
+          "column": "author_id",
+          "policy": "Authors update own wins"
+        }
+      ],
       "manifest_disposition": "export_and_delete",
-      "owner_column": "author_id",
       "match_kind": "author_id",
-      "source": "canonical_manifest"
+      "owner_column": "author_id"
     },
     {
       "table": "workout_completion_receipts",
-      "status": "classified",
       "classification": "personal",
+      "source": "canonical_manifest",
+      "independent_ownership_evidence": [
+        {
+          "kind": "subject_column",
+          "column": "user_id"
+        },
+        {
+          "kind": "fk_to_personal_table",
+          "column": "session_id",
+          "foreign_table": "workout_sessions"
+        },
+        {
+          "kind": "rls_subject_predicate",
+          "column": "user_id",
+          "policy": "workout_receipts_own_select"
+        }
+      ],
       "manifest_disposition": "export_and_delete",
-      "owner_column": "user_id",
       "match_kind": "user_id",
-      "source": "canonical_manifest"
+      "owner_column": "user_id"
     },
     {
       "table": "workout_sessions",
-      "status": "classified",
       "classification": "personal",
+      "source": "canonical_manifest",
+      "independent_ownership_evidence": [
+        {
+          "kind": "subject_column",
+          "column": "user_id"
+        },
+        {
+          "kind": "rls_subject_predicate",
+          "column": "user_id",
+          "policy": "Users delete own workout sessions"
+        },
+        {
+          "kind": "rls_subject_predicate",
+          "column": "user_id",
+          "policy": "Users view own workout sessions"
+        },
+        {
+          "kind": "rls_subject_predicate",
+          "column": "user_id",
+          "policy": "Users insert own workout sessions"
+        },
+        {
+          "kind": "rls_subject_predicate",
+          "column": "user_id",
+          "policy": "Users update own workout sessions"
+        }
+      ],
       "manifest_disposition": "export_and_delete",
-      "owner_column": "user_id",
       "match_kind": "user_id",
-      "source": "canonical_manifest"
+      "owner_column": "user_id"
     }
   ]
 }
