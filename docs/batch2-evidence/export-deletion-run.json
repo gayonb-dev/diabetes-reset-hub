@@ -1,0 +1,312 @@
+{
+  "run": {
+    "started_at": "2026-08-30T05:51:10.244971+00:00",
+    "finished_at": "2026-08-30T05:51:52.624317+00:00",
+    "harness": "tools/batch2/export_deletion_ab_harness.py",
+    "member_a": {
+      "alias": "MEMBER_A",
+      "ref": "id:bf89b4b9853d",
+      "role": "export + deletion subject"
+    },
+    "member_b": {
+      "alias": "MEMBER_B",
+      "ref": "id:a29f64453310",
+      "role": "untouched control"
+    },
+    "isolation": "no real email, Stripe, Resend, Dexcom or external-AI call is made; synthetic principals use @example.invalid"
+  },
+  "export": {
+    "expired_ticket_rejected": true,
+    "expired_ticket_status": 401,
+    "ticket_single_use_rejected_on_reuse": true,
+    "ticket_reuse_status": 401,
+    "download_replay_status": {
+      "zip": 410,
+      "json": 410
+    },
+    "zip": {
+      "bytes": 29234,
+      "sha256": "299cf1529a43ca82c2bf68e5839810e648855bf1b29fd7fcfc59c7e3d3082399",
+      "entries": [
+        "README.txt",
+        "export.json",
+        "meal_swaps.csv",
+        "community_votes.csv",
+        "messages.csv",
+        "visitor_engagement_scores.csv",
+        "phi_access_log.csv",
+        "conversations.csv",
+        "a1c_logs.csv",
+        "blood_sugar_readings.csv",
+        "health_logs.csv",
+        "member_measurements.csv",
+        "mood_logs.csv",
+        "water_logs.csv",
+        "post_meal_walks.csv",
+        "mindset_reads.csv",
+        "snack_logs.csv",
+        "meal_logs.csv",
+        "cheat_meals.csv",
+        "if_fasting_log.csv",
+        "meal_plans.csv",
+        "shopping_lists.csv",
+        "member_daily_progress.csv",
+        "member_progress.csv",
+        "workout_sessions.csv",
+        "user_badges.csv",
+        "user_streaks.csv",
+        "community_answers.csv",
+        "win_posts.csv",
+        "community_questions.csv",
+        "qa_submissions.csv",
+        "qa_monthly_usage.csv",
+        "vita_similarity_log.csv",
+        "activity_events.csv",
+        "support_ticket_notes.csv",
+        "support_tickets.csv",
+        "points_ledger.csv",
+        "workout_completion_receipts.csv",
+        "notifications.csv",
+        "consent_records.csv",
+        "whatsapp_consent.csv",
+        "user_roles.csv",
+        "oauth_client_grants.csv",
+        "coaching_waitlist.csv",
+        "coaching_interest.csv",
+        "deletion_requests.csv",
+        "subscriptions.csv",
+        "dunning_attempts.csv",
+        "orders.csv",
+        "billing_holds.csv",
+        "intake_submissions.csv",
+        "challenge_progress.csv",
+        "leads.csv",
+        "dexcom_connections.csv",
+        "visitor_profiles.csv",
+        "profiles.csv",
+        "deletion_jobs.csv",
+        "legacy_phi_consent.csv"
+      ],
+      "headers": {
+        "Content-Type": "application/zip",
+        "Content-Length": "29234",
+        "Cache-Control": "no-store, max-age=0",
+        "Content-Disposition": "attachment; filename=\"drm-export-b3bc0578-dfea-45ab-8936-98df1c888d38.zip\""
+      }
+    },
+    "json": {
+      "bytes": 14176,
+      "sha256": "5076b210d75f75093d3cf61049f87802cdd0528f9a442a09b21f046a2b91d3e2",
+      "headers": {
+        "Content-Type": "application/json",
+        "Content-Length": "5218",
+        "Cache-Control": "no-store, max-age=0",
+        "Content-Disposition": "attachment; filename=\"drm-export-b3bc0578-dfea-45ab-8936-98df1c888d38.json\""
+      }
+    },
+    "snapshot_consistency": {
+      "zip_contains_export_json": true,
+      "same_schema_version": true,
+      "same_category_set": true,
+      "same_row_counts": true,
+      "same_snapshot_timestamp": true,
+      "exported_at_equals_generated_at": true
+    },
+    "row_counts": {
+      "meal_swaps": 0,
+      "community_votes": 1,
+      "messages": 1,
+      "visitor_engagement_scores": 0,
+      "phi_access_log": 0,
+      "conversations": 1,
+      "a1c_logs": 0,
+      "blood_sugar_readings": 0,
+      "health_logs": 0,
+      "member_measurements": 0,
+      "mood_logs": 0,
+      "water_logs": 0,
+      "post_meal_walks": 0,
+      "mindset_reads": 0,
+      "snack_logs": 0,
+      "meal_logs": 0,
+      "cheat_meals": 0,
+      "if_fasting_log": 0,
+      "meal_plans": 0,
+      "shopping_lists": 0,
+      "member_daily_progress": 0,
+      "member_progress": 0,
+      "workout_sessions": 0,
+      "user_badges": 0,
+      "user_streaks": 0,
+      "community_answers": 1,
+      "win_posts": 1,
+      "community_questions": 1,
+      "qa_submissions": 0,
+      "qa_monthly_usage": 0,
+      "vita_similarity_log": 0,
+      "activity_events": 0,
+      "support_ticket_notes": 1,
+      "support_tickets": 1,
+      "points_ledger": 0,
+      "workout_completion_receipts": 0,
+      "notifications": 0,
+      "consent_records": 0,
+      "whatsapp_consent": 0,
+      "user_roles": 0,
+      "oauth_client_grants": 0,
+      "coaching_waitlist": 0,
+      "coaching_interest": 0,
+      "deletion_requests": 0,
+      "subscriptions": 0,
+      "dunning_attempts": 0,
+      "orders": 1,
+      "billing_holds": 1,
+      "intake_submissions": 0,
+      "challenge_progress": 0,
+      "leads": 0,
+      "dexcom_connections": 0,
+      "visitor_profiles": 1,
+      "profiles": 1,
+      "deletion_jobs": 0,
+      "legacy_phi_consent": 0
+    },
+    "ownership_basis": {
+      "orders": "orders.user_id, or an order attached to a subscription owned by this account. customer_email is never used to claim an order.",
+      "support_ticket_notes": "inherited from the member's own support ticket; note body and staff identifiers excluded."
+    },
+    "per_surface": {
+      "community_questions": {
+        "a_rows_included": 1,
+        "b_rows_included": 0,
+        "result": "PASS"
+      },
+      "community_answers": {
+        "a_rows_included": 1,
+        "b_rows_included": 0,
+        "result": "PASS"
+      },
+      "community_votes": {
+        "a_rows_included": 1,
+        "b_rows_included": 0,
+        "result": "PASS"
+      },
+      "win_posts": {
+        "a_rows_included": 1,
+        "b_rows_included": 0,
+        "result": "PASS"
+      },
+      "conversations": {
+        "a_rows_included": 1,
+        "b_rows_included": 0,
+        "result": "PASS"
+      },
+      "messages": {
+        "a_rows_included": 1,
+        "b_rows_included": 0,
+        "result": "PASS"
+      },
+      "support_tickets": {
+        "a_rows_included": 1,
+        "b_rows_included": 0,
+        "result": "PASS"
+      },
+      "support_ticket_notes": {
+        "a_rows_included": 1,
+        "b_rows_included": 0,
+        "result": "PASS"
+      }
+    },
+    "support_note_redaction": {
+      "body_absent": true,
+      "author_id_absent": true,
+      "flags_present": true
+    },
+    "orders_immutable_ownership": {
+      "owned_by_a_exported": true,
+      "ownerless_legacy_with_a_email_exported": false,
+      "owned_by_b_exported": false
+    },
+    "billing_holds": {
+      "rows_exported": 1,
+      "dispute_id_redacted": true,
+      "charge_id_redacted": true
+    },
+    "community_answer_embeddings_excluded": true
+  },
+  "deletion": {
+    "orders_held_out_during_request_call": 0,
+    "orders_restored_before_worker": false,
+    "job_state_first_pass": "completed",
+    "job_state_retry_pass": "completed",
+    "first_pass_remaining": {},
+    "retry_remaining": {},
+    "retry_is_idempotent": true,
+    "per_surface": {
+      "community_questions": {
+        "a_rows_remaining": 0,
+        "b_rows_remaining": 1,
+        "result": "PASS"
+      },
+      "community_votes": {
+        "a_rows_remaining": 0,
+        "b_rows_remaining": 1,
+        "result": "PASS"
+      },
+      "win_posts": {
+        "a_rows_remaining": 0,
+        "b_rows_remaining": 1,
+        "result": "PASS"
+      },
+      "conversations": {
+        "a_rows_remaining": 0,
+        "b_rows_remaining": 1,
+        "result": "PASS"
+      },
+      "messages": {
+        "a_rows_remaining": 0,
+        "b_rows_remaining": 1,
+        "result": "PASS"
+      },
+      "support_tickets": {
+        "a_rows_remaining": 0,
+        "b_rows_remaining": 1,
+        "result": "PASS"
+      },
+      "support_ticket_notes": {
+        "a_rows_remaining": 0,
+        "b_rows_remaining": 1,
+        "result": "PASS"
+      },
+      "community_answers": {
+        "a_rows_remaining": 0,
+        "b_rows_remaining": 0,
+        "expected_relational_consequence": "B's answer on A's question is removed by ON DELETE CASCADE from community_questions",
+        "result": "PASS"
+      },
+      "community_answer_embeddings": {
+        "a_rows_remaining": 0,
+        "basis": "removed by ON DELETE CASCADE with the parent answer",
+        "result": "PASS"
+      },
+      "billing_holds": {
+        "a_rows_remaining": 1,
+        "basis": "retained under financial and anti-fraud retention (report-only)",
+        "result": "PASS"
+      },
+      "orders": {
+        "owned_by_a_remaining": 0,
+        "ownerless_legacy_a_email_remaining": 1,
+        "owned_by_b_remaining": 1,
+        "result": "PASS"
+      }
+    },
+    "auth_users_remaining_total": 4,
+    "a_auth_identity_removed": true,
+    "b_auth_identity_present": true
+  },
+  "cleanup": {},
+  "errors": [
+    "cleanup failure: 500 Server Error: Internal Server Error for url: https://wqennhjdojjqmmqzjhti.supabase.co/functions/v1/batch2-harness"
+  ],
+  "result": "FAIL"
+}
