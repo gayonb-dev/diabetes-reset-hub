@@ -14,7 +14,8 @@ export type MatchKind =
   | "actor_user_id"
   | "visitor_profile"  // column IN (visitor profile ids bound to the user)
   | "email"            // case-insensitive email match
-  | "customer_email";
+  | "customer_email"
+  | "parent";          // column is a FK to parentTable.parentColumn; ownership is inherited
 
 export type Disposition =
   | "export_and_delete"
@@ -33,6 +34,10 @@ export interface InventoryEntry {
   /** Columns stripped before the row enters an export. */
   redact?: string[];
   category: string;
+  /** For match === "parent": the parent table and its key/owner columns. */
+  parentTable?: string;
+  parentColumn?: string;
+  parentOwnerColumn?: string;
 }
 
 export const INVENTORY: InventoryEntry[] = [
