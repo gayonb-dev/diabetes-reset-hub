@@ -91,6 +91,11 @@ Deno.serve(async (req) => {
   const { data: vps } = await admin.from("visitor_profiles").select("id").eq("user_id", userId);
   const vpIds = (vps ?? []).map((v: { id: string }) => v.id);
 
+  // Parent-owned surfaces: resolve member-owned parent keys before deletion.
+  const { data: parentTickets } = await admin
+    .from("support_tickets").select("id").eq("user_id", userId);
+  const ticketIds = (parentTickets ?? []).map((t: { id: string }) => t.id);
+
   // ==== PRECONDITION: processor cancellation gates destructive deletion ====
   // Nothing below this block runs until the member's billing relationship is
   // resolved. No session is revoked, no row is deleted and the auth identity is
