@@ -2,7 +2,7 @@
 
 Backend and documentation only. No design, accessibility, performance or 24-task browser
 matrix work. Nothing published. Reused client evidence keeps its original execution dates.
-The safeguards below control wherever any earlier wording conflicts.
+The safeguards below control wherever any earlier wording conflicts or is silent.
 
 ## 0. Production and mutation preflight
 
@@ -25,48 +25,67 @@ Confirmed by reading the canonical manifest and the reconciliation artifact:
 - One genuine manifest issue: `support_ticket_notes` is `reference_only` although every note is
   tied to a member-owned support ticket.
 
-## 1. Classification by relationship, fail closed
+## 1. Ownership, not audience access
 
-Personal data is derived, not hand-labelled, from: foreign keys to `auth.users`, `profiles`,
-`visitor_profiles` or another member-owned row; direct and indirect ownership paths; RLS
-policies containing `auth.uid()` ownership checks; canonical manifest subject keys; and owner
-column names (`user_id`, `member_id`, `owner_id`, `author_id`, `actor_id`, `voter_id`,
-`created_by`, `submitted_by`, `recipient_id`, `profile_id` and equivalents).
+A policy merely containing `auth.uid()` is not ownership evidence (an entitlement check letting
+active members read shared educational content is audience access). The classifier requires a
+traceable relationship between the current row and the person through: a row subject/owner
+column; a foreign key; a parent member-owned record; a visitor-profile relationship; or an RLS
+predicate connecting a current-row subject field to `auth.uid()`.
 
-Foreign-key traversal is cycle-safe and fails closed when an ownership path is detected but not
-understood. The generator exits non-zero if any author-, user-, visitor-profile- or
-ticket-linked table is classified non-personal or is missing from the manifest. Generated
-evidence may never show `owner_columns: []` for a surface whose policies or foreign keys
-establish member ownership.
+Recognised owner columns include `user_id`, `member_id`, `owner_id`, `author_id`, `actor_id`,
+`voter_id`, `created_by`, `submitted_by`, `recipient_id`, `profile_id` and equivalents.
+Foreign-key traversal is cycle-safe; unknown ownership relationships fail closed.
 
-## 2. Manifest and policy corrections
+Generator fixtures, positive and negative: direct ownership; indirect parent ownership;
+visitor-profile ownership; author/voter ownership; ticket-note parent ownership;
+entitlement-only read access (must not be read as ownership); cyclic foreign keys; an unknown
+relationship; and a personal table missing from the canonical manifest.
 
-- `support_ticket_notes` becomes personal-by-association: matched through its parent ticket,
-  deleted with the member's tickets, exported under an explicit **field allowlist**. Staff
-  identifiers, security/fraud logic, secrets, internal routing metadata and other people's data
-  are excluded by allowlist, not by omission. The disposition states explicitly whether note
-  text is included, redacted, or routed for manual privacy review.
-- Community content: the documented policy does not authorise retaining linked community
-  content, so questions, answers, votes and win posts are deleted on member deletion. No
-  de-identification branch is introduced. The exact rule is recorded in the artifacts.
-- Manifest tests assert the rule for every corrected surface.
+The generator exits non-zero when an author-, user-, visitor-profile- or ticket-linked table is
+classified non-personal or is missing from the manifest, and evidence may never show
+`owner_columns: []` for a surface whose policies or foreign keys establish ownership.
+
+## 2. Manifest corrections and the support-note rule
+
+`support_ticket_notes` becomes personal-by-association, matched through its parent ticket and
+deleted with the member's tickets. Export follows a deterministic rule:
+
+- Schema-designated member-visible note: export allowlisted text, ticket reference, timestamps.
+- Admin-only or free-form note with no member-visible designation: no raw body in the automatic
+  archive — export a neutral reference recording that an internal support-note record exists
+  and requires manual privacy review.
+- Never export staff identifiers, internal security/fraud reasoning, secrets, routing metadata
+  or another person's data.
+
+The export README and machine-readable metadata state this disposition accurately.
+
+Community content: the documented policy does not authorise retaining linked community content,
+so questions, answers, votes and win posts are deleted on member deletion; no de-identification
+branch is introduced. Manifest and allowlist tests assert the rule for every corrected surface.
 
 ## 3. Two isolated synthetic members
 
-Member A (deletion/export subject) and Member B (untouched control), both seeded across every
+Member A (deletion/export subject) and Member B (untouched control), seeded across every
 corrected surface, including cross-linked cases: A's answer/vote on B's content, B's
 answer/vote on A's content, and separate A-only and B-only conversations, messages, tickets,
 notes and win posts.
 
 Proofs: A's export contains A's records and no B records; deleting A removes only what the
 documented dependency rule requires; B's independent records remain byte-for-byte unchanged.
-Any B response cascaded by deleting A's parent post is recorded explicitly as an expected
-relational consequence. Both accounts and all artifacts are cleaned by exact ID.
+Independent Member B rows are reported separately from B rows that are children of an A-owned
+parent, and any such cascade is recorded as an expected relational consequence. Both accounts
+and all artifacts are cleaned by exact ID.
 
 ## 4. Complete real export path
 
-Canonical function names are taken from the repository and live function inventory; no aliases
-are created. A server-created synthetic reauthentication ticket is used, sending no email.
+Canonical function names come from the repository and live function inventory; no aliases are
+created. Reauthentication is single-use and honoured exactly as the contract requires: if the
+readable and machine-readable exports need separate requests, two separate server-created
+synthetic single-use tickets are issued; if one server snapshot legitimately yields both
+formats, both outputs are proven to come from that snapshot. A consumed or expired ticket is
+proven unable to produce another export. No real email is sent.
+
 Exercised and recorded: readable ZIP; machine-readable JSON; category and source-table
 metadata; exact inclusion of corrected surfaces; exclusion of security-only fields and Member
 B's data; attachment, `no-store` and `nosniff` headers; one-time download; replay rejection;
@@ -83,36 +102,60 @@ or listed explicitly as intentionally retained test evidence. Shared/IP-partitio
 counters are classified as expiring security metadata and reported separately, never deleted to
 manufacture a zero. Retention stays report-only and deletes zero rows.
 
-## 6. Deployment and reproducibility
+## 6. No production test endpoint; access controls preserved
 
-Because `_shared/inventory.ts` changes deployed behaviour: test the exact source first; deploy
-only the Edge Functions consuming the corrected manifest; record names, deployment timestamps
-and tested source SHA; run boot/CORS smoke after deployment; publish no client bundle. No live
-export is claimed as tested until the live functions run the corrected manifest bytes.
+The A/B fixture and reconciliation harness stays local/server-authorized tooling under
+`tools/batch2/` and does not become a publicly callable or permanently deployed function. No
+new production verification secret is added. If an unavoidable temporary private function is
+required it fails closed without a temporary high-entropy secret, returns no secrets, tokens,
+member content or raw identifiers, is deleted immediately after verification, is confirmed 404
+afterwards, and has its temporary secret removed. Local tooling is strongly preferred.
 
-## 7. Deno gate and final artifacts
+Manifest changes must not broaden grants, RLS policies or browser access. Record before/after
+policy and grant digests for every corrected surface and confirm: anonymous access did not
+increase; A cannot read B's private records and B cannot read A's; Admin/service-role behaviour
+is unchanged and intentional; the seven legacy ownerless orders and all real records keep
+identical counts and ownership values; no real row content enters an evidence artifact.
 
-The Deno gate records exactly one of `PASS`, or `BLOCKED — accepted pre-existing toolchain
-conflict` with the exact diagnostic class and location, confirmation it is unchanged, and
-passing focused tests plus boot smoke. No secrets or credentials appear. `PARTIAL` is
-prohibited everywhere; only PASS / FAIL / BLOCKED / NOT TESTED are used.
+## 7. Deployment, rollback and final gates
+
+Record current deployed versions or reproducible source SHAs and a tested rollback procedure
+before deploying. Deploy only the Edge Functions consuming the corrected manifest; deploy no
+client code. No live export is claimed as tested until the live functions run the corrected
+manifest bytes.
+
+Fresh runs: manifest and allowlist tests; reconciliation-generator fixtures; export
+inclusion/exclusion tests; deletion, dependency and idempotence tests; cross-member isolation
+tests; Deno tests and checks for changed functions/shared modules; lint on changed files; boot
+and CORS smoke; policy/grant drift comparison; real synthetic ZIP and JSON export; real
+synthetic deletion and reconciliation; retention report-only execution; exact-ID cleanup and
+safety-flag restoration. Previous client build, accessibility, performance and 24-task evidence
+keeps its original date and is not rerun.
+
+Only PASS / FAIL / BLOCKED / NOT TESTED are used; `PARTIAL` is prohibited. The only permitted
+final BLOCKED results are the accepted historical auth-audit limitation, the two recorded
+localhost Support-browser checks whose allowed-origin server proof passed, and the unchanged
+Deno/Supabase type-resolution conflict (only with the exact diagnostic class and location,
+confirmation it is unchanged, and passing focused tests plus boot smoke). Any other new
+in-scope BLOCKED result prevents closure.
+
+## 8. Final artifacts
 
 Regenerated: `data-lifecycle.json`, `prompt3-inventory-reconciliation.json`,
 `synthetic-cleanup.json`, `gates.json`, `BATCH-2-COMPLETION-REPORT.md` and
-`ARTIFACT-SHA256.txt` (which hashes every final artifact except itself). The report states
-separately: application code changed; migration applied or not; Edge Functions deployed; client
-published: no; real member data changed: no — plus starting and final code SHAs, before/after
-counts, Member B control results, and the accepted historical auth-audit BLOCKED limitation.
+`ARTIFACT-SHA256.txt` (hashing every final artifact except itself).
 
-Batch 2 closes only with zero FAIL, zero NOT TESTED, zero PARTIAL, accurate classification of
-every member-linked surface, successful readable and machine-readable exports, successful
-deletion and reconciliation, Member B unchanged except any justified parent cascade, zero
-unexplained synthetic residue, safety flags restored, and no client publication.
+The report includes: corrected personal-data classifications; both export formats and their
+contents; Member A versus Member B isolation results; the support-note disposition;
+before/after policy and grant digests; affected function deployment versions; rollback
+instructions; starting and final code SHAs; exact synthetic cleanup counts; permitted BLOCKED
+items only; zero FAIL, zero NOT TESTED, zero PARTIAL; application code changed; migration
+applied or not; real member data changed: no; client published: no.
 
 ## Technical notes
 
 Expected changes: `supabase/functions/_shared/inventory.ts` and its consumers
 (`exportBuild.ts`, export/download and deletion functions), a new cycle-safe
-`tools/batch2/prompt3_reconcile.py`, a synthetic A/B export-and-deletion harness under
-`tools/batch2/` (secret-gated, `@example.invalid` only), manifest/allowlist tests, and the
-evidence and report files above.
+`tools/batch2/prompt3_reconcile.py` with fixture suite, a local synthetic A/B
+export-and-deletion harness under `tools/batch2/` (`@example.invalid` only), manifest/allowlist
+tests, and the evidence and report files above.
