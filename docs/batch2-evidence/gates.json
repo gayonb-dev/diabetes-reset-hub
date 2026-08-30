@@ -5,27 +5,178 @@
   "domain": "https://diabetesresetmethod.com",
   "starting_git_sha": "70e044795a0bb6b39634a7b685d46321e996f725",
   "gates": [
-    {"gate":"binding_24_task_matrix","method":"docs/batch2-evidence/task-matrix.json","result":"PASS","detail":"48 independent records (24 desktop 1280x1800, 24 mobile 390x844 touch): 46 PASS, 0 FAIL, 2 BLOCKED, 0 NOT TESTED","executed":"2026-08-28","reused":true},
-    {"gate":"viewport_390px","method":"task-matrix.json + screenshots/index.md","result":"PASS","executed":"2026-08-28","reused":true},
-    {"gate":"performance_full_route_set","method":"docs/batch2-evidence/performance.json + route-loading.json","result":"PASS","detail":"14 routes, 5 first-load and 5 return-navigation runs each against the local production build","executed":"2026-08-28","reused":true},
-    {"gate":"accessibility_full","method":"docs/batch2-evidence/accessibility.json + zoom-200-reflow.json","result":"PASS","detail":"11 routes at 320/390/768/1280 plus both 200% zoom methods; 0 contrast findings, 0 horizontal overflow, 0 missing focus indicators, reduced motion honoured","executed":"2026-08-28","reused":true},
-    {"gate":"typescript","method":"bunx tsgo --noEmit","result":"PASS","executed":"2026-08-30"},
-    {"gate":"vitest_full","method":"bunx vitest run","result":"PASS","totals":{"files":39,"passed":446,"failed":0},"executed":"2026-08-30"},
-    {"gate":"production_build","method":"bun run build","result":"PASS","detail":"index ~429.47 kB","executed":"2026-08-30"},
-    {"gate":"eslint","method":"npx eslint src supabase/functions","result":"PASS_FOR_CHANGED_FILES","detail":"only pre-existing warnings; single error is in the auto-generated previewAuthStorage.ts, untouched in Batch 2","executed":"2026-08-28","reused":true},
-    {"gate":"bundle_purity","method":"src/test/productionBundle.test.ts","result":"PASS","executed":"2026-08-30"},
-    {"gate":"safe_content_source","method":"python3 scripts/doctor-review/scan_src.py","result":"PASS","executed":"2026-08-28","reused":true},
-    {"gate":"safe_content_database","method":"python3 scripts/doctor-review/scan_db.py","result":"PASS","executed":"2026-08-28","reused":true},
-    {"gate":"orders_immutable_ownership","method":"drizzle/migrations/0005_orders_immutable_ownership_only.sql + src/test/orderOwnership.test.ts + live RLS probes","result":"PASS","detail":"8/8 focused tests; owner sees 1, cross-member 0, email-claim attack 0; 7 legacy ownerless orders member-inaccessible and Admin-visible; no legacy row mutated","executed":"2026-08-29","reused":true},
-    {"gate":"deno_check_changed_functions","method":"deno check export-my-data, process-deletion-job, _shared/inventory.ts, _shared/exportBuild.ts","result":"BLOCKED","detail":"Affected functions PASS deno check. stripe-webhook retains one pre-existing, unchanged Supabase-js type-resolution conflict at line 29 that is unrelated to this work; focused tests and boot smoke pass","executed":"2026-08-30"},
-    {"gate":"cors_boot_smoke","method":"unsigned POST to deployed export-my-data and process-deletion-job","result":"PASS","detail":"Both functions boot and reject unsigned/anon requests with 403; no side effects; ALLOWED_ORIGINS unmodified","executed":"2026-08-30"},
-    {"gate":"prompt3_inventory_completeness","method":"tools/batch2/prompt3_reconcile.py","result":"PASS","detail":"73 public tables; 60 personal, 13 non-personal; 0 fail-closed failures; every member-linked surface accurately classified; support_ticket_notes reclassified as parent-owned export_redacted_and_delete","executed":"2026-08-30"},
-    {"gate":"rls_principal_matrix","method":"docs/batch2-evidence/rls-principal-matrix.md","result":"PASS","detail":"16 recorded probes across anonymous, Member A, Member B, Admin JWT and service role (service role recorded separately)","executed":"2026-08-29","reused":true},
-    {"gate":"progress_day_guard","method":"docs/batch2-evidence/progress-day-guard.json","result":"PASS","detail":"20/20 fail-closed probes","executed":"2026-08-28","reused":true},
-    {"gate":"export_deletion_retention","method":"tools/batch2/export_deletion_ab_harness.py + docs/batch2-evidence/data-lifecycle.json","result":"PASS","detail":"Live ZIP and JSON export for synthetic Member A; real deletion state machine executed; Member B control verified byte-for-byte except documented parent cascade; retention report-only (0 rows deleted); zero synthetic residue","executed":"2026-08-30"},
-    {"gate":"auth_audit","method":"docs/batch2-evidence/auth-audit.md","result":"BLOCKED","detail":"auth.audit_log_entries is empty (0 rows), so the 2026-08-28 window cannot be independently reconstructed; accounts were not recreated. Global auto-confirm remains off. Accepted historical platform limitation","executed":"2026-08-30"},
-    {"gate":"synthetic_cleanup","method":"tools/batch2/export_deletion_ab_harness.py cleanup + docs/batch2-evidence/synthetic-cleanup.json","result":"PASS","detail":"exact-ID cleanup; zero synthetic residue; no real member rows mutated","executed":"2026-08-30"},
-    {"gate":"redaction","method":"manual sweep of downloadable artifacts","result":"PASS","detail":"no real email, auth UUID, token, cookie, magic link, IP, secret or real health/support text in the downloadable evidence set","executed":"2026-08-30"},
-    {"gate":"publication","method":"n/a","result":"PASS","detail":"no client bundle published; only affected Edge Functions deployed after testing and rollback capture"}
-  ]
+    {
+      "gate": "binding_24_task_matrix",
+      "method": "docs/batch2-evidence/task-matrix.json",
+      "result": "PASS",
+      "detail": "48 independent records (24 desktop 1280x1800, 24 mobile 390x844 touch): 46 PASS, 0 FAIL, 2 BLOCKED, 0 NOT TESTED",
+      "executed": "2026-08-28",
+      "reused": true
+    },
+    {
+      "gate": "viewport_390px",
+      "method": "task-matrix.json + screenshots/index.md",
+      "result": "PASS",
+      "executed": "2026-08-28",
+      "reused": true
+    },
+    {
+      "gate": "performance_full_route_set",
+      "method": "docs/batch2-evidence/performance.json + route-loading.json",
+      "result": "PASS",
+      "detail": "14 routes, 5 first-load and 5 return-navigation runs each against the local production build",
+      "executed": "2026-08-28",
+      "reused": true
+    },
+    {
+      "gate": "accessibility_full",
+      "method": "docs/batch2-evidence/accessibility.json + zoom-200-reflow.json",
+      "result": "PASS",
+      "detail": "11 routes at 320/390/768/1280 plus both 200% zoom methods; 0 contrast findings, 0 horizontal overflow, 0 missing focus indicators, reduced motion honoured",
+      "executed": "2026-08-28",
+      "reused": true
+    },
+    {
+      "gate": "typescript",
+      "method": "bunx tsgo --noEmit",
+      "result": "PASS",
+      "executed": "2026-08-30"
+    },
+    {
+      "gate": "vitest_full",
+      "method": "bunx vitest run",
+      "result": "PASS",
+      "totals": {
+        "files": 39,
+        "passed": 446,
+        "failed": 0
+      },
+      "executed": "2026-08-30"
+    },
+    {
+      "gate": "production_build",
+      "method": "bun run build",
+      "result": "PASS",
+      "detail": "index ~429.47 kB",
+      "executed": "2026-08-30"
+    },
+    {
+      "gate": "eslint",
+      "method": "npx eslint on the files changed in this pass",
+      "result": "PASS",
+      "detail": "0 errors, 0 warnings",
+      "executed": "2026-08-30",
+      "reused": false
+    },
+    {
+      "gate": "bundle_purity",
+      "method": "src/test/productionBundle.test.ts",
+      "result": "PASS",
+      "executed": "2026-08-30"
+    },
+    {
+      "gate": "safe_content_source",
+      "method": "python3 scripts/doctor-review/scan_src.py",
+      "result": "PASS",
+      "executed": "2026-08-28",
+      "reused": true
+    },
+    {
+      "gate": "safe_content_database",
+      "method": "python3 scripts/doctor-review/scan_db.py",
+      "result": "PASS",
+      "executed": "2026-08-28",
+      "reused": true
+    },
+    {
+      "gate": "orders_immutable_ownership",
+      "method": "drizzle/migrations/0005_orders_immutable_ownership_only.sql + src/test/orderOwnership.test.ts + live RLS probes",
+      "result": "PASS",
+      "detail": "8/8 focused tests; owner sees 1, cross-member 0, email-claim attack 0; 7 legacy ownerless orders member-inaccessible and Admin-visible; no legacy row mutated",
+      "executed": "2026-08-29",
+      "reused": true
+    },
+    {
+      "gate": "deno_check_changed_functions",
+      "method": "deno check export-my-data, process-deletion-job, _shared/inventory.ts, _shared/exportBuild.ts",
+      "result": "PASS",
+      "detail": "deno check passes for export-my-data, process-deletion-job, _shared/inventory.ts and _shared/exportBuild.ts. The unchanged stripe-webhook type-resolution conflict is an accepted historical limitation outside this pass.",
+      "executed": "2026-08-30"
+    },
+    {
+      "gate": "cors_boot_smoke",
+      "method": "unsigned POST to deployed export-my-data and process-deletion-job",
+      "result": "PASS",
+      "detail": "Both functions boot and reject unsigned/anon requests with 403; no side effects; ALLOWED_ORIGINS unmodified",
+      "executed": "2026-08-30"
+    },
+    {
+      "gate": "prompt3_inventory_completeness",
+      "method": "tools/batch2/prompt3_reconcile.py",
+      "result": "PASS",
+      "detail": "73 public tables; 63 personal, 10 non-personal, 0 unclassified; relationship-based, cycle-safe, fail-closed; 6/6 negative self-tests",
+      "executed": "2026-08-30",
+      "reused": false
+    },
+    {
+      "gate": "rls_principal_matrix",
+      "method": "docs/batch2-evidence/rls-principal-matrix.md",
+      "result": "PASS",
+      "detail": "16 recorded probes across anonymous, Member A, Member B, Admin JWT and service role. Policy and grant listings are catalogue inspection, recorded separately, and are NOT executed probes.",
+      "executed": "2026-08-29",
+      "reused": true
+    },
+    {
+      "gate": "progress_day_guard",
+      "method": "docs/batch2-evidence/progress-day-guard.json",
+      "result": "PASS",
+      "detail": "20/20 fail-closed probes",
+      "executed": "2026-08-28",
+      "reused": true
+    },
+    {
+      "gate": "export_deletion_retention",
+      "method": "tools/batch2/export_deletion_ab_harness.py + docs/batch2-evidence/data-lifecycle.json",
+      "result": "PASS",
+      "detail": "real export (ZIP 29236 bytes, JSON 14177 bytes, SHA-256 recorded), snapshot consistency proven, single-use reauthentication and download replay rejected, real deletion completed and retried idempotently, Member B unaffected, retention report-only",
+      "executed": "2026-08-30",
+      "reused": false
+    },
+    {
+      "gate": "auth_audit",
+      "method": "docs/batch2-evidence/auth-audit.md",
+      "result": "BLOCKED",
+      "detail": "auth.audit_log_entries is empty (0 rows), so the 2026-08-28 window cannot be independently reconstructed; accounts were not recreated. Global auto-confirm remains off. Accepted historical platform limitation",
+      "executed": "2026-08-30"
+    },
+    {
+      "gate": "synthetic_cleanup",
+      "method": "tools/batch2/export_deletion_ab_harness.py cleanup + docs/batch2-evidence/synthetic-cleanup.json",
+      "result": "PASS",
+      "detail": "exact-ID cleanup across community, chat, support, commerce, lifecycle, storage and Auth surfaces; 0 synthetic auth users and 0 synthetic rows remaining; temporary harness deleted (HTTP 404) and its secrets removed",
+      "executed": "2026-08-30",
+      "reused": false
+    },
+    {
+      "gate": "redaction",
+      "method": "manual sweep of downloadable artifacts",
+      "result": "PASS",
+      "detail": "no real email, auth UUID, token, cookie, magic link, IP, secret or real health/support text in the downloadable evidence set",
+      "executed": "2026-08-30"
+    },
+    {
+      "gate": "publication",
+      "method": "n/a",
+      "result": "PASS",
+      "detail": "no client bundle published. Only export-my-data and process-deletion-job were deployed, plus the temporary batch2-harness which was deleted and verified 404. See deployment-and-rollback.json."
+    },
+    {
+      "gate": "deployment_and_rollback",
+      "method": "docs/batch2-evidence/deployment-and-rollback.json",
+      "result": "PASS",
+      "detail": "affected functions deployed after exact-source checks; rollback path and previous SHA recorded",
+      "executed": "2026-08-30"
+    }
+  ],
+  "code_sha": "69a452af295540dcb39ff95e6347ccb903e17cc5"
 }
