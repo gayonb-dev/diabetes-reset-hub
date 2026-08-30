@@ -29,7 +29,7 @@ from psycopg2.extras import RealDictCursor
 
 SUPABASE_URL = os.environ["SUPABASE_URL"]
 ANON_KEY = os.environ["VITE_SUPABASE_ANON_KEY"] or os.environ["SUPABASE_PUBLISHABLE_KEY"]
-HARNESS_SECRET = os.environ["BATCH2_HARNESS_SECRET_V3"] or os.environ["BATCH2_HARNESS_SECRET_V2"]
+HARNESS_SECRET = os.environ["BATCH2_HARNESS_SECRET_V2"] or os.environ["BATCH2_HARNESS_SECRET"]
 INTERNAL_SECRET = os.environ["INTERNAL_FUNCTION_SECRET"]
 
 
