@@ -5,33 +5,62 @@ Prompt 3 inventory reconciliation.
 Relationship-based, cycle-safe, fail-closed classification of every public-schema
 table against the canonical manifest in supabase/functions/_shared/inventory.ts.
 
-A table is personal if:
-- it is listed in INVENTORY with an owner/subject column or parent relationship;
-- it has a foreign-key path to auth.users, profiles, visitor_profiles, or another
-  member-owned table;
-- its RLS policies connect a current-row subject field to auth.uid().
+The manifest is loaded STRUCTURALLY (the real module is executed and dumped to
+JSON by tools/batch2/dump_inventory.ts). Source-text regex parsing is not used,
+because it silently missed multi-line entries in the previous run and produced a
+manifest that disagreed with runtime behaviour.
 
-The generator fails closed when an ownership path is detected but not understood
-or when a personal table is missing from the canonical manifest.
+Independent ownership evidence is collected for EVERY table, including tables the
+manifest claims are non-personal. A table is personal when any of these hold:
+  - it carries a subject column (user_id / member_id / author_id / ...);
+  - it has a foreign-key path to auth.users, profiles, visitor_profiles or to
+    another table that is itself personal (cycle-safe traversal);
+  - an RLS policy connects a current-row subject column to auth.uid().
+
+Ownership (whose row is it) is kept separate from audience (who may read it):
+predicates such as has_role(...), membership_access_state(...) or
+member_access_allowed() grant access to a class of readers and are NOT ownership.
+
+The run FAILS CLOSED when:
+  - a table with ownership evidence is listed in REFERENCE_TABLES;
+  - a table with ownership evidence is absent from the manifest;
+  - a table appears in neither the manifest nor REFERENCE_TABLES;
+  - a manifest entry names a column the table does not have.
+
+Run with --self-test to execute the negative fixtures without touching the database.
 """
 
 import json
-import os
-import re
 import subprocess
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-INVENTORY_TS = ROOT / "supabase" / "functions" / "_shared" / "inventory.ts"
+DUMPER = Path(__file__).resolve().parent / "dump_inventory.ts"
 OUT = ROOT / "docs" / "batch2-evidence" / "prompt3-inventory-reconciliation.json"
 
+OWNERSHIP_COLUMNS = {
+    "user_id", "member_id", "owner_id", "author_id", "actor_id", "actor_user_id",
+    "voter_id", "created_by", "submitted_by", "recipient_id", "profile_id",
+    "visitor_profile_id", "subject_ref",
+}
+
+ROOT_OWNER_TABLES = {"users", "profiles", "visitor_profiles"}
+
+# Predicates that describe an AUDIENCE (entitlement / role), not row ownership.
+AUDIENCE_PREDICATES = (
+    "has_role(", "membership_access_state(", "member_access_allowed(",
+    "member_write_allowed(", "membership_write_allowed(",
+)
+
+
+# --------------------------------------------------------------------------
+# catalogue access
+# --------------------------------------------------------------------------
 
 def psql_json(sql: str) -> list[dict]:
     wrapped = f"SELECT json_agg(t) AS result FROM ({sql}) t;"
-    r = subprocess.run(
-        ["psql", "-t", "-A", "-c", wrapped],
-        capture_output=True, text=True,
-    )
+    r = subprocess.run(["psql", "-t", "-A", "-c", wrapped], capture_output=True, text=True)
     if r.returncode != 0:
         raise RuntimeError(f"psql error: {r.stderr}")
     out = r.stdout.strip()
@@ -40,221 +69,261 @@ def psql_json(sql: str) -> list[dict]:
     return json.loads(out)
 
 
-def load_manifest() -> tuple[dict[str, dict], set[str]]:
-    text = INVENTORY_TS.read_text()
-    inventory: dict[str, dict] = {}
-    reference: set[str] = set()
+def load_manifest() -> tuple[dict[str, dict], set[str], dict]:
+    r = subprocess.run(["bun", "run", str(DUMPER)], capture_output=True, text=True, cwd=str(ROOT))
+    if r.returncode != 0:
+        raise RuntimeError(f"manifest load failed: {r.stderr}")
+    dump = json.loads(r.stdout)
+    manifest = {e["table"]: e for e in dump["inventory"]}
+    if len(manifest) != len(dump["inventory"]):
+        raise RuntimeError("duplicate table entries in canonical manifest")
+    return manifest, set(dump["reference_tables"]), dump
 
-    # Parse INVENTORY array entries.
-    entry_re = re.compile(
-        r"\{\s*table:\s*\"([^\"]+)\",\s*match:\s*\"([^\"]+)\",\s*column:\s*\"([^\"]+)\",\s*disposition:\s*\"([^\"]+)\"",
-        re.DOTALL,
+
+def load_catalog() -> dict:
+    tables = [
+        r["table_name"] for r in psql_json(
+            "SELECT table_name FROM information_schema.tables "
+            "WHERE table_schema = 'public' AND table_type = 'BASE TABLE' ORDER BY table_name"
+        )
+    ]
+    cols_rows = psql_json(
+        "SELECT table_name, column_name FROM information_schema.columns "
+        "WHERE table_schema = 'public' ORDER BY table_name, ordinal_position"
     )
-    for m in entry_re.finditer(text):
-        table, match_kind, column, disposition = m.groups()
-        inventory[table] = {
-            "match": match_kind,
-            "column": column,
-            "disposition": disposition,
-        }
+    columns: dict[str, list[str]] = {t: [] for t in tables}
+    for r in cols_rows:
+        columns.setdefault(r["table_name"], []).append(r["column_name"])
 
-    # Parse REFERENCE_TABLES.
-    ref_match = re.search(r"REFERENCE_TABLES\s*=\s*\[([^\]]+)\]", text, re.DOTALL)
-    if ref_match:
-        reference = set(re.findall(r'"([^"]+)"', ref_match.group(1)))
-
-    return inventory, reference
-
-
-def list_public_tables() -> list[str]:
-    rows = psql_json(
-        "SELECT table_name FROM information_schema.tables "
-        "WHERE table_schema = 'public' AND table_type = 'BASE TABLE' ORDER BY table_name"
-    )
-    return [r["table_name"] for r in rows]
-
-
-def get_columns(table: str) -> list[str]:
-    rows = psql_json(
-        "SELECT column_name FROM information_schema.columns "
-        f"WHERE table_schema = 'public' AND table_name = '{table}' ORDER BY ordinal_position"
-    )
-    return [r["column_name"] for r in rows]
-
-
-def get_foreign_keys() -> list[dict]:
-    return psql_json(
+    fk_rows = psql_json(
         """
-        SELECT
-          tc.table_name AS table_name,
-          kcu.column_name AS column_name,
-          ccu.table_name AS foreign_table_name,
-          ccu.column_name AS foreign_column_name
-        FROM information_schema.table_constraints AS tc
-        JOIN information_schema.key_column_usage AS kcu
-          ON tc.constraint_name = kcu.constraint_name
-          AND tc.table_schema = kcu.table_schema
-        JOIN information_schema.constraint_column_usage AS ccu
-          ON ccu.constraint_name = tc.constraint_name
-          AND ccu.table_schema = tc.table_schema
-        WHERE tc.constraint_type = 'FOREIGN KEY'
-          AND tc.table_schema = 'public'
-        ORDER BY tc.table_name, kcu.column_name
+        SELECT c.conrelid::regclass::text AS table_name,
+               a.attname                  AS column_name,
+               c.confrelid::regclass::text AS foreign_table
+        FROM pg_constraint c
+        JOIN LATERAL unnest(c.conkey) WITH ORDINALITY AS k(attnum, ord) ON true
+        JOIN pg_attribute a ON a.attrelid = c.conrelid AND a.attnum = k.attnum
+        WHERE c.contype = 'f' AND c.connamespace = 'public'::regnamespace
         """
     )
+    fks: dict[str, list[dict]] = {t: [] for t in tables}
+    for r in fk_rows:
+        t = r["table_name"].replace("public.", "")
+        ft = r["foreign_table"].split(".")[-1]
+        fks.setdefault(t, []).append({"column": r["column_name"], "foreign_table": ft})
 
-
-def get_policies(table: str) -> list[dict]:
-    return psql_json(
-        f"""
-        SELECT polname AS policy_name, polcmd AS command, polqual::text AS using_expr
-        FROM pg_policy
-        WHERE polrelid = 'public.{table}'::regclass
+    pol_rows = psql_json(
+        """
+        SELECT c.relname AS table_name, p.polname AS policy_name,
+               COALESCE(pg_get_expr(p.polqual, p.polrelid), '') AS using_expr,
+               COALESCE(pg_get_expr(p.polwithcheck, p.polrelid), '') AS check_expr
+        FROM pg_policy p JOIN pg_class c ON c.oid = p.polrelid
+        WHERE c.relnamespace = 'public'::regnamespace
         """
     )
+    policies: dict[str, list[dict]] = {t: [] for t in tables}
+    for r in pol_rows:
+        policies.setdefault(r["table_name"], []).append(r)
+
+    return {"tables": tables, "columns": columns, "fks": fks, "policies": policies}
 
 
-def build_ownership_graph(fks: list[dict]) -> dict[str, list[tuple[str, str]]]:
-    graph: dict[str, list[tuple[str, str]]] = {}
-    for fk in fks:
-        t = fk["table_name"]
-        graph.setdefault(t, []).append((fk["column_name"], fk["foreign_table_name"]))
-    return graph
+# --------------------------------------------------------------------------
+# pure classification (unit-testable, no I/O)
+# --------------------------------------------------------------------------
 
+def ownership_evidence(table: str, catalog: dict, manifest: dict, _stack: tuple = ()) -> list[dict]:
+    """Independent, cycle-safe ownership evidence for one table."""
+    if table in _stack:  # cycle: stop, evidence already reported higher up
+        return []
+    stack = _stack + (table,)
+    ev: list[dict] = []
 
-OWNERSHIP_COLUMNS = {
-    "user_id", "member_id", "owner_id", "author_id", "actor_id", "voter_id",
-    "created_by", "submitted_by", "recipient_id", "profile_id", "visitor_profile_id",
-}
+    for col in catalog["columns"].get(table, []):
+        if col in OWNERSHIP_COLUMNS:
+            ev.append({"kind": "subject_column", "column": col})
 
-ROOT_OWNER_TABLES = {"auth.users", "profiles", "visitor_profiles"}
-
-
-def classify_table(
-    table: str,
-    manifest: dict[str, dict],
-    reference: set[str],
-    graph: dict[str, list[tuple[str, str]]],
-    columns_by_table: dict[str, list[str]],
-    visited: set[str] | None = None,
-) -> dict:
-    if visited is None:
-        visited = set()
-    if table in visited:
-        return {"status": "cycle", "reason": "cycle in foreign-key graph"}
-    visited.add(table)
-
-    if table in manifest:
-        entry = manifest[table]
-        return {
-            "status": "classified",
-            "classification": "personal",
-            "manifest_disposition": entry["disposition"],
-            "owner_column": entry["column"],
-            "match_kind": entry["match"],
-            "source": "canonical_manifest",
-        }
-
-    if table in reference:
-        return {
-            "status": "classified",
-            "classification": "non_personal",
-            "source": "reference_tables",
-        }
-
-    cols = columns_by_table.get(table, [])
-    owner_cols = [c for c in cols if c in OWNERSHIP_COLUMNS]
-
-    # Direct FK to a root owner table.
-    for col, ft in graph.get(table, []):
+    for fk in catalog["fks"].get(table, []):
+        ft = fk["foreign_table"]
         if ft in ROOT_OWNER_TABLES:
-            return {
-                "status": "classified",
-                "classification": "personal",
-                "owner_column": col,
-                "foreign_key_to": ft,
-                "source": "foreign_key",
-            }
+            ev.append({"kind": "fk_to_owner_root", "column": fk["column"], "foreign_table": ft})
+        elif ft != table:
+            if ft in manifest or ownership_evidence(ft, catalog, manifest, stack):
+                ev.append({"kind": "fk_to_personal_table", "column": fk["column"], "foreign_table": ft})
 
-    # Recursive FK to a member-owned table.
-    for col, ft in graph.get(table, []):
-        if ft == table:
+    subject_cols = {c for c in catalog["columns"].get(table, []) if c in OWNERSHIP_COLUMNS}
+    for p in catalog["policies"].get(table, []):
+        expr = f"{p.get('using_expr','')} {p.get('check_expr','')}".lower()
+        if "auth.uid()" not in expr:
             continue
-        parent = classify_table(ft, manifest, reference, graph, columns_by_table, visited.copy())
-        if parent.get("classification") == "personal":
-            return {
-                "status": "classified",
-                "classification": "personal",
-                "owner_column": col,
-                "foreign_key_to": ft,
-                "parent_classification": parent,
-                "source": "indirect_ownership",
+        stripped = expr
+        for pred in AUDIENCE_PREDICATES:
+            stripped = stripped.replace(pred.lower(), " audience_predicate( ")
+        for col in subject_cols:
+            if col in stripped:
+                ev.append({"kind": "rls_subject_predicate", "column": col, "policy": p["policy_name"]})
+                break
+    return ev
+
+
+def classify(catalog: dict, manifest: dict[str, dict], reference: set[str]) -> tuple[list[dict], list[str]]:
+    findings: list[dict] = []
+    failures: list[str] = []
+
+    for table in sorted(catalog["tables"]):
+        ev = ownership_evidence(table, catalog, manifest)
+        in_manifest = table in manifest
+        in_reference = table in reference
+        cols = catalog["columns"].get(table, [])
+
+        if in_manifest and in_reference:
+            failures.append(f"{table}: listed in BOTH the manifest and REFERENCE_TABLES")
+
+        if in_manifest:
+            entry = manifest[table]
+            classification = "personal"
+            source = "canonical_manifest"
+            if entry["match"] != "order_ownership" and entry["column"] not in cols:
+                failures.append(
+                    f"{table}: manifest column '{entry['column']}' does not exist on the table"
+                )
+            if entry["match"] == "parent":
+                pt, pc = entry.get("parentTable"), entry.get("parentOwnerColumn")
+                if not pt or pt not in catalog["tables"] or pc not in catalog["columns"].get(pt, []):
+                    failures.append(f"{table}: parent relationship {pt}.{pc} is not resolvable")
+            detail = {
+                "manifest_disposition": entry["disposition"],
+                "match_kind": entry["match"],
+                "owner_column": entry["column"],
             }
+        elif in_reference:
+            classification = "non_personal"
+            source = "reference_tables"
+            detail = {}
+            if ev:
+                failures.append(
+                    f"{table}: declared non-personal but ownership evidence exists "
+                    f"({', '.join(sorted({e['kind'] for e in ev}))})"
+                )
+        else:
+            classification = "unclassified"
+            source = "not_covered"
+            detail = {}
+            failures.append(
+                f"{table}: covered by neither the canonical manifest nor REFERENCE_TABLES"
+                + (" and it carries ownership evidence" if ev else "")
+            )
 
-    # RLS ownership predicate.
-    policies = get_policies(table)
-    for p in policies:
-        expr = (p.get("using_expr") or "").lower()
-        if "auth.uid()" in expr:
-            for col in owner_cols:
-                if col in expr:
-                    return {
-                        "status": "classified",
-                        "classification": "personal",
-                        "owner_column": col,
-                        "rls_policy": p["policy_name"],
-                        "source": "rls_policy",
-                    }
+        findings.append({
+            "table": table,
+            "classification": classification,
+            "source": source,
+            "independent_ownership_evidence": ev,
+            **detail,
+        })
 
+    return findings, failures
+
+
+# --------------------------------------------------------------------------
+# negative fixtures
+# --------------------------------------------------------------------------
+
+def _cat(tables, columns, fks=None, policies=None) -> dict:
     return {
-        "status": "classified",
-        "classification": "non_personal",
-        "owner_columns": owner_cols,
-        "foreign_keys": graph.get(table, []),
-        "source": "no_ownership_path_detected",
+        "tables": tables,
+        "columns": columns,
+        "fks": fks or {t: [] for t in tables},
+        "policies": policies or {t: [] for t in tables},
     }
 
 
+def self_test() -> int:
+    results = []
+
+    def check(name, cond):
+        results.append((name, bool(cond)))
+
+    # 1. parent-owned notes wrongly declared non-personal must FAIL.
+    cat = _cat(
+        ["support_tickets", "support_ticket_notes"],
+        {"support_tickets": ["id", "user_id"], "support_ticket_notes": ["id", "ticket_id", "body"]},
+        {"support_tickets": [], "support_ticket_notes": [{"column": "ticket_id", "foreign_table": "support_tickets"}]},
+    )
+    _, f = classify(cat, {"support_tickets": {"table": "support_tickets", "match": "user_id", "column": "user_id", "disposition": "export_and_delete"}}, {"support_ticket_notes"})
+    check("parent-owned note declared non-personal fails", any("support_ticket_notes" in x for x in f))
+
+    # 2. table with user_id missing from the manifest must FAIL.
+    cat = _cat(["billing_holds"], {"billing_holds": ["id", "user_id"]})
+    _, f = classify(cat, {}, set())
+    check("unmanifested user_id table fails", any("billing_holds" in x for x in f))
+
+    # 3. derived table FK'd to a personal parent, declared reference, must FAIL.
+    cat = _cat(
+        ["community_answers", "community_answer_embeddings"],
+        {"community_answers": ["id", "author_id"], "community_answer_embeddings": ["id", "answer_id"]},
+        {"community_answers": [], "community_answer_embeddings": [{"column": "answer_id", "foreign_table": "community_answers"}]},
+    )
+    _, f = classify(cat, {"community_answers": {"table": "community_answers", "match": "author_id", "column": "author_id", "disposition": "export_and_delete"}}, {"community_answer_embeddings"})
+    check("derived embedding declared reference fails", any("community_answer_embeddings" in x for x in f))
+
+    # 4. entitlement-only RLS is audience, not ownership: PASSES as non-personal.
+    cat = _cat(
+        ["content_items"], {"content_items": ["id", "title"]},
+        policies={"content_items": [{"policy_name": "members read", "using_expr": "member_access_allowed() AND auth.uid() IS NOT NULL", "check_expr": ""}]},
+    )
+    _, f = classify(cat, {}, {"content_items"})
+    check("entitlement-only RLS stays non-personal", not f)
+
+    # 5. cyclic foreign keys terminate.
+    cat = _cat(
+        ["a", "b"], {"a": ["id", "b_id"], "b": ["id", "a_id"]},
+        {"a": [{"column": "b_id", "foreign_table": "b"}], "b": [{"column": "a_id", "foreign_table": "a"}]},
+    )
+    _, f = classify(cat, {}, {"a", "b"})
+    check("cyclic FK graph terminates", isinstance(f, list))
+
+    # 6. manifest column that does not exist must FAIL.
+    cat = _cat(["water_logs"], {"water_logs": ["id", "user_id"]})
+    _, f = classify(cat, {"water_logs": {"table": "water_logs", "match": "member_id", "column": "member_id", "disposition": "export_and_delete"}}, set())
+    check("manifest column mismatch fails", any("does not exist" in x for x in f))
+
+    ok = all(p for _, p in results)
+    for name, passed in results:
+        print(f"{'PASS' if passed else 'FAIL'}  {name}")
+    print(f"self-test: {'PASS' if ok else 'FAIL'} ({sum(p for _, p in results)}/{len(results)})")
+    return 0 if ok else 1
+
+
 def main() -> int:
-    manifest, reference = load_manifest()
-    tables = list_public_tables()
-    fks = get_foreign_keys()
-    graph = build_ownership_graph(fks)
-    columns_by_table = {t: get_columns(t) for t in tables}
+    if "--self-test" in sys.argv:
+        return self_test()
 
-    findings: list[dict] = []
-    failures: list[str] = []
-    personal_count = 0
-    non_personal_count = 0
-
-    for table in sorted(tables):
-        result = classify_table(table, manifest, reference, graph, columns_by_table)
-        findings.append({"table": table, **result})
-        if result["classification"] == "personal":
-            personal_count += 1
-        else:
-            non_personal_count += 1
-        if result["source"] in ("foreign_key", "indirect_ownership", "rls_policy"):
-            failures.append(
-                f"{table}: detected personal-by-association but missing from canonical manifest"
-            )
+    manifest, reference, dump = load_manifest()
+    catalog = load_catalog()
+    findings, failures = classify(catalog, manifest, reference)
 
     summary = {
-        "total_tables": len(tables),
-        "personal": personal_count,
-        "non_personal": non_personal_count,
-        "fail_closed_failures": failures,
+        "generator": "tools/batch2/prompt3_reconcile.py",
+        "manifest_source": "structural module load via tools/batch2/dump_inventory.ts",
+        "total_tables": len(catalog["tables"]),
+        "personal": sum(1 for f in findings if f["classification"] == "personal"),
+        "non_personal": sum(1 for f in findings if f["classification"] == "non_personal"),
+        "unclassified": sum(1 for f in findings if f["classification"] == "unclassified"),
         "manifest_tables": len(manifest),
         "reference_tables": sorted(reference),
+        "exportable_tables": sorted(dump["exportable"]),
+        "deletable_tables": sorted(dump["deletable"]),
+        "fail_closed_failures": failures,
     }
 
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(json.dumps({"summary": summary, "findings": findings}, indent=2))
     print(json.dumps(summary, indent=2))
     if failures:
-        print("FAIL: relationship-based classification found unmanifested personal tables")
+        print("FAIL: fail-closed classification found unresolved surfaces")
         return 1
-    print("PASS: every member-linked surface is accurately classified")
+    print("PASS: every public table is accurately and independently classified")
     return 0
 
 
