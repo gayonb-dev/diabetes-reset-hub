@@ -15,6 +15,8 @@ export type MatchKind =
   | "visitor_profile"  // column IN (visitor profile ids bound to the user)
   | "email"            // case-insensitive email match
   | "customer_email"
+  | "order_ownership"  // row id IN (orders owned via orders.user_id or a member-owned subscription)
+  | "cascade"          // no direct subject key; removed by FK cascade with a member-owned parent
   | "parent";          // column is a FK to parentTable.parentColumn; ownership is inherited
 
 export type Disposition =
@@ -22,6 +24,8 @@ export type Disposition =
   | "export_redacted_and_delete" // exported with sensitive columns stripped
   | "delete_only_security"       // never exported: credentials / security records
   | "delete_only_legacy"         // exported as labelled legacy, not valid consent
+  | "export_redacted_and_retain" // personal, exported redacted, RETAINED under financial/anti-fraud retention
+  | "cascade_only_not_exported"  // personal by association; removed only by FK cascade, never exported
   | "reference_only";            // no personal data, never exported or deleted
 
 export interface InventoryEntry {
