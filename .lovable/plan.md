@@ -8,9 +8,11 @@ The safeguards below control wherever any earlier wording conflicts or is silent
 
 Before any write: confirm project `wqennhjdojjqmmqzjhti` and `https://diabetesresetmethod.com`;
 confirm every safety flag at its recorded pre-run value; confirm global email auto-confirm
-disabled; confirm no real email, Stripe, Resend, Dexcom or external-AI call can occur. Stop only
-on project mismatch or a flag that cannot be preserved. If a migration unexpectedly becomes
-necessary, confirm a current production restore point before applying it.
+disabled; confirm no real email, Stripe, Resend, Dexcom or external-AI call can occur. Stop if
+the project differs, a safety flag cannot be preserved, or isolation from real email, Stripe,
+Resend, Dexcom and external-AI calls cannot be proven before synthetic writes begin. If a
+migration unexpectedly becomes necessary, confirm a current production restore point before
+applying it.
 
 ## What is actually wrong today
 
@@ -120,9 +122,10 @@ identical counts and ownership values; no real row content enters an evidence ar
 ## 7. Deployment, rollback and final gates
 
 Record current deployed versions or reproducible source SHAs and a tested rollback procedure
-before deploying. Deploy only the Edge Functions consuming the corrected manifest; deploy no
-client code. No live export is claimed as tested until the live functions run the corrected
-manifest bytes.
+before deploying. No client publication: the only production deployments permitted are the
+affected Edge Functions identified here — only those consuming the corrected manifest — after
+testing and rollback capture. No live export is claimed as tested until the live functions run
+the corrected manifest bytes.
 
 Fresh runs: manifest and allowlist tests; reconciliation-generator fixtures; export
 inclusion/exclusion tests; deletion, dependency and idempotence tests; cross-member isolation
