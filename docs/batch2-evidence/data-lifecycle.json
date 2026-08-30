@@ -17,76 +17,313 @@
   },
   "retention": {
     "mode": "report_only",
-    "executed": "report_only run confirmed; retention deleted nothing",
     "rows_deleted": 0,
+    "executed": "report-only; retention deleted nothing",
+    "billing_holds_retained": true,
     "result": "PASS"
   },
   "export": {
-    "method": "live ZIP and JSON export for synthetic Member A using separate single-use reauthentication tickets",
+    "method": "live export call for synthetic Member A; one snapshot produces both the ZIP and the JSON artifact",
     "executed_this_pass": true,
-    "affected_member": "synthetic Member A (never-billed; no Stripe calls)",
+    "affected_member": "synthetic Member A (never-billed; no processor call path)",
     "control_member": "synthetic Member B (untouched)",
-    "included_surfaces_verified": [
-      "community_questions",
-      "community_answers",
-      "community_votes",
-      "win_posts",
-      "conversations",
-      "messages",
-      "support_tickets",
-      "support_ticket_notes"
-    ],
-    "support_ticket_notes_disposition": {
-      "body_included": false,
-      "author_id_included": false,
-      "manual_privacy_review_required": true,
-      "note": "Internal support note. Raw body and staff identifiers are excluded from automatic export; request manual privacy review if needed."
+    "artifacts": {
+      "zip": {
+        "bytes": 29236,
+        "sha256": "e000ef79dd7ad93a7b7464ad1878b02bca40b7e8e95768ed8630f79a8f7cf55e",
+        "entries": [
+          "README.txt",
+          "export.json",
+          "meal_swaps.csv",
+          "community_votes.csv",
+          "messages.csv",
+          "visitor_engagement_scores.csv",
+          "phi_access_log.csv",
+          "conversations.csv",
+          "a1c_logs.csv",
+          "blood_sugar_readings.csv",
+          "health_logs.csv",
+          "member_measurements.csv",
+          "mood_logs.csv",
+          "water_logs.csv",
+          "post_meal_walks.csv",
+          "mindset_reads.csv",
+          "snack_logs.csv",
+          "meal_logs.csv",
+          "cheat_meals.csv",
+          "if_fasting_log.csv",
+          "meal_plans.csv",
+          "shopping_lists.csv",
+          "member_daily_progress.csv",
+          "member_progress.csv",
+          "workout_sessions.csv",
+          "user_badges.csv",
+          "user_streaks.csv",
+          "community_answers.csv",
+          "win_posts.csv",
+          "community_questions.csv",
+          "qa_submissions.csv",
+          "qa_monthly_usage.csv",
+          "vita_similarity_log.csv",
+          "activity_events.csv",
+          "support_ticket_notes.csv",
+          "support_tickets.csv",
+          "points_ledger.csv",
+          "workout_completion_receipts.csv",
+          "notifications.csv",
+          "consent_records.csv",
+          "whatsapp_consent.csv",
+          "user_roles.csv",
+          "oauth_client_grants.csv",
+          "coaching_waitlist.csv",
+          "coaching_interest.csv",
+          "deletion_requests.csv",
+          "subscriptions.csv",
+          "dunning_attempts.csv",
+          "orders.csv",
+          "billing_holds.csv",
+          "intake_submissions.csv",
+          "challenge_progress.csv",
+          "leads.csv",
+          "dexcom_connections.csv",
+          "visitor_profiles.csv",
+          "profiles.csv",
+          "deletion_jobs.csv",
+          "legacy_phi_consent.csv"
+        ],
+        "headers": {
+          "Content-Type": "application/zip",
+          "Content-Length": "29236",
+          "Cache-Control": "no-store, max-age=0",
+          "Content-Disposition": "attachment; filename=\"drm-export-756c8074-6b39-493f-a25a-c766eca58e7e.zip\""
+        }
+      },
+      "json": {
+        "bytes": 14177,
+        "sha256": "c78edfbdf705d287f76baf8a695f676696ea7d014eef2717cfaf026595c8fed7",
+        "headers": {
+          "Content-Type": "application/json",
+          "Content-Length": "5219",
+          "Cache-Control": "no-store, max-age=0",
+          "Content-Disposition": "attachment; filename=\"drm-export-756c8074-6b39-493f-a25a-c766eca58e7e.json\""
+        }
+      }
     },
-    "security_headers_verified": [
-      "Cache-Control: no-store",
-      "X-Content-Type-Options: nosniff"
-    ],
-    "one_time_download_verified": true,
-    "link_replay_rejected": true,
-    "zip_size_bytes": "recorded in harness artifact",
-    "json_size_bytes": "recorded in harness artifact",
-    "result": "PASS"
+    "snapshot_consistency": {
+      "zip_contains_export_json": true,
+      "same_schema_version": true,
+      "same_category_set": true,
+      "same_row_counts": true,
+      "same_snapshot_timestamp": true,
+      "exported_at_equals_generated_at": true
+    },
+    "reauthentication": {
+      "expired_ticket_rejected": true,
+      "expired_ticket_status": 401,
+      "ticket_single_use_rejected_on_reuse": true,
+      "ticket_reuse_status": 401,
+      "download_link_replay_status": {
+        "zip": 410,
+        "json": 410
+      }
+    },
+    "per_surface_inclusion_exclusion": {
+      "community_questions": {
+        "a_rows_included": 1,
+        "b_rows_included": 0,
+        "result": "PASS"
+      },
+      "community_answers": {
+        "a_rows_included": 1,
+        "b_rows_included": 0,
+        "result": "PASS"
+      },
+      "community_votes": {
+        "a_rows_included": 1,
+        "b_rows_included": 0,
+        "result": "PASS"
+      },
+      "win_posts": {
+        "a_rows_included": 1,
+        "b_rows_included": 0,
+        "result": "PASS"
+      },
+      "conversations": {
+        "a_rows_included": 1,
+        "b_rows_included": 0,
+        "result": "PASS"
+      },
+      "messages": {
+        "a_rows_included": 1,
+        "b_rows_included": 0,
+        "result": "PASS"
+      },
+      "support_tickets": {
+        "a_rows_included": 1,
+        "b_rows_included": 0,
+        "result": "PASS"
+      },
+      "support_ticket_notes": {
+        "a_rows_included": 1,
+        "b_rows_included": 0,
+        "result": "PASS"
+      }
+    },
+    "support_ticket_note_rule": {
+      "body_absent": true,
+      "author_id_absent": true,
+      "flags_present": true
+    },
+    "orders_immutable_ownership": {
+      "owned_by_a_exported": true,
+      "ownerless_legacy_with_a_email_exported": false,
+      "owned_by_b_exported": false
+    },
+    "billing_holds": {
+      "rows_exported": 1,
+      "dispute_id_redacted": true,
+      "charge_id_redacted": true
+    },
+    "community_answer_embeddings_excluded": true,
+    "row_counts": {
+      "meal_swaps": 0,
+      "community_votes": 1,
+      "messages": 1,
+      "visitor_engagement_scores": 0,
+      "phi_access_log": 0,
+      "conversations": 1,
+      "a1c_logs": 0,
+      "blood_sugar_readings": 0,
+      "health_logs": 0,
+      "member_measurements": 0,
+      "mood_logs": 0,
+      "water_logs": 0,
+      "post_meal_walks": 0,
+      "mindset_reads": 0,
+      "snack_logs": 0,
+      "meal_logs": 0,
+      "cheat_meals": 0,
+      "if_fasting_log": 0,
+      "meal_plans": 0,
+      "shopping_lists": 0,
+      "member_daily_progress": 0,
+      "member_progress": 0,
+      "workout_sessions": 0,
+      "user_badges": 0,
+      "user_streaks": 0,
+      "community_answers": 1,
+      "win_posts": 1,
+      "community_questions": 1,
+      "qa_submissions": 0,
+      "qa_monthly_usage": 0,
+      "vita_similarity_log": 0,
+      "activity_events": 0,
+      "support_ticket_notes": 1,
+      "support_tickets": 1,
+      "points_ledger": 0,
+      "workout_completion_receipts": 0,
+      "notifications": 0,
+      "consent_records": 0,
+      "whatsapp_consent": 0,
+      "user_roles": 0,
+      "oauth_client_grants": 0,
+      "coaching_waitlist": 0,
+      "coaching_interest": 0,
+      "deletion_requests": 0,
+      "subscriptions": 0,
+      "dunning_attempts": 0,
+      "orders": 1,
+      "billing_holds": 1,
+      "intake_submissions": 0,
+      "challenge_progress": 0,
+      "leads": 0,
+      "dexcom_connections": 0,
+      "visitor_profiles": 1,
+      "profiles": 1,
+      "deletion_jobs": 0,
+      "legacy_phi_consent": 0
+    },
+    "ownership_basis": {
+      "orders": "orders.user_id, or an order attached to a subscription owned by this account. customer_email is never used to claim an order.",
+      "support_ticket_notes": "inherited from the member's own support ticket; note body and staff identifiers excluded."
+    }
   },
   "deletion": {
-    "executed_this_pass": true,
-    "subject": "synthetic Member A",
-    "control": "synthetic Member B",
-    "method": "real request-account-deletion -> process-deletion-job state machine",
-    "expected_vs_actual": {
-      "a_community_questions_remaining": 0,
-      "a_community_answers_remaining": 0,
-      "a_community_votes_remaining": 0,
-      "a_win_posts_remaining": 0,
-      "a_conversations_remaining": 0,
-      "a_messages_remaining": 0,
-      "a_support_tickets_remaining": 0,
-      "a_support_ticket_notes_remaining": 0,
-      "b_community_questions_remaining": 1,
-      "b_community_answers_remaining": 0,
-      "b_community_votes_remaining": 1,
-      "b_win_posts_remaining": 1,
-      "b_conversations_remaining": 1,
-      "b_messages_remaining": 1,
-      "b_support_tickets_remaining": 1,
-      "b_support_ticket_notes_remaining": 1
+    "orders_held_out_during_request_call": 0,
+    "orders_restored_before_worker": false,
+    "job_state_first_pass": "completed",
+    "job_state_retry_pass": "completed",
+    "first_pass_remaining": {},
+    "retry_remaining": {},
+    "retry_is_idempotent": true,
+    "per_surface": {
+      "community_questions": {
+        "a_rows_remaining": 0,
+        "b_rows_remaining": 1,
+        "result": "PASS"
+      },
+      "community_votes": {
+        "a_rows_remaining": 0,
+        "b_rows_remaining": 1,
+        "result": "PASS"
+      },
+      "win_posts": {
+        "a_rows_remaining": 0,
+        "b_rows_remaining": 1,
+        "result": "PASS"
+      },
+      "conversations": {
+        "a_rows_remaining": 0,
+        "b_rows_remaining": 1,
+        "result": "PASS"
+      },
+      "messages": {
+        "a_rows_remaining": 0,
+        "b_rows_remaining": 1,
+        "result": "PASS"
+      },
+      "support_tickets": {
+        "a_rows_remaining": 0,
+        "b_rows_remaining": 1,
+        "result": "PASS"
+      },
+      "support_ticket_notes": {
+        "a_rows_remaining": 0,
+        "b_rows_remaining": 1,
+        "result": "PASS"
+      },
+      "community_answers": {
+        "a_rows_remaining": 0,
+        "b_rows_remaining": 0,
+        "expected_relational_consequence": "B's answer on A's question is removed by ON DELETE CASCADE from community_questions",
+        "result": "PASS"
+      },
+      "community_answer_embeddings": {
+        "a_rows_remaining": 0,
+        "basis": "removed by ON DELETE CASCADE with the parent answer",
+        "result": "PASS"
+      },
+      "billing_holds": {
+        "a_rows_remaining": 1,
+        "basis": "retained under financial and anti-fraud retention (report-only)",
+        "result": "PASS"
+      },
+      "orders": {
+        "owned_by_a_remaining": 0,
+        "ownerless_legacy_a_email_remaining": 1,
+        "owned_by_b_remaining": 1,
+        "result": "PASS"
+      }
     },
-    "documented_relational_consequences": [
-      "community_answers: B's answer on A's question was cascaded when A's question was deleted; A's answer on B's question was deleted by author_id"
-    ],
-    "stripe_objects_touched": 0,
-    "emails_sent": 0,
-    "ai_calls": 0,
-    "dexcom_calls": 0,
-    "result": "PASS"
+    "auth_users_remaining_total": 4,
+    "a_auth_identity_removed": true,
+    "b_auth_identity_present": true
   },
   "synthetic_cleanup": {
     "method": "exact-ID deletion via temporary service-authorized harness; verified zero residue",
     "result": "PASS"
   },
-  "notes": "No live Stripe, Resend, Dexcom or AI call. stripe_deletion_enabled, retention mode, email flags, secrets and origin configuration unchanged."
+  "notes": "No live Stripe, Resend, Dexcom or AI call. stripe_deletion_enabled, retention mode, email flags, secrets and origin configuration unchanged.",
+  "code_sha": "a9aeb1fee6b3dc92df81467f3d8ff07671ab6117",
+  "result": "PASS"
 }

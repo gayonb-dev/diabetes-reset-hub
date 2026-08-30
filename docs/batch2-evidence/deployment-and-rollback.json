@@ -1,0 +1,35 @@
+{
+  "generated_utc": "2026-08-30",
+  "code_sha": "a9aeb1fee6b3dc92df81467f3d8ff07671ab6117",
+  "client_published": false,
+  "functions_deployed": [
+    {
+      "function": "export-my-data",
+      "reason": "immutable order ownership + single shared snapshot timestamp",
+      "deployed_utc": "2026-08-30"
+    },
+    {
+      "function": "process-deletion-job",
+      "reason": "immutable order ownership in deletion and reconciliation",
+      "deployed_utc": "2026-08-30"
+    },
+    {
+      "function": "batch2-harness",
+      "reason": "temporary verification tooling",
+      "deployed_utc": "2026-08-30",
+      "deleted_after_run": true,
+      "post_delete_probe": "HTTP 404"
+    }
+  ],
+  "rollback": {
+    "method": "git revert of the changed files followed by redeploy of the same function names",
+    "files": [
+      "supabase/functions/_shared/inventory.ts",
+      "supabase/functions/_shared/exportBuild.ts",
+      "supabase/functions/process-deletion-job/index.ts"
+    ],
+    "previous_code_sha": "70e044795a0bb6b39634a7b685d46321e996f725",
+    "verified": "affected functions boot and reject unsigned requests after deployment"
+  },
+  "policy_and_grant_drift": "no migration was applied in this pass; RLS policies and table grants are unchanged from 0005_orders_immutable_ownership_only.sql"
+}
