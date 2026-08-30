@@ -206,8 +206,8 @@ class Harness:
 
         notes = snap["categories"].get("support_ticket_notes", [])
         for n in notes:
-            if n.get("body_included") is not True:
-                errors.append("support_ticket_notes: body_included flag missing")
+            if n.get("body_included") is not False:
+                errors.append("support_ticket_notes: body_included flag should be false")
             if n.get("author_id_included") is not False:
                 errors.append("support_ticket_notes: author_id_included flag should be false")
             if n.get("body") not in (None, ""):
