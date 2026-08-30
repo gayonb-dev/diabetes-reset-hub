@@ -52,7 +52,10 @@ def psql_json(sql: str) -> list[dict]:
 
 def psql_exec(sql: str) -> None:
     """Run a non-SELECT statement via psql."""
-    subprocess.run(["psql", "-c", sql], capture_output=True, text=True, check=True)
+    r = subprocess.run(["psql", "-c", sql], capture_output=True, text=True)
+    if r.returncode != 0:
+        print("psql error:", r.stderr)
+        raise subprocess.CalledProcessError(r.returncode, r.args, r.stdout, r.stderr)
 
 
 def harness(action: str, body: dict | None = None) -> dict:
