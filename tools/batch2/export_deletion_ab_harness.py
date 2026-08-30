@@ -42,10 +42,13 @@ def psql_json(sql: str) -> list[dict]:
     wrapped = f"SELECT json_agg(t) AS result FROM ({sql}) t;"
     r = subprocess.run(
         ["psql", "-t", "-A", "-c", wrapped],
-        capture_output=True, text=True, check=True,
+        capture_output=True, text=True,
     )
+    if r.returncode != 0:
+        print("psql error:", r.stderr)
+        raise subprocess.CalledProcessError(r.returncode, r.args, r.stdout, r.stderr)
     out = r.stdout.strip()
-    if not out or out == "":
+    if not out or out == "" or out == "null":
         return []
     return json.loads(out)
 
