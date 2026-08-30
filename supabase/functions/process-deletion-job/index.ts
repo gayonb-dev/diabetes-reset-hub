@@ -444,13 +444,17 @@ Deno.serve(async (req) => {
         if (!reconcileSet.has(entry.table)) return;
         try {
           const isVp = entry.match === "visitor_profile";
-          const isEmail = entry.match === "email" || entry.match === "customer_email";
+          const isEmail = entry.match === "email";
+          const isOrder = entry.match === "order_ownership";
           if ((isVp && !vpIds.length) || (isEmail && !email)) return;
+          if (isOrder && !ownedOrderIds.length) return;
           let n: number;
           if (isEmail) {
             const { count } = await admin.from(entry.table)
               .select("*", { count: "exact", head: true }).ilike(entry.column, email);
             n = count ?? 0;
+          } else if (isOrder) {
+            n = await countRows(admin, entry.table, entry.column, ownedOrderIds);
           } else {
             n = await countRows(admin, entry.table, entry.column, isVp ? vpIds : userId);
           }
