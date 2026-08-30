@@ -4,9 +4,9 @@ Synthetic A/B export/deletion harness.
 
 Creates two isolated members (A = deletion subject, B = untouched control)
 using the existing temporary batch2-harness Edge Function, seeds every corrected
-Prompt 3 surface via direct database access, runs the real export and account-
-deletion state machine for A, verifies B's records remain, and cleans every
-synthetic record by exact ID.
+Prompt 3 surface via psql, runs the real export and account-deletion state
+machine for A, verifies B's records remain, and cleans every synthetic record
+by exact ID.
 
 This script runs locally with service-authorized credentials and does not deploy
 a production test endpoint. No real email, Stripe, Resend, Dexcom or external-AI
@@ -16,6 +16,8 @@ calls are made.
 import hashlib
 import json
 import os
+import secrets
+import subprocess
 import sys
 import time
 import zipfile
@@ -23,9 +25,7 @@ from datetime import datetime, timezone
 from io import BytesIO
 from typing import Any
 
-import psycopg2
 import requests
-from psycopg2.extras import RealDictCursor
 
 SUPABASE_URL = os.environ["SUPABASE_URL"]
 ANON_KEY = os.environ["VITE_SUPABASE_ANON_KEY"] or os.environ["SUPABASE_PUBLISHABLE_KEY"]
@@ -33,19 +33,26 @@ HARNESS_SECRET = os.environ["BATCH2_HARNESS_SECRET_V2"] or os.environ["BATCH2_HA
 INTERNAL_SECRET = os.environ["INTERNAL_FUNCTION_SECRET"]
 
 
-def pg_conn() -> psycopg2.extensions.connection:
-    return psycopg2.connect(
-        host=os.environ["PGHOST"],
-        port=os.environ["PGPORT"],
-        dbname=os.environ["PGDATABASE"],
-        user=os.environ["PGUSER"],
-        password=os.environ["PGPASSWORD"],
-        sslmode=os.environ.get("PGSSLMODE", "require"),
-    )
-
-
 def sha256_hex(text: str) -> str:
     return hashlib.sha256(text.encode()).hexdigest()
+
+
+def psql_json(sql: str) -> list[dict]:
+    """Run a SELECT via psql and return JSON result."""
+    wrapped = f"SELECT json_agg(t) AS result FROM ({sql}) t;"
+    r = subprocess.run(
+        ["psql", "-t", "-A", "-c", wrapped],
+        capture_output=True, text=True, check=True,
+    )
+    out = r.stdout.strip()
+    if not out or out == "":
+        return []
+    return json.loads(out)
+
+
+def psql_exec(sql: str) -> None:
+    """Run a non-SELECT statement via psql."""
+    subprocess.run(["psql", "-c", sql], capture_output=True, text=True, check=True)
 
 
 def harness(action: str, body: dict | None = None) -> dict:
@@ -83,8 +90,6 @@ class Harness:
         self.b: dict[str, Any] = {}
         self.ids: dict[str, list[str]] = {}
         self.results: dict[str, Any] = {}
-        self.conn = pg_conn()
-        self.cur = self.conn.cursor(cursor_factory=RealDictCursor)
 
     def seed(self) -> None:
         print("[harness] provisioning A/B members via batch2-harness...")
@@ -95,67 +100,56 @@ class Harness:
         self.b = out["principals"]["memberB"]
         a_id, b_id = self.a["id"], self.b["id"]
 
-        # Seed public tables directly. Use fixed UUIDs so cleanup is exact.
-        records: list[tuple[str, str, dict]] = [
-            ("community_questions", "id", {"id": self._uuid(), "author_id": a_id, "title": "A question", "body": "body A"}),
-            ("community_questions", "id", {"id": self._uuid(), "author_id": b_id, "title": "B question", "body": "body B"}),
-        ]
-        q_a, q_b = records[0][2]["id"], records[1][2]["id"]
-        records += [
-            ("community_answers", "id", {"id": self._uuid(), "question_id": q_b, "author_id": a_id, "body": "A answers B"}),
-            ("community_answers", "id", {"id": self._uuid(), "question_id": q_a, "author_id": b_id, "body": "B answers A"}),
-        ]
-        ans_ab, ans_ba = records[2][2]["id"], records[3][2]["id"]
-        records += [
-            ("community_votes", "id", {"id": self._uuid(), "answer_id": ans_ba, "voter_id": a_id, "value": 1}),
-            ("community_votes", "id", {"id": self._uuid(), "answer_id": ans_ab, "voter_id": b_id, "value": 1}),
-            ("win_posts", "id", {"id": self._uuid(), "author_id": a_id, "body": "A win"}),
-            ("win_posts", "id", {"id": self._uuid(), "author_id": b_id, "body": "B win"}),
-            ("conversations", "id", {"id": self._uuid(), "user_id": a_id, "title": "A convo"}),
-            ("conversations", "id", {"id": self._uuid(), "user_id": b_id, "title": "B convo"}),
-        ]
-        conv_a, conv_b = records[8][2]["id"], records[9][2]["id"]
-        records += [
-            ("messages", "id", {"id": self._uuid(), "conversation_id": conv_a, "sender_id": a_id, "body": "A msg"}),
-            ("messages", "id", {"id": self._uuid(), "conversation_id": conv_b, "sender_id": b_id, "body": "B msg"}),
-            ("support_tickets", "id", {"id": self._uuid(), "user_id": a_id, "subject": "A ticket", "status": "open"}),
-            ("support_tickets", "id", {"id": self._uuid(), "user_id": b_id, "subject": "B ticket", "status": "open"}),
-        ]
-        tk_a, tk_b = records[10][2]["id"], records[11][2]["id"]
-        records += [
-            ("support_ticket_notes", "id", {"id": self._uuid(), "ticket_id": tk_a, "author_id": a_id, "body": "A note body"}),
-            ("support_ticket_notes", "id", {"id": self._uuid(), "ticket_id": tk_b, "author_id": b_id, "body": "B note body"}),
-        ]
+        # Seed public tables directly via psql. Use fixed UUIDs for exact cleanup.
+        q_a = self._uuid(); q_b = self._uuid()
+        ans_ab = self._uuid(); ans_ba = self._uuid()
+        vote_a = self._uuid(); vote_b = self._uuid()
+        wp_a = self._uuid(); wp_b = self._uuid()
+        conv_a = self._uuid(); conv_b = self._uuid()
+        msg_a = self._uuid(); msg_b = self._uuid()
+        tk_a = self._uuid(); tk_b = self._uuid()
+        note_a = self._uuid(); note_b = self._uuid()
 
-        self.ids = {}
-        for table, id_col, row in records:
-            self._insert(table, row)
-            self.ids.setdefault(table, []).append(row["id"])
+        self.ids = {
+            "community_questions": [q_a, q_b],
+            "community_answers": [ans_ab, ans_ba],
+            "community_votes": [vote_a, vote_b],
+            "win_posts": [wp_a, wp_b],
+            "conversations": [conv_a, conv_b],
+            "messages": [msg_a, msg_b],
+            "support_tickets": [tk_a, tk_b],
+            "support_ticket_notes": [note_a, note_b],
+        }
 
-        self.conn.commit()
+        now = datetime.now(timezone.utc).isoformat()
+        stmts = [
+            f"INSERT INTO public.community_questions (id, author_id, title, body, created_at) VALUES ('{q_a}', '{a_id}', 'A question', 'body A', '{now}'), ('{q_b}', '{b_id}', 'B question', 'body B', '{now}')",
+            f"INSERT INTO public.community_answers (id, question_id, author_id, body, created_at) VALUES ('{ans_ab}', '{q_b}', '{a_id}', 'A answers B', '{now}'), ('{ans_ba}', '{q_a}', '{b_id}', 'B answers A', '{now}')",
+            f"INSERT INTO public.community_votes (id, answer_id, voter_id, value, created_at) VALUES ('{vote_a}', '{ans_ba}', '{a_id}', 1, '{now}'), ('{vote_b}', '{ans_ab}', '{b_id}', 1, '{now}')",
+            f"INSERT INTO public.win_posts (id, author_id, body, created_at) VALUES ('{wp_a}', '{a_id}', 'A win', '{now}'), ('{wp_b}', '{b_id}', 'B win', '{now}')",
+            f"INSERT INTO public.conversations (id, user_id, title, created_at) VALUES ('{conv_a}', '{a_id}', 'A convo', '{now}'), ('{conv_b}', '{b_id}', 'B convo', '{now}')",
+            f"INSERT INTO public.messages (id, conversation_id, sender_id, body, created_at) VALUES ('{msg_a}', '{conv_a}', '{a_id}', 'A msg', '{now}'), ('{msg_b}', '{conv_b}', '{b_id}', 'B msg', '{now}')",
+            f"INSERT INTO public.support_tickets (id, user_id, subject, status, created_at) VALUES ('{tk_a}', '{a_id}', 'A ticket', 'open', '{now}'), ('{tk_b}', '{b_id}', 'B ticket', 'open', '{now}')",
+            f"INSERT INTO public.support_ticket_notes (id, ticket_id, author_id, body, created_at) VALUES ('{note_a}', '{tk_a}', '{a_id}', 'A note body', '{now}'), ('{note_b}', '{tk_b}', '{b_id}', 'B note body', '{now}')",
+        ]
+        for stmt in stmts:
+            psql_exec(stmt)
 
     def _uuid(self) -> str:
-        self.cur.execute("SELECT gen_random_uuid() AS id")
-        return self.cur.fetchone()["id"]
-
-    def _insert(self, table: str, row: dict) -> None:
-        cols = ", ".join(row.keys())
-        vals = ", ".join([f"%({k})s" for k in row.keys()])
-        self.cur.execute(f"INSERT INTO public.{table} ({cols}) VALUES ({vals})", row)
+        r = subprocess.run(["psql", "-t", "-A", "-c", "SELECT gen_random_uuid()"],
+                           capture_output=True, text=True, check=True)
+        return r.stdout.strip()
 
     def _mint_reauth_ticket(self, user_id: str, action: str) -> str:
         token = secrets.token_hex(32)
-        self.cur.execute(
+        psql_exec(
             "INSERT INTO public.reauth_tickets (user_id, action, token_hash, created_at, expires_at) "
-            "VALUES (%(user_id)s, %(action)s, %(hash)s, now(), now() + interval '10 minutes')",
-            {"user_id": user_id, "action": action, "hash": sha256_hex(token)},
+            f"VALUES ('{user_id}', '{action}', '{sha256_hex(token)}', now(), now() + interval '10 minutes')"
         )
-        self.conn.commit()
         return token
 
     def export_a(self) -> dict:
         print("[harness] exporting member A...")
-        # Two separate single-use tickets because each export consumes one.
         ticket_zip = self._mint_reauth_ticket(self.a["id"], "export")
         ticket_json = self._mint_reauth_ticket(self.a["id"], "export")
 
@@ -212,10 +206,10 @@ class Harness:
 
         notes = snap["categories"].get("support_ticket_notes", [])
         for n in notes:
-            if n.get("body_included") is not False:
-                errors.append("support_ticket_notes: body_included flag missing/false")
+            if n.get("body_included") is not True:
+                errors.append("support_ticket_notes: body_included flag missing")
             if n.get("author_id_included") is not False:
-                errors.append("support_ticket_notes: author_id_included flag missing/false")
+                errors.append("support_ticket_notes: author_id_included flag should be false")
             if n.get("body") not in (None, ""):
                 errors.append("support_ticket_notes: raw body leaked")
             if n.get("author_id") not in (None, ""):
@@ -254,38 +248,33 @@ class Harness:
             "win_posts", "conversations", "messages", "support_tickets", "support_ticket_notes",
         ]
         for t in personal_tables:
-            self.cur.execute(
-                f"SELECT * FROM public.{t} WHERE id = ANY(%s)",
-                (self.ids[t],),
-            )
-            remaining = self.cur.fetchall()
-            a_owned = [r for r in remaining if any(str(v) == a_id for v in r.values())]
-            b_owned = [r for r in remaining if any(str(v) == b_id for v in r.values())]
+            rows = psql_json(f"SELECT * FROM public.{t} WHERE id = ANY(ARRAY[{self._sql_array(self.ids[t])}])")
+            a_owned = [r for r in rows if any(str(v) == a_id for v in r.values())]
+            b_owned = [r for r in rows if any(str(v) == b_id for v in r.values())]
             if a_owned:
                 errors.append(f"{t}: A rows remain after deletion")
-            expected_b = 1 if t != "support_ticket_notes" else 1
+            expected_b = 1
             if len(b_owned) != expected_b:
                 errors.append(f"{t}: expected {expected_b} B rows, found {len(b_owned)}")
 
         return errors
 
+    def _sql_array(self, ids: list[str]) -> str:
+        return ", ".join(f"'{id}'" for id in ids)
+
     def cleanup(self) -> dict:
         print("[harness] cleaning up synthetic records...")
         counts: dict[str, dict[str, int]] = {}
         for table, ids in self.ids.items():
-            self.cur.execute(f"SELECT count(*) AS n FROM public.{table} WHERE id = ANY(%s)", (ids,))
-            before = self.cur.fetchone()["n"]
-            self.cur.execute(f"DELETE FROM public.{table} WHERE id = ANY(%s)", (ids,))
-            self.cur.execute(f"SELECT count(*) AS n FROM public.{table} WHERE id = ANY(%s)", (ids,))
-            after = self.cur.fetchone()["n"]
+            before = psql_json(f"SELECT count(*) AS n FROM public.{table} WHERE id = ANY(ARRAY[{self._sql_array(ids)}])")[0]["n"]
+            psql_exec(f"DELETE FROM public.{table} WHERE id = ANY(ARRAY[{self._sql_array(ids)}])")
+            after = psql_json(f"SELECT count(*) AS n FROM public.{table} WHERE id = ANY(ARRAY[{self._sql_array(ids)}])")[0]["n"]
             counts[table] = {"before": before, "after": after}
 
         # Clean any leftover reauth tickets, export artifacts, deletion jobs for A/B.
         for uid in (self.a["id"], self.b["id"]):
             for table in ("reauth_tickets", "export_artifacts", "deletion_jobs"):
-                self.cur.execute(f"DELETE FROM public.{table} WHERE user_id = %s", (uid,))
-
-        self.conn.commit()
+                psql_exec(f"DELETE FROM public.{table} WHERE user_id = '{uid}'")
 
         # Auth cleanup via harness.
         harness("cleanup", {"ids": [self.a["id"], self.b["id"]]})
@@ -316,8 +305,6 @@ class Harness:
             return 0
         finally:
             self.cleanup()
-            self.cur.close()
-            self.conn.close()
 
 
 def main() -> int:
