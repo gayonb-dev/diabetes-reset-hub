@@ -288,17 +288,22 @@ class Harness:
         counts: dict[str, dict[str, int]] = {}
         for table, ids in self.ids.items():
             before = psql_json(f"SELECT count(*) AS n FROM public.{table} WHERE id = ANY(ARRAY[{self._sql_array(ids)}]::uuid[])")[0]["n"]
-            psql_exec(f"DELETE FROM public.{table} WHERE id = ANY(ARRAY[{self._sql_array(ids)}]::uuid[])")
-            after = psql_json(f"SELECT count(*) AS n FROM public.{table} WHERE id = ANY(ARRAY[{self._sql_array(ids)}]::uuid[])")[0]["n"]
+            after = before
             counts[table] = {"before": before, "after": after}
 
-        # Clean any leftover reauth tickets, export artifacts, deletion jobs for A/B.
-        for uid in (self.a["id"], self.b["id"]):
-            for table in ("reauth_tickets", "export_artifacts", "deletion_jobs"):
-                psql_exec(f"DELETE FROM public.{table} WHERE user_id = '{uid}'")
+        extra: dict[str, list[str]] = {}
+        for table, ids in self.ids.items():
+            extra[table] = ids
+        # Auth + public-row cleanup via the temporary service-authorized harness.
+        harness("cleanup", {
+            "ids": [self.a["id"], self.b["id"]],
+            "extra_deletes": extra,
+        })
 
-        # Auth cleanup via harness.
-        harness("cleanup", {"ids": [self.a["id"], self.b["id"]]})
+        # Verify exact-ID removal.
+        for table, ids in self.ids.items():
+            after = psql_json(f"SELECT count(*) AS n FROM public.{table} WHERE id = ANY(ARRAY[{self._sql_array(ids)}]::uuid[])")[0]["n"]
+            counts[table]["after"] = after
 
         self.results["cleanup"] = counts
         return counts
