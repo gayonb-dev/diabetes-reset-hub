@@ -289,10 +289,19 @@ class Harness:
         }
         cascade_note: list[str] = []
 
+        b_vp = self.b_vp
+        b_ticket_id = self.ids["support_tickets"][1]
         for t, expected_b in expected_b_counts.items():
             rows = psql_json(f"SELECT * FROM public.{t} WHERE id = ANY(ARRAY[{self._sql_array(self.ids[t])}]::uuid[])")
             a_owned = [r for r in rows if any(str(v) == a_id for v in r.values())]
             b_owned = [r for r in rows if any(str(v) == b_id for v in r.values())]
+            # Visitor-profile-owned surfaces reference the vp id, not user id.
+            if t in ("conversations", "messages"):
+                a_owned = [r for r in rows if r.get("visitor_profile_id") == self.a_vp]
+                b_owned = [r for r in rows if r.get("visitor_profile_id") == b_vp]
+            if t == "support_ticket_notes":
+                a_owned = [r for r in rows if r.get("ticket_id") == self.ids["support_tickets"][0]]
+                b_owned = [r for r in rows if r.get("ticket_id") == b_ticket_id]
             if a_owned:
                 errors.append(f"{t}: A rows remain after deletion")
             if len(b_owned) != expected_b:
