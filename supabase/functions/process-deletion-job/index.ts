@@ -297,10 +297,15 @@ Deno.serve(async (req) => {
         entries.map(async (entry): Promise<StepResult> => {
           const isVp = entry.match === "visitor_profile";
           const isEmail = entry.match === "email" || entry.match === "customer_email";
+          const isParent = entry.match === "parent";
+          const parentKeys = entry.table === "support_ticket_notes" ? ticketIds : [];
           if (isVp && !vpIds.length) {
             return { step: entry.table, expected: 0, deleted: 0, status: "skipped" };
           }
           if (isEmail && !email) {
+            return { step: entry.table, expected: 0, deleted: 0, status: "skipped" };
+          }
+          if (isParent && !parentKeys.length) {
             return { step: entry.table, expected: 0, deleted: 0, status: "skipped" };
           }
 
@@ -310,8 +315,12 @@ Deno.serve(async (req) => {
               const { count } = await admin.from(entry.table)
                 .select("*", { count: "exact", head: true }).ilike(entry.column, email);
               expected = count ?? 0;
+            } else if (isVp) {
+              expected = await countRows(admin, entry.table, entry.column, vpIds);
+            } else if (isParent) {
+              expected = await countRows(admin, entry.table, entry.column, parentKeys);
             } else {
-              expected = await countRows(admin, entry.table, entry.column, isVp ? vpIds : userId);
+              expected = await countRows(admin, entry.table, entry.column, userId);
             }
 
             if (expected === 0) {
@@ -322,11 +331,21 @@ Deno.serve(async (req) => {
             }
 
             const del = admin.from(entry.table).delete({ count: "exact" });
-            const { count: deleted, error } = isEmail
-              ? await del.ilike(entry.column, email)
-              : isVp
-                ? await del.in(entry.column, vpIds)
-                : await del.eq(entry.column, userId);
+            let deleted: number | null = null;
+            let error: Error | null = null;
+            if (isEmail) {
+              const r = await del.ilike(entry.column, email);
+              deleted = r.count; error = r.error as Error | null;
+            } else if (isVp) {
+              const r = await del.in(entry.column, vpIds);
+              deleted = r.count; error = r.error as Error | null;
+            } else if (isParent) {
+              const r = await del.in(entry.column, parentKeys);
+              deleted = r.count; error = r.error as Error | null;
+            } else {
+              const r = await del.eq(entry.column, userId);
+              deleted = r.count; error = r.error as Error | null;
+            }
 
             if (error) {
               return { step: entry.table, expected, deleted: 0, status: "failed", error: error.message };
