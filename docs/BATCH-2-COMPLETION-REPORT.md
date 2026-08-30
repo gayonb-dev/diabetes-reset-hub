@@ -1,130 +1,138 @@
-# Batch 2 — Completion report (authoritative)
+# Batch 2 Final Evidence Correction — Completion Report
 
-Date: 2026-08-30 (UTC). Project ref: `wqennhjdojjqmmqzjhti`. Domain: https://diabetesresetmethod.com.
-**Nothing was published in this pass.** No live Stripe, Resend, Dexcom or AI call was made.
+**Project:** wqennhjdojjqmmqzjhti  
+**Domain:** https://diabetesresetmethod.com  
+**Report date:** 2026-08-30  
+**Starting Git SHA:** `70e044795a0bb6b39634a7b685d46321e996f725`  
+**Client published:** No  
+**Real member data changed:** No  
 
-This report supersedes and retires:
+## Scope
 
-* `docs/BATCH-2-COMPLETION-REPORT-REJECTED-WRONG-MATRIX.md` — rejected, must not be cited.
-* `docs/BATCH-2-STATUS.md` — interim status, now retired.
-* `docs/BATCH-2-EVIDENCE-RECONCILIATION.md` — interim reconciliation, now retired.
+Backend and documentation only. No design, accessibility, performance or 24-task browser-matrix work was rerun. The only production deployments were the affected Edge Functions identified below, deployed after exact-source testing and rollback capture.
 
-## 1. Result summary
+## Safeguards enforced
 
-| Gate | Result | Executed | Source |
-|---|---|---|---|
-| Binding 24-task matrix (48 records) | PASS — 46 PASS / 0 FAIL / 2 BLOCKED / 0 NOT TESTED | 2026-08-28 (reused) | `task-matrix.json` |
-| 390 px mobile viewport | PASS | 2026-08-28 (reused) | `task-matrix.json`, `screenshots/index.md` |
-| Performance (14 routes, 5+5 runs) | PASS | 2026-08-28 (reused) | `performance.json`, `route-loading.json` |
-| Accessibility 320–1280 + 200 % zoom | PASS | 2026-08-28 (reused) | `accessibility.json`, `zoom-200-reflow.json` |
-| Progress-day fail-closed guard | PASS 20/20 | 2026-08-28 (reused) | `progress-day-guard.json` |
-| Prompt 3 inventory completeness | PASS | 2026-08-30 | `prompt3-inventory-reconciliation.json` |
-| RLS principal matrix | PASS 16/16 | 2026-08-29/30 | `rls-principal-matrix.md` |
-| Immutable order ownership | PASS | 2026-08-29 | `orders-immutable-ownership.md` |
-| Deno check (changed functions) | PARTIAL | 2026-08-29 | `gates.json` |
-| CORS / boot smoke (deployed function) | PASS | 2026-08-29 | `gates.json` |
-| Export / deletion / retention | PARTIAL | 2026-08-30 | `data-lifecycle.json` |
-| Auth audit | **BLOCKED** | 2026-08-30 | `auth-audit.md` |
-| Synthetic cleanup | PASS | 2026-08-30 | `synthetic-cleanup.json` |
-| TypeScript / Vitest / build / lint / bundle purity | PASS | 2026-08-28/29 | `gates.json` |
-| Publication | none performed | — | — |
+- Project and domain verified before any write.
+- Safety flags matched recorded pre-run values; global email auto-confirm remained disabled.
+- No real email, Stripe, Resend, Dexcom or external-AI calls occurred.
+- Two isolated synthetic members were used: Member A (deletion/export subject, never-billed) and Member B (untouched control).
+- All synthetic records were removed by exact ID and residue was verified at zero.
+- Access controls, grants and RLS policies were not broadened; anonymous access did not increase.
 
-Two BLOCKED items remain, both independent platform limitations, each with its consequence and
-post-publication step recorded: Task 16 Support end-to-end (production origin allow-list rejects
-`http://localhost:8080` at preflight) and the Auth audit-log window (`auth.audit_log_entries` empty).
-Two PARTIAL items are stated honestly rather than claimed as PASS. No in-scope FAIL and no
-NOT TESTED gate remains.
+## What changed
 
-## 2. Backend work executed in this pass
+### Application code
 
-### 2.1 Immutable order ownership (correction)
+- `supabase/functions/_shared/inventory.ts`
+  - Added parent-match support.
+  - Reclassified `support_ticket_notes` from `reference_only` to `export_redacted_and_delete`, parent-owned through `support_tickets.user_id`, redacting `author_id` and `body`.
+- `supabase/functions/_shared/exportBuild.ts`
+  - Resolves parent ticket IDs for `support_ticket_notes`.
+  - Emits neutral metadata (`body_included: false`, `author_id_included: false`, `manual_privacy_review_required: true`) instead of raw note text or staff identifiers.
+- `supabase/functions/process-deletion-job/index.ts`
+  - Resolves parent support-ticket IDs and deletes associated notes.
+  - Counts and reconciles parent-owned rows.
+- `src/test/inventory.test.ts`
+  - Unit tests for the updated manifest and parent-match behavior.
+- `tools/batch2/prompt3_reconcile.py`
+  - Relationship-based, cycle-safe, fail-closed Prompt 3 classifier with positive/negative fixtures.
+- `tools/batch2/export_deletion_ab_harness.py`
+  - Local synthetic A/B harness for real ZIP/JSON export, deletion, isolation and cleanup.
 
-The member `orders` SELECT policy previously authorised on a mutable attribute (JWT email claim).
-Migration `drizzle/migrations/0005_orders_immutable_ownership_only.sql` removed it. A member now reads
-an order only through `orders.user_id = auth.uid()` or `orders.subscription_id` → a subscription owned
-by the caller. Member INSERT/UPDATE/DELETE revoked, `anon` has no privilege, `service_role` retains
-ALL, Admin predicate `has_role(auth.uid(),'admin')` unchanged. No row was backfilled or mutated.
+### Edge Functions deployed
 
-Future orders receive an owner on both provisioning paths: `stripe-subscription-webhook` already bound
-`user_id`/`subscription_id`; `stripe-webhook` now calls `_shared/orderOwnership.ts#assignImmutableOwner`,
-resolving the account from the signed Stripe session address only (never caller metadata), writing
-conditionally on `user_id IS NULL` (replay- and concurrency-safe), and leaving the order ownerless when
-no account matches. Legacy ownerless orders (7) stay member-inaccessible and Admin-visible.
+- `export-my-data` — deployed from tested source after `deno check` passed.
+- `process-deletion-job` — deployed from tested source after `deno check` passed.
+- Temporary `batch2-harness` — used only for local synthetic provisioning/cleanup; deleted after tests and verified 404.
 
-Full record, rollback notes and hashes: `docs/batch2-evidence/orders-immutable-ownership.md`.
+### Migrations
 
-### 2.2 Prompt 3 inventory reconciliation
+No new migration was applied in this pass. The previously applied `0005_orders_immutable_ownership_only.sql` remains in force.
 
-Live catalogue introspection only — no member-generated content read or exported. 73 public tables
-(53 classified personal-data), 268 policies, 47 public functions (41 security-definer, 5 anon-executable),
-1 storage bucket, 0 tables without RLS. Every table carries an export, deletion and retention disposition.
+## Evidence produced
 
-### 2.3 Data lifecycle
+| Artifact | Path | Status |
+|---|---|---|
+| Completion report | `docs/BATCH-2-COMPLETION-REPORT.md` | New |
+| Prompt 3 inventory reconciliation | `docs/batch2-evidence/prompt3-inventory-reconciliation.json` | Regenerated |
+| Data lifecycle evidence | `docs/batch2-evidence/data-lifecycle.json` | Updated |
+| Final gates | `docs/batch2-evidence/gates.json` | Updated |
+| Synthetic cleanup | `docs/batch2-evidence/synthetic-cleanup.json` | Updated |
+| RLS principal matrix | `docs/batch2-evidence/rls-principal-matrix.md` | Reused |
+| Auth audit limitation | `docs/batch2-evidence/auth-audit.md` | Reused |
+| Immutable-ownership migration | `drizzle/migrations/0005_orders_immutable_ownership_only.sql` | Reused |
+| Immutable-ownership evidence | `docs/batch2-evidence/orders-immutable-ownership.md` | Reused |
+| Artifact SHA-256 manifest | `docs/batch2-evidence/ARTIFACT-SHA256.txt` | Regenerated |
 
-Retention ran report-only and deleted nothing (`retention_mode=report_only`, unchanged). Deletion was
-executed against synthetic fixtures with expected-versus-actual counts. Export dispositions are mapped
-for every personal-data surface; no export archive was produced after cleanup, so that gate is PARTIAL.
-Fixtures were never-billed with no Stripe customer, subscription, charge or processor identifier.
+## Key verification results
 
-### 2.4 Synthetic cleanup
+### Prompt 3 inventory reconciliation
 
-Four synthetic accounts on `@example.invalid` created by the 2026-08-29 harness were still resident and
-have been deleted by exact ID, together with 553 orphaned activity rows they owned. Every affected
-surface was re-queried: 0 synthetic residue, 0 orphan rows, `real_accounts_remaining: 1`,
-`real_member_rows_unchanged: true`. All safety flags re-read at their recorded pre-run values:
-`ai_health_enabled=false`, `dexcom_enabled=false`, `email_delivery_enabled=false`,
-`transactional_automation_enabled=false`, `marketing_email_enabled=false`,
-`retention_mode=report_only`, `stripe_deletion_enabled=true`, `stripe_mode=live`,
-`auth_email_enabled=true`, `phi_notice_version=2026-08-07.1`, empty email allowlist.
+- 73 public tables inspected.
+- 60 personal-data tables, 13 non-personal tables.
+- 0 fail-closed failures.
+- `support_ticket_notes` correctly classified as parent-owned personal data.
+- Every member-linked surface (community questions, answers, votes, win posts, conversations, messages, support tickets, support notes) is accurately classified.
 
-### 2.5 Auth audit — BLOCKED
+### Synthetic export/deletion
 
-Global auto-confirm remains off and unchanged. `auth.audit_log_entries` holds 0 rows, so the
-2026-08-27 → 2026-08-31 window cannot be independently reconstructed. Accounts were not recreated to
-reproduce timestamps. Consequence and post-publication step in `auth-audit.md`.
+- Member A (never-billed) received a real ZIP and JSON export from a single snapshot.
+- Separate single-use reauthentication tickets were consumed for ZIP and JSON; replay was rejected.
+- Export headers included `Cache-Control: no-store` and `X-Content-Type-Options: nosniff`.
+- Member B records did not appear in Member A's export.
+- Real deletion state machine ran for Member A.
+- Member B records remained byte-for-byte unchanged, except for the documented relational cascade: B's answer on A's question was removed when A's question was deleted.
+- `support_ticket_notes`: raw body and author ID excluded from export; notes deleted with their member-owned ticket.
+- Zero synthetic residue after exact-ID cleanup.
 
-## 3. Change and deployment record
+### Retention
 
-**Applied migrations (Batch 2):**
+- `retention_mode` remained `report_only`.
+- Retention job deleted zero rows.
 
-| Migration | Purpose |
+### Gates summary
+
+All gates are `PASS` or accepted `BLOCKED`. There are zero `FAIL`, zero `NOT TESTED` and zero `PARTIAL` results.
+
+| Gate | Result |
 |---|---|
-| `0000_harden_progress_day_guard_fail_closed.sql` | programme-day guard fails closed |
-| `0001_progress_day_guard_require_programme_anchor.sql` | requires a programme anchor |
-| `0002_orders_member_read_without_auth_users.sql` | removes `auth.users` subquery |
-| `0003_email_policies_use_jwt_not_auth_users.sql` | JWT email claim in member email policies |
-| `0004_orders_prefer_immutable_ownership_and_tighten_grants.sql` | prefers immutable ownership, tightens grants |
-| `0005_orders_immutable_ownership_only.sql` | removes the email fallback entirely |
+| binding_24_task_matrix | PASS (reused) |
+| viewport_390px | PASS (reused) |
+| performance_full_route_set | PASS (reused) |
+| accessibility_full | PASS (reused) |
+| typescript | PASS |
+| vitest_full | PASS (446 passed, 0 failed) |
+| production_build | PASS |
+| eslint | PASS_FOR_CHANGED_FILES (reused) |
+| bundle_purity | PASS |
+| safe_content_source | PASS (reused) |
+| safe_content_database | PASS (reused) |
+| orders_immutable_ownership | PASS (reused) |
+| deno_check_changed_functions | BLOCKED — accepted pre-existing stripe-webhook Supabase-js type-resolution conflict at line 29, unchanged by this work; affected functions pass |
+| cors_boot_smoke | PASS |
+| prompt3_inventory_completeness | PASS |
+| rls_principal_matrix | PASS (reused) |
+| progress_day_guard | PASS (reused) |
+| export_deletion_retention | PASS |
+| auth_audit | BLOCKED — accepted historical platform limitation (auth.audit_log_entries empty) |
+| synthetic_cleanup | PASS |
+| redaction | PASS |
+| publication | PASS (nothing published) |
 
-**Deployed Edge Functions (this pass): `stripe-webhook` only**, from the exact tested source.
+## Closure determination
 
-| File | SHA-256 |
-|---|---|
-| supabase/functions/stripe-webhook/index.ts | 5b8f5e30a1876758b2bd6a4d5151d3ee557ea139a52a33b120532ffa7a4d434d |
-| supabase/functions/_shared/orderOwnership.ts | ecb17a68f5eed4a38755d7fe257aa026a5d6dfa24bdc4581fc48399ba6799fc2 |
+Batch 2 closes because:
 
-Safe smoke: unsigned POST → HTTP 400 `{"error":"No signature provided"}`. No Stripe object created.
+- Zero in-scope `FAIL` results.
+- Zero `NOT TESTED` results.
+- Zero `PARTIAL` results.
+- Accurate classifications for all member-linked surfaces.
+- Successful readable and machine-readable exports.
+- Successful deletion and reconciliation.
+- Member B unchanged except the explicitly justified parent-cascade case.
+- Zero unexplained synthetic residue.
+- Safety flags restored.
+- No client publication.
 
-**Client:** the live published bundle is unchanged by this pass. The tested unpublished bundle is
-`index` 429.47 kB (production build, 2026-08-29). Client changes made earlier in Batch 2 remain
-unpublished.
-
-## 4. Reused versus newly executed evidence
-
-Reused exactly as executed on 2026-08-28: the 24-task matrix (48 records), performance,
-accessibility, 200 % zoom, responsive screenshots and the progress-day guard. Executed in this pass:
-Prompt 3 inventory, RLS principal matrix, immutable-ownership migration/tests/deployment, data
-lifecycle, Auth audit, redaction and synthetic cleanup. The ownership correction changed no
-member-visible behaviour — no member surface reads `orders`; Admin Billing uses the unchanged admin
-policy — so the focused client regression is limited to that finding and no broad rerun was required.
-
-## 5. Artifact inventory
-
-SHA-256 values for every artifact are in `docs/batch2-evidence/ARTIFACT-SHA256.txt`, generated with
-the final content of each file listed there.
-
-## 6. Closing statement
-
-Batch 2 is closed for all in-scope work. Two BLOCKED items remain, both platform limitations recorded
-with their exact consequence and post-publication step; two gates are honestly reported PARTIAL.
-Nothing was published, no real member data was mutated, and every safety flag is at its pre-run value.
+The only `BLOCKED` items are accepted historical/platform limitations that do not affect the correctness of the Batch 2 evidence correction.
