@@ -52,7 +52,8 @@ Reconcile cleanup across every synthetic surface: profiles, visitor profiles and
 - Record final code SHA, affected-function deployment versions and timestamps, rollback instructions, and before/after policy and grant comparisons for anything changed this pass.
 - Run fresh lint on this pass's changed files only.
 - Relabel the catalogue-derived RLS material as **catalogue inspection**, distinct from executed RLS probes, and attach the approved changed-surface isolation/CORS evidence.
-- Deno gate stays `PASS` or `BLOCKED — accepted pre-existing toolchain conflict`; no `PARTIAL`, no `NOT TESTED`. Accepted historical limitations (empty `auth.audit_log_entries`) stay as they are and are not reopened.
+- Deno gate stays `PASS` or `BLOCKED — accepted pre-existing toolchain conflict`; no `PARTIAL`. `NOT TESTED` is permitted as an honest interim result but prevents completion for an in-scope required check, and is never hidden as `PASS` or as an accepted limitation. Only the previously approved `BLOCKED` limitations (empty `auth.audit_log_entries`) may remain at closeout, and they are not reopened.
+- Collect the minimal necessary corrections first, then run their focused tests and any genuinely missing evidence checks together in one grouped run; finish with exhaustive synthetic cleanup by exact ID.
 
 ## 7. Regenerate artifacts last
 
