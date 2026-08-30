@@ -6,7 +6,8 @@ No new feature work, no client publication, no design/accessibility/performance 
 
 - Recover the prior A/B harness run output from the retained sandbox execution logs (the full stdout of the passing run, including seeded IDs, export snapshot metadata, per-surface counts, deletion reconciliation and cleanup before/after counts) and the deployment/receipt records already captured for `export-my-data` and `process-deletion-job`, plus the recorded HTTP 404 proving the temporary `batch2-harness` function was deleted.
 - Store the recovered material as `docs/batch2-evidence/export-deletion-run.json` (machine-readable) with a short human index.
-- Do not recreate `batch2-harness` to retrieve evidence. If — and only if — a runtime correction below invalidates a prior result, the affected check is rerun; that rerun requires a temporary, service-authorized harness redeploy, which is then deleted again with a recorded 404 and a confirmed removal of any temporary secret.
+- Recover existing evidence first. If a required result was never captured, cannot be recovered, or was invalidated by a runtime correction, execute only that missing or affected check. Preserve all valid, unaffected prior results. Use local/server-authorized tooling first; a temporary harness deployment is not mandatory and is used only when existing authorized tooling cannot perform the necessary check, under the previously approved authentication, no-email/no-processor, deletion, 404 and temporary-secret-removal safeguards. Do not repeatedly recreate fixtures or rerun completed client tests.
+- Recover logs without copying unredacted stdout into the repository or downloads: strip credentials, tokens, signed download URLs and real member data, and use consistent synthetic aliases.
 
 ## 2. Classification correctness (generator and manifest)
 
@@ -18,16 +19,17 @@ Confirmed discrepancies to resolve:
 
 Work:
 
-1. Fix the generator to parse the manifest structurally (all entries, single- and multi-line), so manifest coverage is reported accurately.
-2. Make the independent ownership checks genuinely fail closed: a table with an owner-style column, an FK path to `auth.users` / `profiles` / `visitor_profiles` / a member-owned parent, or a subject-linked `auth.uid()` RLS predicate must never be emitted as non-personal. Verify the corrected generator fails on `support_ticket_notes`, `billing_holds` and `community_answer_embeddings` before the manifest is fixed, then passes after.
-3. Reconcile **every** remaining non-personal classification (currently 13) individually, recording for each the reason it holds no member linkage.
-4. Update the canonical manifest where a real gap exists (billing/containment surfaces, embeddings relationship), with correct match kind, disposition, order and redaction; update `src/test/inventory.test.ts` accordingly.
+1. Read the manifest structurally — load a machine-readable representation from the actual module rather than another fragile text regex — so every entry (single- and multi-line) is seen.
+2. Make the independent ownership checks genuinely fail closed. Ownership stays distinct from audience-access policies and from technical author/editor metadata; an unknown but potentially personal relationship must require resolution and must never silently become non-personal.
+3. Prove failure with isolated negative fixtures — the previous `support_ticket_notes` misclassification, a missing manifest entry, an incorrect embedding relationship, and an unrecognized ownership path — and prove the corrected actual manifest passes. The `support_ticket_notes` entry is already correct and is not altered merely to demonstrate a failing test.
+4. Reconcile **every** remaining non-personal classification (currently 13) individually, recording for each the reason it holds no member linkage.
+5. Update the canonical manifest only where a real gap exists. Personal-data classification and export/deletion disposition are separate decisions: for `billing_holds`, `billing_events`, `content_containment_log` and derived embeddings, document the actual subject relationship and the approved field-level export, deletion or retention rule. Do not export raw internal event payloads and do not delete deduplication, security or financial records merely because a table becomes classified personal; preserve existing billing restrictions, event replay protection and approved retention rules. Update `src/test/inventory.test.ts` accordingly.
 
 ## 3. Runtime matching checks
 
-- `orders`: verify export/deletion actually resolve orders through immutable ownership (`orders.user_id`, or `subscription_id` → member-owned subscription) rather than `customer_email` alone. The manifest entry is currently `customer_email`; if runtime relies on it, change runtime to prefer immutable ownership with email only as a documented legacy fallback consistent with the applied RLS migration. Preserve the seven ownerless legacy orders untouched and preserve financial-retention rules (no deletion of records retention requires).
+- `orders`: resolve export/deletion ownership only through verified immutable relationships — `orders.user_id` or the order's member-owned subscription relationship. Do not use `customer_email`, a JWT email, or an email match as an ownership fallback. Missing or contradictory ownership fails closed. Preserve all seven ownerless legacy orders and existing financial-retention rules. Use synthetic cases to prove that matching an email does not expose or delete an ownerless or another member's order. Distinguish an inaccurate manifest description from an actual runtime defect; change runtime only where necessary.
 - `community_answer_embeddings`: confirm the resolution path through answer → author, not a visitor-profile mismatch.
-- For each finding, state explicitly whether it was incorrect **evidence** or incorrect **runtime behaviour**; change runtime only where required, and rerun only the checks that a runtime change invalidates.
+- For each finding, state explicitly whether it was incorrect **evidence** or incorrect **runtime behaviour**; rerun only the checks that a runtime change invalidates.
 
 ## 4. Machine-readable export/deletion results
 
@@ -35,7 +37,7 @@ Replace every placeholder such as `"recorded in harness artifact"` in `data-life
 
 - actual ZIP and JSON byte sizes and SHA-256 hashes;
 - per-surface inclusion/exclusion results with expected vs actual counts;
-- snapshot consistency proof (both formats from one server snapshot, or two tickets);
+- snapshot consistency: separate tickets prove separate single-use authorization, not snapshot consistency. Compare the ZIP and JSON against the same recorded dataset/snapshot, or use unchanged synthetic fixtures and compare normalized category contents while allowing documented format-specific timestamps. Do not substitute assertions or placeholders for observed results;
 - attachment/response headers (`Content-Disposition`, `Cache-Control: no-store`, `X-Content-Type-Options`);
 - reauthentication ticket single-use, download replay rejection and expiry results;
 - deletion retry/idempotency results;
@@ -50,7 +52,8 @@ Reconcile cleanup across every synthetic surface: profiles, visitor profiles and
 - Record final code SHA, affected-function deployment versions and timestamps, rollback instructions, and before/after policy and grant comparisons for anything changed this pass.
 - Run fresh lint on this pass's changed files only.
 - Relabel the catalogue-derived RLS material as **catalogue inspection**, distinct from executed RLS probes, and attach the approved changed-surface isolation/CORS evidence.
-- Deno gate stays `PASS` or `BLOCKED — accepted pre-existing toolchain conflict`; no `PARTIAL`, no `NOT TESTED`. Accepted historical limitations (empty `auth.audit_log_entries`) stay as they are and are not reopened.
+- Deno gate stays `PASS` or `BLOCKED — accepted pre-existing toolchain conflict`; no `PARTIAL`. `NOT TESTED` is permitted as an honest interim result but prevents completion for an in-scope required check, and is never hidden as `PASS` or as an accepted limitation. Only the previously approved `BLOCKED` limitations (empty `auth.audit_log_entries`) may remain at closeout, and they are not reopened.
+- Collect the minimal necessary corrections first, then run their focused tests and any genuinely missing evidence checks together in one grouped run; finish with exhaustive synthetic cleanup by exact ID.
 
 ## 7. Regenerate artifacts last
 
