@@ -96,6 +96,23 @@ Deno.serve(async (req) => {
     .from("support_tickets").select("id").eq("user_id", userId);
   const ticketIds = (parentTickets ?? []).map((t: { id: string }) => t.id);
 
+  // Orders are matched ONLY by immutable ownership: orders.user_id, or an order
+  // attached to a subscription owned by this member. Ownerless legacy orders
+  // and other members' orders can never be selected from an email match.
+  const { data: subsForOrders } = await admin
+    .from("subscriptions").select("id").eq("user_id", userId);
+  const subIdsForOrders = (subsForOrders ?? []).map((s: { id: string }) => s.id);
+  const ownedOrderIdSet = new Set<string>();
+  {
+    const { data: byUser } = await admin.from("orders").select("id").eq("user_id", userId);
+    for (const o of byUser ?? []) ownedOrderIdSet.add((o as { id: string }).id);
+    if (subIdsForOrders.length) {
+      const { data: bySub } = await admin.from("orders").select("id").in("subscription_id", subIdsForOrders);
+      for (const o of bySub ?? []) ownedOrderIdSet.add((o as { id: string }).id);
+    }
+  }
+  const ownedOrderIds = Array.from(ownedOrderIdSet);
+
   // ==== PRECONDITION: processor cancellation gates destructive deletion ====
   // Nothing below this block runs until the member's billing relationship is
   // resolved. No session is revoked, no row is deleted and the auth identity is
