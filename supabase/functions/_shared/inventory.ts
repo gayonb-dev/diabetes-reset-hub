@@ -169,7 +169,7 @@ export const INVENTORY: InventoryEntry[] = [
 /** Public tables that intentionally hold no personal data. */
 export const REFERENCE_TABLES = [
   "app_config", "badges", "content_items", "daily_actions", "snack_library",
-  "vita_quotes", "rate_limits", "daily_digest", "broadcast_log",
+  "vita_quotes", "rate_limits", "daily_digest",
   // Stripe event de-duplication / replay ledger. Keyed by stripe_event_id and
   // object_id only; carries no member column and no FK to any member table.
   "billing_events",
