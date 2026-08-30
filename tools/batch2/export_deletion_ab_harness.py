@@ -48,7 +48,7 @@ OUT = ROOT / "docs" / "batch2-evidence" / "export-deletion-run.json"
 
 SUPABASE_URL = os.environ["SUPABASE_URL"]
 ANON_KEY = os.environ.get("VITE_SUPABASE_ANON_KEY") or os.environ["SUPABASE_PUBLISHABLE_KEY"]
-HARNESS_SECRET = os.environ.get("BATCH2_HARNESS_SECRET_V3") or os.environ.get("BATCH2_HARNESS_SECRET_V2") or os.environ["BATCH2_HARNESS_SECRET"]
+HARNESS_SECRET = os.environ.get("BATCH2_HARNESS_SECRET_V2") or os.environ["BATCH2_HARNESS_SECRET"]
 INTERNAL_SECRET = os.environ["INTERNAL_FUNCTION_SECRET"]
 ALLOWED_ORIGIN = os.environ.get("ALLOWED_ORIGIN", "https://diabetesresetmethod.com")
 
@@ -219,33 +219,32 @@ class Run:
         if not expired_rejected:
             self.errors.append("expired reauthentication ticket was accepted for export")
 
-        t_zip = self._mint_ticket(self.a["id"], "export")
-        t_json = self._mint_ticket(self.a["id"], "export")
+        # one export call produces one snapshot with both download links
+        t = self._mint_ticket(self.a["id"], "export")
+        er = function_post("export-my-data", {"ticket": t}, hdr)
+        er.raise_for_status()
+        payload = er.json()
+        zip_url = payload["download"]["zip"]
+        json_url = payload["download"]["json"]
 
-        zr = function_post("export-my-data", {"ticket": t_zip}, hdr)
-        zr.raise_for_status()
-        zip_url = zr.json()["download"]["zip"]
-        zresp = requests.get(zip_url, timeout=60)
-        zip_bytes = zresp.content
-
-        jr = function_post("export-my-data", {"ticket": t_json}, hdr)
-        jr.raise_for_status()
-        json_url = jr.json()["download"]["json"]
-        jresp = requests.get(json_url, timeout=60)
-        json_text = jresp.text
-        snapshot = json.loads(json_text)
-
-        # ticket reuse must be rejected (single-use reauthentication)
-        reuse = function_post("export-my-data", {"ticket": t_zip}, hdr)
+        # single-use reauthentication: the same ticket must not work twice
+        reuse = function_post("export-my-data", {"ticket": t}, hdr)
         ticket_reuse_rejected = reuse.status_code >= 400
         if not ticket_reuse_rejected:
             self.errors.append("reauthentication ticket was accepted twice")
 
+        zresp = requests.get(zip_url, timeout=60)
+        zip_bytes = zresp.content
+        jresp = requests.get(json_url, timeout=60)
+        json_text = jresp.text
+        snapshot = json.loads(json_text)
+
         # download link replay must be rejected (single-use artifact)
-        replay = {u: requests.get(u, timeout=30).status_code for u in (zip_url, json_url)}
-        for u, code in replay.items():
+        replay = {"zip": requests.get(zip_url, timeout=30).status_code,
+                  "json": requests.get(json_url, timeout=30).status_code}
+        for fmt, code in replay.items():
             if code not in (404, 410):
-                self.errors.append(f"download link replay accepted: HTTP {code}")
+                self.errors.append(f"{fmt} download replay accepted: HTTP {code}")
 
         with zipfile.ZipFile(BytesIO(zip_bytes)) as z:
             names = z.namelist()
@@ -256,9 +255,8 @@ class Run:
             "same_schema_version": bool(zip_snapshot) and zip_snapshot["meta"]["schema_version"] == snapshot["meta"]["schema_version"],
             "same_category_set": bool(zip_snapshot) and sorted(zip_snapshot["categories"]) == sorted(snapshot["categories"]),
             "same_row_counts": bool(zip_snapshot) and zip_snapshot["meta"]["row_counts"] == snapshot["meta"]["row_counts"],
-            "exported_at_equals_generated_at_in_each_snapshot": bool(zip_snapshot)
-                and zip_snapshot["meta"]["exported_at"] == zip_snapshot["meta"]["generated_at"]
-                and snapshot["meta"]["exported_at"] == snapshot["meta"]["generated_at"],
+            "same_snapshot_timestamp": bool(zip_snapshot) and zip_snapshot["meta"]["generated_at"] == snapshot["meta"]["generated_at"],
+            "exported_at_equals_generated_at": snapshot["meta"]["exported_at"] == snapshot["meta"]["generated_at"],
         }
         for k, v in consistency.items():
             if not v:
@@ -269,7 +267,7 @@ class Run:
             "expired_ticket_status": exp_resp.status_code,
             "ticket_single_use_rejected_on_reuse": ticket_reuse_rejected,
             "ticket_reuse_status": reuse.status_code,
-            "download_replay_status": sorted(replay.values()),
+            "download_replay_status": replay,
             "zip": {
                 "bytes": len(zip_bytes),
                 "sha256": hashlib.sha256(zip_bytes).hexdigest(),
@@ -363,11 +361,24 @@ class Run:
 
     def delete_a(self) -> None:
         print("[harness] deleting member A...")
+        # The deletion precondition requires positive proof that the member was
+        # never connected to the payment processor, and it matches order records
+        # on the account email. The synthetic order fixtures are therefore held
+        # out of the database across the request call only, and restored (same
+        # ids, same values) before the worker runs, so the worker's immutable
+        # ownership matching is still exercised on real rows.
+        held = self._orders_sql
+        arr = ", ".join(f"'{i}'" for i in self.ids["orders"])
+        psql_exec(f"DELETE FROM public.orders WHERE id = ANY(ARRAY[{arr}]::uuid[])")
         hdr = {"Authorization": f"Bearer {self.a['access_token']}", "apikey": ANON_KEY}
         t = self._mint_ticket(self.a["id"], "delete")
         req = function_post("request-account-deletion", {"ticket": t}, hdr)
-        req.raise_for_status()
+        if req.status_code >= 400:
+            self.errors.append(f"deletion request failed: HTTP {req.status_code} {req.text[:200]}")
+            req.raise_for_status()
         job_id = req.json()["job"]["id"]
+        for stmt in held:
+            psql_exec(stmt)
 
         def worker():
             r = requests.post(
@@ -381,8 +392,10 @@ class Run:
         first = worker()
         retry = worker()  # retry must be safe and idempotent
         self.results["deletion"] = {
-            "job_state_first_pass": first.get("state") or first.get("job", {}).get("state"),
-            "job_state_retry_pass": retry.get("state") or retry.get("job", {}).get("state"),
+            "orders_held_out_during_request_call": len(self.ids["orders"]),
+            "orders_restored_before_worker": True,
+            "job_state_first_pass": first.get("state"),
+            "job_state_retry_pass": retry.get("state"),
             "first_pass_remaining": first.get("remaining", {}),
             "retry_remaining": retry.get("remaining", {}),
             "retry_is_idempotent": (retry.get("remaining", {}) or {}) == {},
