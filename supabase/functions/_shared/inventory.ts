@@ -48,7 +48,14 @@ export const INVENTORY: InventoryEntry[] = [
   // ---- derived / dependent rows (deleted first) ----
   { table: "meal_swaps", match: "member_id", column: "member_id", disposition: "export_and_delete", order: 10, category: "meals" },
   { table: "community_votes", match: "voter_id", column: "voter_id", disposition: "export_and_delete", order: 10, category: "community" },
-  { table: "community_answer_embeddings", match: "visitor_profile", column: "answer_id", disposition: "reference_only", order: 10, category: "community" },
+  // Derived vector + combined text of a member-authored answer: personal by
+  // association, never exported (derived search artefact), and removed by the
+  // ON DELETE CASCADE from community_answers / community_questions.
+  {
+    table: "community_answer_embeddings", match: "cascade", column: "answer_id",
+    parentTable: "community_answers", parentColumn: "id", parentOwnerColumn: "author_id",
+    disposition: "cascade_only_not_exported", order: 10, category: "community",
+  },
   { table: "messages", match: "visitor_profile", column: "visitor_profile_id", disposition: "export_and_delete", order: 11, category: "chat" },
   { table: "visitor_engagement_scores", match: "visitor_profile", column: "visitor_profile_id", disposition: "export_and_delete", order: 11, category: "derived" },
   { table: "phi_access_log", match: "visitor_profile", column: "visitor_profile_id", disposition: "export_and_delete", order: 11, category: "audit" },
