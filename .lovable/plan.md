@@ -2,91 +2,117 @@
 
 Backend and documentation only. No design, accessibility, performance or 24-task browser
 matrix work. Nothing published. Reused client evidence keeps its original execution dates.
+The safeguards below control wherever any earlier wording conflicts.
+
+## 0. Production and mutation preflight
+
+Before any write: confirm project `wqennhjdojjqmmqzjhti` and `https://diabetesresetmethod.com`;
+confirm every safety flag at its recorded pre-run value; confirm global email auto-confirm
+disabled; confirm no real email, Stripe, Resend, Dexcom or external-AI call can occur. Stop only
+on project mismatch or a flag that cannot be preserved. If a migration unexpectedly becomes
+necessary, confirm a current production restore point before applying it.
 
 ## What is actually wrong today
 
 Confirmed by reading the canonical manifest and the reconciliation artifact:
 
-- The canonical manifest `supabase/functions/_shared/inventory.ts` **already** treats
-  `community_questions`, `community_answers`, `community_votes`, `win_posts`, `conversations`
-  and `messages` as personal data with `export_and_delete` (matched on `author_id`,
-  `voter_id` and member-bound `visitor_profile_id`).
+- `supabase/functions/_shared/inventory.ts` **already** treats `community_questions`,
+  `community_answers`, `community_votes`, `win_posts`, `conversations` and `messages` as
+  personal data with `export_and_delete` (matched on `author_id`, `voter_id`, member-bound
+  `visitor_profile_id`).
 - `docs/batch2-evidence/prompt3-inventory-reconciliation.json` labels those same surfaces
   `configuration_or_content`. This is a **generator classification defect**, not a manifest gap.
-- One genuine manifest issue: `support_ticket_notes` is `reference_only` although each note is
-  tied to a member's support ticket.
+- One genuine manifest issue: `support_ticket_notes` is `reference_only` although every note is
+  tied to a member-owned support ticket.
 
-## 1. Classification rule and manifest correction
+## 1. Classification by relationship, fail closed
 
-Adopt one written rule, enforced in code:
+Personal data is derived, not hand-labelled, from: foreign keys to `auth.users`, `profiles`,
+`visitor_profiles` or another member-owned row; direct and indirect ownership paths; RLS
+policies containing `auth.uid()` ownership checks; canonical manifest subject keys; and owner
+column names (`user_id`, `member_id`, `owner_id`, `author_id`, `actor_id`, `voter_id`,
+`created_by`, `submitted_by`, `recipient_id`, `profile_id` and equivalents).
 
-> A public table is personal data when it has a member/author/actor/voter user column, a
-> `visitor_profile_id` that can bind to a member, or a foreign key to a member-owned row
-> (for example `support_ticket_notes.ticket_id` → `support_tickets.user_id`).
+Foreign-key traversal is cycle-safe and fails closed when an ownership path is detected but not
+understood. The generator exits non-zero if any author-, user-, visitor-profile- or
+ticket-linked table is classified non-personal or is missing from the manifest. Generated
+evidence may never show `owner_columns: []` for a surface whose policies or foreign keys
+establish member ownership.
 
-- Reclassify `support_ticket_notes` in the canonical manifest to
-  `export_redacted_and_delete` matched through its parent ticket, redacting the internal
-  staff author identifier. Notes are deleted with the member's tickets.
-- Community content policy: the documented policy does **not** authorise retaining linked
-  community content, so `community_questions`, `community_answers`, `community_votes` and
-  `win_posts` are deleted on member deletion. No de-identification branch is introduced. This
-  exact rule is recorded in the artifacts rather than a "non-personal" label.
-- Update the manifest tests to assert the rule for every listed surface.
+## 2. Manifest and policy corrections
 
-## 2. Reconciliation generator must fail closed
+- `support_ticket_notes` becomes personal-by-association: matched through its parent ticket,
+  deleted with the member's tickets, exported under an explicit **field allowlist**. Staff
+  identifiers, security/fraud logic, secrets, internal routing metadata and other people's data
+  are excluded by allowlist, not by omission. The disposition states explicitly whether note
+  text is included, redacted, or routed for manual privacy review.
+- Community content: the documented policy does not authorise retaining linked community
+  content, so questions, answers, votes and win posts are deleted on member deletion. No
+  de-identification branch is introduced. The exact rule is recorded in the artifacts.
+- Manifest tests assert the rule for every corrected surface.
 
-Rewrite the Prompt 3 reconciliation generator as a source-controlled script that:
+## 3. Two isolated synthetic members
 
-- reads live catalogue metadata (columns, foreign keys, policies, grants) read-only;
-- derives personal-data status from the rule above rather than a hand-maintained label list;
-- cross-checks every derived personal-data table against the canonical manifest;
-- **exits non-zero** (fail closed) if any author-linked, user-linked, visitor-profile-linked or
-  ticket-linked table is classified non-personal, or is missing from the manifest.
+Member A (deletion/export subject) and Member B (untouched control), both seeded across every
+corrected surface, including cross-linked cases: A's answer/vote on B's content, B's
+answer/vote on A's content, and separate A-only and B-only conversations, messages, tickets,
+notes and win posts.
 
-Regenerated output: `docs/batch2-evidence/prompt3-inventory-reconciliation.json`, including the
-seven named surfaces with corrected categories and dispositions.
+Proofs: A's export contains A's records and no B records; deleting A removes only what the
+documented dependency rule requires; B's independent records remain byte-for-byte unchanged.
+Any B response cascaded by deleting A's parent post is recorded explicitly as an expected
+relational consequence. Both accounts and all artifacts are cleaned by exact ID.
 
-## 3. Synthetic member: export and deletion proof
+## 4. Complete real export path
 
-One new labelled synthetic member (isolated, `@example.invalid`), with records seeded across
-every corrected surface: community question, answer, vote, win post, conversation, message,
-support ticket plus a note, and control rows on already-correct surfaces.
+Canonical function names are taken from the repository and live function inventory; no aliases
+are created. A server-created synthetic reauthentication ticket is used, sending no email.
+Exercised and recorded: readable ZIP; machine-readable JSON; category and source-table
+metadata; exact inclusion of corrected surfaces; exclusion of security-only fields and Member
+B's data; attachment, `no-store` and `nosniff` headers; one-time download; replay rejection;
+expiry/cleanup of the exact synthetic artifact. No export is PASS from manifest mapping alone.
 
-- Run the **real** export path (`export-my-data` / `download-export`) and verify each seeded
-  record appears under the correct category, with security-only surfaces
-  (`reauth_tickets`, `state_nonces`, `product_validation_tokens`, secrets) absent.
-- Run the **real** deletion workflow (`request-account-deletion` → `process-deletion-job`) and
-  record expected-versus-actual counts per corrected surface, reconciling to zero unexplained
-  rows.
-- Confirm `retention-report` stays report-only and deletes zero rows.
-- Delete every synthetic record by exact ID, re-query every affected surface, prove zero
-  residue, and re-confirm all safety flags at their recorded pre-run values. The single real
-  owner account and all real member rows are untouched. No live Stripe, Resend, Dexcom or AI
-  call; the deletion fixture is never-billed.
+## 5. Deletion and processor truthfulness
 
-## 4. Deno gate resolution
+Run the real deletion state machine for Member A: expected-versus-actual counts per corrected
+table, dependency order, reconciliation, retry/idempotence, zero unexplained rows. The
+never-billed fixture is recorded as having no applicable Stripe object — never
+processor-verified or processor-deleted — with zero external processor calls. Deletion
+receipts, jobs, export artifacts and other synthetic audit rows are either removed by exact ID
+or listed explicitly as intentionally retained test evidence. Shared/IP-partitioned rate-limit
+counters are classified as expiring security metadata and reported separately, never deleted to
+manufacture a zero. Retention stays report-only and deletes zero rows.
 
-Re-run `deno check` over the changed functions and shared modules plus function tests and boot
-smoke, then record exactly one status: `PASS` if clean, otherwise
-`BLOCKED — accepted pre-existing toolchain conflict` with the unchanged supabase-js type
-conflict quoted verbatim and passing tests/smoke alongside it. `PARTIAL` is removed.
+## 6. Deployment and reproducibility
 
-## 5. Regenerated artifacts
+Because `_shared/inventory.ts` changes deployed behaviour: test the exact source first; deploy
+only the Edge Functions consuming the corrected manifest; record names, deployment timestamps
+and tested source SHA; run boot/CORS smoke after deployment; publish no client bundle. No live
+export is claimed as tested until the live functions run the corrected manifest bytes.
 
-`data-lifecycle.json`, `prompt3-inventory-reconciliation.json`, `synthetic-cleanup.json`,
-`gates.json` and `docs/BATCH-2-COMPLETION-REPORT.md`, with refreshed SHA-256 for every
-artifact. Downloadable copies stay redacted (no real email, UUID, token, IP or member text).
+## 7. Deno gate and final artifacts
 
-Batch 2 closes only with zero FAIL, zero NOT TESTED, zero PARTIAL, an executed synthetic
-export, an executed deletion/reconciliation, accurate classifications for all member-linked
-surfaces, and zero synthetic residue. The empty `auth.audit_log_entries` history stays an
-accepted BLOCKED platform limitation. Nothing is published.
+The Deno gate records exactly one of `PASS`, or `BLOCKED — accepted pre-existing toolchain
+conflict` with the exact diagnostic class and location, confirmation it is unchanged, and
+passing focused tests plus boot smoke. No secrets or credentials appear. `PARTIAL` is
+prohibited everywhere; only PASS / FAIL / BLOCKED / NOT TESTED are used.
+
+Regenerated: `data-lifecycle.json`, `prompt3-inventory-reconciliation.json`,
+`synthetic-cleanup.json`, `gates.json`, `BATCH-2-COMPLETION-REPORT.md` and
+`ARTIFACT-SHA256.txt` (which hashes every final artifact except itself). The report states
+separately: application code changed; migration applied or not; Edge Functions deployed; client
+published: no; real member data changed: no — plus starting and final code SHAs, before/after
+counts, Member B control results, and the accepted historical auth-audit BLOCKED limitation.
+
+Batch 2 closes only with zero FAIL, zero NOT TESTED, zero PARTIAL, accurate classification of
+every member-linked surface, successful readable and machine-readable exports, successful
+deletion and reconciliation, Member B unchanged except any justified parent cascade, zero
+unexplained synthetic residue, safety flags restored, and no client publication.
 
 ## Technical notes
 
-- Files expected to change: `supabase/functions/_shared/inventory.ts`, its tests, deletion and
-  export handlers where the note surface is enumerated, a new
-  `tools/batch2/prompt3_reconcile.py`, a new synthetic export/deletion harness under
-  `tools/batch2/`, and the evidence/report files above.
-- Any database behaviour change ships as a source-controlled migration with rollback notes and
-  a source hash; none is expected for classification alone.
+Expected changes: `supabase/functions/_shared/inventory.ts` and its consumers
+(`exportBuild.ts`, export/download and deletion functions), a new cycle-safe
+`tools/batch2/prompt3_reconcile.py`, a synthetic A/B export-and-deletion harness under
+`tools/batch2/` (secret-gated, `@example.invalid` only), manifest/allowlist tests, and the
+evidence and report files above.
