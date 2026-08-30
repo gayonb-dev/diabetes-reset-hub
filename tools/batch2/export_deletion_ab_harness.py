@@ -371,9 +371,12 @@ class Run:
         # out of the database across the request call only, and restored (same
         # ids, same values) before the worker runs, so the worker's immutable
         # ownership matching is still exercised on real rows.
-        held = self._orders_sql
-        arr = ", ".join(f"'{i}'" for i in self.ids["orders"])
-        psql_exec(f"DELETE FROM public.orders WHERE id = ANY(ARRAY[{arr}]::uuid[])")
+        gate = scalar("SELECT (value)::text AS v FROM public.app_config WHERE key = 'stripe_deletion_enabled'")
+        hold_out = str(gate).strip() != "true"
+        held = self._orders_sql if hold_out else []
+        if hold_out:
+            arr = ", ".join(f"'{i}'" for i in self.ids["orders"])
+            psql_exec(f"DELETE FROM public.orders WHERE id = ANY(ARRAY[{arr}]::uuid[])")
         hdr = {"Authorization": f"Bearer {self.a['access_token']}", "apikey": ANON_KEY}
         t = self._mint_ticket(self.a["id"], "delete")
         req = function_post("request-account-deletion", {"ticket": t}, hdr)
@@ -396,8 +399,8 @@ class Run:
         first = worker()
         retry = worker()  # retry must be safe and idempotent
         self.results["deletion"] = {
-            "orders_held_out_during_request_call": len(self.ids["orders"]),
-            "orders_restored_before_worker": True,
+            "orders_held_out_during_request_call": len(held),
+            "orders_restored_before_worker": bool(held),
             "job_state_first_pass": first.get("state"),
             "job_state_retry_pass": retry.get("state"),
             "first_pass_remaining": first.get("remaining", {}),
