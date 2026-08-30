@@ -150,6 +150,16 @@ async function cleanup(ids: string[], extraDeletes?: Record<string, string[]>) {
   removed["visitor_profiles"] = vp?.length ?? 0;
   const { data: pr } = await admin.from("profiles").delete().in("user_id", ids).select("id");
   removed["profiles"] = pr?.length ?? 0;
+
+  // Extra synthetic rows supplied by the local A/B harness (e.g. community content).
+  if (extraDeletes) {
+    for (const [table, rowIds] of Object.entries(extraDeletes)) {
+      if (!rowIds.length) continue;
+      const { data } = await admin.from(table).delete().in("id", rowIds).select("id");
+      removed[`extra:${table}`] = data?.length ?? 0;
+    }
+  }
+
   const deleted: string[] = [];
   for (const id of ids) {
     const { error } = await admin.auth.admin.deleteUser(id);
