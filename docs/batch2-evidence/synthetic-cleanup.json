@@ -1,41 +1,135 @@
 {
   "generated_utc": "2026-08-30",
-  "method": "live synthetic A/B export/deletion harness; exact-ID cleanup via temporary service-authorized batch2-harness function; verified zero residue",
+  "code_sha": "69a452af295540dcb39ff95e6347ccb903e17cc5",
+  "method": "exact-ID cleanup through a temporary service-authorized batch2-harness function; the sandbox database role holds no UPDATE/DELETE privilege on member tables",
   "project_ref": "wqennhjdojjqmmqzjhti",
   "domain": "https://diabetesresetmethod.com",
   "members": {
-    "member_a": "synthetic deletion/export subject (never-billed)",
-    "member_b": "synthetic untouched control"
+    "member_a": {
+      "alias": "MEMBER_A",
+      "ref": "id:2e7d82096c1c",
+      "role": "export + deletion subject"
+    },
+    "member_b": {
+      "alias": "MEMBER_B",
+      "ref": "id:f010c4982a72",
+      "role": "untouched control"
+    }
   },
-  "surfaces": [
-    {"surface":"community_questions","seeded_ids":2,"a_remaining_after_deletion":0,"b_remaining_after_deletion":1,"post_cleanup_remaining":0},
-    {"surface":"community_answers","seeded_ids":2,"a_remaining_after_deletion":0,"b_remaining_after_deletion":0,"post_cleanup_remaining":0,"note":"B's answer on A's question cascaded with A's question deletion"},
-    {"surface":"community_votes","seeded_ids":2,"a_remaining_after_deletion":0,"b_remaining_after_deletion":1,"post_cleanup_remaining":0},
-    {"surface":"win_posts","seeded_ids":2,"a_remaining_after_deletion":0,"b_remaining_after_deletion":1,"post_cleanup_remaining":0},
-    {"surface":"conversations","seeded_ids":2,"a_remaining_after_deletion":0,"b_remaining_after_deletion":1,"post_cleanup_remaining":0},
-    {"surface":"messages","seeded_ids":2,"a_remaining_after_deletion":0,"b_remaining_after_deletion":1,"post_cleanup_remaining":0},
-    {"surface":"support_tickets","seeded_ids":2,"a_remaining_after_deletion":0,"b_remaining_after_deletion":1,"post_cleanup_remaining":0},
-    {"surface":"support_ticket_notes","seeded_ids":2,"a_remaining_after_deletion":0,"b_remaining_after_deletion":1,"post_cleanup_remaining":0}
-  ],
-  "auth_accounts": {
-    "synthetic_created_this_pass": 2,
-    "synthetic_deleted_by_cleanup": 2,
-    "real_accounts_remaining": 1,
-    "real_member_rows_unchanged": true
+  "surfaces": {
+    "community_questions": {
+      "before": 1,
+      "after": 0
+    },
+    "community_answers": {
+      "before": 0,
+      "after": 0
+    },
+    "community_votes": {
+      "before": 1,
+      "after": 0
+    },
+    "win_posts": {
+      "before": 1,
+      "after": 0
+    },
+    "conversations": {
+      "before": 1,
+      "after": 0
+    },
+    "messages": {
+      "before": 0,
+      "after": 0
+    },
+    "support_tickets": {
+      "before": 1,
+      "after": 0
+    },
+    "support_ticket_notes": {
+      "before": 0,
+      "after": 0
+    },
+    "community_answer_embeddings": {
+      "before": 0,
+      "after": 0
+    },
+    "billing_holds": {
+      "before": 1,
+      "after": 0
+    },
+    "orders": {
+      "before": 2,
+      "after": 0
+    },
+    "reauth_tickets": {
+      "before": 0,
+      "after": 0
+    },
+    "export_artifacts": {
+      "before": 0,
+      "after": 0
+    },
+    "deletion_jobs": {
+      "before": 0,
+      "after": 0
+    },
+    "visitor_sessions": {
+      "before": 0,
+      "after": 0
+    },
+    "visitor_profiles": {
+      "before": 1,
+      "after": 0
+    },
+    "profiles": {
+      "before": 1,
+      "after": 0
+    },
+    "subscriptions": {
+      "before": 1,
+      "after": 0
+    },
+    "consent_records": {
+      "before": 0,
+      "after": 0
+    },
+    "storage_objects": {
+      "exports": 0,
+      "avatars": 0,
+      "uploads": 0
+    },
+    "retained_security_metadata": {
+      "rate_limits": "hashed request buckets only; no synthetic identifier is stored; retained by design",
+      "phi_access_log_rows_for_synthetic_actors": 0
+    },
+    "auth_users": {
+      "deleted": 2,
+      "synthetic_remaining": 0
+    }
   },
-  "safety_flags_after": {
-    "ai_health_enabled": false,
-    "auth_email_enabled": true,
-    "dexcom_enabled": false,
-    "email_delivery_enabled": false,
-    "email_test_allowlist": [],
-    "marketing_email_enabled": false,
-    "phi_notice_version": "2026-08-07.1",
-    "retention_mode": "report_only",
-    "stripe_deletion_enabled": true,
-    "stripe_mode": "live",
-    "transactional_automation_enabled": false
+  "residue": {
+    "synthetic_auth_users_remaining": 0,
+    "storage_objects_remaining": {
+      "exports": 0,
+      "avatars": 0,
+      "uploads": 0
+    },
+    "real_member_rows_mutated": 0
   },
-  "result": "PASS",
-  "residue_verified": true
+  "retained_security_metadata": {
+    "rate_limits": "hashed request buckets only; no synthetic identifier is stored; retained by design",
+    "phi_access_log_rows_for_synthetic_actors": 0
+  },
+  "temporary_tooling": {
+    "function": "batch2-harness",
+    "deleted": true,
+    "post_delete_probe": "POST /functions/v1/batch2-harness -> HTTP 404",
+    "secrets_removed": [
+      "BATCH2_HARNESS_SECRET",
+      "BATCH2_HARNESS_SECRET_V2",
+      "BATCH2_HARNESS_SECRET_V3"
+    ],
+    "note": "An earlier closeout recorded this function as deleted; it was found deployed at the start of this pass, used for the missing checks, then deleted and re-verified."
+  },
+  "result": "PASS"
 }
