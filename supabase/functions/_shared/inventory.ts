@@ -14,7 +14,6 @@ export type MatchKind =
   | "actor_user_id"
   | "visitor_profile"  // column IN (visitor profile ids bound to the user)
   | "email"            // case-insensitive email match
-  | "customer_email"
   | "order_ownership"  // row id IN (orders owned via orders.user_id or a member-owned subscription)
   | "cascade"          // no direct subject key; removed by FK cascade with a member-owned parent
   | "parent";          // column is a FK to parentTable.parentColumn; ownership is inherited
