@@ -1,166 +1,92 @@
-# Batch 2 — Final Backend Closeout
+# Batch 2 — Final Evidence Correction (backend only)
 
-Backend and documentation work only. The approved matrix (46 PASS / 0 FAIL / 2 BLOCKED),
-performance, accessibility, responsive and screenshot evidence are reused exactly as they
-stand, with their original execution dates. No Playwright, no performance or accessibility
-reruns unless a backend defect found here changes visible client behaviour. Nothing is
-published and no ZIP is produced.
+Backend and documentation only. No design, accessibility, performance or 24-task browser
+matrix work. Nothing published. Reused client evidence keeps its original execution dates.
 
-## 0. Production preflight (before any synthetic principal or database change)
+## What is actually wrong today
 
-Confirm the production project ref `wqennhjdojjqmmqzjhti` and the domain
-`https://diabetesresetmethod.com`; record the pre-run baseline of `ai_health_enabled`,
-`dexcom_enabled`, `email_delivery_enabled`, `transactional_automation_enabled`,
-`marketing_email_enabled`, `retention_mode`, `stripe_deletion_enabled` and the production Auth
-auto-confirm state. The identical set is re-recorded after cleanup and must retain the same
-values. Stop on a project mismatch or if synthetic records cannot be isolated safely. Global
-Auth auto-confirm, secrets, origins, Stripe flags, email flags and retention mode are not
-changed at any point.
+Confirmed by reading the canonical manifest and the reconciliation artifact:
 
+- The canonical manifest `supabase/functions/_shared/inventory.ts` **already** treats
+  `community_questions`, `community_answers`, `community_votes`, `win_posts`, `conversations`
+  and `messages` as personal data with `export_and_delete` (matched on `author_id`,
+  `voter_id` and member-bound `visitor_profile_id`).
+- `docs/batch2-evidence/prompt3-inventory-reconciliation.json` labels those same surfaces
+  `configuration_or_content`. This is a **generator classification defect**, not a manifest gap.
+- One genuine manifest issue: `support_ticket_notes` is `reference_only` although each note is
+  tied to a member's support ticket.
 
+## 1. Classification rule and manifest correction
 
-## 1. Changed-function verification
+Adopt one written rule, enforced in code:
 
-- Reconcile every Edge Function and shared Deno module changed from the resolved Batch 2
-  starting commit through the current tested tree; record the file list and per-file SHA-256.
-- Run `deno check` and any Deno tests over that exact set.
-- Boot/CORS smoke per changed deployed function using preflight, auth rejection or harmless
-  malformed input only — never a request that can send email, call AI, touch Stripe, delete
-  data or emit notifications. Record approved-origin, disallowed-origin, missing-origin and
-  boot/503 outcomes. `ALLOWED_ORIGINS` is not modified.
+> A public table is personal data when it has a member/author/actor/voter user column, a
+> `visitor_profile_id` that can bind to a member, or a foreign key to a member-owned row
+> (for example `support_ticket_notes.ticket_id` → `support_tickets.user_id`).
 
-## 2. Prompt 3 inventory completeness
+- Reclassify `support_ticket_notes` in the canonical manifest to
+  `export_redacted_and_delete` matched through its parent ticket, redacting the internal
+  staff author identifier. Notes are deleted with the member's tickets.
+- Community content policy: the documented policy does **not** authorise retaining linked
+  community content, so `community_questions`, `community_answers`, `community_votes` and
+  `win_posts` are deleted on member deletion. No de-identification branch is introduced. This
+  exact rule is recorded in the artifacts rather than a "non-personal" label.
+- Update the manifest tests to assert the rule for every listed surface.
 
-Enumerate every Batch 2-created or altered table, column, function/RPC, policy, Storage
-surface, Edge Function data operation and Admin data operation from catalogue/schema
-information and allowlisted non-personal configuration only. No member-generated content is
-read or exported. Each item is reconciled against the Prompt 3 manifest with its export,
-deletion and retention disposition into `prompt3-inventory-reconciliation.json`.
+## 2. Reconciliation generator must fail closed
 
-## 3. Complete RLS principal matrix
+Rewrite the Prompt 3 reconciliation generator as a source-controlled script that:
 
-Executable probes as anonymous, synthetic Member A, synthetic Member B, synthetic Admin
-holding a normal authenticated JWT with the real application admin role, and service role
-recorded separately (never counted as Admin). Every read/insert/update/delete attempt
-re-reads the target row and records the actual result across `activity_events`,
-`member_progress` and the programme-day trigger, coaching interest, support tickets and
-permitted note/status operations, points/Activity Score data, altered notification surfaces,
-every new order and billing-email policy, plus anything the inventory surfaces.
+- reads live catalogue metadata (columns, foreign keys, policies, grants) read-only;
+- derives personal-data status from the rule above rather than a hand-maintained label list;
+- cross-checks every derived personal-data table against the canonical manifest;
+- **exits non-zero** (fail closed) if any author-linked, user-linked, visitor-profile-linked or
+  ticket-linked table is classified non-personal, or is missing from the manifest.
 
-Programme-day proofs: unlocked own day succeeds; future day fails; missing/NULL programme
-state fails closed; cross-member write fails; deletion-restricted write fails; service-role
-behaviour deliberately separate.
+Regenerated output: `docs/batch2-evidence/prompt3-inventory-reconciliation.json`, including the
+seven named surfaces with corrected categories and dispositions.
 
-### Order ownership must fail closed
+## 3. Synthetic member: export and deletion proof
 
-Email-only RLS is not accepted as a follow-up risk. A new source-controlled migration replaces
-the JWT-email fallback so a member may read an order only through an immutable,
-server-established ownership relationship — `orders.user_id = auth.uid()`, or an immutable
-order-to-subscription relationship whose subscription belongs to `auth.uid()`. Request-body
-email, URL email, browser state and bare JWT-email comparison are removed as authorization
-rules. Legacy orders with no immutable owner become inaccessible to ordinary members while
-Admin access is preserved; Billing/Support show an honest state; a separate authenticated
-claim/reconciliation path is documented for later. No real legacy order is backfilled or
-mutated during this closeout.
+One new labelled synthetic member (isolated, `@example.invalid`), with records seeded across
+every corrected surface: community question, answer, vote, win post, conversation, message,
+support ticket plus a note, and control rows on already-correct surfaces.
 
-Proofs recorded in the matrix: anonymous denied; A cannot reach B and B cannot reach A; a
-changed, recycled or newly registered matching email cannot expose a legacy order; member
-access read-only unless an existing authorized operation requires otherwise; deletion
-restrictions effective; Admin uses the application admin predicate; service role separate.
-Output: `rls-principal-matrix.md`, plus rollback notes and the migration source hash.
+- Run the **real** export path (`export-my-data` / `download-export`) and verify each seeded
+  record appears under the correct category, with security-only surfaces
+  (`reauth_tickets`, `state_nonces`, `product_validation_tokens`, secrets) absent.
+- Run the **real** deletion workflow (`request-account-deletion` → `process-deletion-job`) and
+  record expected-versus-actual counts per corrected surface, reconciling to zero unexplained
+  rows.
+- Confirm `retention-report` stays report-only and deletes zero rows.
+- Delete every synthetic record by exact ID, re-query every affected surface, prove zero
+  residue, and re-confirm all safety flags at their recorded pre-run values. The single real
+  owner account and all real member rows are untouched. No live Stripe, Resend, Dexcom or AI
+  call; the deletion fixture is never-billed.
 
-### Immutable ownership for future orders
+## 4. Deno gate resolution
 
-Before choosing the migration design, inspect the canonical checkout, payment webhook,
-subscription webhook and order schema so removing the legacy JWT-email policy cannot leave
-newly created orders ownerless. Reuse an existing immutable relationship if one already works
-safely (`orders.user_id = auth.uid()`, or `orders.subscription_id` → canonical subscription →
-authenticated `user_id`). If neither is populated reliably, make the smallest safe server-side
-correction so every newly provisioned order receives immutable ownership through the trusted
-checkout/webhook process.
+Re-run `deno check` over the changed functions and shared modules plus function tests and boot
+smoke, then record exactly one status: `PASS` if clean, otherwise
+`BLOCKED — accepted pre-existing toolchain conflict` with the unchanged supabase-js type
+conflict quoted verbatim and passing tests/smoke alongside it. `PARTIAL` is removed.
 
-Proven with synthetic mocked Stripe objects only — no live Stripe object created or modified:
-a newly created order receives the correct immutable owner; webhook replay does not change or
-duplicate ownership; concurrent verification and webhook handling do not duplicate orders or
-subscriptions; request-body or metadata email cannot select the owner; Member A cannot claim
-Member B's order; a legacy NULL-owner order stays inaccessible to ordinary members; Admin can
-still investigate a legacy order; no real legacy order is backfilled or changed.
+## 5. Regenerated artifacts
 
-### Deployment of the ownership correction
+`data-lifecycle.json`, `prompt3-inventory-reconciliation.json`, `synthetic-cleanup.json`,
+`gates.json` and `docs/BATCH-2-COMPLETION-REPORT.md`, with refreshed SHA-256 for every
+artifact. Downloadable copies stay redacted (no real email, UUID, token, IP or member text).
 
-After the immutable-ownership migration and any required checkout/webhook correction: run the
-focused ownership, replay, concurrency and RLS tests; run Deno checks/tests for every changed
-function and shared module; deploy only the materially changed Edge Functions from the exact
-tested source; record source SHA-256 and deployment receipts; run safe boot/auth/CORS smoke
-that creates no Stripe object; and prove through synthetic mocked provisioning that the
-deployed server path assigns immutable ownership to future orders.
+Batch 2 closes only with zero FAIL, zero NOT TESTED, zero PARTIAL, an executed synthetic
+export, an executed deletion/reconciliation, accurate classifications for all member-linked
+surfaces, and zero synthetic residue. The empty `auth.audit_log_entries` history stays an
+accepted BLOCKED platform limitation. Nothing is published.
 
-### Focused visible regression (mandatory, not conditional)
+## Technical notes
 
-The ownership correction always triggers this rerun. Rerun only: Task 23 on desktop and mobile
-across its five canonical lifecycle states; Billing loading, owned-order,
-legacy-unowned-order and backend-error states; required Settings, Support, export and deletion
-reachability; and proof that no authenticated billing state redirects to Login. The other 23
-matrix tasks, broad performance testing, accessibility testing and unrelated screenshots are
-not rerun. Preserved matrix totals are updated only from this focused evidence.
-
-
-
-
-## 4. Export, deletion and retention execution
-
-New, isolated, labelled synthetic fixtures only. Export inclusion/exclusion is tested for
-every new or altered personal-data surface; deletion is tested with expected-versus-actual
-row counts; retention runs in report-only mode and is proven to delete nothing. The deletion
-fixture is never-billed with no Stripe customer, subscription, charge or processor
-identifier. No live Stripe, Resend, Dexcom or AI call. `stripe_deletion_enabled`, retention
-mode, email flags, secrets and origin configuration are unchanged. Output: `data-lifecycle.json`.
-
-## 5. Auth audit
-
-Global auto-confirm stays off and is confirmed off. Available Auth audit logs are used to
-recover synthetic-account creation and deletion timestamps and whether any other account was
-created in the relevant interval. If the logs cannot reconstruct the window, that is recorded
-honestly as independent BLOCKED evidence; accounts are not recreated to reproduce timestamps.
-Any synthetic account needed in this pass is created and individually confirmed through the
-administrative no-email path. Output: `auth-audit.md`.
-
-## 6. Corrections found during this pass
-
-Smallest safe correction only, with a source-controlled migration when database behaviour
-changes, rollback notes, SHA-256 of the tested migration/function source, focused tests, and
-reruns of only the RLS/lifecycle/Deno gates the change could affect. No unrelated cleanup,
-refactoring or dependency upgrades.
-
-## 7. Redaction and cleanup
-
-Downloadable evidence carries no real email, auth UUID, member identifier, session token,
-cookie, magic link, IP, secret, or real health/support text — aggregate statements only
-(`real_accounts_remaining: 1`, `real_member_rows_unchanged: true`). Cleanup evidence reports
-before / created / deleted / remaining counts for every synthetic surface, redacted in the
-downloadable copy; exact synthetic IDs live only in the internal manifest. Every new synthetic
-record and identity is deleted by exact ID, every affected surface re-queried, zero
-run-specific residue proven, and all safety flags confirmed at their recorded pre-run values.
-Output: `synthetic-cleanup.json`.
-
-## 8. Final artifacts and reconciliation
-
-Final inventory hashes both the reused client evidence and the new backend evidence:
-`task-matrix.json`, `performance.json`, `accessibility.json`, `route-loading.json`,
-`screenshots/index.md`, `gates.json`, `prompt3-inventory-reconciliation.json`,
-`rls-principal-matrix.md`, `data-lifecycle.json`, `auth-audit.md`, redacted
-`synthetic-cleanup.json` and the authoritative `docs/BATCH-2-COMPLETION-REPORT.md`.
-
-The report additionally records the full 40-character Batch 2 starting SHA, the full tested
-final SHA (or an honest working-tree digest if uncommitted), the complete changed-file list,
-every applied migration with its source hash, every deployed Edge Function with its source
-hash, the current live client bundle, the tested unpublished bundle, original execution dates
-for reused evidence, and SHA-256 for every final artifact. It preserves the approved matrix
-result, separates reused evidence from gates executed in this pass, clearly retires every
-superseded report (including `BATCH-2-COMPLETION-REPORT-REJECTED-WRONG-MATRIX.md` and the
-interim `BATCH-2-STATUS.md`), distinguishes code changes / applied migrations / deployed
-functions / unpublished client changes, reports every gate as PASS / FAIL / BLOCKED / NOT
-TESTED with references resolving to real files, and confirms nothing was published.
-
-Batch 2 closes only when no in-scope FAIL or NOT TESTED remains; independent platform
-limitations may stay BLOCKED with their exact consequence and post-publication step.
+- Files expected to change: `supabase/functions/_shared/inventory.ts`, its tests, deletion and
+  export handlers where the note surface is enumerated, a new
+  `tools/batch2/prompt3_reconcile.py`, a new synthetic export/deletion harness under
+  `tools/batch2/`, and the evidence/report files above.
+- Any database behaviour change ships as a source-controlled migration with rollback notes and
+  a source hash; none is expected for classification alone.
