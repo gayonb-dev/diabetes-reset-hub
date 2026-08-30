@@ -238,6 +238,15 @@ async function storageProbe(prefixes: string[]) {
   return json({ storage_objects_remaining: out });
 }
 
+async function usersExist(ids: string[]) {
+  const out: Record<string, boolean> = {};
+  for (const id of ids) {
+    const { data } = await admin.auth.admin.getUserById(id);
+    out[id] = Boolean(data?.user);
+  }
+  return json({ exists: out });
+}
+
 async function cleanupOrders() {
   const { data } = await admin.from("orders").delete()
     .eq("product_id", "synthetic-batch2").select("id");
@@ -291,6 +300,7 @@ Deno.serve(async (req) => {
     case "seed_orders_explicit": return await seedOrdersExplicit(body.rows ?? []);
     case "delete_by_ids": return await deleteByIds(String(body.table), body.ids ?? []);
     case "delete_by_column": return await deleteByColumn(String(body.table), String(body.column), body.ids ?? []);
+    case "users_exist": return await usersExist(body.ids ?? []);
     case "storage_probe": return await storageProbe(body.ids ?? []);
     case "cleanup_orders": return await cleanupOrders();
     case "deletion_lock": return await setDeletionLock(body.user_id!, body.state ?? "clear");

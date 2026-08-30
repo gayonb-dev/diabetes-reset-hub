@@ -491,15 +491,15 @@ class Run:
             "owned_by_a_remaining": 0, "ownerless_legacy_a_email_remaining": 1, "owned_by_b_remaining": 1} else "FAIL"}
 
         auth_left = harness("audit")
+        exists = harness("users_exist", {"ids": [a_id, b_id]}).get("exists", {})
         self.results["deletion"]["per_surface"] = per_surface
         self.results["deletion"]["auth_users_remaining_total"] = auth_left.get("total")
-        self.results["deletion"]["a_auth_identity_removed"] = not bool(
-            scalar(f"SELECT count(*) AS n FROM auth.users WHERE id = '{a_id}'") and
-            int(scalar(f"SELECT count(*) AS n FROM auth.users WHERE id = '{a_id}'"))
-        )
-        self.results["deletion"]["b_auth_identity_present"] = bool(
-            int(scalar(f"SELECT count(*) AS n FROM auth.users WHERE id = '{b_id}'") or 0)
-        )
+        self.results["deletion"]["a_auth_identity_removed"] = exists.get(a_id) is False
+        self.results["deletion"]["b_auth_identity_present"] = exists.get(b_id) is True
+        if exists.get(a_id) is not False:
+            self.errors.append("member A auth identity survived deletion")
+        if exists.get(b_id) is not True:
+            self.errors.append("member B auth identity was affected by A's deletion")
 
     # ---------------- cleanup ----------------
 
