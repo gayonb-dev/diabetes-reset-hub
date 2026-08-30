@@ -8,9 +8,11 @@ The safeguards below control wherever any earlier wording conflicts or is silent
 
 Before any write: confirm project `wqennhjdojjqmmqzjhti` and `https://diabetesresetmethod.com`;
 confirm every safety flag at its recorded pre-run value; confirm global email auto-confirm
-disabled; confirm no real email, Stripe, Resend, Dexcom or external-AI call can occur. Stop only
-on project mismatch or a flag that cannot be preserved. If a migration unexpectedly becomes
-necessary, confirm a current production restore point before applying it.
+disabled; confirm no real email, Stripe, Resend, Dexcom or external-AI call can occur. Stop if
+the project differs, a safety flag cannot be preserved, or isolation from real email, Stripe,
+Resend, Dexcom and external-AI calls cannot be proven before synthetic writes begin. If a
+migration unexpectedly becomes necessary, confirm a current production restore point before
+applying it.
 
 ## What is actually wrong today
 
