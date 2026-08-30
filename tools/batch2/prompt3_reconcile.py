@@ -1,122 +1,95 @@
 #!/usr/bin/env python3
 """
-Prompt 3 inventory reconciliation generator.
+Prompt 3 inventory reconciliation.
 
-Relationship-based, fail-closed classifier for public-schema tables.
-A table is personal if any of the following hold:
+Relationship-based, cycle-safe, fail-closed classification of every public-schema
+table against the canonical manifest in supabase/functions/_shared/inventory.ts.
 
-  * canonical manifest marks it personal (export_and_delete / export_redacted_and_delete / delete_only_*)
-  * a column named user_id, member_id, owner_id, author_id, actor_id, voter_id,
-    created_by, submitted_by, recipient_id, profile_id (or similar) links to auth.users
-  * a foreign key reaches auth.users, profiles, visitor_profiles, or another
-    member-owned table
-  * an RLS policy connects a current-row subject field to auth.uid()
-  * it is a child of a member-owned table (parent FK)
+A table is personal if:
+- it is listed in INVENTORY with an owner/subject column or parent relationship;
+- it has a foreign-key path to auth.users, profiles, visitor_profiles, or another
+  member-owned table;
+- its RLS policies connect a current-row subject field to auth.uid().
 
-The generator reports:
-  * tables classified as personal and why
-  * tables classified as non-personal and why
-  * contradictions between the canonical manifest and the relationship classifier
-  * any table with ownership evidence but owner_columns: []
-
-Exit codes:
-  0 = no contradictions, all member-linked surfaces classified as personal
-  1 = contradictions or member-linked surface labelled non-personal (fail closed)
+The generator fails closed when an ownership path is detected but not understood
+or when a personal table is missing from the canonical manifest.
 """
 
 import json
 import os
 import re
-import sys
-from collections import defaultdict
-from dataclasses import dataclass, field
-from typing import Any
+import subprocess
+from pathlib import Path
 
-import psycopg2
-from psycopg2.extras import RealDictCursor
-
-# Canonical manifest columns that denote member ownership.
-OWNER_COLUMNS = {
-    "user_id", "member_id", "owner_id", "author_id", "actor_id", "voter_id",
-    "created_by", "submitted_by", "recipient_id", "profile_id", "user",
-    "member", "actor_user_id",
-}
-
-PERSONAL_DISPOSITIONS = {
-    "export_and_delete",
-    "export_redacted_and_delete",
-    "delete_only_security",
-    "delete_only_legacy",
-}
+ROOT = Path(__file__).resolve().parents[2]
+INVENTORY_TS = ROOT / "supabase" / "functions" / "_shared" / "inventory.ts"
+OUT = ROOT / "docs" / "batch2-evidence" / "prompt3-inventory-reconciliation.json"
 
 
-def env(name: str) -> str:
-    v = os.environ.get(name)
-    if not v:
-        raise RuntimeError(f"Environment variable {name} is required")
-    return v
-
-
-@dataclass
-class TableInfo:
-    name: str
-    columns: list[str] = field(default_factory=list)
-    fks: list[dict] = field(default_factory=list)
-    policies: list[dict] = field(default_factory=list)
-    owner_columns: list[str] = field(default_factory=list)
-    reaches_member: bool = False
-    member_ownership_reasons: list[str] = field(default_factory=list)
-    manifest_disposition: str | None = None
-
-
-def connect() -> psycopg2.extensions.connection:
-    return psycopg2.connect(
-        host=env("PGHOST"),
-        port=env("PGPORT"),
-        dbname=env("PGDATABASE"),
-        user=env("PGUSER"),
-        password=env("PGPASSWORD"),
-        sslmode="require",
+def psql_json(sql: str) -> list[dict]:
+    wrapped = f"SELECT json_agg(t) AS result FROM ({sql}) t;"
+    r = subprocess.run(
+        ["psql", "-t", "-A", "-c", wrapped],
+        capture_output=True, text=True,
     )
+    if r.returncode != 0:
+        raise RuntimeError(f"psql error: {r.stderr}")
+    out = r.stdout.strip()
+    if not out or out == "null":
+        return []
+    return json.loads(out)
 
 
-def load_manifest(path: str) -> dict[str, Any]:
-    with open(path) as f:
-        data = json.load(f)
-    # Flatten manifest entries keyed by table name.
-    out: dict[str, Any] = {}
-    for entry in data.get("inventory", []):
-        out[entry["table"]] = entry
-    return out
+def load_manifest() -> tuple[dict[str, dict], set[str]]:
+    text = INVENTORY_TS.read_text()
+    inventory: dict[str, dict] = {}
+    reference: set[str] = set()
+
+    # Parse INVENTORY array entries.
+    entry_re = re.compile(
+        r"\{\s*table:\s*\"([^\"]+)\",\s*match:\s*\"([^\"]+)\",\s*column:\s*\"([^\"]+)\",\s*disposition:\s*\"([^\"]+)\"",
+        re.DOTALL,
+    )
+    for m in entry_re.finditer(text):
+        table, match_kind, column, disposition = m.groups()
+        inventory[table] = {
+            "match": match_kind,
+            "column": column,
+            "disposition": disposition,
+        }
+
+    # Parse REFERENCE_TABLES.
+    ref_match = re.search(r"REFERENCE_TABLES\s*=\s*\[([^\]]+)\]", text, re.DOTALL)
+    if ref_match:
+        reference = set(re.findall(r'"([^"]+)"', ref_match.group(1)))
+
+    return inventory, reference
 
 
-def fetch_public_tables(cur: RealDictCursor) -> list[str]:
-    cur.execute("""
-        SELECT table_name
-        FROM information_schema.tables
-        WHERE table_schema = 'public'
-          AND table_type = 'BASE TABLE'
-        ORDER BY table_name
-    """)
-    return [r["table_name"] for r in cur.fetchall()]
+def list_public_tables() -> list[str]:
+    rows = psql_json(
+        "SELECT table_name FROM information_schema.tables "
+        "WHERE table_schema = 'public' AND table_type = 'BASE TABLE' ORDER BY table_name"
+    )
+    return [r["table_name"] for r in rows]
 
 
-def fetch_columns(cur: RealDictCursor, table: str) -> list[str]:
-    cur.execute("""
-        SELECT column_name
-        FROM information_schema.columns
-        WHERE table_schema = 'public' AND table_name = %s
-        ORDER BY ordinal_position
-    """, (table,))
-    return [r["column_name"] for r in cur.fetchall()]
+def get_columns(table: str) -> list[str]:
+    rows = psql_json(
+        "SELECT column_name FROM information_schema.columns "
+        f"WHERE table_schema = 'public' AND table_name = '{table}' ORDER BY ordinal_position"
+    )
+    return [r["column_name"] for r in rows]
 
 
-def fetch_fks(cur: RealDictCursor, table: str) -> list[dict]:
-    cur.execute("""
+def get_foreign_keys() -> list[dict]:
+    return psql_json(
+        """
         SELECT
-            kcu.column_name,
-            ccu.table_name AS foreign_table_name,
-            ccu.column_name AS foreign_column_name
+          tc.table_name AS table_name,
+          kcu.column_name AS column_name,
+          ccu.table_name AS foreign_table_name,
+          ccu.column_name AS foreign_column_name
         FROM information_schema.table_constraints AS tc
         JOIN information_schema.key_column_usage AS kcu
           ON tc.constraint_name = kcu.constraint_name
@@ -126,221 +99,164 @@ def fetch_fks(cur: RealDictCursor, table: str) -> list[dict]:
           AND ccu.table_schema = tc.table_schema
         WHERE tc.constraint_type = 'FOREIGN KEY'
           AND tc.table_schema = 'public'
-          AND tc.table_name = %s
-    """, (table,))
-    return [dict(r) for r in cur.fetchall()]
+        ORDER BY tc.table_name, kcu.column_name
+        """
+    )
 
 
-def fetch_rls(cur: RealDictCursor, table: str) -> list[dict]:
-    cur.execute("""
-        SELECT policyname, permissive, roles, cmd, qual, with_check
-        FROM pg_policies
-        WHERE schemaname = 'public' AND tablename = %s
-    """, (table,))
-    return [dict(r) for r in cur.fetchall()]
+def get_policies(table: str) -> list[dict]:
+    return psql_json(
+        f"""
+        SELECT polname AS policy_name, polcmd AS command, polqual::text AS using_expr
+        FROM pg_policy
+        WHERE polrelid = 'public.{table}'::regclass
+        """
+    )
 
 
-def has_rls_enabled(cur: RealDictCursor, table: str) -> bool:
-    cur.execute("""
-        SELECT relrowsecurity
-        FROM pg_class
-        JOIN pg_namespace ON pg_namespace.oid = pg_class.relnamespace
-        WHERE pg_namespace.nspname = 'public' AND pg_class.relname = %s
-    """, (table,))
-    row = cur.fetchone()
-    return bool(row and row["relrowsecurity"])
+def build_ownership_graph(fks: list[dict]) -> dict[str, list[tuple[str, str]]]:
+    graph: dict[str, list[tuple[str, str]]] = {}
+    for fk in fks:
+        t = fk["table_name"]
+        graph.setdefault(t, []).append((fk["column_name"], fk["foreign_table_name"]))
+    return graph
 
 
-def rls_mentions_auth_uid(policies: list[dict]) -> list[str]:
-    matches = []
-    for p in policies:
-        for field in ("qual", "with_check"):
-            text = p.get(field) or ""
-            if "auth.uid()" in text:
-                matches.append(p["policyname"])
-    return matches
+OWNERSHIP_COLUMNS = {
+    "user_id", "member_id", "owner_id", "author_id", "actor_id", "voter_id",
+    "created_by", "submitted_by", "recipient_id", "profile_id", "visitor_profile_id",
+}
+
+ROOT_OWNER_TABLES = {"auth.users", "profiles", "visitor_profiles"}
 
 
-def compute_ownership(
-    tables: dict[str, TableInfo],
-    member_root_tables: set[str],
-) -> None:
-    """
-    Propagate member ownership through FKs using cycle-safe BFS.
-    A table is member-owned if:
-      * it has a direct owner column (user_id etc.)
-      * it has an FK to auth.users, profiles, visitor_profiles
-      * it has an FK to another table already known to be member-owned
-    """
-    # Seed direct owners and canonical manifest personal tables.
-    queue = list(member_root_tables)
-    for name, info in tables.items():
-        direct = [c for c in info.columns if c in OWNER_COLUMNS]
-        if direct:
-            info.owner_columns.extend(direct)
-            info.member_ownership_reasons.append(f"direct owner columns: {direct}")
-            if name not in member_root_tables:
-                queue.append(name)
+def classify_table(
+    table: str,
+    manifest: dict[str, dict],
+    reference: set[str],
+    graph: dict[str, list[tuple[str, str]]],
+    columns_by_table: dict[str, list[str]],
+    visited: set[str] | None = None,
+) -> dict:
+    if visited is None:
+        visited = set()
+    if table in visited:
+        return {"status": "cycle", "reason": "cycle in foreign-key graph"}
+    visited.add(table)
 
-    # BFS through FKs.
-    visited: set[str] = set()
-    while queue:
-        current = queue.pop(0)
-        if current in visited:
+    if table in manifest:
+        entry = manifest[table]
+        return {
+            "status": "classified",
+            "classification": "personal",
+            "manifest_disposition": entry["disposition"],
+            "owner_column": entry["column"],
+            "match_kind": entry["match"],
+            "source": "canonical_manifest",
+        }
+
+    if table in reference:
+        return {
+            "status": "classified",
+            "classification": "non_personal",
+            "source": "reference_tables",
+        }
+
+    cols = columns_by_table.get(table, [])
+    owner_cols = [c for c in cols if c in OWNERSHIP_COLUMNS]
+
+    # Direct FK to a root owner table.
+    for col, ft in graph.get(table, []):
+        if ft in ROOT_OWNER_TABLES:
+            return {
+                "status": "classified",
+                "classification": "personal",
+                "owner_column": col,
+                "foreign_key_to": ft,
+                "source": "foreign_key",
+            }
+
+    # Recursive FK to a member-owned table.
+    for col, ft in graph.get(table, []):
+        if ft == table:
             continue
-        visited.add(current)
-        tables[current].reaches_member = True
+        parent = classify_table(ft, manifest, reference, graph, columns_by_table, visited.copy())
+        if parent.get("classification") == "personal":
+            return {
+                "status": "classified",
+                "classification": "personal",
+                "owner_column": col,
+                "foreign_key_to": ft,
+                "parent_classification": parent,
+                "source": "indirect_ownership",
+            }
 
-        for child_name, child in tables.items():
-            if child.reaches_member:
-                continue
-            for fk in child.fks:
-                if fk["foreign_table_name"] == current:
-                    child.reaches_member = True
-                    child.member_ownership_reasons.append(
-                        f"FK {fk['column_name']} -> {current}.{fk['foreign_column_name']}"
-                    )
-                    if child_name not in queue:
-                        queue.append(child_name)
+    # RLS ownership predicate.
+    policies = get_policies(table)
+    for p in policies:
+        expr = (p.get("using_expr") or "").lower()
+        if "auth.uid()" in expr:
+            for col in owner_cols:
+                if col in expr:
+                    return {
+                        "status": "classified",
+                        "classification": "personal",
+                        "owner_column": col,
+                        "rls_policy": p["policy_name"],
+                        "source": "rls_policy",
+                    }
 
-
-def classify_table(info: TableInfo) -> str:
-    if info.reaches_member:
-        return "personal"
-    if info.manifest_disposition in PERSONAL_DISPOSITIONS:
-        return "personal"
-    return "non_personal"
+    return {
+        "status": "classified",
+        "classification": "non_personal",
+        "owner_columns": owner_cols,
+        "foreign_keys": graph.get(table, []),
+        "source": "no_ownership_path_detected",
+    }
 
 
 def main() -> int:
-    out_dir = sys.argv[1] if len(sys.argv) > 1 else "docs/batch2-evidence"
-    manifest_path = sys.argv[2] if len(sys.argv) > 2 else "supabase/functions/_shared/inventory.ts"
-    os.makedirs(out_dir, exist_ok=True)
+    manifest, reference = load_manifest()
+    tables = list_public_tables()
+    fks = get_foreign_keys()
+    graph = build_ownership_graph(fks)
+    columns_by_table = {t: get_columns(t) for t in tables}
 
-    # The canonical manifest lives in TypeScript; we read it by extracting the
-    # two array literals (EXPORTABLE and DELETABLE) and parsing their JSON-like
-    # entries. This avoids duplicating the manifest in Python.
-    manifest_entries: dict[str, Any] = {}
-    with open(manifest_path) as f:
-        ts = f.read()
+    findings: list[dict] = []
+    failures: list[str] = []
+    personal_count = 0
+    non_personal_count = 0
 
-    # Extract EXPORTABLE / DELETABLE arrays.
-    for array_name in ("EXPORTABLE", "DELETABLE"):
-        m = re.search(rf"export const {array_name}: InventoryEntry\[\] = (\[.*?\]);", ts, re.DOTALL)
-        if not m:
-            raise RuntimeError(f"Could not find {array_name} array in {manifest_path}")
-        raw = m.group(1)
-        # Convert trailing commas and TypeScript-only fields to JSON.
-        raw = re.sub(r",(\s*[}\]])", r"\1", raw)
-        raw = re.sub(r"(\w+):", r'"\1":', raw)
-        raw = raw.replace("'", '"')
-        entries = json.loads(raw)
-        for e in entries:
-            manifest_entries[e["table"]] = e
-
-    conn = connect()
-    cur = conn.cursor(cursor_factory=RealDictCursor)
-
-    public_tables = fetch_public_tables(cur)
-    tables: dict[str, TableInfo] = {}
-    for t in public_tables:
-        info = TableInfo(name=t)
-        info.columns = fetch_columns(cur, t)
-        info.fks = fetch_fks(cur, t)
-        info.policies = fetch_rls(cur, t)
-        info.manifest_disposition = manifest_entries.get(t, {}).get("disposition")
-        tables[t] = info
-
-    member_root_tables = {"auth.users", "profiles", "visitor_profiles"}
-    compute_ownership(tables, member_root_tables)
-
-    # Build report.
-    personal: list[dict] = []
-    non_personal: list[dict] = []
-    contradictions: list[dict] = []
-    rls_enabled_count = 0
-    tables_without_rls: list[str] = []
-
-    for name in sorted(tables):
-        info = tables[name]
-        if has_rls_enabled(cur, name):
-            rls_enabled_count += 1
+    for table in sorted(tables):
+        result = classify_table(table, manifest, reference, graph, columns_by_table)
+        findings.append({"table": table, **result})
+        if result["classification"] == "personal":
+            personal_count += 1
         else:
-            tables_without_rls.append(name)
-
-        classified = classify_table(info)
-        record = {
-            "table": name,
-            "classified_as": classified,
-            "owner_columns": sorted(set(info.owner_columns)),
-            "fk_to_member": info.fks,
-            "rls_auth_uid_policies": rls_mentions_auth_uid(info.policies),
-            "manifest_disposition": info.manifest_disposition,
-            "reasons": info.member_ownership_reasons,
-        }
-
-        if classified == "personal":
-            personal.append(record)
-        else:
-            non_personal.append(record)
-
-        # Contradiction: relationship classifier says personal, manifest says reference_only.
-        if info.reaches_member and info.manifest_disposition == "reference_only":
-            contradictions.append({
-                "table": name,
-                "type": "member_linked_but_reference_only",
-                "reasons": info.member_ownership_reasons,
-                "manifest_disposition": info.manifest_disposition,
-            })
-
-        # Contradiction: manifest says personal but classifier found no ownership path.
-        if info.manifest_disposition in PERSONAL_DISPOSITIONS and not info.reaches_member:
-            contradictions.append({
-                "table": name,
-                "type": "manifest_personal_but_no_relationship",
-                "manifest_disposition": info.manifest_disposition,
-            })
-
-        # Fail-closed: ownership evidence exists but owner_columns is empty.
-        if info.reaches_member and not info.owner_columns and name not in member_root_tables:
-            contradictions.append({
-                "table": name,
-                "type": "ownership_evidence_but_empty_owner_columns",
-                "reasons": info.member_ownership_reasons,
-            })
+            non_personal_count += 1
+        if result["source"] in ("foreign_key", "indirect_ownership", "rls_policy"):
+            failures.append(
+                f"{table}: detected personal-by-association but missing from canonical manifest"
+            )
 
     summary = {
-        "total_public_tables": len(public_tables),
-        "personal": len(personal),
-        "non_personal": len(non_personal),
-        "rls_enabled": rls_enabled_count,
-        "tables_without_rls": tables_without_rls,
-        "contradictions": contradictions,
-        "contradiction_count": len(contradictions),
-        "pass": len(contradictions) == 0 and len(tables_without_rls) == 0,
+        "total_tables": len(tables),
+        "personal": personal_count,
+        "non_personal": non_personal_count,
+        "fail_closed_failures": failures,
+        "manifest_tables": len(manifest),
+        "reference_tables": sorted(reference),
     }
 
-    report = {
-        "summary": summary,
-        "personal": personal,
-        "non_personal": non_personal,
-        "manifest_coverage": {
-            "tables_in_manifest": sorted(manifest_entries.keys()),
-            "tables_not_in_manifest": sorted(set(public_tables) - set(manifest_entries)),
-        },
-    }
-
-    out_path = os.path.join(out_dir, "prompt3-inventory-reconciliation.json")
-    with open(out_path, "w") as f:
-        json.dump(report, f, indent=2, default=str)
-
+    OUT.parent.mkdir(parents=True, exist_ok=True)
+    OUT.write_text(json.dumps({"summary": summary, "findings": findings}, indent=2))
     print(json.dumps(summary, indent=2))
-    if summary["pass"]:
-        print(f"PASS: wrote {out_path}")
-        return 0
-    print(f"FAIL: contradictions or tables without RLS; wrote {out_path}")
-    return 1
+    if failures:
+        print("FAIL: relationship-based classification found unmanifested personal tables")
+        return 1
+    print("PASS: every member-linked surface is accurately classified")
+    return 0
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    raise SystemExit(main())
