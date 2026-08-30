@@ -94,6 +94,8 @@ class Harness:
     def __init__(self) -> None:
         self.a: dict[str, Any] = {}
         self.b: dict[str, Any] = {}
+        self.a_vp: str = ""
+        self.b_vp: str = ""
         self.ids: dict[str, list[str]] = {}
         self.results: dict[str, Any] = {}
 
@@ -105,6 +107,10 @@ class Harness:
         self.a = out["principals"]["memberA"]
         self.b = out["principals"]["memberB"]
         a_id, b_id = self.a["id"], self.b["id"]
+
+        # Resolve visitor_profile ids created by the harness trigger.
+        self.a_vp = psql_json(f"SELECT id FROM public.visitor_profiles WHERE user_id = '{a_id}'")[0]["id"]
+        self.b_vp = psql_json(f"SELECT id FROM public.visitor_profiles WHERE user_id = '{b_id}'")[0]["id"]
 
         # Seed public tables directly via psql. Use fixed UUIDs for exact cleanup.
         q_a = self._uuid(); q_b = self._uuid()
@@ -128,14 +134,16 @@ class Harness:
         }
 
         now = datetime.now(timezone.utc).isoformat()
+        ref_a = f"HARNESS-A-{secrets.token_hex(4)}"
+        ref_b = f"HARNESS-B-{secrets.token_hex(4)}"
         stmts = [
-            f"INSERT INTO public.community_questions (id, author_id, title, body, created_at) VALUES ('{q_a}', '{a_id}', 'A question', 'body A', '{now}'), ('{q_b}', '{b_id}', 'B question', 'body B', '{now}')",
-            f"INSERT INTO public.community_answers (id, question_id, author_id, body, created_at) VALUES ('{ans_ab}', '{q_b}', '{a_id}', 'A answers B', '{now}'), ('{ans_ba}', '{q_a}', '{b_id}', 'B answers A', '{now}')",
-            f"INSERT INTO public.community_votes (id, answer_id, voter_id, value, created_at) VALUES ('{vote_a}', '{ans_ba}', '{a_id}', 1, '{now}'), ('{vote_b}', '{ans_ab}', '{b_id}', 1, '{now}')",
-            f"INSERT INTO public.win_posts (id, author_id, body, created_at) VALUES ('{wp_a}', '{a_id}', 'A win', '{now}'), ('{wp_b}', '{b_id}', 'B win', '{now}')",
-            f"INSERT INTO public.conversations (id, user_id, title, created_at) VALUES ('{conv_a}', '{a_id}', 'A convo', '{now}'), ('{conv_b}', '{b_id}', 'B convo', '{now}')",
-            f"INSERT INTO public.messages (id, conversation_id, sender_id, body, created_at) VALUES ('{msg_a}', '{conv_a}', '{a_id}', 'A msg', '{now}'), ('{msg_b}', '{conv_b}', '{b_id}', 'B msg', '{now}')",
-            f"INSERT INTO public.support_tickets (id, user_id, subject, status, created_at) VALUES ('{tk_a}', '{a_id}', 'A ticket', 'open', '{now}'), ('{tk_b}', '{b_id}', 'B ticket', 'open', '{now}')",
+            f"INSERT INTO public.community_questions (id, author_id, content, created_at) VALUES ('{q_a}', '{a_id}', 'A question', '{now}'), ('{q_b}', '{b_id}', 'B question', '{now}')",
+            f"INSERT INTO public.community_answers (id, question_id, author_id, content, created_at) VALUES ('{ans_ab}', '{q_b}', '{a_id}', 'A answers B', '{now}'), ('{ans_ba}', '{q_a}', '{b_id}', 'B answers A', '{now}')",
+            f"INSERT INTO public.community_votes (id, voter_id, target_type, target_id, vote_type, created_at) VALUES ('{vote_a}', '{a_id}', 'answer', '{ans_ba}', 'upvote', '{now}'), ('{vote_b}', '{b_id}', 'answer', '{ans_ab}', 'upvote', '{now}')",
+            f"INSERT INTO public.win_posts (id, author_id, milestone_type, milestone_label, created_at) VALUES ('{wp_a}', '{a_id}', 'other', 'A milestone', '{now}'), ('{wp_b}', '{b_id}', 'other', 'B milestone', '{now}')",
+            f"INSERT INTO public.conversations (id, visitor_profile_id, summary, created_at) VALUES ('{conv_a}', '{self.a_vp}', 'A convo', '{now}'), ('{conv_b}', '{self.b_vp}', 'B convo', '{now}')",
+            f"INSERT INTO public.messages (id, conversation_id, visitor_profile_id, role, content, created_at) VALUES ('{msg_a}', '{conv_a}', '{self.a_vp}', 'user', 'A msg', '{now}'), ('{msg_b}', '{conv_b}', '{self.b_vp}', 'user', 'B msg', '{now}')",
+            f"INSERT INTO public.support_tickets (id, user_id, reference, category, message, created_at) VALUES ('{tk_a}', '{a_id}', '{ref_a}', 'Question', 'A ticket message', '{now}'), ('{tk_b}', '{b_id}', '{ref_b}', 'Question', 'B ticket message', '{now}')",
             f"INSERT INTO public.support_ticket_notes (id, ticket_id, author_id, body, created_at) VALUES ('{note_a}', '{tk_a}', '{a_id}', 'A note body', '{now}'), ('{note_b}', '{tk_b}', '{b_id}', 'B note body', '{now}')",
         ]
         for stmt in stmts:
@@ -254,7 +262,7 @@ class Harness:
             "win_posts", "conversations", "messages", "support_tickets", "support_ticket_notes",
         ]
         for t in personal_tables:
-            rows = psql_json(f"SELECT * FROM public.{t} WHERE id = ANY(ARRAY[{self._sql_array(self.ids[t])}])")
+            rows = psql_json(f"SELECT * FROM public.{t} WHERE id = ANY(ARRAY[{self._sql_array(self.ids[t])}]::uuid[])")
             a_owned = [r for r in rows if any(str(v) == a_id for v in r.values())]
             b_owned = [r for r in rows if any(str(v) == b_id for v in r.values())]
             if a_owned:
@@ -272,9 +280,9 @@ class Harness:
         print("[harness] cleaning up synthetic records...")
         counts: dict[str, dict[str, int]] = {}
         for table, ids in self.ids.items():
-            before = psql_json(f"SELECT count(*) AS n FROM public.{table} WHERE id = ANY(ARRAY[{self._sql_array(ids)}])")[0]["n"]
-            psql_exec(f"DELETE FROM public.{table} WHERE id = ANY(ARRAY[{self._sql_array(ids)}])")
-            after = psql_json(f"SELECT count(*) AS n FROM public.{table} WHERE id = ANY(ARRAY[{self._sql_array(ids)}])")[0]["n"]
+            before = psql_json(f"SELECT count(*) AS n FROM public.{table} WHERE id = ANY(ARRAY[{self._sql_array(ids)}]::uuid[])")[0]["n"]
+            psql_exec(f"DELETE FROM public.{table} WHERE id = ANY(ARRAY[{self._sql_array(ids)}]::uuid[])")
+            after = psql_json(f"SELECT count(*) AS n FROM public.{table} WHERE id = ANY(ARRAY[{self._sql_array(ids)}]::uuid[])")[0]["n"]
             counts[table] = {"before": before, "after": after}
 
         # Clean any leftover reauth tickets, export artifacts, deletion jobs for A/B.
