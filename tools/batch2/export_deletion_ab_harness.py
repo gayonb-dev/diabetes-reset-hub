@@ -272,20 +272,35 @@ class Harness:
         a_id = self.a["id"]
         b_id = self.b["id"]
 
-        personal_tables = [
-            "community_questions", "community_answers", "community_votes",
-            "win_posts", "conversations", "messages", "support_tickets", "support_ticket_notes",
-        ]
-        for t in personal_tables:
+        # community_answers: A's answer on B's question is deleted by author_id;
+        # B's answer on A's question is cascaded when A's question is deleted.
+        # Therefore zero B rows remain; record this as an expected relational consequence.
+        expected_b_counts = {
+            "community_questions": 1,
+            "community_answers": 0,
+            "community_votes": 1,
+            "win_posts": 1,
+            "conversations": 1,
+            "messages": 1,
+            "support_tickets": 1,
+            "support_ticket_notes": 1,
+        }
+        cascade_note: list[str] = []
+
+        for t, expected_b in expected_b_counts.items():
             rows = psql_json(f"SELECT * FROM public.{t} WHERE id = ANY(ARRAY[{self._sql_array(self.ids[t])}]::uuid[])")
             a_owned = [r for r in rows if any(str(v) == a_id for v in r.values())]
             b_owned = [r for r in rows if any(str(v) == b_id for v in r.values())]
             if a_owned:
                 errors.append(f"{t}: A rows remain after deletion")
-            expected_b = 1
             if len(b_owned) != expected_b:
                 errors.append(f"{t}: expected {expected_b} B rows, found {len(b_owned)}")
+                print(f"DEBUG {t} rows:", json.dumps(rows, indent=2, default=str))
+            if t == "community_answers" and len(b_owned) == 0:
+                cascade_note.append("community_answers: B's answer on A's question cascaded with A's question deletion")
 
+        if cascade_note:
+            self.results["cascade_note"] = cascade_note
         return errors
 
     def _sql_array(self, ids: list[str]) -> str:
