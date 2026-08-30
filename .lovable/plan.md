@@ -6,7 +6,8 @@ No new feature work, no client publication, no design/accessibility/performance 
 
 - Recover the prior A/B harness run output from the retained sandbox execution logs (the full stdout of the passing run, including seeded IDs, export snapshot metadata, per-surface counts, deletion reconciliation and cleanup before/after counts) and the deployment/receipt records already captured for `export-my-data` and `process-deletion-job`, plus the recorded HTTP 404 proving the temporary `batch2-harness` function was deleted.
 - Store the recovered material as `docs/batch2-evidence/export-deletion-run.json` (machine-readable) with a short human index.
-- Do not recreate `batch2-harness` to retrieve evidence. If — and only if — a runtime correction below invalidates a prior result, the affected check is rerun; that rerun requires a temporary, service-authorized harness redeploy, which is then deleted again with a recorded 404 and a confirmed removal of any temporary secret.
+- Recover existing evidence first. If a required result was never captured, cannot be recovered, or was invalidated by a runtime correction, execute only that missing or affected check. Preserve all valid, unaffected prior results. Use local/server-authorized tooling first; a temporary harness deployment is not mandatory and is used only when existing authorized tooling cannot perform the necessary check, under the previously approved authentication, no-email/no-processor, deletion, 404 and temporary-secret-removal safeguards. Do not repeatedly recreate fixtures or rerun completed client tests.
+- Recover logs without copying unredacted stdout into the repository or downloads: strip credentials, tokens, signed download URLs and real member data, and use consistent synthetic aliases.
 
 ## 2. Classification correctness (generator and manifest)
 
