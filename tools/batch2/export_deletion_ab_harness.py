@@ -72,10 +72,13 @@ def harness(action: str, body: dict | None = None) -> dict:
     return r.json()
 
 
+ALLOWED_ORIGIN = os.environ.get("ALLOWED_ORIGIN", "https://diabetesresetmethod.com")
+
+
 def function_post(name: str, body: dict, headers: dict) -> dict:
     r = requests.post(
         f"{SUPABASE_URL}/functions/v1/{name}",
-        headers={**headers, "Content-Type": "application/json"},
+        headers={**headers, "Content-Type": "application/json", "Origin": ALLOWED_ORIGIN},
         json=body,
     )
     try:
