@@ -230,7 +230,7 @@ Deno.serve(async (req) => {
   if (req.headers.get("x-harness-secret") !== HARNESS_SECRET) {
     return json({ error: "forbidden" }, 403);
   }
-  let body: { action?: string; ids?: string[]; user_id?: string; state?: string; specs?: { user_id: string; email: string; own_uid?: boolean }[] } = {};
+  let body: { action?: string; ids?: string[]; user_id?: string; state?: string; extra_deletes?: Record<string, string[]>; specs?: { user_id: string; email: string; own_uid?: boolean }[] } = {};
   try { body = await req.json(); } catch { /* boot smoke sends no body */ }
 
   switch (body.action) {
