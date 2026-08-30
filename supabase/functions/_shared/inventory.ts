@@ -164,6 +164,15 @@ export const INVENTORY: InventoryEntry[] = [
   { table: "visitor_profiles", match: "user_id", column: "user_id", disposition: "export_and_delete", order: 30, category: "identity" },
   { table: "profiles", match: "user_id", column: "user_id", disposition: "export_and_delete", order: 31, category: "identity" },
   { table: "deletion_jobs", match: "user_id", column: "user_id", disposition: "export_and_delete", order: 99, category: "privacy" },
+
+  // Staff broadcast audit. The only member-linked field is sent_by, the STAFF
+  // account that sent the broadcast; members are never a row subject here. The
+  // FK to auth.users is ON DELETE SET NULL, so deleting that staff account
+  // severs the identifier automatically. Never exported to a member.
+  {
+    table: "broadcast_log", match: "cascade", column: "sent_by",
+    disposition: "cascade_only_not_exported", order: 10, category: "operations",
+  },
 ];
 
 /** Public tables that intentionally hold no personal data. */
