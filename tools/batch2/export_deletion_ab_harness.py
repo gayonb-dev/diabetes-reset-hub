@@ -546,7 +546,10 @@ class Run:
             }
 
         harness("cleanup_orders")
-        auth_out = harness("cleanup", {"ids": ids, "extra_deletes": self.ids})
+        harness("cleanup", {"ids": ids, "extra_deletes": self.ids})
+        # The provisioning call also creates the unused memberA and admin
+        # principals; every synthetic identity is removed, not only A and B.
+        auth_out = harness("cleanup_all_synthetic")
         report["auth_users"] = {
             "deleted": len(auth_out.get("auth_users_deleted", [])),
             "synthetic_remaining": auth_out.get("synthetic_remaining"),

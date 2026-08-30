@@ -220,7 +220,7 @@ async function deleteByIds(table: string, ids: string[]) {
 
 async function deleteByColumn(table: string, column: string, values: string[]) {
   if (!values.length) return json({ table, removed: 0 });
-  const { data, error } = await admin.from(table).delete().in(column, values).select("id");
+  const { data, error } = await admin.from(table).delete().in(column, values).select(column);
   if (error) return json({ table, error: error.message }, 500);
   return json({ table, removed: data?.length ?? 0 });
 }
