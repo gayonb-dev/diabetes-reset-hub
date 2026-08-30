@@ -236,7 +236,7 @@ Deno.serve(async (req) => {
   switch (body.action) {
     case "provision": return await provision();
     case "service_probe": return await serviceProbe(body.user_id!);
-    case "cleanup": return await cleanup(body.ids ?? []);
+    case "cleanup": return await cleanup(body.ids ?? [], body.extra_deletes ?? {});
     case "cleanup_all_synthetic": {
       const { data } = await admin.auth.admin.listUsers({ page: 1, perPage: 200 });
       const ids = (data?.users ?? []).filter((u) => (u.email ?? "").endsWith("@example.invalid")).map((u) => u.id);
