@@ -1,8 +1,10 @@
 # Batch 2 — Final Evidence Correction (backend only)
 
-Backend and documentation only. No design, accessibility, performance or 24-task browser
-matrix work. Nothing published. Reused client evidence keeps its original execution dates.
-The safeguards below control wherever any earlier wording conflicts or is silent.
+Backend and documentation only. No design, accessibility, performance or 24-task browser-matrix
+work. No client publication. The only production deployments permitted are the affected Edge
+Functions identified in §7, after testing and rollback capture. Reused client evidence keeps its
+original execution dates. The safeguards below control wherever earlier wording conflicts or is
+silent.
 
 ## 0. Production and mutation preflight
 
