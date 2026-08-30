@@ -32,6 +32,11 @@ export async function buildSnapshot(
     .from("visitor_profiles").select("id").eq("user_id", userId);
   const vpIds = (vps ?? []).map((v: { id: string }) => v.id);
 
+  // Parent-owned surfaces need the member's parent keys resolved first.
+  const { data: parentTickets } = await admin
+    .from("support_tickets").select("id").eq("user_id", userId);
+  const ticketIds = (parentTickets ?? []).map((t: { id: string }) => t.id);
+
   const categories: Record<string, Record<string, unknown>[]> = {};
   const coverage: Record<string, number> = {};
 
@@ -48,6 +53,17 @@ export async function buildSnapshot(
       // Case-insensitive email matching.
       const { data } = await q.ilike(entry.column, email);
       rows = data ?? [];
+    } else if (entry.match === "parent") {
+      if (entry.table === "support_ticket_notes" && ticketIds.length) {
+        const { data } = await q.in(entry.column, ticketIds);
+        rows = (data ?? []).map((r: Record<string, unknown>) => ({
+          ...r,
+          body_included: false,
+          author_id_included: false,
+          manual_privacy_review_required: true,
+          note: "Internal support note. Raw body and staff identifiers are excluded from automatic export; request manual privacy review if needed.",
+        }));
+      }
     } else {
       const { data } = await q.eq(entry.column, userId);
       rows = data ?? [];

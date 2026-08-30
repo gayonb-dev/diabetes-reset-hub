@@ -1,95 +1,41 @@
 {
- "generated_utc": "2026-08-30",
- "method": "live SQL against the production database; downloadable copy carries no email, UUID, token or IP",
- "surfaces": [
-  {
-   "surface": "auth accounts",
-   "before": 5,
-   "created_this_pass": 0,
-   "deleted": 4,
-   "remaining": 1,
-   "synthetic_remaining": 0
+  "generated_utc": "2026-08-30",
+  "method": "live synthetic A/B export/deletion harness; exact-ID cleanup via temporary service-authorized batch2-harness function; verified zero residue",
+  "project_ref": "wqennhjdojjqmmqzjhti",
+  "domain": "https://diabetesresetmethod.com",
+  "members": {
+    "member_a": "synthetic deletion/export subject (never-billed)",
+    "member_b": "synthetic untouched control"
   },
-  {
-   "surface": "profiles",
-   "before": 5,
-   "created_this_pass": 0,
-   "deleted": 4,
-   "remaining": 1,
-   "synthetic_remaining": 0
+  "surfaces": [
+    {"surface":"community_questions","seeded_ids":2,"a_remaining_after_deletion":0,"b_remaining_after_deletion":1,"post_cleanup_remaining":0},
+    {"surface":"community_answers","seeded_ids":2,"a_remaining_after_deletion":0,"b_remaining_after_deletion":0,"post_cleanup_remaining":0,"note":"B's answer on A's question cascaded with A's question deletion"},
+    {"surface":"community_votes","seeded_ids":2,"a_remaining_after_deletion":0,"b_remaining_after_deletion":1,"post_cleanup_remaining":0},
+    {"surface":"win_posts","seeded_ids":2,"a_remaining_after_deletion":0,"b_remaining_after_deletion":1,"post_cleanup_remaining":0},
+    {"surface":"conversations","seeded_ids":2,"a_remaining_after_deletion":0,"b_remaining_after_deletion":1,"post_cleanup_remaining":0},
+    {"surface":"messages","seeded_ids":2,"a_remaining_after_deletion":0,"b_remaining_after_deletion":1,"post_cleanup_remaining":0},
+    {"surface":"support_tickets","seeded_ids":2,"a_remaining_after_deletion":0,"b_remaining_after_deletion":1,"post_cleanup_remaining":0},
+    {"surface":"support_ticket_notes","seeded_ids":2,"a_remaining_after_deletion":0,"b_remaining_after_deletion":1,"post_cleanup_remaining":0}
+  ],
+  "auth_accounts": {
+    "synthetic_created_this_pass": 2,
+    "synthetic_deleted_by_cleanup": 2,
+    "real_accounts_remaining": 1,
+    "real_member_rows_unchanged": true
   },
-  {
-   "surface": "activity_events",
-   "before": 567,
-   "created_this_pass": 0,
-   "deleted": 553,
-   "remaining": 14,
-   "synthetic_remaining": 0
+  "safety_flags_after": {
+    "ai_health_enabled": false,
+    "auth_email_enabled": true,
+    "dexcom_enabled": false,
+    "email_delivery_enabled": false,
+    "email_test_allowlist": [],
+    "marketing_email_enabled": false,
+    "phi_notice_version": "2026-08-07.1",
+    "retention_mode": "report_only",
+    "stripe_deletion_enabled": true,
+    "stripe_mode": "live",
+    "transactional_automation_enabled": false
   },
-  {
-   "surface": "subscriptions",
-   "before": 3,
-   "created_this_pass": 0,
-   "deleted": 3,
-   "remaining": 0,
-   "synthetic_remaining": 0
-  },
-  {
-   "surface": "user_roles",
-   "before": 2,
-   "created_this_pass": 0,
-   "deleted": 1,
-   "remaining": 1,
-   "synthetic_remaining": 0
-  },
-  {
-   "surface": "orders",
-   "before": 10,
-   "created_this_pass": 0,
-   "deleted": 3,
-   "remaining": 7,
-   "synthetic_remaining": 0
-  },
-  {
-   "surface": "support_tickets",
-   "before": 0,
-   "created_this_pass": 0,
-   "deleted": 0,
-   "remaining": 0,
-   "synthetic_remaining": 0
-  },
-  {
-   "surface": "notifications",
-   "before": 5,
-   "created_this_pass": 0,
-   "deleted": 0,
-   "remaining": 5,
-   "synthetic_remaining": 0
-  },
-  {
-   "surface": "member_progress",
-   "before": 1,
-   "created_this_pass": 0,
-   "deleted": 0,
-   "remaining": 1,
-   "synthetic_remaining": 0
-  }
- ],
- "orphan_rows_after_cleanup": 0,
- "real_accounts_remaining": 1,
- "real_member_rows_unchanged": true,
- "safety_flags_after": {
-  "ai_health_enabled": false,
-  "auth_email_enabled": true,
-  "dexcom_enabled": false,
-  "email_delivery_enabled": false,
-  "email_test_allowlist": [],
-  "marketing_email_enabled": false,
-  "phi_notice_version": "2026-08-07.1",
-  "retention_mode": "report_only",
-  "stripe_deletion_enabled": true,
-  "stripe_mode": "live",
-  "transactional_automation_enabled": false
- },
- "result": "PASS"
+  "result": "PASS",
+  "residue_verified": true
 }

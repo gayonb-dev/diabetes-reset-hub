@@ -14,7 +14,8 @@ export type MatchKind =
   | "actor_user_id"
   | "visitor_profile"  // column IN (visitor profile ids bound to the user)
   | "email"            // case-insensitive email match
-  | "customer_email";
+  | "customer_email"
+  | "parent";          // column is a FK to parentTable.parentColumn; ownership is inherited
 
 export type Disposition =
   | "export_and_delete"
@@ -33,6 +34,10 @@ export interface InventoryEntry {
   /** Columns stripped before the row enters an export. */
   redact?: string[];
   category: string;
+  /** For match === "parent": the parent table and its key/owner columns. */
+  parentTable?: string;
+  parentColumn?: string;
+  parentOwnerColumn?: string;
 }
 
 export const INVENTORY: InventoryEntry[] = [
@@ -76,7 +81,21 @@ export const INVENTORY: InventoryEntry[] = [
   { table: "activity_events", match: "user_id", column: "user_id", disposition: "export_and_delete", order: 22, category: "derived" },
 
   // ---- support (Batch 1 Part E) ----
-  { table: "support_ticket_notes", match: "user_id", column: "ticket_id", disposition: "reference_only", order: 23, category: "support" },
+  // Notes are admin-only and tied to a member ticket. They are deleted with the
+  // ticket (FK ON DELETE CASCADE) and exported as a neutral reference: the raw
+  // body and staff author_id are not placed in the automatic archive.
+  {
+    table: "support_ticket_notes",
+    match: "parent",
+    column: "ticket_id",
+    parentTable: "support_tickets",
+    parentColumn: "id",
+    parentOwnerColumn: "user_id",
+    disposition: "export_redacted_and_delete",
+    order: 23,
+    category: "support",
+    redact: ["author_id", "body"],
+  },
   // Raw user agent is NOT COLLECTED (column removed 2026-08-16); only coarse
   // non-identifying client_platform / client_viewport values are stored.
   { table: "support_tickets", match: "user_id", column: "user_id", disposition: "export_and_delete", order: 24, category: "support" },

@@ -130,7 +130,7 @@ async function serviceProbe(userId: string) {
   return json({ service_role_future_day_insert: "ACCEPTED", inserted_then_removed: data!.id });
 }
 
-async function cleanup(ids: string[]) {
+async function cleanup(ids: string[], extraDeletes?: Record<string, string[]>) {
   const removed: Record<string, number> = {};
   const tables = [
     "member_progress", "member_daily_progress", "activity_events", "points_ledger",
@@ -150,6 +150,16 @@ async function cleanup(ids: string[]) {
   removed["visitor_profiles"] = vp?.length ?? 0;
   const { data: pr } = await admin.from("profiles").delete().in("user_id", ids).select("id");
   removed["profiles"] = pr?.length ?? 0;
+
+  // Extra synthetic rows supplied by the local A/B harness (e.g. community content).
+  if (extraDeletes) {
+    for (const [table, rowIds] of Object.entries(extraDeletes)) {
+      if (!rowIds.length) continue;
+      const { data } = await admin.from(table).delete().in("id", rowIds).select("id");
+      removed[`extra:${table}`] = data?.length ?? 0;
+    }
+  }
+
   const deleted: string[] = [];
   for (const id of ids) {
     const { error } = await admin.auth.admin.deleteUser(id);
@@ -226,7 +236,7 @@ Deno.serve(async (req) => {
   switch (body.action) {
     case "provision": return await provision();
     case "service_probe": return await serviceProbe(body.user_id!);
-    case "cleanup": return await cleanup(body.ids ?? []);
+    case "cleanup": return await cleanup(body.ids ?? [], body.extra_deletes ?? {});
     case "cleanup_all_synthetic": {
       const { data } = await admin.auth.admin.listUsers({ page: 1, perPage: 200 });
       const ids = (data?.users ?? []).filter((u) => (u.email ?? "").endsWith("@example.invalid")).map((u) => u.id);
