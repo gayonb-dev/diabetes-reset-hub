@@ -112,6 +112,7 @@ class Run:
         self.b_vp = ""
         self.ids: dict[str, list[str]] = {}
         self.order_ids: dict[str, str] = {}
+        self._orders_sql: list[str] = []
         self.results: dict[str, Any] = {}
         self.errors: list[str] = []
 
@@ -186,8 +187,11 @@ class Run:
         ]
         if b_sub:
             stmts.append(f"UPDATE public.orders SET subscription_id = '{b_sub}' WHERE id = '{ord_b}'")
-        for s in stmts:
-            psql_exec(s)
+        # The order statements are replayable so the fixtures can be restored
+        # identically after the deletion-request precondition check.
+        self._orders_sql = [x for x in stmts if "public.orders" in x]
+        for stmt in stmts:
+            psql_exec(stmt)
 
     # ---------------- reauthentication ----------------
 
