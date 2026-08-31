@@ -725,7 +725,10 @@ export default function Settings() {
       {/* Prompt 6 A6 — WhatsApp broadcast opt-in removed: no WhatsApp delivery
           channel is enabled in production, so the app must not promise one. */}
 
+      <InstallAppCard />
+
       {/* Notifications */}
+
       <Card className="p-5 border-border rounded-xl shadow-warm">
         <h2 className="font-heading font-semibold text-base flex items-center gap-2 mb-1 max-lg:sticky max-lg:top-0 max-lg:z-10 max-lg:bg-card max-lg:py-1">
           <Bell className="h-4 w-4 text-primary" /> Notifications
