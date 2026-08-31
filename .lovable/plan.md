@@ -52,7 +52,7 @@ One continuous implementation on the unpublished client. No publication, no prod
 
 ## 7. Reporting
 
-Update `docs/LANDING-PRODUCT-PREVIEW-COMPLETION-REPORT.md` in place with one clearly identified section for this work: changed files and final revision, typography reference and exceptions, snack-copy provenance and disposition (including the unapplied content correction), landing artefact-vs-defect conclusion, water and PWA results, device/browser coverage, per-item PASS/FAIL/BLOCKED/NOT TESTED, and confirmation that nothing was published and production was unchanged. No new report set.
+Update `docs/LANDING-PRODUCT-PREVIEW-COMPLETION-REPORT.md` in place with one clearly identified section for this work: changed files and final revision, typography reference (resolved family/weights) and exceptions, snack-copy provenance and disposition (unapplied SQL, undeployed function prompts), landing artefact-vs-defect conclusion, water and PWA results, device/browser coverage, per-item PASS/FAIL/BLOCKED/NOT TESTED, one precise outstanding-items list, and confirmation that nothing was published and production was unchanged. No publication, production change, real payment, email or external AI call. No new report set.
 
 ## Technical notes
 
