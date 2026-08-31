@@ -47,6 +47,28 @@ export function HabitRing({
   const bloomControls = useAnimationControls();
   const [bloom, setBloom] = useState(false);
 
+  /**
+   * Log-only habits (water) get a brief save highlight when the logged amount
+   * increases. It acknowledges that the amount was stored — it never implies a
+   * prescribed daily intake was completed. Reduced motion removes the pulse.
+   */
+  const lastValueRef = useRef(value);
+  const [justSaved, setJustSaved] = useState(false);
+  useEffect(() => {
+    if (!logOnly) {
+      lastValueRef.current = value;
+      return;
+    }
+    if (value > lastValueRef.current) {
+      setJustSaved(true);
+      const t = window.setTimeout(() => setJustSaved(false), 900);
+      lastValueRef.current = value;
+      return () => window.clearTimeout(t);
+    }
+    lastValueRef.current = value;
+  }, [value, logOnly]);
+
+
   // Completion bloom — fires when a ring first reaches 100% in this session.
   useEffect(() => {
     if (pct >= 1 && !wasCompleteRef.current) {
