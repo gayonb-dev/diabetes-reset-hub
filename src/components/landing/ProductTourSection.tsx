@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import ScrollReveal from "./ScrollReveal";
 import PreviewLightbox from "./PreviewLightbox";
@@ -13,6 +13,8 @@ import { useCheckout } from "./CheckoutContext";
 const ProductTourSection = () => {
   const { openCheckout } = useCheckout();
   const [active, setActive] = useState<PreviewItem | null>(null);
+  // Closing the enlarged screen returns focus to the thumbnail that opened it.
+  const lastTrigger = useRef<HTMLButtonElement | null>(null);
 
   return (
     <section
@@ -39,7 +41,10 @@ const ProductTourSection = () => {
             <li key={item.id} className="h-full">
               <button
                 type="button"
-                onClick={() => setActive(item)}
+                onClick={(e) => {
+                  lastTrigger.current = e.currentTarget;
+                  setActive(item);
+                }}
                 className="group flex h-full w-full flex-col text-left bg-card border border-border rounded-xl overflow-hidden hover:border-primary/60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary transition-colors"
               >
                 <img
@@ -79,7 +84,10 @@ const ProductTourSection = () => {
         </div>
       </div>
 
-      <PreviewLightbox item={active} onClose={() => setActive(null)} />
+      <PreviewLightbox item={active} onClose={() => {
+          setActive(null);
+          window.setTimeout(() => lastTrigger.current?.focus(), 0);
+        }} />
     </section>
   );
 };

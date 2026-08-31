@@ -147,6 +147,13 @@ async def main():
         except Exception as e:  # noqa: BLE001
             R["water_interaction_error"] = str(e)
 
+        try:
+            await p.get_by_role("button", name="Mindset").first.click()
+            await p.wait_for_timeout(600)
+            await p.screenshot(path=str(SHOTS / "mindset-20s.png"))
+        except Exception as e:  # noqa: BLE001
+            R["mindset_open_error"] = str(e)
+
         mindset = await p.evaluate("() => document.body.innerText.match(/\\b20 ?s|20 seconds/i)?.[0] || null")
         R["mindset_20s_visible"] = mindset
         await ctx.close()

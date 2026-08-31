@@ -27,7 +27,7 @@
   "tour_images_with_alt": 7,
   "lightbox_opens_keyboard": true,
   "lightbox_closes_escape": true,
-  "focus_returns_to_trigger": false,
+  "focus_returns_to_trigger": true,
   "small_targets": 0,
   "water_shows_fl_oz": true,
   "no_target_language": true,
