@@ -1,7 +1,6 @@
 import { ArrowRight, Compass, ListChecks, Stethoscope, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
-import heroImage from "@/assets/hero-diabetes-reset.jpg";
 import { goToSection } from "@/lib/landingNav";
 import { PREVIEWS } from "./previewManifest";
 import { useCheckout } from "./CheckoutContext";
