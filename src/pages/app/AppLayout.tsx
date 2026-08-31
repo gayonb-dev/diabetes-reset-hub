@@ -15,7 +15,6 @@ import {
   Shield,
   LifeBuoy,
   User,
-  Library,
   CreditCard,
   MoreHorizontal,
   Settings as SettingsIcon,
@@ -222,9 +221,6 @@ export default function AppLayout() {
             </p>
             <NavLink to="/app/learn" {...prefetchHandlers("/app/learn")} className={navClass}>
               <BookOpen className="h-4 w-4" aria-hidden /> Learn
-            </NavLink>
-            <NavLink to="/app/library" {...prefetchHandlers("/app/library")} className={navClass}>
-              <Library className="h-4 w-4" aria-hidden /> Library
             </NavLink>
             <NavLink to="/app/workouts" {...prefetchHandlers("/app/workouts")} className={navClass}>
               <Activity className="h-4 w-4" aria-hidden /> Workouts
