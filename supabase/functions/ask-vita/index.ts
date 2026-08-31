@@ -74,8 +74,8 @@ Days 15–28: Post-meal walks only. 10–15 minutes after each meal, 3 times dai
 Day 29 onward: Structured workouts begin. 3 days per week.
 
 SNACK TIMING:
-Snacks work best 3–4 hours after a main meal, and are mainly for bridging gaps longer
-than 5 hours. A snack must land at least 1.5 hours before the next main meal.
+Snacks are optional. If a snack fits the member's care plan, suggest choosing a time
+and food that work with their hunger, medicines, activity and daily schedule.
 Blood sugar peaks at approximately 72 minutes post-meal and returns toward baseline
 after roughly two hours, so a later snack avoids stacking onto still-elevated blood sugar.
 When a member's meals are already spaced 4–5 hours apart, a snack is NOT needed and the

@@ -156,6 +156,27 @@
   .font-body {
     font-family: 'Inter', system-ui, sans-serif;
   }
+}
+
+/* ---- Member app + Admin readable typography ----
+   The signed-in surfaces (and any dialog they portal to <body>) use the
+   readable Inter stack for headings. The public site keeps Fraunces: this
+   rule only applies while a member/admin layout is mounted, so landing and
+   public checkout dialogs are untouched. */
+html[data-app-surface] .font-heading,
+html[data-app-surface] h1,
+html[data-app-surface] h2,
+html[data-app-surface] h3,
+html[data-app-surface] h4,
+html[data-app-surface] h5,
+html[data-app-surface] h6 {
+  font-family: 'Inter', system-ui, sans-serif;
+  letter-spacing: -0.01em;
+  font-variation-settings: normal;
+}
+
+@layer utilities {
+
   .tabular-nums {
     font-variant-numeric: tabular-nums;
   }

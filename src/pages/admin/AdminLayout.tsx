@@ -1,6 +1,8 @@
 import { Suspense, useState } from "react";
 import { Link, NavLink, Outlet } from "react-router-dom";
 import RouteSkeleton from "@/components/system/RouteSkeleton";
+import { useAppSurface } from "@/hooks/useAppSurface";
+
 
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
@@ -42,6 +44,8 @@ const tabs = [
 export default function AdminLayout() {
   const { signOut, user } = useAuth();
   const [showDesktopBanner, setShowDesktopBanner] = useState(true);
+  useAppSurface("admin");
+
   return (
     <div className="min-h-dvh admin-shell">
       {showDesktopBanner && (

@@ -31,6 +31,8 @@ import { Suspense } from "react";
 import { useLocation } from "react-router-dom";
 import RouteSkeleton, { type RouteSkeletonVariant } from "@/components/system/RouteSkeleton";
 import { prefetchOnIdle, prefetchHandlers } from "@/lib/routePrefetch";
+import { useAppSurface } from "@/hooks/useAppSurface";
+
 
 /** Page-shaped loading fallback per destination. */
 function skeletonVariantFor(pathname: string): RouteSkeletonVariant {
@@ -65,6 +67,8 @@ function mobileNavClass({ isActive }: { isActive: boolean }) {
 
 export default function AppLayout() {
   useVisualViewport();
+  useAppSurface("member");
+
   const { signOut, subscription, isAdmin, user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
