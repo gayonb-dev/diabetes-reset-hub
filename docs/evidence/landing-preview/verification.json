@@ -1,0 +1,41 @@
+{
+  "desktop_cta_count": 5,
+  "desktop_page_errors": [],
+  "desktop_checkout_dialog_keyboard": 1,
+  "desktop_checkout_closes": true,
+  "desktop_checkout_dialog_pointer": 1,
+  "desktop_sections_present": {
+    "how-it-works": true,
+    "inside-the-membership": true,
+    "pricing": true,
+    "faq": true,
+    "product-tour": true
+  },
+  "mobile_cta_count": 6,
+  "mobile_page_errors": [],
+  "mobile_checkout_dialog_keyboard": 1,
+  "mobile_checkout_closes": true,
+  "mobile_checkout_dialog_pointer": 1,
+  "mobile_sections_present": {
+    "how-it-works": true,
+    "inside-the-membership": true,
+    "pricing": true,
+    "faq": true,
+    "product-tour": true
+  },
+  "tour_items": 7,
+  "tour_images_with_alt": 7,
+  "lightbox_opens_keyboard": true,
+  "lightbox_closes_escape": true,
+  "focus_returns_to_trigger": false,
+  "small_targets": 0,
+  "water_shows_fl_oz": true,
+  "no_target_language": true,
+  "ml_rounding_notice": true,
+  "zero_rounding_blocked": false,
+  "mindset_20s_visible": null,
+  "external_hosts_blocked": [],
+  "edge_function_calls_intercepted": [
+    "/functions/v1/gamify-action"
+  ]
+}
