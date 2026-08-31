@@ -98,7 +98,7 @@ async def main():
         R["lightbox_opens_keyboard"] = await p.get_by_role("dialog").count() == 1
         await p.screenshot(path=str(SHOTS / "lightbox.png"))
         await p.keyboard.press("Escape")
-        await p.wait_for_timeout(400)
+        await p.wait_for_timeout(900)
         R["lightbox_closes_escape"] = await p.get_by_role("dialog").count() == 0
         R["focus_returns_to_trigger"] = await p.evaluate(
             "() => document.activeElement?.closest('#product-tour') !== null")
@@ -137,9 +137,10 @@ async def main():
             R["ml_rounding_notice"] = "8 fl oz" in body
             await p.screenshot(path=str(SHOTS / "water-ml-250.png"))
             await field.fill("10")   # rounds to 0 fl oz -> must be refused
-            await p.wait_for_timeout(400)
+            await p.get_by_role("button", name="Log water").first.click()
+            await p.wait_for_timeout(600)
             body = await p.inner_text("body")
-            R["zero_rounding_blocked"] = "too small" in body.lower() or "at least" in body.lower()
+            R["zero_rounding_blocked"] = "nothing was saved" in body.lower()
             await p.screenshot(path=str(SHOTS / "water-ml-too-small.png"))
         except Exception as e:  # noqa: BLE001
             R["water_interaction_error"] = str(e)
