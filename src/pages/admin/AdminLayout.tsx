@@ -10,7 +10,6 @@ import {
   MessageSquare,
   BookOpen,
   Megaphone,
-  UserPlus,
   BarChart3,
   HeartHandshake,
   FileText,
