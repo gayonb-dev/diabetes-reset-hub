@@ -1,4 +1,4 @@
-import { useState, forwardRef } from "react";
+import { useState, useEffect, useRef, forwardRef } from "react";
 import { X, Check, Loader2, Lock } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -80,6 +80,8 @@ const PaymentModal = forwardRef<HTMLDivElement, PaymentModalProps>(
       }
     };
 
+    const handleCloseRef = useRef<() => void>(() => {});
+
     const handleClose = () => {
       setErrors({});
       setFullName("");
@@ -87,6 +89,24 @@ const PaymentModal = forwardRef<HTMLDivElement, PaymentModalProps>(
       setIsSuccess(false);
       onClose();
     };
+
+    // Escape closes the modal and the first field receives focus on open, so
+    // the checkout is fully operable from the keyboard.
+    const nameRef = useRef<HTMLInputElement>(null);
+    useEffect(() => {
+      if (!isOpen) return;
+      const onKey = (e: KeyboardEvent) => {
+        if (e.key === "Escape" && !isSubmitting) handleCloseRef.current();
+      };
+      document.addEventListener("keydown", onKey);
+      const t = window.setTimeout(() => nameRef.current?.focus(), 0);
+      return () => {
+        document.removeEventListener("keydown", onKey);
+        window.clearTimeout(t);
+      };
+    }, [isOpen, isSubmitting]);
+
+    handleCloseRef.current = handleClose;
 
     if (!isOpen) return null;
 
@@ -163,6 +183,7 @@ const PaymentModal = forwardRef<HTMLDivElement, PaymentModalProps>(
                   <Label htmlFor="checkout-name">Full name</Label>
                   <Input
                     id="checkout-name"
+                    ref={nameRef}
                     type="text"
                     value={fullName}
                     onChange={(e) => {
