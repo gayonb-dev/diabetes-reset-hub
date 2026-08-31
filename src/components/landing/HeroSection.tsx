@@ -19,11 +19,11 @@ const HeroSection = () => {
   const today = PREVIEWS.find((p) => p.id === "today") ?? PREVIEWS[0];
 
   return (
-    <section className="relative bg-gradient-to-b from-secondary/20 to-background pt-8 pb-8 md:pt-12 md:pb-12 overflow-hidden">
+    <section className="relative bg-gradient-to-b from-secondary/20 to-background pt-8 pb-10 md:pt-10 md:pb-12 overflow-hidden">
       <div className="container mx-auto px-4">
-        <div className="grid lg:grid-cols-2 gap-8 items-center">
+        <div className="grid lg:grid-cols-2 gap-8 items-start">
           <motion.div
-            className="space-y-4"
+            className="space-y-4 order-1"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, ease: [0.25, 0.4, 0.25, 1] }}
@@ -66,46 +66,38 @@ const HeroSection = () => {
             </p>
           </motion.div>
 
-          <motion.div
-            className="relative"
-            initial={{ opacity: 0, scale: 0.95 }}
+          {/* The hero's only visual is the genuine Today screen: an honest crop
+              of the real screenshot, top-anchored so the daily action and the
+              logging shortcuts are visible. The complete screen stays available
+              through the product tour and its enlargement. */}
+          <motion.figure
+            className="order-2 rounded-2xl border border-border bg-card overflow-hidden shadow-lg"
+            initial={{ opacity: 0, scale: 0.98 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8, delay: 0.2, ease: [0.25, 0.4, 0.25, 1] }}
+            transition={{ duration: 0.7, delay: 0.15, ease: [0.25, 0.4, 0.25, 1] }}
           >
-            <div className="aspect-square rounded-3xl overflow-hidden shadow-2xl bg-gradient-to-br from-primary/20 to-secondary/20">
-              <img
-                src={heroImage}
-                alt="An adult preparing a plate of vegetables and lean protein in a home kitchen"
-                className="w-full h-full object-cover"
-                width={1024}
-                height={1024}
-              />
-            </div>
-
-            {/* Genuine product preview in the hero: the real Today screen with
-                illustrative example entries, clearly labelled as such. */}
-            <figure className="mt-4 rounded-2xl border border-border bg-card overflow-hidden shadow-lg">
+            <div className="h-[320px] sm:h-[400px] lg:h-[460px] bg-muted overflow-hidden">
               <img
                 src={today.thumb}
                 alt={today.alt}
                 width={today.width}
                 height={today.height}
-                className="w-full h-auto bg-muted"
+                className="w-full h-full object-cover object-top"
               />
-              <figcaption className="p-3 flex flex-wrap items-center justify-between gap-2">
-                <span className="text-xs text-muted-foreground">
-                  The actual Today screen · illustrative example entries
-                </span>
-                <button
-                  type="button"
-                  onClick={() => goToSection("product-tour")}
-                  className="min-h-[44px] text-sm font-semibold text-primary underline"
-                >
-                  See more screens
-                </button>
-              </figcaption>
-            </figure>
-          </motion.div>
+            </div>
+            <figcaption className="p-3 flex flex-wrap items-center justify-between gap-2">
+              <span className="text-xs text-muted-foreground">
+                The actual Today screen · illustrative example entries
+              </span>
+              <button
+                type="button"
+                onClick={() => goToSection("product-tour")}
+                className="min-h-[44px] text-sm font-semibold text-primary underline"
+              >
+                See the full tour
+              </button>
+            </figcaption>
+          </motion.figure>
         </div>
 
         {/* Honest trust row */}
