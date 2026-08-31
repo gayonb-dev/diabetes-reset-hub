@@ -52,6 +52,10 @@ export function HabitRing({
    * increases. It acknowledges that the amount was stored — it never implies a
    * prescribed daily intake was completed. Reduced motion removes the pulse.
    */
+  const reducedMotion =
+    typeof window !== "undefined" && typeof window.matchMedia === "function"
+      ? window.matchMedia("(prefers-reduced-motion: reduce)").matches
+      : false;
   const lastValueRef = useRef(value);
   const [justSaved, setJustSaved] = useState(false);
   useEffect(() => {
@@ -101,7 +105,7 @@ export function HabitRing({
         style={{
           width: size,
           height: size,
-          boxShadow: bloom || justSaved ? `0 0 16px 2px ${color}` : "none",
+          boxShadow: (bloom || justSaved) && !reducedMotion ? `0 0 16px 2px ${color}` : "none",
           transition: "box-shadow 0.4s ease-out",
         }}
         animate={bloomControls}
