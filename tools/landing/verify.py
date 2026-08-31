@@ -150,6 +150,8 @@ async def main():
         try:
             await p.get_by_role("button", name="Mindset").first.click()
             await p.wait_for_timeout(600)
+            await p.get_by_role("button", name="Read reflection").first.click()
+            await p.wait_for_timeout(900)
             await p.screenshot(path=str(SHOTS / "mindset-20s.png"))
         except Exception as e:  # noqa: BLE001
             R["mindset_open_error"] = str(e)
