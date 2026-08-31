@@ -18,6 +18,9 @@ const PreviewLightbox = ({ item, onClose }: PreviewLightboxProps) => (
           <div className="px-6 pt-6">
             <DialogTitle className="font-heading text-xl">{item.label}</DialogTitle>
             <DialogDescription className="mt-1">{item.caption}</DialogDescription>
+            <p className="text-xs text-muted-foreground mt-2">
+              Actual app screen · illustrative example entries
+            </p>
           </div>
           <div className="p-6 pt-4 max-h-[70vh] overflow-auto">
             <img
