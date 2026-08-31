@@ -34,21 +34,28 @@ const ProductTourSection = () => {
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)] items-start">
         <figure className="bg-card border border-border rounded-xl overflow-hidden">
-          <img
-            key={active.id}
-            src={active.src}
-            alt={active.alt}
-            width={active.width}
-            height={active.height}
-            loading="lazy"
-            decoding="async"
-            className="w-full h-auto bg-muted"
-          />
+          {/* Bounded stage: the page length no longer follows each screenshot's
+              natural height, and switching previews causes no layout jump. The
+              aspect ratio is preserved (cover) and the full screen stays
+              available in the enlargement. */}
+          <div className="h-[420px] sm:h-[520px] lg:h-[640px] bg-muted overflow-hidden">
+            <img
+              key={active.id}
+              src={active.src}
+              alt={active.alt}
+              width={active.width}
+              height={active.height}
+              loading="lazy"
+              decoding="async"
+              className="w-full h-full object-cover object-top"
+            />
+          </div>
           <figcaption className="p-4 border-t border-border">
             <p className="font-heading font-semibold text-foreground">{active.label}</p>
             <p className="text-sm text-muted-foreground mt-1">{active.caption}</p>
             <p className="text-xs text-muted-foreground mt-2">
-              Actual app screen · illustrative example entries
+              Actual app screen · illustrative example entries. Showing the top of this screen —
+              enlarge for the full page.
             </p>
             <Button
               variant="outline"

@@ -37,7 +37,8 @@ export const PREVIEWS: PreviewItem[] = [
     width: 1280,
     height: 1400,
     alt: "The Today screen showing one action for the day, a short mindset reflection, and habit logging for water, meals and movement.",
-    caption: "Today: one action for the day, plus water, meal and movement logging.",
+    caption:
+      "Today: one clear daily action, plus water, meal and movement logging. Come back when you are ready for the next step.",
   },
   {
     id: "meals",
@@ -47,7 +48,8 @@ export const PREVIEWS: PreviewItem[] = [
     width: 1280,
     height: 1400,
     alt: "The Meals screen showing meal ideas for the day with recipes and a shopping list that can be grouped by meal.",
-    caption: "Meals: a weekly plan with recipes, swaps and a shopping list you can group by meal.",
+    caption:
+      "Meals: a weekly plan with recipes and swaps, so you can build practical meal structure around your own preferences and save useful ideas.",
   },
   {
     id: "meals-shopping",
@@ -67,7 +69,8 @@ export const PREVIEWS: PreviewItem[] = [
     width: 1280,
     height: 1400,
     alt: "The Progress screen showing entries a member has recorded, such as blood glucose readings, weight and measurements, with example values only.",
-    caption: "Progress: your own entries for glucose, A1C, weight and measurements.",
+    caption:
+      "Progress: record the information you choose — glucose, A1C, weight and measurements — and view your own trends. The app does not diagnose them.",
   },
   {
     id: "workouts",
@@ -88,7 +91,8 @@ export const PREVIEWS: PreviewItem[] = [
     width: 1280,
     height: 1400,
     alt: "The Learn screen showing the library of written educational guides.",
-    caption: "Learn: written educational guides. Educational only, not medical advice.",
+    caption:
+      "Learn: written educational guides, including mindset reflections. Educational only, not medical advice.",
   },
   {
     id: "ask",
@@ -99,7 +103,7 @@ export const PREVIEWS: PreviewItem[] = [
     height: 1400,
     alt: "The Ask screen where a member can submit a question, alongside the optional community area.",
     caption:
-      "Ask: submit a question and read published answers. Community participation is optional.",
+      "Ask: submit a question and read labeled educational answers with clear safety boundaries and guidance on when to contact a professional. Community participation is optional.",
   },
   {
     id: "report",
@@ -109,6 +113,7 @@ export const PREVIEWS: PreviewItem[] = [
     width: 1280,
     height: 1400,
     alt: "A printable summary report of a member's own recorded entries, prepared for a healthcare visit.",
-    caption: "Printable report: your own entries, laid out to take to a healthcare visit.",
+    caption:
+      "Printable report: organize selected entries and questions into a report you can bring to a healthcare visit.",
   },
 ];

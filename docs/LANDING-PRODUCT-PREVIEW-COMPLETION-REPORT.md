@@ -171,3 +171,61 @@ published, deployed, migrated or mutated externally in this pass.
   0 errors (1 pre-existing exhaustive-deps warning in `AppLayout.tsx`); production
   build succeeded, entry bundle 442.65 kB / 138.41 kB gzip.
 - Asset SHA-256 values are recorded in `public/previews/index.json`.
+
+## Final landing visual polish (2026-08-31)
+
+Presentation-only correction. No backend work, no new features, no publication.
+Checkout, navigation, tour controls, approved copy, pricing and legal content are
+unchanged.
+
+### Changes in this pass
+- `src/components/landing/HeroSection.tsx` — the lifestyle photograph is no longer
+  used in the hero (the asset remains in `src/assets`). The hero's single visual is
+  an honest top-anchored crop of the genuine Today screenshot (320/400/460px stage,
+  `object-cover object-top`), so Today's Action and the logging shortcuts are visible
+  without the full-length screen. Grid changed from `items-center` to `items-start`
+  and padding tightened, removing the blank column space. On mobile the headline,
+  description, checkout button and renewal pricing come before the preview. The
+  "actual Today screen · illustrative example entries" label and the link to the full
+  tour are preserved.
+- `src/components/landing/ProductTourSection.tsx` — the featured screen now sits in a
+  bounded responsive stage (420 / 520 / 640px, `object-cover object-top`) instead of
+  letting each screenshot's natural height drive page length. Aspect ratio preserved
+  (no distortion), captions/selectors/enlarge control unchanged, and the caption
+  states "Showing the top of this screen — enlarge for the full page". The
+  enlargement still loads the complete screenshot on demand. All 8 preview choices
+  and the tour CTA + renewal pricing are retained.
+- `src/components/landing/InsideMembershipSection.tsx` — the duplicate five-card text
+  block is removed. The section keeps its heading and `#inside-the-membership`
+  anchor, and now contains the single coherent product tour.
+- `src/components/landing/previewManifest.ts` — the useful wording from those cards
+  (Today's next step, meal structure, "the app does not diagnose", Ask's labeled
+  educational answers and safety boundaries, printable report) is merged into the
+  corresponding tour captions. Every existing limitation is preserved, including the
+  Day 29 workout unlock, optional community participation and educational-only Learn.
+
+### Verification
+- Browser pass at 1280×800 and 390×844 after animations settled: headline, checkout
+  button and renewal pricing clear in the initial viewport; previews, captions and
+  selectors readable; **no horizontal overflow** on either size; no sticky-CTA / VITA
+  collision; 5 (desktop) / 6 (mobile) shared checkout controls present; 8 tour
+  selectors all switch the featured screen; enlargement opens and closes on Escape;
+  affected anchors work; **0 page errors**.
+- Faded/clipped check: a computed-style sweep of pricing terms, FAQ headings/answers
+  and the final CTA after scroll-settle found **no** element rendering below 0.9
+  opacity — the faintness was a full-page-capture artefact of the scroll-reveal
+  animation, so the capture method was corrected (scroll-and-settle) and no styling
+  or animation override was added. Focus indicators and reduced-motion support are
+  unchanged.
+- Layout stability when switching previews: total page height varies by 20px across
+  all 8 screens (caption line count only) — no large jumps.
+- Image loading: tour thumbnails and the featured image are `loading="lazy"`; the
+  full-resolution asset is still requested only when a preview is enlarged.
+- Gates rerun after the code changes: Vitest 41 files / 461 tests passed; TypeScript
+  clean; ESLint on the four touched files reported no problems; production build
+  succeeded, entry bundle 440.63 kB / 138.03 kB gzip. Evidence for unchanged
+  functionality is reused from the prior pass.
+- Fresh screenshots: `docs/evidence/landing-preview/screenshots/final-hero-desktop-1280x800.png`,
+  `final-hero-mobile-390x844.png`, `final-product-tour-desktop.png`.
+
+Nothing published.
