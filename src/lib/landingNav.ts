@@ -30,6 +30,9 @@ export function focusSection(id: string): boolean {
   if (!section) return false;
   const heading = section.querySelector<HTMLElement>("h1, h2, h3") ?? section;
   if (!heading.hasAttribute("tabindex")) heading.setAttribute("tabindex", "-1");
+  // The heading is only focusable programmatically, so it never needs the
+  // default focus ring; the scroll position already shows where focus landed.
+  heading.classList.add("outline-none");
   heading.focus({ preventScroll: true });
   return true;
 }

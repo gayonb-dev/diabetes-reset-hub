@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import ScrollReveal from "./ScrollReveal";
 import PreviewLightbox from "./PreviewLightbox";
@@ -13,6 +13,8 @@ import { useCheckout } from "./CheckoutContext";
 const ProductTourSection = () => {
   const { openCheckout } = useCheckout();
   const [active, setActive] = useState<PreviewItem | null>(null);
+  // Closing the enlarged screen returns focus to the thumbnail that opened it.
+  const lastTrigger = useRef<HTMLButtonElement | null>(null);
 
   return (
     <section
@@ -36,11 +38,14 @@ const ProductTourSection = () => {
 
         <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {PREVIEWS.map((item) => (
-            <li key={item.id}>
+            <li key={item.id} className="h-full">
               <button
                 type="button"
-                onClick={() => setActive(item)}
-                className="group w-full text-left bg-card border border-border rounded-xl overflow-hidden hover:border-primary/60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary transition-colors"
+                onClick={(e) => {
+                  lastTrigger.current = e.currentTarget;
+                  setActive(item);
+                }}
+                className="group flex h-full w-full flex-col text-left bg-card border border-border rounded-xl overflow-hidden hover:border-primary/60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary transition-colors"
               >
                 <img
                   src={item.thumb}
@@ -51,12 +56,12 @@ const ProductTourSection = () => {
                   decoding="async"
                   className="w-full h-56 object-cover object-top bg-muted"
                 />
-                <span className="block p-4">
+                <span className="flex flex-1 flex-col p-4">
                   <span className="block font-heading font-semibold text-foreground">
                     {item.label}
                   </span>
                   <span className="block text-sm text-muted-foreground mt-1">{item.caption}</span>
-                  <span className="block text-xs font-semibold text-primary mt-2 min-h-[24px]">
+                  <span className="mt-auto block pt-2 text-xs font-semibold text-primary min-h-[24px]">
                     Enlarge screen
                   </span>
                 </span>
@@ -79,7 +84,10 @@ const ProductTourSection = () => {
         </div>
       </div>
 
-      <PreviewLightbox item={active} onClose={() => setActive(null)} />
+      <PreviewLightbox item={active} onClose={() => {
+          setActive(null);
+          window.setTimeout(() => lastTrigger.current?.focus(), 0);
+        }} />
     </section>
   );
 };
