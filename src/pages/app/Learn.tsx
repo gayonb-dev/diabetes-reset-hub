@@ -364,9 +364,8 @@ export default function Learn() {
 
         </TabsContent>
 
-        {/* BLOG TAB — only when posts exist */}
-        {blogPosts.length > 0 && (
         {/* RESOURCES TAB — the material that used to live on /app/library. */}
+
         <TabsContent value="resources" className="mt-5 space-y-6">
           <p className="text-sm text-secondary-fg">
             Recipes, movement notes and printable resources. Educational only — not medical
