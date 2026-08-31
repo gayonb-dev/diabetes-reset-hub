@@ -1,5 +1,6 @@
 {
   "generated_by": "tools/landing/capture_previews.py",
+  "note": "Real member app captured locally with synthetic fixture data.",
   "assets": [
     {
       "id": "ask",
@@ -7,8 +8,8 @@
       "thumb": "/previews/ask-thumb.jpg",
       "width": 1280,
       "height": 1400,
-      "sha256_full": "a6927c08ba7d87377b114c89eee6539ac753677bfe4a0c6ef65be683fcb5d903",
-      "sha256_thumb": "e18b977a9a527ea8083994f23d8e6fbdbec66b4d69959344fba381cda7cbad11"
+      "sha256_full": "50c65bfe7a77767edc56dd32407bff589c720f14ae8bf8103d9f6b51566f0d7b",
+      "sha256_thumb": "109de8a0c3ff7ffdb78f68cbebf437b53561f593f7c6b830c211ef3225f0d750"
     },
     {
       "id": "learn",
@@ -16,8 +17,17 @@
       "thumb": "/previews/learn-thumb.jpg",
       "width": 1280,
       "height": 1400,
-      "sha256_full": "6dd54117bde96023b0e7dc9f970831d8654ba52dbc906ab9f29aa7ae9d6b2502",
-      "sha256_thumb": "f4d6546da6170cf84b2f21e57bb1964823e013693e25e3b3a5c6936928f8cb4d"
+      "sha256_full": "a57253a2f6591d76d3af77fb16515fc47980cfaaa99059a47a1b3d417b9380c9",
+      "sha256_thumb": "7c5465b24c35273c670fa5e5a4d1dfd7863de662e7cd684082ed9876052b8e86"
+    },
+    {
+      "id": "meals-shopping",
+      "full": "/previews/meals-shopping.jpg",
+      "thumb": "/previews/meals-shopping-thumb.jpg",
+      "width": 1280,
+      "height": 1400,
+      "sha256_full": "0081d69bec64ef80cd114534e67c088d6f0eabf0f3017723445d1b418c836af5",
+      "sha256_thumb": "64a217e02b22b1c9e752a9887f431fdb95f429cd8434ed8a740c81a2dbf09e5f"
     },
     {
       "id": "meals",
@@ -25,8 +35,8 @@
       "thumb": "/previews/meals-thumb.jpg",
       "width": 1280,
       "height": 1400,
-      "sha256_full": "8b71942b360aa96c7463374071562af6b402dc9dda03519916ef1086a20c7951",
-      "sha256_thumb": "f19a3ba6faad90316cf7d351b2f6c5a785f9d0125a9a4045a7282081f9eb7bde"
+      "sha256_full": "58499b9b0c90fb8e74d53c561307b3fcd132ffb9a95994fb6216a6e8bbffd5dd",
+      "sha256_thumb": "affdb240ab7bbe163e373ffeec3befa802ef4f116a29361a76c802a907fd60a2"
     },
     {
       "id": "progress",
@@ -34,8 +44,8 @@
       "thumb": "/previews/progress-thumb.jpg",
       "width": 1280,
       "height": 1400,
-      "sha256_full": "968d589207a57e4dbedf1e6fc40557b70a492a9b5d3a4c703af8215248584c21",
-      "sha256_thumb": "5c7ee02bd73d94a5dd7a9543ef2e371b82aceb380e4a1fa4f927ae0252723537"
+      "sha256_full": "e7128836d22b1946db1cd5594539e1dc09e1b0fa35af35a7ced12a08fea3ca87",
+      "sha256_thumb": "407e5df964aa1acfcf18aaeaf2b97771772e02d1a70859184ebdb48379943964"
     },
     {
       "id": "report",
@@ -43,8 +53,8 @@
       "thumb": "/previews/report-thumb.jpg",
       "width": 1280,
       "height": 1400,
-      "sha256_full": "770effdad2f639346502b8edd1a12ecb6d5906604b8ad7245cfc37cb61c949a8",
-      "sha256_thumb": "327368dded7e89d062bfa47b634801d4a14eccc013fa775c6bb1d1500345a57e"
+      "sha256_full": "336b8f3085cd8b4a9f507bbc1c3f2a176aa63c7e422fb7912a68db64d35608f5",
+      "sha256_thumb": "fd83f49337b29226d045fedcd5f6c34108c6a628a885c01bdf226590fd6b14d8"
     },
     {
       "id": "today",
@@ -52,8 +62,8 @@
       "thumb": "/previews/today-thumb.jpg",
       "width": 1280,
       "height": 1400,
-      "sha256_full": "cdf5655c33b0ce7a6dc08b9f2eb42270d8e09962787bd0ca4ca573d82cac1e40",
-      "sha256_thumb": "5b21d97df331b8c622eadd30a2d47ce3888ba9374fd06608e0af13ad72c91c78"
+      "sha256_full": "ebb70921ee458a40b9ce75e50105e69f905b07ba4eef64da08616d9b1719e44f",
+      "sha256_thumb": "2e47a455c1d4298f79e17c0def206181ab8ee2fb6324ec3023a322efb692b86a"
     },
     {
       "id": "workouts",
@@ -61,8 +71,8 @@
       "thumb": "/previews/workouts-thumb.jpg",
       "width": 1280,
       "height": 1400,
-      "sha256_full": "0a796b37294781af025db8215afc61b0c8e71e2a1cc6bdf1b600af689cbe870e",
-      "sha256_thumb": "b35a0414355430a6aed964b1e7fb886404904850be0cb909d012d7b68e0b17a1"
+      "sha256_full": "4bf061cd6bdebb21b551d80df6dbacb6c4bb0987b28167929a5fbb6ae1223b32",
+      "sha256_thumb": "d00e980c7ab84415ff6f0fa501bd683425493da4b2001d24a44075364d0a87af"
     }
   ]
 }
