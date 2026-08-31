@@ -8,8 +8,8 @@
       "thumb": "/previews/ask-thumb.jpg",
       "width": 1280,
       "height": 1400,
-      "sha256_full": "50c65bfe7a77767edc56dd32407bff589c720f14ae8bf8103d9f6b51566f0d7b",
-      "sha256_thumb": "109de8a0c3ff7ffdb78f68cbebf437b53561f593f7c6b830c211ef3225f0d750"
+      "sha256_full": "1d110ecd85b64bdba118d98c9e2b4c7f0ffd37fd78248ceeee4f11dfb8f58b72",
+      "sha256_thumb": "2906efbe738faebc484e782a92f6f1c95212dec1c70e1bbe4212a135a8971b03"
     },
     {
       "id": "learn",
@@ -17,8 +17,8 @@
       "thumb": "/previews/learn-thumb.jpg",
       "width": 1280,
       "height": 1400,
-      "sha256_full": "a57253a2f6591d76d3af77fb16515fc47980cfaaa99059a47a1b3d417b9380c9",
-      "sha256_thumb": "7c5465b24c35273c670fa5e5a4d1dfd7863de662e7cd684082ed9876052b8e86"
+      "sha256_full": "551c016da77a1f0b97aaa41acd7614aea57e53cf3be10486f0dadef8f790f814",
+      "sha256_thumb": "54f9a699279de3eb25553139f8ed433623e054952ae121e2f09a8a5e56028143"
     },
     {
       "id": "meals-shopping",
@@ -26,8 +26,8 @@
       "thumb": "/previews/meals-shopping-thumb.jpg",
       "width": 1280,
       "height": 1400,
-      "sha256_full": "0081d69bec64ef80cd114534e67c088d6f0eabf0f3017723445d1b418c836af5",
-      "sha256_thumb": "64a217e02b22b1c9e752a9887f431fdb95f429cd8434ed8a740c81a2dbf09e5f"
+      "sha256_full": "e2cce48f82968178a51d9191dfae5edea35deef1fdb42a7ea5183f16590de220",
+      "sha256_thumb": "95b226fdff4a62961e29c2b3b5eb4a182863c9adec112405f62853ef75b86d20"
     },
     {
       "id": "meals",
@@ -35,8 +35,8 @@
       "thumb": "/previews/meals-thumb.jpg",
       "width": 1280,
       "height": 1400,
-      "sha256_full": "58499b9b0c90fb8e74d53c561307b3fcd132ffb9a95994fb6216a6e8bbffd5dd",
-      "sha256_thumb": "affdb240ab7bbe163e373ffeec3befa802ef4f116a29361a76c802a907fd60a2"
+      "sha256_full": "b7c1af61b22acfcb1cabec9882000acfeef77b9372d4e6e21ba814d70b46123c",
+      "sha256_thumb": "09b36ecb4ec84b480a940805b391771a25206ba86855798cbd779a902bf8d549"
     },
     {
       "id": "progress",
@@ -44,8 +44,8 @@
       "thumb": "/previews/progress-thumb.jpg",
       "width": 1280,
       "height": 1400,
-      "sha256_full": "e7128836d22b1946db1cd5594539e1dc09e1b0fa35af35a7ced12a08fea3ca87",
-      "sha256_thumb": "407e5df964aa1acfcf18aaeaf2b97771772e02d1a70859184ebdb48379943964"
+      "sha256_full": "35fc70ec5db44a5dda9a2a1704fb1998f14275e4700a8045994741a2a7047951",
+      "sha256_thumb": "ce2df8526e4e5aa5c6ef1e9d6d96d7a22cb88b8fd5f86b532495d5356538ed98"
     },
     {
       "id": "report",
@@ -62,8 +62,8 @@
       "thumb": "/previews/today-thumb.jpg",
       "width": 1280,
       "height": 1400,
-      "sha256_full": "ebb70921ee458a40b9ce75e50105e69f905b07ba4eef64da08616d9b1719e44f",
-      "sha256_thumb": "2e47a455c1d4298f79e17c0def206181ab8ee2fb6324ec3023a322efb692b86a"
+      "sha256_full": "f7521862e534da159160a3a3dedc64d37eacfc62b6fe13af84af4b2d1f299d49",
+      "sha256_thumb": "ecf953e8292756b050f375176fa1ee8f21f3a5c8f04ad8acd2be7730af478c5d"
     },
     {
       "id": "workouts",
@@ -71,8 +71,8 @@
       "thumb": "/previews/workouts-thumb.jpg",
       "width": 1280,
       "height": 1400,
-      "sha256_full": "4bf061cd6bdebb21b551d80df6dbacb6c4bb0987b28167929a5fbb6ae1223b32",
-      "sha256_thumb": "d00e980c7ab84415ff6f0fa501bd683425493da4b2001d24a44075364d0a87af"
+      "sha256_full": "6600d88eacdda3b34e5c0ed87165179d718018caa9b4a98f1a6d9b2f7aa36b5d",
+      "sha256_thumb": "012595dc62f868fe8f2100c4fbae4562dc5d639780a876cc70b2e33eb4456fe0"
     }
   ]
 }

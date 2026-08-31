@@ -3,12 +3,12 @@
     {
       "method": "GET",
       "path": "/auth/v1/health",
-      "query": "_=1788149863738"
+      "query": "_=1788149958668"
     },
     {
       "method": "GET",
       "path": "/auth/v1/health",
-      "query": "_=1788149864832"
+      "query": "_=1788149959769"
     },
     {
       "method": "GET",
@@ -338,7 +338,7 @@
     {
       "method": "GET",
       "path": "/auth/v1/health",
-      "query": "_=1788149868493"
+      "query": "_=1788149963382"
     },
     {
       "method": "GET",
@@ -418,7 +418,7 @@
     {
       "method": "GET",
       "path": "/auth/v1/health",
-      "query": "_=1788149871917"
+      "query": "_=1788149966811"
     },
     {
       "method": "GET",
@@ -498,22 +498,12 @@
     {
       "method": "GET",
       "path": "/auth/v1/health",
-      "query": "_=1788149879556"
-    },
-    {
-      "method": "POST",
-      "path": "/rest/v1/rpc/my_deletion_status",
-      "query": ""
+      "query": "_=1788149974470"
     },
     {
       "method": "GET",
       "path": "/rest/v1/user_roles",
       "query": "select=role&user_id=eq.0d000000-0000-4000-8000-000000000001"
-    },
-    {
-      "method": "POST",
-      "path": "/rest/v1/activity_events",
-      "query": ""
     },
     {
       "method": "GET",
@@ -524,6 +514,16 @@
       "method": "GET",
       "path": "/rest/v1/profiles",
       "query": "select=timezone&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "POST",
+      "path": "/rest/v1/rpc/my_deletion_status",
+      "query": ""
+    },
+    {
+      "method": "POST",
+      "path": "/rest/v1/activity_events",
+      "query": ""
     },
     {
       "method": "GET",
@@ -583,7 +583,7 @@
     {
       "method": "GET",
       "path": "/auth/v1/health",
-      "query": "_=1788149882942"
+      "query": "_=1788149977926"
     },
     {
       "method": "GET",
@@ -596,14 +596,14 @@
       "query": "select=*&user_id=eq.0d000000-0000-4000-8000-000000000001"
     },
     {
-      "method": "POST",
-      "path": "/rest/v1/rpc/my_deletion_status",
-      "query": ""
-    },
-    {
       "method": "GET",
       "path": "/rest/v1/profiles",
       "query": "select=timezone&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "POST",
+      "path": "/rest/v1/rpc/my_deletion_status",
+      "query": ""
     },
     {
       "method": "POST",
@@ -663,7 +663,7 @@
     {
       "method": "GET",
       "path": "/auth/v1/health",
-      "query": "_=1788149886309"
+      "query": "_=1788149981357"
     },
     {
       "method": "GET",
@@ -733,7 +733,7 @@
     {
       "method": "GET",
       "path": "/auth/v1/health",
-      "query": "_=1788149890893"
+      "query": "_=1788149986157"
     },
     {
       "method": "GET",
@@ -746,14 +746,14 @@
       "query": "select=*&user_id=eq.0d000000-0000-4000-8000-000000000001"
     },
     {
-      "method": "POST",
-      "path": "/rest/v1/rpc/my_deletion_status",
-      "query": ""
-    },
-    {
       "method": "GET",
       "path": "/rest/v1/profiles",
       "query": "select=timezone&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "POST",
+      "path": "/rest/v1/rpc/my_deletion_status",
+      "query": ""
     },
     {
       "method": "POST",
@@ -818,7 +818,7 @@
     {
       "method": "GET",
       "path": "/auth/v1/health",
-      "query": "_=1788149894213"
+      "query": "_=1788149989507"
     },
     {
       "method": "GET",
@@ -868,7 +868,7 @@
     {
       "method": "GET",
       "path": "/rest/v1/blood_sugar_readings",
-      "query": "select=measured_at%2Cvalue_mgdl%2Creading_type&member_id=eq.0d000000-0000-4000-8000-000000000001&measured_at=gte.2026-06-02T04%3A18%3A14.444Z&order=measured_at.asc"
+      "query": "select=measured_at%2Cvalue_mgdl%2Creading_type&member_id=eq.0d000000-0000-4000-8000-000000000001&measured_at=gte.2026-06-02T04%3A19%3A49.772Z&order=measured_at.asc"
     },
     {
       "method": "GET",
