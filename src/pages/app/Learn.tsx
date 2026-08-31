@@ -118,7 +118,10 @@ export default function Learn() {
   const [guides, setGuides] = useState<LearnGuide[]>(DEFAULT_LEARN_GUIDES);
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
   const [resources, setResources] = useState<ResourceItem[]>([]);
-  const [tab, setTab] = useState(requestedGuide ? "learn" : "mindset");
+  const requestedTab = searchParams.get("tab");
+  const [tab, setTab] = useState(
+    requestedTab || (requestedGuide ? "learn" : "mindset"),
+  );
   const [openGuide, setOpenGuide] = useState<string>(requestedGuide ?? "");
   const headingRefs = useRef<Record<string, HTMLSpanElement | null>>({});
   const guidesHeadingRef = useRef<HTMLHeadingElement | null>(null);
@@ -363,6 +366,51 @@ export default function Learn() {
 
         {/* BLOG TAB — only when posts exist */}
         {blogPosts.length > 0 && (
+        {/* RESOURCES TAB — the material that used to live on /app/library. */}
+        <TabsContent value="resources" className="mt-5 space-y-6">
+          <p className="text-sm text-secondary-fg">
+            Recipes, movement notes and printable resources. Educational only — not medical
+            advice.
+          </p>
+          {RESOURCE_GROUPS.map((group) => {
+            const list = resources.filter((r) => group.types.includes(r.type));
+            if (list.length === 0) return null;
+            return (
+              <section key={group.key} aria-labelledby={`resources-${group.key}`}>
+                <h2
+                  id={`resources-${group.key}`}
+                  className="font-heading font-semibold text-lg text-foreground"
+                >
+                  {group.title}
+                </h2>
+                <p className="text-sm text-secondary-fg mt-0.5 mb-3">{group.hint}</p>
+                <div className="grid lg:grid-cols-2 gap-3">
+                  {list.map((item) => {
+                    const locked = !!item.day_unlock && currentProgramDay < item.day_unlock;
+                    return (
+                      <Card key={item.id} className="p-4 border border-border">
+                        <div className="flex items-start justify-between gap-2">
+                          <h3 className="font-heading font-medium text-foreground text-sm">
+                            {item.title}
+                          </h3>
+                          {locked && (
+                            <span className="inline-flex items-center gap-1 text-[11px] text-tertiary-fg whitespace-nowrap">
+                              <Lock className="h-3 w-3" aria-hidden /> Day {item.day_unlock}
+                            </span>
+                          )}
+                        </div>
+                        {item.summary && !locked && (
+                          <p className="text-xs text-secondary-fg mt-1">{item.summary}</p>
+                        )}
+                      </Card>
+                    );
+                  })}
+                </div>
+              </section>
+            );
+          })}
+        </TabsContent>
+
         <TabsContent value="blog" className="mt-5 space-y-3">
           <p className="text-sm text-secondary-fg">
             Curated reads from trusted sources.
