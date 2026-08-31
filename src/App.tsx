@@ -52,7 +52,6 @@ const AdminQaQueue = lazy(() => import("./pages/admin/AdminQaQueue"));
 const AdminSupport = lazy(() => import("./pages/admin/AdminSupport"));
 const AdminContent = lazy(() => import("./pages/admin/AdminContent"));
 const AdminBroadcasts = lazy(() => import("./pages/admin/AdminBroadcasts"));
-const AdminWaitlist = lazy(() => import("./pages/admin/AdminWaitlist"));
 const AdminCoachingInterest = lazy(() => import("./pages/admin/AdminCoachingInterest"));
 const AdminDigest = lazy(() => import("./pages/admin/AdminDigest"));
 const AdminPhiLog = lazy(() => import("./pages/admin/AdminPhiLog"));
@@ -152,7 +151,8 @@ const App = () => (
                 <Route path="support" element={<AdminSupport />} />
                 <Route path="content" element={<AdminContent />} />
                 <Route path="broadcasts" element={<AdminBroadcasts />} />
-                <Route path="waitlist" element={<AdminWaitlist />} />
+                {/* Coaching waitlist consolidated into Coaching Interest. */}
+                <Route path="waitlist" element={<Navigate to="/admin/coaching-interest" replace />} />
                 <Route path="phi-log" element={<AdminPhiLog />} />
                 <Route path="community" element={<AdminCommunity />} />
               </Route>

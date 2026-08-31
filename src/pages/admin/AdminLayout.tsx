@@ -37,7 +37,6 @@ const tabs = [
   { to: "/admin/content", label: "Content", icon: BookOpen },
   { to: "/admin/broadcasts", label: "Broadcasts", icon: Megaphone },
   { to: "/admin/coaching-interest", label: "Coaching Interest", icon: HeartHandshake },
-  { to: "/admin/waitlist", label: "Coaching Waitlist", icon: UserPlus },
   { to: "/admin/phi-log", label: "PHI Audit", icon: Shield },
 ];
 
