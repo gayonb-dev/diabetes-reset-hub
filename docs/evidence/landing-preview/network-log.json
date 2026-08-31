@@ -3,12 +3,12 @@
     {
       "method": "GET",
       "path": "/auth/v1/health",
-      "query": "_=1788135632894"
+      "query": "_=1788145039730"
     },
     {
       "method": "GET",
       "path": "/auth/v1/health",
-      "query": "_=1788135633880"
+      "query": "_=1788145040442"
     },
     {
       "method": "GET",
@@ -338,7 +338,7 @@
     {
       "method": "GET",
       "path": "/auth/v1/health",
-      "query": "_=1788135637199"
+      "query": "_=1788145043500"
     },
     {
       "method": "GET",
@@ -418,7 +418,87 @@
     {
       "method": "GET",
       "path": "/auth/v1/health",
-      "query": "_=1788135640499"
+      "query": "_=1788145046496"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/user_roles",
+      "query": "select=role&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/subscriptions",
+      "query": "select=*&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/profiles",
+      "query": "select=timezone&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "POST",
+      "path": "/rest/v1/rpc/my_deletion_status",
+      "query": ""
+    },
+    {
+      "method": "POST",
+      "path": "/rest/v1/activity_events",
+      "query": ""
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/user_roles",
+      "query": "select=role&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/subscriptions",
+      "query": "select=*&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/profiles",
+      "query": "select=timezone&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/visitor_profiles",
+      "query": "select=metadata%2Clevel&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/notifications",
+      "query": "select=id%2Ctemplate_key%2Ctitle%2Cbody%2Cread_at%2Ccreated_at&user_id=eq.0d000000-0000-4000-8000-000000000001&order=created_at.desc&limit=30"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/notifications",
+      "query": "select=id%2Ctemplate_key%2Ctitle%2Cbody%2Cread_at%2Ccreated_at&user_id=eq.0d000000-0000-4000-8000-000000000001&order=created_at.desc&limit=30"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/profiles",
+      "query": "select=program_start_date&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/profiles",
+      "query": "select=meal_preferences&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/profiles",
+      "query": "select=week_start_day&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/meal_plans",
+      "query": "select=id%2Cgeneration_status%2Cplan_data%2Cplan_type%2Cvalid_from%2Ccreated_at&member_id=eq.0d000000-0000-4000-8000-000000000001&order=valid_from.desc&limit=4"
+    },
+    {
+      "method": "GET",
+      "path": "/auth/v1/health",
+      "query": "_=1788145053821"
     },
     {
       "method": "GET",
@@ -503,7 +583,7 @@
     {
       "method": "GET",
       "path": "/auth/v1/health",
-      "query": "_=1788135643798"
+      "query": "_=1788145056863"
     },
     {
       "method": "GET",
@@ -583,7 +663,7 @@
     {
       "method": "GET",
       "path": "/auth/v1/health",
-      "query": "_=1788135647044"
+      "query": "_=1788145059900"
     },
     {
       "method": "GET",
@@ -653,7 +733,7 @@
     {
       "method": "GET",
       "path": "/auth/v1/health",
-      "query": "_=1788135650330"
+      "query": "_=1788145064236"
     },
     {
       "method": "GET",
@@ -738,7 +818,7 @@
     {
       "method": "GET",
       "path": "/auth/v1/health",
-      "query": "_=1788135653581"
+      "query": "_=1788145067231"
     },
     {
       "method": "GET",
@@ -788,7 +868,7 @@
     {
       "method": "GET",
       "path": "/rest/v1/blood_sugar_readings",
-      "query": "select=measured_at%2Cvalue_mgdl%2Creading_type&member_id=eq.0d000000-0000-4000-8000-000000000001&measured_at=gte.2026-06-02T00%3A20%3A53.783Z&order=measured_at.asc"
+      "query": "select=measured_at%2Cvalue_mgdl%2Creading_type&member_id=eq.0d000000-0000-4000-8000-000000000001&measured_at=gte.2026-06-02T02%3A57%3A47.390Z&order=measured_at.asc"
     },
     {
       "method": "GET",
