@@ -4,7 +4,6 @@ import {
   CreditCard,
   Home,
   LifeBuoy,
-  Library,
   Settings as SettingsIcon,
   Shield,
   User,
@@ -30,7 +29,6 @@ export const MORE_GROUPS: { title: string; items: MoreNavItem[] }[] = [
     title: "Learn & tools",
     items: [
       { to: "/app/learn", label: "Learn", icon: BookOpen },
-      { to: "/app/library", label: "Library", icon: Library },
       { to: "/app/workouts", label: "Workouts", icon: Activity },
     ],
   },

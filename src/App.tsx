@@ -25,7 +25,6 @@ const AuthCallback = lazy(() => import("./pages/AuthCallback"));
 const AppLayout = lazy(() => import("./pages/app/AppLayout"));
 const Dashboard = lazy(() => import("./pages/app/Dashboard"));
 const DayDetail = lazy(() => import("./pages/app/DayDetail"));
-const Library = lazy(() => import("./pages/app/Library"));
 const Learn = lazy(() => import("./pages/app/Learn"));
 const Supplements = lazy(() => import("./pages/app/Supplements"));
 const WorkoutLibrary = lazy(() => import("./pages/app/WorkoutLibrary"));
@@ -224,7 +223,9 @@ const App = () => (
                 <Route index element={<Dashboard />} />
                 <Route path="today" element={<Dashboard />} />
                 <Route path="day/:day" element={<DayDetail />} />
-                <Route path="library" element={<Library />} />
+                {/* Library consolidated into Learn → Resources. Old deep links keep working. */}
+                <Route path="library" element={<Navigate to="/app/learn?tab=resources" replace />} />
+                <Route path="library/*" element={<Navigate to="/app/learn?tab=resources" replace />} />
                 <Route path="learn" element={<Learn />} />
                 <Route path="supplements" element={<Supplements />} />
                 <Route path="workouts" element={<WorkoutLibrary />} />
