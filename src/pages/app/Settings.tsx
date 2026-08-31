@@ -3,6 +3,8 @@
 // destructive sign-out at bottom of page (green, not red), confirmation dialog.
 
 import { useEffect, useState } from "react";
+import InstallAppCard from "@/components/settings/InstallAppCard";
+
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
