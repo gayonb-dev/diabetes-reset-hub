@@ -1,6 +1,7 @@
 import { useRef } from "react";
 import { Apple, ClipboardList, FileText, MessageSquare, Sun } from "lucide-react";
 import ScrollReveal from "./ScrollReveal";
+import ProductTourSection from "./ProductTourSection";
 
 /**
  * Prompt 4 §5 — product proof.
@@ -96,6 +97,10 @@ const InsideMembershipSection = () => {
             Next
           </button>
         </div>
+
+        {/* One coherent tour lives inside this section so the page has a single
+            "inside the membership" area rather than two competing ones. */}
+        <ProductTourSection />
       </div>
     </section>
   );

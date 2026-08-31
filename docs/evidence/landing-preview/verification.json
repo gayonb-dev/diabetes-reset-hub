@@ -23,8 +23,8 @@
     "faq": true,
     "product-tour": true
   },
-  "tour_items": 7,
-  "tour_images_with_alt": 7,
+  "tour_items": 8,
+  "tour_images_with_alt": 9,
   "lightbox_opens_keyboard": true,
   "lightbox_closes_escape": true,
   "focus_returns_to_trigger": true,

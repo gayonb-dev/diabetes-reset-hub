@@ -176,5 +176,61 @@ export default function AdminCoachingInterest() {
           </Select>
         </Card>
       ))}
+
+      <section aria-labelledby="legacy-waitlist" className="pt-4 border-t border-border">
+        <h2 id="legacy-waitlist" className="font-heading font-semibold text-foreground">
+          Historical coaching waitlist
+        </h2>
+        <p className="text-sm text-muted-foreground mt-1">
+          Archived records from the retired waitlist form. No new rows are created here.
+          Opening this list performs an audited PHI read.
+        </p>
+        {legacy === null ? (
+          <Button
+            variant="outline"
+            className="mt-3 min-h-11"
+            disabled={legacyLoading}
+            onClick={() => void loadLegacy()}
+          >
+            {legacyLoading ? "Loading…" : "Show historical waitlist"}
+          </Button>
+        ) : legacy.length === 0 ? (
+          <p className="text-sm text-muted-foreground mt-3">No historical waitlist records.</p>
+        ) : (
+          <div className="space-y-3 mt-3">
+            <p className="text-sm text-muted-foreground tabular-nums">
+              {legacy.length} archived record{legacy.length === 1 ? "" : "s"}
+            </p>
+            {legacy.map((r) => (
+              <Card key={r.id} className="p-4 flex flex-wrap items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="text-sm font-medium text-foreground">{r.full_name}</p>
+                  <p className="text-xs text-muted-foreground">{r.email}</p>
+                  {r.phone && <p className="text-xs text-muted-foreground">{r.phone}</p>}
+                  {r.why_now && (
+                    <p className="text-xs italic text-muted-foreground mt-2">"{r.why_now}"</p>
+                  )}
+                  <p className="text-xs text-muted-foreground mt-2 tabular-nums">
+                    Joined {new Date(r.created_at).toLocaleDateString()}
+                  </p>
+                </div>
+                <Select value={r.status} onValueChange={(v) => updateLegacyStatus(r.id, v)}>
+                  <SelectTrigger className="w-40" aria-label={`Status for ${r.email}`}>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {LEGACY_STATUSES.map((s) => (
+                      <SelectItem key={s} value={s}>
+                        {s}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </Card>
+            ))}
+          </div>
+        )}
+      </section>
     </div>
   );
+}

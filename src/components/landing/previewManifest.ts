@@ -24,6 +24,10 @@ export interface PreviewItem {
   caption: string;
 }
 
+/** Visible, honest description of what these images are. */
+export const PREVIEW_DATA_NOTE =
+  "Every screen below is the real member app captured locally with illustrative example entries for a fictional member — not a real member's data, and not a promised result.";
+
 export const PREVIEWS: PreviewItem[] = [
   {
     id: "today",
@@ -44,6 +48,16 @@ export const PREVIEWS: PreviewItem[] = [
     height: 1400,
     alt: "The Meals screen showing meal ideas for the day with recipes and a shopping list that can be grouped by meal.",
     caption: "Meals: a weekly plan with recipes, swaps and a shopping list you can group by meal.",
+  },
+  {
+    id: "meals-shopping",
+    label: "Shopping list",
+    src: "/previews/meals-shopping.jpg",
+    thumb: "/previews/meals-shopping-thumb.jpg",
+    width: 1280,
+    height: 1400,
+    alt: "The shopping list generated from the week's meals, grouped by meal, with each ingredient listed as a check item.",
+    caption: "Shopping list: ingredients from your plan, grouped by meal or by category.",
   },
   {
     id: "progress",
