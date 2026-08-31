@@ -85,35 +85,43 @@ export function HabitRing({
         animate={bloomControls}
       >
         <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
-          <circle
-            cx={size / 2}
-            cy={size / 2}
-            r={r}
-            fill="none"
-            stroke="hsl(var(--muted))"
-            strokeWidth={stroke}
-          />
-          {!logOnly && (
-          <motion.circle
-            cx={size / 2}
-            cy={size / 2}
-            r={r}
-            fill="none"
-            stroke={color}
-            strokeWidth={stroke}
-            strokeDasharray={c}
-            strokeLinecap="round"
-            transform={`rotate(-90 ${size / 2} ${size / 2})`}
-            initial={{ strokeDashoffset: c }}
-            animate={{ strokeDashoffset: offset }}
-            transition={{
-              duration: 0.8,
-              delay: delayMs / 1000,
-              ease: [0.65, 0, 0.35, 1],
-            }}
-          />
+          {logOnly ? (
+            /* Log-only habits (water) have no target, so no progress arc and no
+               empty track that could read as an unfinished goal — a neutral
+               filled badge in the same footprint instead. */
+            <circle cx={size / 2} cy={size / 2} r={r} fill={color} fillOpacity={0.14} />
+          ) : (
+            <>
+              <circle
+                cx={size / 2}
+                cy={size / 2}
+                r={r}
+                fill="none"
+                stroke="hsl(var(--muted))"
+                strokeWidth={stroke}
+              />
+              <motion.circle
+                cx={size / 2}
+                cy={size / 2}
+                r={r}
+                fill="none"
+                stroke={color}
+                strokeWidth={stroke}
+                strokeDasharray={c}
+                strokeLinecap="round"
+                transform={`rotate(-90 ${size / 2} ${size / 2})`}
+                initial={{ strokeDashoffset: c }}
+                animate={{ strokeDashoffset: offset }}
+                transition={{
+                  duration: 0.8,
+                  delay: delayMs / 1000,
+                  ease: [0.65, 0, 0.35, 1],
+                }}
+              />
+            </>
           )}
         </svg>
+
         <div
           className="absolute inset-0 flex items-center justify-center"
           style={{ color }}

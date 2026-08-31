@@ -1,11 +1,10 @@
 import { Button } from "@/components/ui/button";
 import ScrollReveal from "./ScrollReveal";
+import { useCheckout } from "./CheckoutContext";
 
-interface FinalCTASectionProps {
-  onOpenPayment: () => void;
-}
+const FinalCTASection = () => {
+  const { openCheckout } = useCheckout();
 
-const FinalCTASection = ({ onOpenPayment }: FinalCTASectionProps) => {
   return (
     <section className="relative bg-gradient-to-r from-primary via-primary-dark to-primary py-14 overflow-hidden">
       <div className="container mx-auto px-4 text-center relative z-10">
@@ -19,7 +18,7 @@ const FinalCTASection = ({ onOpenPayment }: FinalCTASectionProps) => {
           </p>
 
           <Button
-            onClick={onOpenPayment}
+            onClick={openCheckout}
             className="min-h-[44px] bg-background text-primary hover:bg-background/90 px-8 py-5 text-lg font-bold rounded-xl h-auto shadow-2xl mb-5"
           >
             Start 14 days for $27

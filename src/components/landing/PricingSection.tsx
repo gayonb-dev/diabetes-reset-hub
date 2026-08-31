@@ -2,10 +2,7 @@ import { Check, Lock, Shield, Zap } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import ScrollReveal from "./ScrollReveal";
-
-interface PricingSectionProps {
-  onOpenPayment: () => void;
-}
+import { useCheckout } from "./CheckoutContext";
 
 const INCLUDED = [
   "Guided Today actions",
@@ -19,13 +16,15 @@ const INCLUDED = [
 
 const TRUST_BADGES = [
   { icon: Lock, text: "Secure checkout" },
-  { icon: Zap, text: "Instant access" },
+  { icon: Zap, text: "Access begins after your payment is confirmed" },
   { icon: Shield, text: "Cancel in the app" },
 ];
 
-const PricingSection = ({ onOpenPayment }: PricingSectionProps) => {
+const PricingSection = () => {
+  const { openCheckout } = useCheckout();
+
   return (
-    <section id="pricing" className="bg-gradient-to-b from-primary/5 to-background py-12">
+    <section id="pricing" className="scroll-mt-24 bg-gradient-to-b from-primary/5 to-background py-12">
       <div className="container mx-auto px-4">
         <ScrollReveal>
           <p className="text-sm font-semibold tracking-widest uppercase text-primary text-center mb-2">
@@ -72,13 +71,17 @@ const PricingSection = ({ onOpenPayment }: PricingSectionProps) => {
 
               <div className="px-8 pb-4">
                 <Button
-                  onClick={onOpenPayment}
+                  onClick={openCheckout}
                   className="w-full min-h-[44px] bg-primary hover:bg-primary-dark text-primary-foreground py-5 text-lg font-bold rounded-xl h-auto shadow-lg"
                 >
                   Start 14 days for $27
                 </Button>
                 <p className="text-center text-xs text-muted-foreground mt-3">
                   Secure payment processing by Stripe. Full renewal terms appear before payment.
+                </p>
+                <p className="text-center text-xs text-muted-foreground mt-2">
+                  Access begins after your payment is confirmed. The confirmation page shows whether
+                  your payment is confirmed or still processing.
                 </p>
                 <p className="text-center text-xs text-muted-foreground mt-2">
                   30-day refund guarantee on each charge. Request it within 30 days under the{" "}

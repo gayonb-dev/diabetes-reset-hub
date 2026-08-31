@@ -65,7 +65,7 @@ const FAQSection = () => {
   const [openIndex, setOpenIndex] = useState<number>(0);
 
   return (
-    <section id="faq" className="bg-background py-12">
+    <section id="faq" className="scroll-mt-24 bg-background py-12">
       <div className="container mx-auto px-4 max-w-3xl">
         <ScrollReveal>
           <h2 className="font-heading font-bold text-3xl sm:text-4xl text-center text-foreground mb-8">

@@ -2,10 +2,8 @@ import { ArrowRight, Compass, ListChecks, Stethoscope, XCircle } from "lucide-re
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import heroImage from "@/assets/hero-diabetes-reset.jpg";
-
-const scrollTo = (id: string) => {
-  document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
-};
+import { goToSection } from "@/lib/landingNav";
+import { useCheckout } from "./CheckoutContext";
 
 const TRUST_ROW = [
   { icon: Compass, label: "Self-guided membership" },
@@ -15,6 +13,8 @@ const TRUST_ROW = [
 ];
 
 const HeroSection = () => {
+  const { openCheckout } = useCheckout();
+
   return (
     <section className="relative bg-gradient-to-b from-secondary/20 to-background pt-8 pb-8 md:pt-12 md:pb-12 overflow-hidden">
       <div className="container mx-auto px-4">
@@ -40,7 +40,7 @@ const HeroSection = () => {
 
             <div className="flex flex-col sm:flex-row gap-3">
               <Button
-                onClick={() => scrollTo("pricing")}
+                onClick={openCheckout}
                 className="w-full sm:w-auto min-h-[44px] bg-primary hover:bg-primary-dark text-primary-foreground px-8 py-5 text-lg font-bold rounded-xl h-auto shadow-lg"
               >
                 Start 14 days for $27
@@ -48,7 +48,7 @@ const HeroSection = () => {
               </Button>
               <Button
                 variant="outline"
-                onClick={() => scrollTo("inside-the-membership")}
+                onClick={() => goToSection("inside-the-membership")}
                 className="w-full sm:w-auto min-h-[44px] px-8 py-5 text-lg font-semibold rounded-xl h-auto border-primary/40"
               >
                 See inside the membership

@@ -1,0 +1,68 @@
+{
+  "generated_by": "tools/landing/capture_previews.py",
+  "assets": [
+    {
+      "id": "ask",
+      "full": "/previews/ask.jpg",
+      "thumb": "/previews/ask-thumb.jpg",
+      "width": 1280,
+      "height": 1400,
+      "sha256_full": "a6927c08ba7d87377b114c89eee6539ac753677bfe4a0c6ef65be683fcb5d903",
+      "sha256_thumb": "e18b977a9a527ea8083994f23d8e6fbdbec66b4d69959344fba381cda7cbad11"
+    },
+    {
+      "id": "learn",
+      "full": "/previews/learn.jpg",
+      "thumb": "/previews/learn-thumb.jpg",
+      "width": 1280,
+      "height": 1400,
+      "sha256_full": "6dd54117bde96023b0e7dc9f970831d8654ba52dbc906ab9f29aa7ae9d6b2502",
+      "sha256_thumb": "f4d6546da6170cf84b2f21e57bb1964823e013693e25e3b3a5c6936928f8cb4d"
+    },
+    {
+      "id": "meals",
+      "full": "/previews/meals.jpg",
+      "thumb": "/previews/meals-thumb.jpg",
+      "width": 1280,
+      "height": 1400,
+      "sha256_full": "8b71942b360aa96c7463374071562af6b402dc9dda03519916ef1086a20c7951",
+      "sha256_thumb": "f19a3ba6faad90316cf7d351b2f6c5a785f9d0125a9a4045a7282081f9eb7bde"
+    },
+    {
+      "id": "progress",
+      "full": "/previews/progress.jpg",
+      "thumb": "/previews/progress-thumb.jpg",
+      "width": 1280,
+      "height": 1400,
+      "sha256_full": "968d589207a57e4dbedf1e6fc40557b70a492a9b5d3a4c703af8215248584c21",
+      "sha256_thumb": "5c7ee02bd73d94a5dd7a9543ef2e371b82aceb380e4a1fa4f927ae0252723537"
+    },
+    {
+      "id": "report",
+      "full": "/previews/report.jpg",
+      "thumb": "/previews/report-thumb.jpg",
+      "width": 1280,
+      "height": 1400,
+      "sha256_full": "770effdad2f639346502b8edd1a12ecb6d5906604b8ad7245cfc37cb61c949a8",
+      "sha256_thumb": "327368dded7e89d062bfa47b634801d4a14eccc013fa775c6bb1d1500345a57e"
+    },
+    {
+      "id": "today",
+      "full": "/previews/today.jpg",
+      "thumb": "/previews/today-thumb.jpg",
+      "width": 1280,
+      "height": 1400,
+      "sha256_full": "cdf5655c33b0ce7a6dc08b9f2eb42270d8e09962787bd0ca4ca573d82cac1e40",
+      "sha256_thumb": "5b21d97df331b8c622eadd30a2d47ce3888ba9374fd06608e0af13ad72c91c78"
+    },
+    {
+      "id": "workouts",
+      "full": "/previews/workouts.jpg",
+      "thumb": "/previews/workouts-thumb.jpg",
+      "width": 1280,
+      "height": 1400,
+      "sha256_full": "0a796b37294781af025db8215afc61b0c8e71e2a1cc6bdf1b600af689cbe870e",
+      "sha256_thumb": "b35a0414355430a6aed964b1e7fb886404904850be0cb909d012d7b68e0b17a1"
+    }
+  ]
+}

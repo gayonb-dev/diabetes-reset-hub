@@ -4,6 +4,9 @@ import { phaseFor } from "@/lib/phase";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { waterLoggedLabel } from "@/lib/hydration";
+import { formatVolume } from "@/lib/units";
+import WaterEntry from "@/components/today/WaterEntry";
+
 import { useGamification } from "@/hooks/useGamification";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -28,6 +31,9 @@ const MEAL_LABEL: Record<"breakfast" | "lunch" | "dinner", string> = {
 };
 
 const CUSTOM_SNACK = "__custom_snack__";
+
+// Mindset reflection: the intended read time is 20 seconds (single source).
+const MINDSET_READ_SECONDS = 20;
 
 // Snack slot labels are derived from the timing engine's computed schedule,
 // never hardcoded clock language. Fallback only when the engine yields none.
@@ -92,7 +98,6 @@ export default function HabitLogging({ currentProgramDay }: Props) {
   const { recordAction } = useGamification();
   const [openKey, setOpenKey] = useState<string | null>(null);
   const [lowersMeds, setLowersMeds] = useState(false);
-  const [customOz, setCustomOz] = useState("");
   const [snackOverflow, setSnackOverflow] = useState<null | "snack_3">(null);
   const isMobile = useIsMobile();
   const [snackSheetSlot, setSnackSheetSlot] = useState<"snack_1" | "snack_2" | null>(null);
@@ -250,38 +255,13 @@ export default function HabitLogging({ currentProgramDay }: Props) {
           open={openKey === "water"}
           onToggle={() => toggle("water")}
         >
-          <div className="flex flex-wrap gap-2 mt-3">
-            {[8, 12, 16].map((oz) => (
-              <Button key={oz} variant="outline" size="sm" onClick={() => h.addWater(oz)}>
-                +{oz}oz
-              </Button>
-            ))}
-            <Input
-              placeholder="Custom oz"
-              type="number"
-              inputMode="decimal"
-              className="w-28 h-9"
-              value={customOz}
-              onChange={(e) => setCustomOz(e.target.value)}
-            />
-            <Button
-              size="sm"
-              onClick={() => {
-                const v = parseInt(customOz);
-                if (v > 0) {
-                  h.addWater(v);
-                  setCustomOz("");
-                }
-              }}
-            >
-              Add
-            </Button>
-          </div>
-          <p className="text-xs text-tertiary-fg mt-3">
-            Keep water available and take regular drinks during the day. This log records what you drank; it is not a target. If a healthcare professional has given you a fluid limit or different advice, follow that advice.
+          <p className="text-sm text-foreground font-medium mt-3 tabular-nums">
+            Water logged today — {formatVolume(h.waterOz)}
           </p>
+          <WaterEntry addWater={h.addWater} />
         </Section>
       </div>
+
 
 
       {/* MEALS */}
@@ -528,7 +508,7 @@ export default function HabitLogging({ currentProgramDay }: Props) {
 // Batch 2 task 5 — the reflection is a plain disclosure. The control says
 // exactly what it does ("Read reflection" / "Hide reflection"), exposes its
 // expanded state to assistive technology, and the reflection text itself is
-// the region it controls. The 30-second read timer only gates the *logging*
+// the region it controls. The 20-second read timer only gates the *logging*
 // button, never the ability to read.
 function MindsetCard({ read, onRead }: { read: boolean; onRead: () => void }) {
   const [elapsed, setElapsed] = useState(0);
@@ -538,7 +518,7 @@ function MindsetCard({ read, onRead }: { read: boolean; onRead: () => void }) {
     const t = setInterval(() => setElapsed((e) => e + 1), 1000);
     return () => clearInterval(t);
   }, [read, expanded]);
-  const canRead = elapsed >= 30 || read;
+  const canRead = elapsed >= MINDSET_READ_SECONDS || read;
   return (
     <div className="rounded-xl border border-border bg-primary-muted p-4 mt-3">
       <Button
@@ -564,7 +544,7 @@ function MindsetCard({ read, onRead }: { read: boolean; onRead: () => void }) {
           disabled={!canRead}
           onClick={onRead}
         >
-          {read ? "Read ✓" : canRead ? "I read this" : `I read this (${30 - elapsed}s)`}
+          {read ? "Read ✓" : canRead ? "I read this" : `I read this (${MINDSET_READ_SECONDS - elapsed}s)`}
         </Button>
       </div>
     </div>

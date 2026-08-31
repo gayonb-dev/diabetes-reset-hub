@@ -1,0 +1,830 @@
+{
+  "intercepted": [
+    {
+      "method": "GET",
+      "path": "/auth/v1/health",
+      "query": "_=1788135632894"
+    },
+    {
+      "method": "GET",
+      "path": "/auth/v1/health",
+      "query": "_=1788135633880"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/user_roles",
+      "query": "select=role&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/subscriptions",
+      "query": "select=*&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/profiles",
+      "query": "select=timezone&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "POST",
+      "path": "/rest/v1/rpc/my_deletion_status",
+      "query": ""
+    },
+    {
+      "method": "POST",
+      "path": "/rest/v1/activity_events",
+      "query": ""
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/user_roles",
+      "query": "select=role&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/subscriptions",
+      "query": "select=*&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/profiles",
+      "query": "select=timezone&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/visitor_profiles",
+      "query": "select=metadata%2Clevel&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/notifications",
+      "query": "select=id%2Ctemplate_key%2Ctitle%2Cbody%2Cread_at%2Ccreated_at&user_id=eq.0d000000-0000-4000-8000-000000000001&order=created_at.desc&limit=30"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/notifications",
+      "query": "select=id%2Ctemplate_key%2Ctitle%2Cbody%2Cread_at%2Ccreated_at&user_id=eq.0d000000-0000-4000-8000-000000000001&order=created_at.desc&limit=30"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/profiles",
+      "query": "select=program_start_date&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/water_logs",
+      "query": "select=ounces&member_id=eq.0d000000-0000-4000-8000-000000000001&log_date=eq.2026-08-30"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/meal_logs",
+      "query": "select=*&member_id=eq.0d000000-0000-4000-8000-000000000001&log_date=eq.2026-08-30"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/snack_logs",
+      "query": "select=*&member_id=eq.0d000000-0000-4000-8000-000000000001&log_date=eq.2026-08-30"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/post_meal_walks",
+      "query": "select=slot&member_id=eq.0d000000-0000-4000-8000-000000000001&log_date=eq.2026-08-30"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/mindset_reads",
+      "query": "select=id&member_id=eq.0d000000-0000-4000-8000-000000000001&log_date=eq.2026-08-30"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/mood_logs",
+      "query": "select=mood&member_id=eq.0d000000-0000-4000-8000-000000000001&log_date=eq.2026-08-30"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/water_logs",
+      "query": "select=log_date%2Counces&member_id=eq.0d000000-0000-4000-8000-000000000001&order=log_date.desc&limit=60"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/visitor_profiles",
+      "query": "select=streak_count%2Cstreak_freeze_available%2Clevel%2Clevel_earned_at%2Creset_points%2Chelpful_points%2Cbadges_earned%2Ccommunity_badges_earned%2Clast_ring_close_at%2Cstreak_history%2Cphase_1_extension_active%2Ccurrent_program_phase&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/vita_quotes",
+      "query": "select=id%2Ccategory%2Cquote_text%2Cday_range_start%2Cday_range_end&is_active=eq.true&day_range_start=lte.0&day_range_end=gte.0"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/visitor_profiles",
+      "query": "select=metadata&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/vita_quotes",
+      "query": "select=id%2Ccategory%2Cquote_text%2Cday_range_start%2Cday_range_end&is_active=eq.true&day_range_start=lte.7&day_range_end=gte.7"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/visitor_profiles",
+      "query": "select=metadata&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/user_streaks",
+      "query": "select=longest_streak&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/daily_actions",
+      "query": "select=id%2Cday_number%2Cphase_number%2Caction_title%2Caction_description%2Csub_tasks&day_number=gte.0&is_extension_day=eq.false&order=day_number.asc&limit=3"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/daily_actions",
+      "query": "select=id%2Cday_number%2Cphase_number%2Caction_title%2Caction_description%2Csub_tasks&day_number=gte.7&is_extension_day=eq.false&order=day_number.asc&limit=3"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/member_daily_progress",
+      "query": "select=day_number%2Ccompleted_at&member_id=eq.0d000000-0000-4000-8000-000000000001&status=eq.completed"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/daily_actions",
+      "query": "select=id%2Cday_number%2Cphase_number%2Caction_title%2Caction_description%2Csub_tasks&day_number=lt.0&is_extension_day=eq.false&order=day_number.desc&limit=30"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/daily_actions",
+      "query": "select=id%2Cday_number%2Cphase_number%2Caction_title%2Caction_description%2Csub_tasks&day_number=lt.7&is_extension_day=eq.false&order=day_number.desc&limit=30"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/health_logs",
+      "query": "select=blood_sugar%2Clog_date&user_id=eq.0d000000-0000-4000-8000-000000000001&blood_sugar=not.is.null&order=log_date.desc&limit=1"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/member_daily_progress",
+      "query": "select=action_id%2Cstatus&member_id=eq.0d000000-0000-4000-8000-000000000001&status=eq.completed&action_id=in.%2844444444-4444-4444-8444-000000000006%2C44444444-4444-4444-8444-000000000005%2C44444444-4444-4444-8444-000000000004%2C44444444-4444-4444-8444-000000000003%2C44444444-4444-4444-8444-000000000002%2C44444444-4444-4444-8444-000000000001%29"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/health_logs",
+      "query": "select=weight%2Clog_date&user_id=eq.0d000000-0000-4000-8000-000000000001&weight=not.is.null&order=log_date.desc&limit=1"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/member_daily_progress",
+      "query": "select=status%2Csub_tasks_completed&member_id=eq.0d000000-0000-4000-8000-000000000001&action_id=eq.44444444-4444-4444-8444-000000000007"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/a1c_logs",
+      "query": "select=value_percent%2Cmeasured_on&member_id=eq.0d000000-0000-4000-8000-000000000001&order=measured_on.desc&limit=1"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/health_logs",
+      "query": "select=blood_sugar%2Clog_date&user_id=eq.0d000000-0000-4000-8000-000000000001&blood_sugar=not.is.null&order=log_date.desc&limit=1"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/blood_sugar_readings",
+      "query": "select=value_mgdl%2Cmeasured_at%2Creading_type&member_id=eq.0d000000-0000-4000-8000-000000000001&order=measured_at.desc&limit=1"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/health_logs",
+      "query": "select=weight%2Clog_date&user_id=eq.0d000000-0000-4000-8000-000000000001&weight=not.is.null&order=log_date.desc&limit=1"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/a1c_logs",
+      "query": "select=value_percent%2Cmeasured_on&member_id=eq.0d000000-0000-4000-8000-000000000001&order=measured_on.desc&limit=1"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/blood_sugar_readings",
+      "query": "select=value_mgdl%2Cmeasured_at%2Creading_type&member_id=eq.0d000000-0000-4000-8000-000000000001&order=measured_at.desc&limit=1"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/water_logs",
+      "query": "select=ounces&member_id=eq.0d000000-0000-4000-8000-000000000001&log_date=eq.2026-08-30"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/meal_logs",
+      "query": "select=*&member_id=eq.0d000000-0000-4000-8000-000000000001&log_date=eq.2026-08-30"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/snack_logs",
+      "query": "select=*&member_id=eq.0d000000-0000-4000-8000-000000000001&log_date=eq.2026-08-30"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/post_meal_walks",
+      "query": "select=slot&member_id=eq.0d000000-0000-4000-8000-000000000001&log_date=eq.2026-08-30"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/mindset_reads",
+      "query": "select=id&member_id=eq.0d000000-0000-4000-8000-000000000001&log_date=eq.2026-08-30"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/mood_logs",
+      "query": "select=mood&member_id=eq.0d000000-0000-4000-8000-000000000001&log_date=eq.2026-08-30"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/water_logs",
+      "query": "select=log_date%2Counces&member_id=eq.0d000000-0000-4000-8000-000000000001&order=log_date.desc&limit=60"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/user_streaks",
+      "query": "select=current_streak%2Clongest_streak%2Clast_active_date%2Ctotal_xp%2Clevel&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/badges",
+      "query": "select=slug%2Cname%2Cdescription%2Cicon%2Ctier%2Csort_order&order=sort_order.asc"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/user_badges",
+      "query": "select=badge_id%2Cearned_at&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/profiles",
+      "query": "select=medication_class%2Cfasting_eligibility%2Cdoctor_confirmed_at%2Cfasting_exclusions%2Cbedtime_hour%2Cfasting_target%2Cfasting_started_on%2Cwindow_start_hour%2Clow_bs_card_seen_at&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/visitor_profiles",
+      "query": "select=metadata%2Clowers_blood_sugar_meds&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/snack_library",
+      "query": "select=name%2Cdescription%2Cunlock_day&order=sort_order.asc"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/visitor_profiles",
+      "query": "select=id%2Cgetting_started_checklist%2Cmetadata&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "POST",
+      "path": "/functions/v1/gamify-action",
+      "query": ""
+    },
+    {
+      "method": "POST",
+      "path": "/functions/v1/gamify-action",
+      "query": ""
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/user_badges",
+      "query": "select=earned_at%2Cbadges%28slug%29&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/user_streaks",
+      "query": "select=current_streak%2Clongest_streak%2Clast_active_date%2Ctotal_xp%2Clevel&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/badges",
+      "query": "select=slug%2Cname%2Cdescription%2Cicon%2Ctier%2Csort_order&order=sort_order.asc"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/user_badges",
+      "query": "select=badge_id%2Cearned_at&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/user_streaks",
+      "query": "select=current_streak%2Clongest_streak%2Clast_active_date%2Ctotal_xp%2Clevel&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/badges",
+      "query": "select=slug%2Cname%2Cdescription%2Cicon%2Ctier%2Csort_order&order=sort_order.asc"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/user_badges",
+      "query": "select=badge_id%2Cearned_at&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/user_badges",
+      "query": "select=earned_at%2Cbadges%28slug%29&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/user_badges",
+      "query": "select=earned_at%2Cbadges%28slug%29&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "GET",
+      "path": "/auth/v1/health",
+      "query": "_=1788135637199"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/user_roles",
+      "query": "select=role&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/subscriptions",
+      "query": "select=*&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/profiles",
+      "query": "select=timezone&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "POST",
+      "path": "/rest/v1/rpc/my_deletion_status",
+      "query": ""
+    },
+    {
+      "method": "POST",
+      "path": "/rest/v1/activity_events",
+      "query": ""
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/user_roles",
+      "query": "select=role&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/subscriptions",
+      "query": "select=*&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/profiles",
+      "query": "select=timezone&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/visitor_profiles",
+      "query": "select=metadata%2Clevel&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/notifications",
+      "query": "select=id%2Ctemplate_key%2Ctitle%2Cbody%2Cread_at%2Ccreated_at&user_id=eq.0d000000-0000-4000-8000-000000000001&order=created_at.desc&limit=30"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/notifications",
+      "query": "select=id%2Ctemplate_key%2Ctitle%2Cbody%2Cread_at%2Ccreated_at&user_id=eq.0d000000-0000-4000-8000-000000000001&order=created_at.desc&limit=30"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/profiles",
+      "query": "select=program_start_date&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/profiles",
+      "query": "select=meal_preferences&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/profiles",
+      "query": "select=week_start_day&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/meal_plans",
+      "query": "select=id%2Cgeneration_status%2Cplan_data%2Cplan_type%2Cvalid_from%2Ccreated_at&member_id=eq.0d000000-0000-4000-8000-000000000001&order=valid_from.desc&limit=4"
+    },
+    {
+      "method": "GET",
+      "path": "/auth/v1/health",
+      "query": "_=1788135640499"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/user_roles",
+      "query": "select=role&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/subscriptions",
+      "query": "select=*&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/profiles",
+      "query": "select=timezone&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "POST",
+      "path": "/rest/v1/rpc/my_deletion_status",
+      "query": ""
+    },
+    {
+      "method": "POST",
+      "path": "/rest/v1/activity_events",
+      "query": ""
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/user_roles",
+      "query": "select=role&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/subscriptions",
+      "query": "select=*&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/profiles",
+      "query": "select=timezone&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/visitor_profiles",
+      "query": "select=metadata%2Clevel&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/notifications",
+      "query": "select=id%2Ctemplate_key%2Ctitle%2Cbody%2Cread_at%2Ccreated_at&user_id=eq.0d000000-0000-4000-8000-000000000001&order=created_at.desc&limit=30"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/notifications",
+      "query": "select=id%2Ctemplate_key%2Ctitle%2Cbody%2Cread_at%2Ccreated_at&user_id=eq.0d000000-0000-4000-8000-000000000001&order=created_at.desc&limit=30"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/user_streaks",
+      "query": "select=current_streak%2Clongest_streak%2Clast_active_date%2Ctotal_xp%2Clevel&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/badges",
+      "query": "select=slug%2Cname%2Cdescription%2Cicon%2Ctier%2Csort_order&order=sort_order.asc"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/user_badges",
+      "query": "select=badge_id%2Cearned_at&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/blood_sugar_readings",
+      "query": "select=*&member_id=eq.0d000000-0000-4000-8000-000000000001&order=measured_at.desc&limit=90"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/user_badges",
+      "query": "select=earned_at%2Cbadges%28slug%29&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "GET",
+      "path": "/auth/v1/health",
+      "query": "_=1788135643798"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/user_roles",
+      "query": "select=role&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/subscriptions",
+      "query": "select=*&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/profiles",
+      "query": "select=timezone&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "POST",
+      "path": "/rest/v1/rpc/my_deletion_status",
+      "query": ""
+    },
+    {
+      "method": "POST",
+      "path": "/rest/v1/activity_events",
+      "query": ""
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/user_roles",
+      "query": "select=role&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/subscriptions",
+      "query": "select=*&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/profiles",
+      "query": "select=timezone&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/visitor_profiles",
+      "query": "select=metadata%2Clevel&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/notifications",
+      "query": "select=id%2Ctemplate_key%2Ctitle%2Cbody%2Cread_at%2Ccreated_at&user_id=eq.0d000000-0000-4000-8000-000000000001&order=created_at.desc&limit=30"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/notifications",
+      "query": "select=id%2Ctemplate_key%2Ctitle%2Cbody%2Cread_at%2Ccreated_at&user_id=eq.0d000000-0000-4000-8000-000000000001&order=created_at.desc&limit=30"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/profiles",
+      "query": "select=program_start_date&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/visitor_profiles",
+      "query": "select=knee_friendly&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/workout_sessions",
+      "query": "select=workout_slug%2Cworkout_name%2Cstatus&user_id=eq.0d000000-0000-4000-8000-000000000001&status=in.%28in_progress%2Cpaused%29&order=started_at.desc&limit=1"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/workout_completion_receipts",
+      "query": "select=id%2Cworkout_name%2Ctrack%2Ccompleted_at&user_id=eq.0d000000-0000-4000-8000-000000000001&order=completed_at.desc&limit=10"
+    },
+    {
+      "method": "GET",
+      "path": "/auth/v1/health",
+      "query": "_=1788135647044"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/user_roles",
+      "query": "select=role&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/subscriptions",
+      "query": "select=*&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/profiles",
+      "query": "select=timezone&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "POST",
+      "path": "/rest/v1/rpc/my_deletion_status",
+      "query": ""
+    },
+    {
+      "method": "POST",
+      "path": "/rest/v1/activity_events",
+      "query": ""
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/user_roles",
+      "query": "select=role&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/subscriptions",
+      "query": "select=*&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/profiles",
+      "query": "select=timezone&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/visitor_profiles",
+      "query": "select=metadata%2Clevel&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/notifications",
+      "query": "select=id%2Ctemplate_key%2Ctitle%2Cbody%2Cread_at%2Ccreated_at&user_id=eq.0d000000-0000-4000-8000-000000000001&order=created_at.desc&limit=30"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/notifications",
+      "query": "select=id%2Ctemplate_key%2Ctitle%2Cbody%2Cread_at%2Ccreated_at&user_id=eq.0d000000-0000-4000-8000-000000000001&order=created_at.desc&limit=30"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/profiles",
+      "query": "select=program_start_date&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/content_items",
+      "query": "select=id%2Ctype%2Cslug%2Ctitle%2Csummary%2Cbody%2Cmetadata%2Ccreated_at&is_active=eq.true&type=in.%28guide%2Cblog%29&order=sort_order.asc"
+    },
+    {
+      "method": "GET",
+      "path": "/auth/v1/health",
+      "query": "_=1788135650330"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/user_roles",
+      "query": "select=role&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/subscriptions",
+      "query": "select=*&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/profiles",
+      "query": "select=timezone&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "POST",
+      "path": "/rest/v1/rpc/my_deletion_status",
+      "query": ""
+    },
+    {
+      "method": "POST",
+      "path": "/rest/v1/activity_events",
+      "query": ""
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/user_roles",
+      "query": "select=role&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/subscriptions",
+      "query": "select=*&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/profiles",
+      "query": "select=timezone&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/visitor_profiles",
+      "query": "select=metadata%2Clevel&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/notifications",
+      "query": "select=id%2Ctemplate_key%2Ctitle%2Cbody%2Cread_at%2Ccreated_at&user_id=eq.0d000000-0000-4000-8000-000000000001&order=created_at.desc&limit=30"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/notifications",
+      "query": "select=id%2Ctemplate_key%2Ctitle%2Cbody%2Cread_at%2Ccreated_at&user_id=eq.0d000000-0000-4000-8000-000000000001&order=created_at.desc&limit=30"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/profiles",
+      "query": "select=program_start_date&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/community_questions",
+      "query": "select=*&order=created_at.desc&limit=100"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/win_posts",
+      "query": "select=*&order=created_at.desc&limit=50"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/community_votes",
+      "query": "select=target_id%2Ctarget_type%2Cvote_type&voter_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/visitor_profiles",
+      "query": "select=community_display_name&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "GET",
+      "path": "/auth/v1/health",
+      "query": "_=1788135653581"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/user_roles",
+      "query": "select=role&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/subscriptions",
+      "query": "select=*&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/profiles",
+      "query": "select=timezone&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "POST",
+      "path": "/rest/v1/rpc/my_deletion_status",
+      "query": ""
+    },
+    {
+      "method": "POST",
+      "path": "/rest/v1/activity_events",
+      "query": ""
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/user_roles",
+      "query": "select=role&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/subscriptions",
+      "query": "select=*&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/profiles",
+      "query": "select=timezone&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/profiles",
+      "query": "select=first_name&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/blood_sugar_readings",
+      "query": "select=measured_at%2Cvalue_mgdl%2Creading_type&member_id=eq.0d000000-0000-4000-8000-000000000001&measured_at=gte.2026-06-02T00%3A20%3A53.783Z&order=measured_at.asc"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/a1c_logs",
+      "query": "select=measured_on%2Cvalue_percent&member_id=eq.0d000000-0000-4000-8000-000000000001&order=measured_on.asc"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/health_logs",
+      "query": "select=log_date%2Cweight&user_id=eq.0d000000-0000-4000-8000-000000000001&log_date=gte.2026-06-02&weight=not.is.null&order=log_date.asc"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/member_measurements",
+      "query": "select=measured_at%2Cwaist%2Chips%2Cchest%2Cthigh%2Carm%2Cneck&member_id=eq.0d000000-0000-4000-8000-000000000001&order=measured_at.desc&limit=6"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/user_streaks",
+      "query": "select=current_streak%2Clongest_streak&user_id=eq.0d000000-0000-4000-8000-000000000001"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/meal_logs",
+      "query": "select=log_date%2Cvegetables%2Cprotein%2Ccomplex_carbs&member_id=eq.0d000000-0000-4000-8000-000000000001&log_date=gte.2026-06-02"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/post_meal_walks",
+      "query": "select=log_date&member_id=eq.0d000000-0000-4000-8000-000000000001&log_date=gte.2026-06-02"
+    },
+    {
+      "method": "GET",
+      "path": "/rest/v1/mindset_reads",
+      "query": "select=log_date&member_id=eq.0d000000-0000-4000-8000-000000000001&log_date=gte.2026-06-02"
+    }
+  ],
+  "blocked": []
+}

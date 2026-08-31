@@ -42,7 +42,7 @@ const InsideMembershipSection = () => {
   return (
     <section
       id="inside-the-membership"
-      className="bg-gradient-to-b from-background to-primary/5 py-12"
+      className="scroll-mt-24 bg-gradient-to-b from-background to-primary/5 py-12"
       aria-labelledby="inside-heading"
     >
       <div className="container mx-auto px-4">
