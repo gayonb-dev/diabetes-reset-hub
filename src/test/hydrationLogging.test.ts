@@ -16,8 +16,8 @@ import { calendarDayKey } from "@/lib/calendarDay";
 
 describe("hydration labels", () => {
   it("shows only the amount logged today", () => {
-    expect(waterLoggedLabel(0)).toBe("0 oz logged today");
-    expect(waterLoggedLabel(32)).toBe("32 oz logged today");
+    expect(waterLoggedLabel(0)).toBe("0 fl oz logged today (≈ 0 mL)");
+    expect(waterLoggedLabel(32)).toBe("32 fl oz logged today (≈ 946 mL)");
     expect(waterLoggedLabel(32)).not.toMatch(/\/|%|target/i);
   });
 });

@@ -1,9 +1,7 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-
-const scrollTo = (id: string) => {
-  document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
-};
+import { goToSection } from "@/lib/landingNav";
+import { useCheckout } from "./CheckoutContext";
 
 const NAV = [
   { label: "How it works", id: "how-it-works" },
@@ -13,6 +11,9 @@ const NAV = [
 ];
 
 const SiteHeader = () => {
+  // Safe outside the landing page: without a provider this navigates to /#pricing.
+  const { openCheckout } = useCheckout();
+
   return (
     <header className="sticky top-0 z-40 bg-background/90 backdrop-blur border-b border-border/60">
       <div className="container mx-auto px-4 min-h-14 py-2 flex items-center justify-between gap-3">
@@ -21,14 +22,17 @@ const SiteHeader = () => {
         </a>
         <nav aria-label="Primary" className="flex items-center gap-1 sm:gap-3">
           {NAV.map((item) => (
-            <button
+            <a
               key={item.id}
-              type="button"
-              onClick={() => scrollTo(item.id)}
+              href={`#${item.id}`}
+              onClick={(e) => {
+                // Fall back to the plain anchor when the section is not on this page.
+                if (goToSection(item.id)) e.preventDefault();
+              }}
               className="hidden lg:inline-flex items-center min-h-[44px] px-2 text-sm text-muted-foreground hover:text-foreground"
             >
               {item.label}
-            </button>
+            </a>
           ))}
           <Link
             to="/login"
@@ -37,7 +41,7 @@ const SiteHeader = () => {
             Member login
           </Link>
           <Button
-            onClick={() => scrollTo("pricing")}
+            onClick={openCheckout}
             className="min-h-[44px] bg-primary hover:bg-primary-dark text-primary-foreground font-semibold"
           >
             Start 14 days for $27

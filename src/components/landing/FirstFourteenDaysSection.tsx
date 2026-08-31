@@ -17,7 +17,7 @@ const STEPS = [
 
 const FirstFourteenDaysSection = () => {
   return (
-    <section id="how-it-works" className="bg-background py-12" aria-labelledby="first14-heading">
+    <section id="how-it-works" className="scroll-mt-24 bg-background py-12" aria-labelledby="first14-heading">
       <div className="container mx-auto px-4 max-w-4xl">
         <ScrollReveal>
           <h2

@@ -27,7 +27,7 @@ import HabitLogging from "@/components/today/HabitLogging";
 import { useDailyHabits } from "@/hooks/useDailyHabits";
 import { useVitaQuotes } from "@/hooks/useVitaQuotes";
 import { useProgramDay } from "@/hooks/useProgramDay";
-import { getUnits, displayGlucose, displayWeight } from "@/lib/units";
+import { getUnits, displayGlucose, displayWeight, approxMl } from "@/lib/units";
 import { bloodSugarTone, classifyGlucose, GLUCOSE_STATUS_LABEL, GlucoseReadingType } from "@/lib/glucose";
 import { phaseFor, dayInPhase, PHASE_TOTAL, PROGRAM_TOTAL_DAYS } from "@/lib/phase";
 import { ProgramProgressLine } from "@/components/dashboard/ProgramProgressLine";
@@ -275,7 +275,7 @@ export default function Dashboard() {
     (s) => habits.walks[s],
   ).length;
   const habitData = {
-    water: { value: habits.waterOz, target: null, unit: "oz" },
+    water: { value: habits.waterOz, target: null, unit: "fl oz" },
     food: { value: mealsDone, target: 3, unit: "meals" },
     exercise: {
       value:
@@ -325,7 +325,7 @@ export default function Dashboard() {
     {
       label: "Water Today",
       value: habits.waterOz > 0 ? String(habits.waterOz) : null,
-      unit: habits.waterOz > 0 ? "oz logged today" : undefined,
+      unit: habits.waterOz > 0 ? `fl oz logged today (≈ ${approxMl(habits.waterOz)} mL)` : undefined,
       sub: habits.waterStreak > 1 ? `💧 ${habits.waterStreak}-day streak` : undefined,
       emptyHint: "Tap to log",
       tone: "water" as const,

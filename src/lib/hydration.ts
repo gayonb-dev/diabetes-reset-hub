@@ -10,9 +10,17 @@
  * restriction or clinician instruction follows that advice instead.
  */
 
-/** Member-facing label for the amount logged so far today. */
+import { approxMl } from "@/lib/units";
+
+/**
+ * Member-facing label for the amount logged so far today.
+ *
+ * The unit is spelled "fl oz" (US fluid ounces, the canonical stored unit) and
+ * the approximate millilitre equivalent is shown so the amount is unambiguous.
+ * Still no target: this is a plain statement of what was logged.
+ */
 export function waterLoggedLabel(oz: number): string {
-  return `${oz} oz logged today`;
+  return `${oz} fl oz logged today (≈ ${approxMl(oz)} mL)`;
 }
 
 /**

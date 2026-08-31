@@ -15,7 +15,7 @@ type ChecklistItem = {
 
 const ITEMS: ChecklistItem[] = [
   { slug: "measuring_tape", label: "Measuring tape", hint: "For body measurements on Day 30.", unlockDay: 1, unlockLabel: "Day 1", searchUrl: "https://www.google.com/search?q=cloth+body+measuring+tape" },
-  { slug: "water_bottle", label: "Large water bottle", hint: "Sized to your daily target — makes tracking effortless.", unlockDay: 1, unlockLabel: "Day 1", searchUrl: "https://www.google.com/search?q=large+water+bottle+32oz" },
+  { slug: "water_bottle", label: "Large water bottle", hint: "A bottle you can refill makes logging what you drink easier.", unlockDay: 1, unlockLabel: "Day 1", searchUrl: "https://www.google.com/search?q=large+water+bottle+32oz" },
   { slug: "walking_shoes", label: "Comfortable walking shoes", hint: "You'll use these three times a day.", unlockDay: 15, unlockLabel: "Day 15", searchUrl: "https://www.google.com/search?q=comfortable+walking+shoes" },
   { slug: "water_bottle_weights", label: "Two filled water bottles", hint: "Used as light weights when structured workouts begin.", unlockDay: 15, unlockLabel: "Day 15" },
   { slug: "yoga_mat", label: "Yoga mat (optional)", hint: "For floor exercises.", unlockDay: 15, unlockLabel: "Day 15", searchUrl: "https://www.google.com/search?q=yoga+mat" },

@@ -1,9 +1,11 @@
-import { useState } from "react";
+import { useEffect } from "react";
 import { Helmet } from "react-helmet-async";
 import SiteHeader from "@/components/landing/SiteHeader";
 import HeroSection from "@/components/landing/HeroSection";
 import SimplerStepSection from "@/components/landing/SimplerStepSection";
 import InsideMembershipSection from "@/components/landing/InsideMembershipSection";
+import ProductTourSection from "@/components/landing/ProductTourSection";
+import DayOneSection from "@/components/landing/DayOneSection";
 import FirstFourteenDaysSection from "@/components/landing/FirstFourteenDaysSection";
 import AudienceFitSection from "@/components/landing/AudienceFitSection";
 import FounderSection from "@/components/landing/FounderSection";
@@ -14,15 +16,27 @@ import Footer from "@/components/landing/Footer";
 import StickyBottomCTA from "@/components/landing/StickyBottomCTA";
 import PaymentModal from "@/components/landing/PaymentModal";
 import ChatWidget from "@/components/chat/ChatWidget";
+import { CheckoutProvider, useCheckout } from "@/components/landing/CheckoutContext";
+import { syncSectionFromHash } from "@/lib/landingNav";
 import { usePaidMemberRedirect } from "@/hooks/usePaidMemberRedirect";
 
 const TITLE = "Diabetes Reset Method | Daily Type 2 Diabetes Support";
 const DESCRIPTION =
   "A self-guided membership with daily actions, meal tools, progress tracking, educational support, and printable reports. $27 for the first 14 days, then $67/month until canceled.";
 
-const Index = () => {
-  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
-  usePaidMemberRedirect("/app");
+const LandingBody = () => {
+  const { isOpen, closeCheckout } = useCheckout();
+
+  // Direct hash entry, reload and browser back/forward all land on the section.
+  useEffect(() => {
+    const sync = () => {
+      // Sections mount with content, so defer one frame before measuring.
+      requestAnimationFrame(() => syncSectionFromHash());
+    };
+    sync();
+    window.addEventListener("hashchange", sync);
+    return () => window.removeEventListener("hashchange", sync);
+  }, []);
 
   return (
     <main className="min-h-dvh pb-28 md:pb-0">
@@ -70,21 +84,32 @@ const Index = () => {
         <HeroSection />
         <SimplerStepSection />
         <InsideMembershipSection />
+        <ProductTourSection />
+        <DayOneSection />
         <FirstFourteenDaysSection />
         <AudienceFitSection />
         <FounderSection />
-        <PricingSection onOpenPayment={() => setIsPaymentModalOpen(true)} />
+        <PricingSection />
         <FAQSection />
-        <FinalCTASection onOpenPayment={() => setIsPaymentModalOpen(true)} />
+        <FinalCTASection />
       </div>
       <Footer />
 
       <StickyBottomCTA />
 
-      <PaymentModal isOpen={isPaymentModalOpen} onClose={() => setIsPaymentModalOpen(false)} />
+      <PaymentModal isOpen={isOpen} onClose={closeCheckout} />
 
       <ChatWidget />
     </main>
+  );
+};
+
+const Index = () => {
+  usePaidMemberRedirect("/app");
+  return (
+    <CheckoutProvider>
+      <LandingBody />
+    </CheckoutProvider>
   );
 };
 

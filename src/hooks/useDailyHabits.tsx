@@ -51,7 +51,7 @@ export interface DailyHabits {
   walks: Record<WalkLog["slot"], boolean>;
   mindsetRead: boolean;
   mood: number | null;
-  addWater: (oz: number) => Promise<void>;
+  addWater: (oz: number) => Promise<boolean>;
   saveMeal: (mt: MealLog["meal_type"], patch: Partial<MealLog>) => Promise<void>;
   setSnack: (slot: SnackLog["slot"], patch: Partial<SnackLog>) => Promise<void>;
   toggleWalk: (slot: WalkLog["slot"]) => Promise<void>;
@@ -176,20 +176,31 @@ export function useDailyHabits(): DailyHabits {
     return () => window.removeEventListener(HABITS_CHANGED_EVENT, handler);
   }, [refresh]);
 
+  /**
+   * Logs whole US fluid ounces (the canonical storage unit of
+   * public.water_logs.ounces, an integer column). Returns true only once the
+   * row is persisted, so callers never show "Saved" for a failed write.
+   */
   const addWater = useCallback(
-    async (oz: number) => {
-      if (!user) return;
-      // Optimistic — the ring moves immediately, then reconciles.
+    async (oz: number): Promise<boolean> => {
+      if (!user) return false;
+      if (!Number.isFinite(oz) || oz <= 0) return false;
+      // Optimistic — the amount moves immediately, then reconciles.
       setWaterOz((prev) => prev + oz);
       const { error } = await supabase
         .from("water_logs")
         .insert({ member_id: user.id, ounces: oz, log_date: todayISO() });
-      if (error) setWaterOz((prev) => Math.max(0, prev - oz));
+      if (error) {
+        setWaterOz((prev) => Math.max(0, prev - oz));
+        return false;
+      }
       await refresh();
       emitChanged();
+      return true;
     },
     [user, refresh],
   );
+
 
   // Writes only the changed fields, applies the local value immediately and
   // reconciles once the newest response settles.
