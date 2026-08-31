@@ -35,6 +35,71 @@ import { useProgramDay } from "@/hooks/useProgramDay";
 import { useGamification } from "@/hooks/useGamification";
 
 
+/** Content types absorbed from the retired /app/library route. */
+const RESOURCE_TYPES = [
+  "recipe",
+  "movement",
+  "article",
+  "plate_method",
+  "mini_challenge",
+  "reset_day",
+] as const;
+
+const RESOURCE_GROUPS: { key: string; title: string; types: string[]; hint: JSX.Element }[] = [
+  {
+    key: "recipes",
+    title: "Recipes and meal tools",
+    types: ["recipe", "plate_method"],
+    hint: (
+      <>
+        Your weekly plan, swaps and shopping list live in{" "}
+        <Link to="/app/meals" className="text-primary underline">
+          Meals
+        </Link>
+        .
+      </>
+    ),
+  },
+  {
+    key: "movement",
+    title: "Movement",
+    types: ["movement"],
+    hint: (
+      <>
+        Guided sessions live in{" "}
+        <Link to="/app/workouts" className="text-primary underline">
+          Workouts
+        </Link>{" "}
+        and unlock at Day 29.
+      </>
+    ),
+  },
+  {
+    key: "articles",
+    title: "Articles and resources",
+    types: ["article", "mini_challenge", "reset_day"],
+    hint: (
+      <>
+        Have a question about any of these? Use{" "}
+        <Link to="/app/ask" className="text-primary underline">
+          Ask
+        </Link>
+        .
+      </>
+    ),
+  },
+];
+
+type ResourceItem = {
+  id: string;
+  type: string;
+  slug: string;
+  title: string;
+  summary: string | null;
+  day_unlock: number | null;
+  metadata: Record<string, unknown> | null;
+};
+
 type BlogPost = {
   id: string;
   title: string;
@@ -52,6 +117,7 @@ export default function Learn() {
   const [activeWeek, setActiveWeek] = useState<MindsetWeek | null>(null);
   const [guides, setGuides] = useState<LearnGuide[]>(DEFAULT_LEARN_GUIDES);
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
+  const [resources, setResources] = useState<ResourceItem[]>([]);
   const [tab, setTab] = useState(requestedGuide ? "learn" : "mindset");
   const [openGuide, setOpenGuide] = useState<string>(requestedGuide ?? "");
   const headingRefs = useRef<Record<string, HTMLSpanElement | null>>({});
@@ -77,9 +143,9 @@ export default function Learn() {
     (async () => {
       const { data } = await supabase
         .from("content_items")
-        .select("id,type,slug,title,summary,body,metadata,created_at")
+        .select("id,type,slug,title,summary,body,metadata,created_at,day_unlock")
         .eq("is_active", true)
-        .in("type", ["guide", "blog"])
+        .in("type", RESOURCE_TYPES.concat(["guide", "blog"]))
         .order("sort_order");
       if (cancelled || !data) return;
 
@@ -97,6 +163,12 @@ export default function Learn() {
 
       const blogs = data.filter((d) => d.type === "blog") as BlogPost[];
       setBlogPosts(blogs);
+
+      // Library consolidation: the recipe / movement / article material that
+      // used to live on the separate Library route is surfaced here instead.
+      setResources(
+        data.filter((d) => (RESOURCE_TYPES as readonly string[]).includes(d.type)) as ResourceItem[],
+      );
     })();
     return () => {
       cancelled = true;
@@ -135,6 +207,9 @@ export default function Learn() {
         <TabsList className="bg-muted">
           <TabsTrigger value="mindset" className="min-h-11">Mindset</TabsTrigger>
           <TabsTrigger value="learn" className="min-h-11">Guides</TabsTrigger>
+          {resources.length > 0 && (
+            <TabsTrigger value="resources" className="min-h-11">Resources</TabsTrigger>
+          )}
           {blogPosts.length > 0 && <TabsTrigger value="blog" className="min-h-11">Blog</TabsTrigger>}
 
         </TabsList>
