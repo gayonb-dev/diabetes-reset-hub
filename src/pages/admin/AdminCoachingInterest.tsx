@@ -15,6 +15,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import AdminListSkeleton from "@/components/admin/AdminListSkeleton";
+import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
 interface Row {
@@ -28,10 +29,57 @@ interface Row {
 
 const STATUSES = ["interested", "withdrawn", "contacted", "closed"];
 
+/**
+ * The separate "Coaching Waitlist" admin page has been consolidated here.
+ * The historical `coaching_waitlist` rows are no longer created by any live
+ * surface (Settings writes to `coaching_interest`), so they are shown only on
+ * request and still through the audited PHI read — `why_now` / `phone` are
+ * PHI-adjacent.
+ */
+const LEGACY_STATUSES = ["pending", "contacted", "enrolled", "declined"];
+
+interface LegacyRow {
+  id: string;
+  full_name: string;
+  email: string;
+  phone: string | null;
+  why_now: string | null;
+  status: string;
+  created_at: string;
+}
+
 export default function AdminCoachingInterest() {
   const [rows, setRows] = useState<Row[]>([]);
   const [state, setState] = useState<"loading" | "ready" | "error">("loading");
   const [filter, setFilter] = useState<string>("all");
+  const [legacy, setLegacy] = useState<LegacyRow[] | null>(null);
+  const [legacyLoading, setLegacyLoading] = useState(false);
+
+  const loadLegacy = async () => {
+    setLegacyLoading(true);
+    const { data, error } = await supabase.functions.invoke("read-phi-data", {
+      body: {
+        table: "coaching_waitlist",
+        reason: "Admin coaching review (historical waitlist)",
+        order_by: { column: "created_at", ascending: false },
+      },
+    });
+    setLegacyLoading(false);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    setLegacy(((data?.rows as LegacyRow[]) || []));
+  };
+
+  const updateLegacyStatus = async (id: string, status: string) => {
+    const { error } = await supabase.from("coaching_waitlist").update({ status }).eq("id", id);
+    if (error) toast.error(error.message);
+    else {
+      toast.success("Updated");
+      void loadLegacy();
+    }
+  };
 
   const load = async () => {
     setState("loading");
@@ -130,4 +178,3 @@ export default function AdminCoachingInterest() {
       ))}
     </div>
   );
-}
