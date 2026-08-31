@@ -126,17 +126,19 @@ async def main():
         try:
             await p.get_by_role("button", name="Water").first.click()
             await p.wait_for_timeout(600)
-            ml = p.get_by_role("button", name="mL")
-            if await ml.count():
-                await ml.first.click()
-                await p.wait_for_timeout(300)
+            ml = p.get_by_role("button", name="mL", exact=True)
+            R["ml_toggle_found"] = await ml.count()
+            await ml.first.click()
+            await p.wait_for_timeout(300)
+            R["ml_toggle_pressed"] = await ml.first.get_attribute("aria-pressed")
             field = p.get_by_role("spinbutton").first
             await field.fill("250")
             await p.wait_for_timeout(400)
             body = await p.inner_text("body")
-            R["ml_rounding_notice"] = "8 fl oz" in body
+            R["ml_rounding_notice"] = "Saves 8 fl oz" in body
             await p.screenshot(path=str(SHOTS / "water-ml-250.png"))
-            await field.fill("10")   # rounds to 0 fl oz -> must be refused
+            await ml.first.click()
+            await field.fill("10")   # 10 mL rounds to 0 fl oz -> must be refused
             await p.get_by_role("button", name="Add", exact=True).first.click()
             await p.wait_for_timeout(600)
             body = await p.inner_text("body")

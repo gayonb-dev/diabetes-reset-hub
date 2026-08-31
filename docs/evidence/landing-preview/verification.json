@@ -31,8 +31,10 @@
   "small_targets": 0,
   "water_shows_fl_oz": true,
   "no_target_language": true,
+  "ml_toggle_found": 1,
+  "ml_toggle_pressed": "true",
   "ml_rounding_notice": true,
-  "zero_rounding_blocked": false,
+  "zero_rounding_blocked": true,
   "mindset_20s_visible": null,
   "external_hosts_blocked": [],
   "edge_function_calls_intercepted": [
