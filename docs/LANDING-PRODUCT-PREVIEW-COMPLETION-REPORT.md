@@ -136,3 +136,38 @@ None. The water precision question was resolved without any schema change, and n
 - No paid service, tracking pixel, session recording, new analytics collection or AI-credit-dependent feature added.
 - Feature flags, disabled capabilities (including fasting scheduling), Batch 1 and Batch 2 corrections, and PWA scope are untouched.
 - No conversion-rate improvement is claimed; there is no conversion evidence.
+
+---
+
+## Consolidated correction closeout (final unpublished pass)
+
+Project verified: `wqennhjdojjqmmqzjhti` / https://diabetesresetmethod.com. Nothing was
+published, deployed, migrated or mutated externally in this pass.
+
+### Changes in this pass
+- `src/components/dashboard/HabitRing.tsx` — water indicator is a neutral circular
+  frame (same footprint/stroke as other rings) with a brief save highlight on an
+  increase, suppressed under `prefers-reduced-motion`. No target, arc or percentage.
+- `src/pages/app/AppLayout.tsx` — redundant "Library" sidebar entry removed
+  (Learn → Resources is the single destination); unused icon import dropped.
+- `tools/landing/fixtures.py` — added synthetic `content_items` (recipes, movement,
+  plate method, article) and completed `workout_completion_receipts` so the real
+  Learn/Resources and Workouts routes render populated, clearly fictional data.
+- `tools/landing/capture_previews.py` — captures 8 screens including
+  `/app/meals?tab=shopping` with "By meal" actually selected and Learn → Guides.
+- `public/previews/*.jpg`, `public/previews/index.json` — regenerated from the final
+  implementation; intermediate PNG masters removed after optimisation.
+
+### Evidence (isolated local/preview environment, not live backend)
+- Capture run: 8/8 screens captured, `blocked hosts: []`.
+- Landing verification harness (`tools/landing/verify.py`): 5 sections present on
+  desktop and mobile, 6 shared checkout controls, keyboard + pointer checkout open
+  and close, 8 tour items all with alt text, lightbox keyboard open, Escape close and
+  focus return, 0 sub-44px targets, water shows "fl oz logged" with no target
+  language, mL toggle state exact, rounding notice shown, zero-rounding submission
+  refused, Mindset label "I read this (20s)" counting from 20, external hosts blocked
+  `[]`, only `/functions/v1/gamify-action` intercepted.
+- Gates: Vitest 41 files / 461 tests passed; TypeScript clean; ESLint on changed files
+  0 errors (1 pre-existing exhaustive-deps warning in `AppLayout.tsx`); production
+  build succeeded, entry bundle 442.65 kB / 138.41 kB gzip.
+- Asset SHA-256 values are recorded in `public/previews/index.json`.
