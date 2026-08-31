@@ -11,18 +11,21 @@ One continuous implementation on the unpublished client. No publication, no prod
 
 ## 2. Readable typography across the signed-in app and Admin
 
-- Reference: the readable sans styling already used in Meals → Shopping List / Off-Plan Meal (the Inter stack). The decorative `font-heading` (Fraunces) stack is the source of the serif titles.
-- Introduce a functional-app heading treatment that resolves to the readable sans family, and apply it at the shared layer first: app layout, cards, dialogs, tables, tabs, buttons, forms, notifications and report components.
+- Reference: the readable sans styling already used in Meals → Shopping List / Off-Plan Meal. Confirm the actual resolved family/weights from rendered computed styles after fonts load — not from source assumptions — before applying anything.
+- Keep the public `font-heading` definition and public-facing shared components unchanged. Introduce a member/Admin-scoped heading treatment and apply it at the app shared layer: app layout, cards, tables, tabs, buttons, forms, notifications, printable report, and dialogs rendered outside the app layout (portals) via an app-scoped wrapper class rather than a global dialog change.
+- Explicitly do not alter public checkout/payment dialogs or landing components while fixing shared primitives; where a primitive is shared, scope the change so public usage is untouched and verify both surfaces.
 - Then remove page-level `font-heading` overrides across Today, all Meals tabs (including Snacks), Progress and printable report, Ask/Community, Learn and guide details, Workouts, Profile, Billing, Settings, Support, onboarding and every Admin page.
-- Hierarchy preserved by size/weight/spacing; no blanket global override that would affect icons, controls or print. Public landing typography and brand artwork unchanged.
+- Hierarchy preserved by size/weight/spacing; no blanket global override affecting icons, controls or print. Check mobile wrapping, browser zoom (up to 200%) and bold/heavy weights.
 - Record the exact resolved family/weights and any intentional exceptions in the report.
 
 ## 3. Snack copy provenance and conformance
 
 - Provenance established: the claim strings ("near-zero glucose impact", "cinnamon supports glucose control", "prevents spikes") live in stored `snack_library` rows seeded by an old migration; the fixed timing sentence is hard-coded in `src/components/meals/SnackLibrary.tsx` and repeated in Edge Function prompts.
 - Client-side fixes now: replace the hard-coded intro with the approved sentence — "Snacks are optional. If a snack fits your care plan, choose a time and food that work with your hunger, medicines, activity and daily schedule." — and remove the obsolete snack-timing banner nudge that tells members to regenerate a plan.
-- Stored rows are production content: prepare the exact neutral replacement wording as a reviewed, unapplied SQL file plus the affected record identifiers, and document it as a BLOCKED production dependency under section 0. Food descriptions, ingredients and quantities retained; no new medical claims.
-- Edge Function prompt wording corrected in source only, not deployed.
+- Stored rows are production content. Prepare, but do not apply, a reviewed SQL file kept outside any automatically applied migration directory (`supabase/migrations-pending/`). It must contain: exact record IDs, expected-current-copy guards, expected affected-row counts, explicit transaction with abort-on-mismatch, preserved unrelated fields and member plans, and rollback wording.
+- Record the exact Edge Functions whose prompt wording is corrected in source and still awaits deployment. The report must clearly separate local source fixes from unchanged production rows and undeployed functions; the snack issue stays an outstanding release dependency until separately authorized, applied and verified.
+- Verify snack-copy conformance at its actual rendering source (component + stored row values), not by screenshot substitution.
+
 
 ## 4. Landing check before any landing code change
 
