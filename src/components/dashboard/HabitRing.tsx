@@ -101,18 +101,27 @@ export function HabitRing({
         style={{
           width: size,
           height: size,
-          boxShadow: bloom ? `0 0 24px 4px ${color}` : "none",
+          boxShadow: bloom || justSaved ? `0 0 16px 2px ${color}` : "none",
           transition: "box-shadow 0.4s ease-out",
         }}
         animate={bloomControls}
       >
         <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
           {logOnly ? (
-            /* Log-only habits (water) have no target, so no progress arc and no
-               empty track that could read as an unfinished goal — a neutral
-               filled badge in the same footprint instead. */
-            <circle cx={size / 2} cy={size / 2} r={r} fill={color} fillOpacity={0.14} />
+            /* Log-only habits (water) keep the same footprint and stroke as the
+               other indicators, but the outer circle is only a visual frame:
+               there is no target, no percentage and no filled progress arc. */
+            <circle
+              cx={size / 2}
+              cy={size / 2}
+              r={r}
+              fill="none"
+              stroke={justSaved ? color : "hsl(var(--muted))"}
+              strokeWidth={stroke}
+              style={{ transition: "stroke 0.4s ease-out" }}
+            />
           ) : (
+
             <>
               <circle
                 cx={size / 2}
