@@ -410,7 +410,10 @@ export default function Learn() {
           })}
         </TabsContent>
 
+        {/* BLOG TAB — only when posts exist */}
+        {blogPosts.length > 0 && (
         <TabsContent value="blog" className="mt-5 space-y-3">
+
           <p className="text-sm text-secondary-fg">
             Curated reads from trusted sources.
           </p>
