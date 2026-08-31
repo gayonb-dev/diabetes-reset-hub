@@ -218,10 +218,16 @@ async def main():
         )
 
         global _start_override
-        for name, route_path, _variant in SHOTS:
+        for name, route_path, action in SHOTS:
             _start_override = PROGRAM_START_OVERRIDE.get(name)
             await page.goto(BASE + route_path, wait_until="domcontentloaded")
             await page.wait_for_timeout(2500)
+            if action:
+                try:
+                    await page.get_by_role("tab", name=action, exact=True).click(timeout=3000)
+                except Exception:
+                    await page.get_by_text(action, exact=True).first.click(timeout=3000)
+                await page.wait_for_timeout(1200)
             full = OUT / ("%s.png" % name)
             await page.screenshot(path=str(full))
             print("captured", name, page.url)
