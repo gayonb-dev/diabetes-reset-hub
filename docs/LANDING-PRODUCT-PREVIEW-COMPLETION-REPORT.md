@@ -229,3 +229,67 @@ unchanged.
   `final-hero-mobile-390x844.png`, `final-product-tour-desktop.png`.
 
 Nothing published.
+
+---
+
+## Final App Typography, Water Outline, Snack Copy and PWA (2026-08-31)
+
+Project `wqennhjdojjqmmqzjhti` / `https://diabetesresetmethod.com` confirmed. Nothing
+published, no migrations applied, no Edge Functions deployed, no real payments,
+emails or external AI calls.
+
+### Files changed
+- `src/components/dashboard/HabitRing.tsx` — water outline is now persistent, derived
+  from the saved amount for the member's calendar day (`target === null && value > 0`),
+  plus a visible "Water logged today" line. No target, no fill arc, no extra award;
+  the existing unit conversion and once-daily point remain untouched.
+- `src/hooks/useAppSurface.ts` (new) — sets `data-app-surface="member" | "admin"` on
+  `<html>` while a signed-in layout is mounted, and removes it on unmount.
+- `src/pages/app/AppLayout.tsx`, `src/pages/admin/AdminLayout.tsx` — call the hook.
+- `src/index.css` — `html[data-app-surface]` switches headings and `.font-heading` to
+  the readable Inter stack. Because the marker is on the document root, dialogs and
+  printable reports portaled to `<body>` are covered too. The public `.font-heading`
+  definition is unchanged, so landing pages and public checkout dialogs keep Fraunces.
+- `src/components/meals/SnackLibrary.tsx` — approved general snack intro replaces the
+  "3–4 hours after a main meal" guidance.
+- `src/pages/app/Meals.tsx` — the stale-plan snack-timing banner (and its now-unused
+  `staleTiming` / `MEAL_TIMING_VERSION` usage) is removed; the header explains swaps
+  and where to regenerate a plan.
+- `supabase/functions/ask-vita/index.ts`, `supabase/functions/generate-meal-plan/index.ts`
+  — legacy snack timing prompt wording corrected **in source only**.
+- `supabase/migrations-pending/2026-08-31_snack_library_neutral_notes.sql` (new,
+  **not applied**) — 9 exact `snack_library` IDs, expected-current-copy guards,
+  expected affected rows = 9, single transaction with an aborting assertion, and
+  rollback wording. Only `nutritional_note` changes; the Edamame row is deliberately
+  untouched. No member plans or unrelated fields are affected.
+- `index.html`, `public/manifest.webmanifest` (new), `public/icons/*` (new),
+  `src/components/settings/InstallAppCard.tsx` (new), `src/pages/app/Settings.tsx` —
+  online-first Add to Home Screen: manifest, icons, Apple meta, and a Settings card
+  with the native prompt where offered, Apple instructions including "Open as Web
+  App", and an installed-state message. **No service worker and no offline cache**,
+  so no member/health data is cached for offline use.
+
+### Verification
+- Rendered-style check: landing `h1` computes to `Fraunces, Inter, Georgia, serif`
+  and `data-app-surface` is absent on public pages — public typography untouched.
+- Manifest served 200 with `short_name: "Reset Method"`; `/icons/icon-192.png` 200;
+  `<link rel="manifest">` present.
+- Gates: Vitest 41 files / 461 tests passed; TypeScript clean; ESLint on the eight
+  touched files: 0 errors, 1 pre-existing warning in `AppLayout.tsx`; production build
+  succeeded, entry bundle 441.29 kB / 138.00 kB gzip.
+
+### Outstanding items (precise status)
+1. **Production snack rows — NOT APPLIED.** The 9 `snack_library` claim strings are
+   still live in production. Release dependency until the pending SQL is separately
+   authorised, applied and verified.
+2. **`ask-vita` and `generate-meal-plan` — NOT DEPLOYED.** Prompt wording corrected in
+   source only; the deployed functions still carry the legacy snack timing text.
+3. **Deno type-check of the changed functions — BLOCKED.** `deno check` cannot resolve
+   `npm:@supabase/supabase-js@2.45.4` in this sandbox; `test_edge_functions` reports
+   no test modules for either function. Not run, not passed.
+4. **Signed-in browser verification — NOT TESTED.** `LOVABLE_BROWSER_AUTH_STATUS` is
+   `signed_out`, so member typography at mobile/zoom/bold, the persistent water
+   outline in situ, snack copy at its rendering source, the save-failure path, the
+   checkout return trip and sign-out/reopen could not be exercised in the browser this
+   pass. Covered by unit tests and source review only.
+5. **Real device installation — NOT TESTED.** No physical device available.

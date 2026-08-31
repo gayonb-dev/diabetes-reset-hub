@@ -36,12 +36,15 @@ export function HabitRing({
 }: HabitRingProps) {
   const { label, color, Icon } = META[habit];
   const logOnly = target === null;
+  /** Derived from the persisted amount for the current member calendar day. */
+  const loggedToday = logOnly && value > 0;
   const pct = !logOnly && target > 0 ? Math.min(value / target, 1) : 0;
   const stroke = size >= 112 ? 10 : size >= 96 ? 8 : 6;
   const r = (size - stroke) / 2;
   const c = 2 * Math.PI * r;
   const offset = c * (1 - pct);
   const ariaPct = Math.round(pct * 100);
+
 
   const wasCompleteRef = useRef(pct >= 1);
   const bloomControls = useAnimationControls();
@@ -96,9 +99,10 @@ export function HabitRing({
       role="img"
       aria-label={
         logOnly
-          ? `${label}: ${value}${unit ? " " + unit : ""} logged today. No target.`
+          ? `${label}: ${value}${unit ? " " + unit : ""} logged today. No target.${loggedToday ? " Water logged today." : ""}`
           : `${label} habit ring: ${value} of ${target}${unit ? " " + unit : ""} completed, ${ariaPct} percent.`
       }
+
     >
       <motion.div
         className="relative rounded-full"
@@ -114,17 +118,20 @@ export function HabitRing({
           {logOnly ? (
             /* Log-only habits (water) keep the same footprint and stroke as the
                other indicators, but the outer circle is only a visual frame:
-               there is no target, no percentage and no filled progress arc. */
+               there is no target, no percentage and no filled progress arc.
+               A persisted positive amount for today keeps the frame brand blue
+               ("Water logged today"); it is never driven by transient state. */
             <circle
               cx={size / 2}
               cy={size / 2}
               r={r}
               fill="none"
-              stroke={justSaved ? color : "hsl(var(--muted))"}
+              stroke={loggedToday ? color : "hsl(var(--muted))"}
               strokeWidth={stroke}
               style={{ transition: "stroke 0.4s ease-out" }}
             />
           ) : (
+
 
             <>
               <circle
@@ -187,6 +194,13 @@ export function HabitRing({
           </>
         )}
       </span>
+      {loggedToday && (
+        <span className="text-[11px] font-medium" style={{ color }}>
+          Water logged today
+        </span>
+      )}
+
+
     </div>
   );
 }

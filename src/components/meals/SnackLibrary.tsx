@@ -66,8 +66,10 @@ export function SnackLibrary({ dayNumber }: { dayNumber: number }) {
   return (
     <div className="space-y-3">
       <p className="text-xs text-muted-foreground">
-        Snacks work best 3–4 hours after a main meal, and are mainly for bridging gaps longer than 5 hours.
+        Snacks are optional. If a snack fits your care plan, choose a time and food that work with
+        your hunger, medicines, activity and daily schedule.
       </p>
+
       <div className="grid lg:grid-cols-2 gap-3">
         {snacks.map((s) => {
           const locked = dayNumber < s.unlock_day;

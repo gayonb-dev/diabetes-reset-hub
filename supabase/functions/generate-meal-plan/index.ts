@@ -119,7 +119,7 @@ Do not set calorie, carbohydrate, sodium, or glycemic-index requirements for the
 ---
 
 SNACK TIMING — INCLUDE IN INSTRUCTIONS
-Snacks work best 3–4 hours after a main meal, and are mainly for bridging gaps longer than 5 hours.
+Snacks are optional. If a snack fits the member's care plan, choose a time and food that work with their hunger, medicines, activity and daily schedule.
 Each snack must be eaten at least 1.5 hours before the next main meal.
 This member's computed schedule for the day is:
 {{SCHEDULE}}
@@ -260,7 +260,7 @@ Meal 2 (final meal before the fast):
 ---
 
 IF SNACK TIMING
-Snacks work best 3–4 hours after a main meal, and are mainly for bridging gaps longer than 5 hours.
+Snacks are optional. If a snack fits the member's care plan, choose a time and food that work with their hunger, medicines, activity and daily schedule.
 Meal 2: at least 1.5 hours after any snack that precedes it.
 Snack 2 must end at least 2 hours before the fasting window begins.
 Never schedule Snack 2 within 2 hours of the end of the eating window.
