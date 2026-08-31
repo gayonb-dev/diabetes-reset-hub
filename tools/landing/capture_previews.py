@@ -54,14 +54,18 @@ PROGRAM_START_OVERRIDE = {"workouts": 40}
 _start_override = None
 
 SHOTS = [
-    ("today", "/app", "dashboard"),
-    ("meals", "/app/meals", "meals"),
-    ("progress", "/app/progress", "progress"),
-    ("workouts", "/app/workouts", "workouts"),
-    ("learn", "/app/learn", "learn"),
-    ("ask", "/app/ask", "ask"),
-    ("report", "/app/progress/report", "report"),
+    ("today", "/app", None),
+    ("meals", "/app/meals", None),
+    # A tab name is not proof of the feature behind it: the shopping list is
+    # captured with "By meal" actually selected.
+    ("meals-shopping", "/app/meals?tab=shopping", "By meal"),
+    ("progress", "/app/progress", None),
+    ("workouts", "/app/workouts", None),
+    ("learn", "/app/learn", "Guides"),
+    ("ask", "/app/ask", None),
+    ("report", "/app/progress/report", None),
 ]
+
 
 
 DATE_FIELDS = {"log_date", "measured_on", "reading_date"}
