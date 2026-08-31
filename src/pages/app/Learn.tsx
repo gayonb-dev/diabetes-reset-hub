@@ -148,7 +148,7 @@ export default function Learn() {
         .from("content_items")
         .select("id,type,slug,title,summary,body,metadata,created_at,day_unlock")
         .eq("is_active", true)
-        .in("type", RESOURCE_TYPES.concat(["guide", "blog"]))
+        .in("type", [...RESOURCE_TYPES, "guide", "blog"] as string[])
         .order("sort_order");
       if (cancelled || !data) return;
 
