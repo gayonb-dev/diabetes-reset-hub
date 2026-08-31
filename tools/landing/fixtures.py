@@ -502,7 +502,32 @@ TABLES = {
         }
     ],
     "workout_sessions": [],
-    "workout_completion_receipts": [],
+    # Synthetic completed-workout history for the illustrative Day-40 member,
+    # so the Workouts preview demonstrates the real "Recent workouts" list.
+    "workout_completion_receipts": [
+        {
+            "id": "aaaa0001-0000-4000-8000-000000000001",
+            "user_id": USER_ID,
+            "workout_name": "Standing Strength A",
+            "track": "A",
+            "completed_at": d(2) + "T09:12:00Z",
+        },
+        {
+            "id": "aaaa0001-0000-4000-8000-000000000002",
+            "user_id": USER_ID,
+            "workout_name": "Low-Impact Cardio",
+            "track": "B",
+            "completed_at": d(4) + "T08:40:00Z",
+        },
+        {
+            "id": "aaaa0001-0000-4000-8000-000000000003",
+            "user_id": USER_ID,
+            "workout_name": "Chair Mobility",
+            "track": "A",
+            "completed_at": d(6) + "T18:05:00Z",
+        },
+    ],
+
     "meal_plans": [
         {
             "id": "eeeeeee1-0000-4000-8000-000000000001",

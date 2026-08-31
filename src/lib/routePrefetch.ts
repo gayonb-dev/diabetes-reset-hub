@@ -21,7 +21,6 @@ const LOADERS: Record<string, Loader> = {
   "/app/progress": () => import("@/pages/app/Progress"),
   "/app/workouts": () => import("@/pages/app/WorkoutLibrary"),
   "/app/learn": () => import("@/pages/app/Learn"),
-  "/app/library": () => import("@/pages/app/Library"),
   "/app/ask": () => import("@/pages/app/Ask"),
   "/app/profile": () => import("@/pages/app/Profile"),
   "/app/settings": () => import("@/pages/app/Settings"),

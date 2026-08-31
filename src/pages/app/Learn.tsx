@@ -35,6 +35,71 @@ import { useProgramDay } from "@/hooks/useProgramDay";
 import { useGamification } from "@/hooks/useGamification";
 
 
+/** Content types absorbed from the retired /app/library route. */
+const RESOURCE_TYPES = [
+  "recipe",
+  "movement",
+  "article",
+  "plate_method",
+  "mini_challenge",
+  "reset_day",
+] as const;
+
+const RESOURCE_GROUPS: { key: string; title: string; types: string[]; hint: JSX.Element }[] = [
+  {
+    key: "recipes",
+    title: "Recipes and meal tools",
+    types: ["recipe", "plate_method"],
+    hint: (
+      <>
+        Your weekly plan, swaps and shopping list live in{" "}
+        <Link to="/app/meals" className="text-primary underline">
+          Meals
+        </Link>
+        .
+      </>
+    ),
+  },
+  {
+    key: "movement",
+    title: "Movement",
+    types: ["movement"],
+    hint: (
+      <>
+        Guided sessions live in{" "}
+        <Link to="/app/workouts" className="text-primary underline">
+          Workouts
+        </Link>{" "}
+        and unlock at Day 29.
+      </>
+    ),
+  },
+  {
+    key: "articles",
+    title: "Articles and resources",
+    types: ["article", "mini_challenge", "reset_day"],
+    hint: (
+      <>
+        Have a question about any of these? Use{" "}
+        <Link to="/app/ask" className="text-primary underline">
+          Ask
+        </Link>
+        .
+      </>
+    ),
+  },
+];
+
+type ResourceItem = {
+  id: string;
+  type: string;
+  slug: string;
+  title: string;
+  summary: string | null;
+  day_unlock: number | null;
+  metadata: Record<string, unknown> | null;
+};
+
 type BlogPost = {
   id: string;
   title: string;
@@ -52,7 +117,11 @@ export default function Learn() {
   const [activeWeek, setActiveWeek] = useState<MindsetWeek | null>(null);
   const [guides, setGuides] = useState<LearnGuide[]>(DEFAULT_LEARN_GUIDES);
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
-  const [tab, setTab] = useState(requestedGuide ? "learn" : "mindset");
+  const [resources, setResources] = useState<ResourceItem[]>([]);
+  const requestedTab = searchParams.get("tab");
+  const [tab, setTab] = useState(
+    requestedTab || (requestedGuide ? "learn" : "mindset"),
+  );
   const [openGuide, setOpenGuide] = useState<string>(requestedGuide ?? "");
   const headingRefs = useRef<Record<string, HTMLSpanElement | null>>({});
   const guidesHeadingRef = useRef<HTMLHeadingElement | null>(null);
@@ -77,9 +146,9 @@ export default function Learn() {
     (async () => {
       const { data } = await supabase
         .from("content_items")
-        .select("id,type,slug,title,summary,body,metadata,created_at")
+        .select("id,type,slug,title,summary,body,metadata,created_at,day_unlock")
         .eq("is_active", true)
-        .in("type", ["guide", "blog"])
+        .in("type", [...RESOURCE_TYPES, "guide", "blog"] as string[])
         .order("sort_order");
       if (cancelled || !data) return;
 
@@ -97,6 +166,12 @@ export default function Learn() {
 
       const blogs = data.filter((d) => d.type === "blog") as BlogPost[];
       setBlogPosts(blogs);
+
+      // Library consolidation: the recipe / movement / article material that
+      // used to live on the separate Library route is surfaced here instead.
+      setResources(
+        data.filter((d) => (RESOURCE_TYPES as readonly string[]).includes(d.type)) as ResourceItem[],
+      );
     })();
     return () => {
       cancelled = true;
@@ -135,6 +210,9 @@ export default function Learn() {
         <TabsList className="bg-muted">
           <TabsTrigger value="mindset" className="min-h-11">Mindset</TabsTrigger>
           <TabsTrigger value="learn" className="min-h-11">Guides</TabsTrigger>
+          {resources.length > 0 && (
+            <TabsTrigger value="resources" className="min-h-11">Resources</TabsTrigger>
+          )}
           {blogPosts.length > 0 && <TabsTrigger value="blog" className="min-h-11">Blog</TabsTrigger>}
 
         </TabsList>
@@ -286,9 +364,56 @@ export default function Learn() {
 
         </TabsContent>
 
+        {/* RESOURCES TAB — the material that used to live on /app/library. */}
+
+        <TabsContent value="resources" className="mt-5 space-y-6">
+          <p className="text-sm text-secondary-fg">
+            Recipes, movement notes and printable resources. Educational only — not medical
+            advice.
+          </p>
+          {RESOURCE_GROUPS.map((group) => {
+            const list = resources.filter((r) => group.types.includes(r.type));
+            if (list.length === 0) return null;
+            return (
+              <section key={group.key} aria-labelledby={`resources-${group.key}`}>
+                <h2
+                  id={`resources-${group.key}`}
+                  className="font-heading font-semibold text-lg text-foreground"
+                >
+                  {group.title}
+                </h2>
+                <p className="text-sm text-secondary-fg mt-0.5 mb-3">{group.hint}</p>
+                <div className="grid lg:grid-cols-2 gap-3">
+                  {list.map((item) => {
+                    const locked = !!item.day_unlock && currentProgramDay < item.day_unlock;
+                    return (
+                      <Card key={item.id} className="p-4 border border-border">
+                        <div className="flex items-start justify-between gap-2">
+                          <h3 className="font-heading font-medium text-foreground text-sm">
+                            {item.title}
+                          </h3>
+                          {locked && (
+                            <span className="inline-flex items-center gap-1 text-[11px] text-tertiary-fg whitespace-nowrap">
+                              <Lock className="h-3 w-3" aria-hidden /> Day {item.day_unlock}
+                            </span>
+                          )}
+                        </div>
+                        {item.summary && !locked && (
+                          <p className="text-xs text-secondary-fg mt-1">{item.summary}</p>
+                        )}
+                      </Card>
+                    );
+                  })}
+                </div>
+              </section>
+            );
+          })}
+        </TabsContent>
+
         {/* BLOG TAB — only when posts exist */}
         {blogPosts.length > 0 && (
         <TabsContent value="blog" className="mt-5 space-y-3">
+
           <p className="text-sm text-secondary-fg">
             Curated reads from trusted sources.
           </p>
