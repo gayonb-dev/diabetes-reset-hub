@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import heroImage from "@/assets/hero-diabetes-reset.jpg";
 import { goToSection } from "@/lib/landingNav";
+import { PREVIEWS } from "./previewManifest";
 import { useCheckout } from "./CheckoutContext";
 
 const TRUST_ROW = [
@@ -14,6 +15,8 @@ const TRUST_ROW = [
 
 const HeroSection = () => {
   const { openCheckout } = useCheckout();
+  // The genuine Today screen, shown immediately in the hero.
+  const today = PREVIEWS.find((p) => p.id === "today") ?? PREVIEWS[0];
 
   return (
     <section className="relative bg-gradient-to-b from-secondary/20 to-background pt-8 pb-8 md:pt-12 md:pb-12 overflow-hidden">
@@ -78,6 +81,30 @@ const HeroSection = () => {
                 height={1024}
               />
             </div>
+
+            {/* Genuine product preview in the hero: the real Today screen with
+                illustrative example entries, clearly labelled as such. */}
+            <figure className="mt-4 rounded-2xl border border-border bg-card overflow-hidden shadow-lg">
+              <img
+                src={today.thumb}
+                alt={today.alt}
+                width={today.width}
+                height={today.height}
+                className="w-full h-auto bg-muted"
+              />
+              <figcaption className="p-3 flex flex-wrap items-center justify-between gap-2">
+                <span className="text-xs text-muted-foreground">
+                  The actual Today screen · illustrative example entries
+                </span>
+                <button
+                  type="button"
+                  onClick={() => goToSection("product-tour")}
+                  className="min-h-[44px] text-sm font-semibold text-primary underline"
+                >
+                  See more screens
+                </button>
+              </figcaption>
+            </figure>
           </motion.div>
         </div>
 

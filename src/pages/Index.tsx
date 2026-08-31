@@ -4,7 +4,6 @@ import SiteHeader from "@/components/landing/SiteHeader";
 import HeroSection from "@/components/landing/HeroSection";
 import SimplerStepSection from "@/components/landing/SimplerStepSection";
 import InsideMembershipSection from "@/components/landing/InsideMembershipSection";
-import ProductTourSection from "@/components/landing/ProductTourSection";
 import DayOneSection from "@/components/landing/DayOneSection";
 import FirstFourteenDaysSection from "@/components/landing/FirstFourteenDaysSection";
 import AudienceFitSection from "@/components/landing/AudienceFitSection";
@@ -84,7 +83,6 @@ const LandingBody = () => {
         <HeroSection />
         <SimplerStepSection />
         <InsideMembershipSection />
-        <ProductTourSection />
         <DayOneSection />
         <FirstFourteenDaysSection />
         <AudienceFitSection />
