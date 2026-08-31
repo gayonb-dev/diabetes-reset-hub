@@ -137,7 +137,7 @@ async def main():
             R["ml_rounding_notice"] = "8 fl oz" in body
             await p.screenshot(path=str(SHOTS / "water-ml-250.png"))
             await field.fill("10")   # rounds to 0 fl oz -> must be refused
-            await p.get_by_role("button", name="Log water").first.click()
+            await p.get_by_role("button", name="Add", exact=True).first.click()
             await p.wait_for_timeout(600)
             body = await p.inner_text("body")
             R["zero_rounding_blocked"] = "nothing was saved" in body.lower()
