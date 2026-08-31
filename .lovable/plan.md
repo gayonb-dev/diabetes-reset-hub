@@ -37,15 +37,18 @@ One continuous implementation on the unpublished client. No publication, no prod
 
 - No manifest exists today (only an `apple-touch-icon` link). Add `public/manifest.webmanifest` with stable id, app name/short name, `/app` start URL, appropriate scope, `standalone` display and existing brand colours; add head links (manifest, theme-color, apple-touch-icon).
 - Generate 192px, 512px and padded maskable icons plus an Apple touch icon from existing brand artwork. No account identifiers or tokens in any URL or metadata.
-- Settings gains a clearly labelled "Add to Home Screen" control: fires the native prompt only when `beforeinstallprompt` is available and the member invokes it; otherwise shows accurate manual instructions including Safari Share → Add to Home Screen. Dismissal, unsupported browsers and standalone mode all handled without dead buttons or false success. Absence of the install event is not treated as "already installed".
+- Settings gains a clearly labelled "Add to Home Screen" control: fires the native prompt only when `beforeinstallprompt` is available and the member invokes it; otherwise shows accurate manual instructions including Safari Share → Add to Home Screen and "Open as Web App" where that option exists. Dismissal, unsupported browsers and standalone mode all handled without dead buttons or false success. Absence of the install event is not treated as "already installed".
 - Manifest-only: no service worker, no caching framework, no offline queue, no push or background sync. Nothing about auth, redirects, billing/deletion restrictions or sign-out changes; installed sessions are not assumed shared. A short note explains that member features need internet and re-sign-in may be required.
 - Check standalone safe-area spacing, bottom navigation, keyboard/input behaviour and scrolling.
+- PWA behaviour checks (restored): network failure during a save shows no false success, creates no offline write queue and loses no previously saved state; external checkout and return navigation exercised with isolated fixtures (no real payment); sign-out followed by reopening the installed/standalone entry behaves correctly.
 
 ## 6. Verification and evidence
 
-- Behaviour checks: water (empty day, persisted, reload/navigation, failed save, next calendar day, reduced motion); typography route/override inventory with shared-component checks and page-specific exceptions; snack rendering source and copy conformance; landing tour/anchors/legibility/current previews; PWA manifest validity, supported and unsupported install paths, dismissal, standalone layout, access checks and sign-out.
-- Final gates once on final code: focused regressions, full unit suite, TypeScript, lint on touched files, production build, and a bundle scan for private data, harness code or secrets (synthetic preview images are intentional).
-- Real phone installation is not performed here; Android/iPhone install and production-origin checks are recorded as NOT TESTED / BLOCKED for the controlled-release checklist.
+- Behaviour checks: water (empty day, persisted, reload/navigation, failed save, next calendar day, reduced motion) with existing conversion and once-daily award behaviour unchanged; typography route/override inventory with shared-component and public-surface checks, mobile wrapping, zoom and bold text; snack copy verified at its rendering source; landing tour/anchors/legibility/current previews; the PWA checks above.
+- Changed Edge Function sources: run the applicable Deno checks and focused tests for those functions only. Do not deploy them and do not rerun unrelated backend suites.
+- Final client gates once on final code: focused regressions, full unit suite, TypeScript, lint on touched files, production build, and a bundle scan for private data, harness code or secrets (synthetic preview images are intentional).
+- Real phone installation is not performed here; Android/iPhone install and production-origin checks are recorded as NOT TESTED (unavailable), never PASS and never an implementation failure.
+- Independent work continues despite the recorded production-content dependency; valid prior evidence is reused and Batch 2 is not restarted.
 
 ## 7. Reporting
 
