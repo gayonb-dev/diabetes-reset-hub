@@ -80,7 +80,7 @@ export function SnackLibrary({ dayNumber }: { dayNumber: number }) {
               )}
             >
               <div className="flex items-start justify-between gap-2 mb-2">
-                <h3 className="font-semibold text-sm leading-tight flex items-center gap-1.5">
+                <h3 className="font-heading font-medium text-foreground text-sm leading-tight break-words flex items-center gap-1.5">
                   {locked && <Lock className="h-3.5 w-3.5 text-muted-foreground" />}
                   {s.name}
                 </h3>
