@@ -151,13 +151,16 @@ async def main():
             await p.get_by_role("button", name="Mindset").first.click()
             await p.wait_for_timeout(600)
             await p.get_by_role("button", name="Read reflection").first.click()
-            await p.wait_for_timeout(900)
+            await p.wait_for_timeout(120)
+            R["mindset_initial_label"] = await p.get_by_role(
+                "button", name="I read this").first.inner_text()
+            await p.wait_for_timeout(700)
             await p.screenshot(path=str(SHOTS / "mindset-20s.png"))
         except Exception as e:  # noqa: BLE001
             R["mindset_open_error"] = str(e)
 
-        mindset = await p.evaluate("() => document.body.innerText.match(/\\b20 ?s|20 seconds/i)?.[0] || null")
-        R["mindset_20s_visible"] = mindset
+        R["mindset_countdown_after_1s"] = await p.evaluate(
+            "() => document.body.innerText.match(/I read this \\((\\d+)s\\)/)?.[1] || null")
         await ctx.close()
         await b.close()
 
