@@ -11,18 +11,21 @@ One continuous implementation on the unpublished client. No publication, no prod
 
 ## 2. Readable typography across the signed-in app and Admin
 
-- Reference: the readable sans styling already used in Meals → Shopping List / Off-Plan Meal (the Inter stack). The decorative `font-heading` (Fraunces) stack is the source of the serif titles.
-- Introduce a functional-app heading treatment that resolves to the readable sans family, and apply it at the shared layer first: app layout, cards, dialogs, tables, tabs, buttons, forms, notifications and report components.
+- Reference: the readable sans styling already used in Meals → Shopping List / Off-Plan Meal. Confirm the actual resolved family/weights from rendered computed styles after fonts load — not from source assumptions — before applying anything.
+- Keep the public `font-heading` definition and public-facing shared components unchanged. Introduce a member/Admin-scoped heading treatment and apply it at the app shared layer: app layout, cards, tables, tabs, buttons, forms, notifications, printable report, and dialogs rendered outside the app layout (portals) via an app-scoped wrapper class rather than a global dialog change.
+- Explicitly do not alter public checkout/payment dialogs or landing components while fixing shared primitives; where a primitive is shared, scope the change so public usage is untouched and verify both surfaces.
 - Then remove page-level `font-heading` overrides across Today, all Meals tabs (including Snacks), Progress and printable report, Ask/Community, Learn and guide details, Workouts, Profile, Billing, Settings, Support, onboarding and every Admin page.
-- Hierarchy preserved by size/weight/spacing; no blanket global override that would affect icons, controls or print. Public landing typography and brand artwork unchanged.
+- Hierarchy preserved by size/weight/spacing; no blanket global override affecting icons, controls or print. Check mobile wrapping, browser zoom (up to 200%) and bold/heavy weights.
 - Record the exact resolved family/weights and any intentional exceptions in the report.
 
 ## 3. Snack copy provenance and conformance
 
 - Provenance established: the claim strings ("near-zero glucose impact", "cinnamon supports glucose control", "prevents spikes") live in stored `snack_library` rows seeded by an old migration; the fixed timing sentence is hard-coded in `src/components/meals/SnackLibrary.tsx` and repeated in Edge Function prompts.
 - Client-side fixes now: replace the hard-coded intro with the approved sentence — "Snacks are optional. If a snack fits your care plan, choose a time and food that work with your hunger, medicines, activity and daily schedule." — and remove the obsolete snack-timing banner nudge that tells members to regenerate a plan.
-- Stored rows are production content: prepare the exact neutral replacement wording as a reviewed, unapplied SQL file plus the affected record identifiers, and document it as a BLOCKED production dependency under section 0. Food descriptions, ingredients and quantities retained; no new medical claims.
-- Edge Function prompt wording corrected in source only, not deployed.
+- Stored rows are production content. Prepare, but do not apply, a reviewed SQL file kept outside any automatically applied migration directory (`supabase/migrations-pending/`). It must contain: exact record IDs, expected-current-copy guards, expected affected-row counts, explicit transaction with abort-on-mismatch, preserved unrelated fields and member plans, and rollback wording.
+- Record the exact Edge Functions whose prompt wording is corrected in source and still awaits deployment. The report must clearly separate local source fixes from unchanged production rows and undeployed functions; the snack issue stays an outstanding release dependency until separately authorized, applied and verified.
+- Verify snack-copy conformance at its actual rendering source (component + stored row values), not by screenshot substitution.
+
 
 ## 4. Landing check before any landing code change
 
@@ -34,19 +37,22 @@ One continuous implementation on the unpublished client. No publication, no prod
 
 - No manifest exists today (only an `apple-touch-icon` link). Add `public/manifest.webmanifest` with stable id, app name/short name, `/app` start URL, appropriate scope, `standalone` display and existing brand colours; add head links (manifest, theme-color, apple-touch-icon).
 - Generate 192px, 512px and padded maskable icons plus an Apple touch icon from existing brand artwork. No account identifiers or tokens in any URL or metadata.
-- Settings gains a clearly labelled "Add to Home Screen" control: fires the native prompt only when `beforeinstallprompt` is available and the member invokes it; otherwise shows accurate manual instructions including Safari Share → Add to Home Screen. Dismissal, unsupported browsers and standalone mode all handled without dead buttons or false success. Absence of the install event is not treated as "already installed".
+- Settings gains a clearly labelled "Add to Home Screen" control: fires the native prompt only when `beforeinstallprompt` is available and the member invokes it; otherwise shows accurate manual instructions including Safari Share → Add to Home Screen and "Open as Web App" where that option exists. Dismissal, unsupported browsers and standalone mode all handled without dead buttons or false success. Absence of the install event is not treated as "already installed".
 - Manifest-only: no service worker, no caching framework, no offline queue, no push or background sync. Nothing about auth, redirects, billing/deletion restrictions or sign-out changes; installed sessions are not assumed shared. A short note explains that member features need internet and re-sign-in may be required.
 - Check standalone safe-area spacing, bottom navigation, keyboard/input behaviour and scrolling.
+- PWA behaviour checks (restored): network failure during a save shows no false success, creates no offline write queue and loses no previously saved state; external checkout and return navigation exercised with isolated fixtures (no real payment); sign-out followed by reopening the installed/standalone entry behaves correctly.
 
 ## 6. Verification and evidence
 
-- Behaviour checks: water (empty day, persisted, reload/navigation, failed save, next calendar day, reduced motion); typography route/override inventory with shared-component checks and page-specific exceptions; snack rendering source and copy conformance; landing tour/anchors/legibility/current previews; PWA manifest validity, supported and unsupported install paths, dismissal, standalone layout, access checks and sign-out.
-- Final gates once on final code: focused regressions, full unit suite, TypeScript, lint on touched files, production build, and a bundle scan for private data, harness code or secrets (synthetic preview images are intentional).
-- Real phone installation is not performed here; Android/iPhone install and production-origin checks are recorded as NOT TESTED / BLOCKED for the controlled-release checklist.
+- Behaviour checks: water (empty day, persisted, reload/navigation, failed save, next calendar day, reduced motion) with existing conversion and once-daily award behaviour unchanged; typography route/override inventory with shared-component and public-surface checks, mobile wrapping, zoom and bold text; snack copy verified at its rendering source; landing tour/anchors/legibility/current previews; the PWA checks above.
+- Changed Edge Function sources: run the applicable Deno checks and focused tests for those functions only. Do not deploy them and do not rerun unrelated backend suites.
+- Final client gates once on final code: focused regressions, full unit suite, TypeScript, lint on touched files, production build, and a bundle scan for private data, harness code or secrets (synthetic preview images are intentional).
+- Real phone installation is not performed here; Android/iPhone install and production-origin checks are recorded as NOT TESTED (unavailable), never PASS and never an implementation failure.
+- Independent work continues despite the recorded production-content dependency; valid prior evidence is reused and Batch 2 is not restarted.
 
 ## 7. Reporting
 
-Update `docs/LANDING-PRODUCT-PREVIEW-COMPLETION-REPORT.md` in place with one clearly identified section for this work: changed files and final revision, typography reference and exceptions, snack-copy provenance and disposition (including the unapplied content correction), landing artefact-vs-defect conclusion, water and PWA results, device/browser coverage, per-item PASS/FAIL/BLOCKED/NOT TESTED, and confirmation that nothing was published and production was unchanged. No new report set.
+Update `docs/LANDING-PRODUCT-PREVIEW-COMPLETION-REPORT.md` in place with one clearly identified section for this work: changed files and final revision, typography reference (resolved family/weights) and exceptions, snack-copy provenance and disposition (unapplied SQL, undeployed function prompts), landing artefact-vs-defect conclusion, water and PWA results, device/browser coverage, per-item PASS/FAIL/BLOCKED/NOT TESTED, one precise outstanding-items list, and confirmation that nothing was published and production was unchanged. No publication, production change, real payment, email or external AI call. No new report set.
 
 ## Technical notes
 
