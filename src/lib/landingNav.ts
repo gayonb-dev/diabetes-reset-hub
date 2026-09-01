@@ -13,6 +13,7 @@
 export const LANDING_SECTIONS = [
   "how-it-works",
   "inside-the-membership",
+  "who-its-for",
   "pricing",
   "faq",
 ] as const;
