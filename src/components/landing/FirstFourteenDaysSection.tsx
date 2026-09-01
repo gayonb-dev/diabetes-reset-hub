@@ -2,16 +2,16 @@ import ScrollReveal from "./ScrollReveal";
 
 const STEPS = [
   {
-    label: "Start",
-    body: "Set your preferences, review the safety boundaries, and find your first Today action.",
+    label: "Day 1",
+    body: "Open Today, see your first action, and explore the tools already available.",
   },
   {
-    label: "Days 1–7",
-    body: "Practice daily actions and explore meal, movement, and tracking tools at your own pace.",
+    label: "Days 2–7",
+    body: "Use the meal, logging, educational, and progress tools that fit your routine. You do not have to complete everything.",
   },
   {
     label: "Days 8–14",
-    body: "Review what you used, adjust your routine, and prepare questions or a printable report for a healthcare visit.",
+    body: "Continue the daily actions, review what you recorded, and decide whether you want to continue into the monthly membership.",
   },
 ];
 
@@ -24,12 +24,16 @@ const FirstFourteenDaysSection = () => {
             id="first14-heading"
             className="font-heading font-bold text-3xl sm:text-4xl text-center text-foreground mb-4"
           >
-            What happens during your first 14 days
+            Your first 14 days are for one thing: deciding whether DRM earns a place in your
+            routine.
           </h2>
-          <p className="text-center text-muted-foreground max-w-2xl mx-auto mb-10">
-            Your first 14 days are for learning the app, trying the tools that fit your routine, and
-            deciding whether the membership is useful to you.
-          </p>
+          <div className="text-center text-muted-foreground max-w-2xl mx-auto mb-10 space-y-3">
+            <p>You are not buying a promised health result.</p>
+            <p>
+              You are paying for access to the real membership so you can use the tools, experience
+              the daily structure, and decide whether it is useful to you.
+            </p>
+          </div>
         </ScrollReveal>
 
         <ol className="grid md:grid-cols-3 gap-6">
@@ -49,7 +53,8 @@ const FirstFourteenDaysSection = () => {
         </ol>
 
         <p className="text-center text-sm text-muted-foreground mt-8">
-          These are participation milestones, not promised medical results.
+          This is not a test. There is no prize for using every feature. Use what helps and leave
+          the rest.
         </p>
       </div>
     </section>

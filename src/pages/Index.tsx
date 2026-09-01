@@ -7,6 +7,10 @@ import InsideMembershipSection from "@/components/landing/InsideMembershipSectio
 import DayOneSection from "@/components/landing/DayOneSection";
 import FirstFourteenDaysSection from "@/components/landing/FirstFourteenDaysSection";
 import AudienceFitSection from "@/components/landing/AudienceFitSection";
+import PracticeSection from "@/components/landing/PracticeSection";
+import FirstWeekBridgeSection from "@/components/landing/FirstWeekBridgeSection";
+import RiskControlSection from "@/components/landing/RiskControlSection";
+import ObjectionsSection from "@/components/landing/ObjectionsSection";
 import FounderSection from "@/components/landing/FounderSection";
 import PricingSection from "@/components/landing/PricingSection";
 import FAQSection, { FAQS } from "@/components/landing/FAQSection";
@@ -19,9 +23,13 @@ import { CheckoutProvider, useCheckout } from "@/components/landing/CheckoutCont
 import { syncSectionFromHash } from "@/lib/landingNav";
 import { usePaidMemberRedirect } from "@/hooks/usePaidMemberRedirect";
 
-const TITLE = "Diabetes Reset Method | Daily Type 2 Diabetes Support";
+const TITLE = "Diabetes Reset Method | One Clear Daily Step for Type 2 Diabetes";
 const DESCRIPTION =
-  "A self-guided membership with daily actions, meal tools, progress tracking, educational support, and printable reports. $27 for the first 14 days, then $67/month until canceled.";
+  "Stop wondering what to focus on today. Explore one guided daily action, practical meal tools, progress tracking, educational support, and printable reports. Start with 14 days for $27.";
+
+const OG_TITLE = "Stop wondering what to focus on for your diabetes today";
+const OG_DESCRIPTION =
+  "See the real Diabetes Reset Method membership before joining. Start with one guided daily action and practical tools for meals, movement, tracking, learning, and healthcare visits.";
 
 const LandingBody = () => {
   const { isOpen, closeCheckout } = useCheckout();
@@ -44,8 +52,8 @@ const LandingBody = () => {
         <meta name="description" content={DESCRIPTION} />
         <link rel="canonical" href="https://diabetesresetmethod.com/" />
         <meta property="og:url" content="https://diabetesresetmethod.com/" />
-        <meta property="og:title" content="A simpler daily system for managing Type 2 diabetes" />
-        <meta property="og:description" content={DESCRIPTION} />
+        <meta property="og:title" content={OG_TITLE} />
+        <meta property="og:description" content={OG_DESCRIPTION} />
         <script type="application/ld+json">
           {JSON.stringify({
             "@context": "https://schema.org",
@@ -82,12 +90,16 @@ const LandingBody = () => {
       <div id="main-content" tabIndex={-1} className="outline-none">
         <HeroSection />
         <SimplerStepSection />
-        <InsideMembershipSection />
         <DayOneSection />
-        <FirstFourteenDaysSection />
-        <AudienceFitSection />
+        <PracticeSection />
         <FounderSection />
+        <InsideMembershipSection />
+        <AudienceFitSection />
+        <FirstFourteenDaysSection />
+        <FirstWeekBridgeSection />
+        <RiskControlSection />
         <PricingSection />
+        <ObjectionsSection />
         <FAQSection />
         <FinalCTASection />
       </div>

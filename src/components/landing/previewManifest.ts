@@ -26,7 +26,15 @@ export interface PreviewItem {
 
 /** Visible, honest description of what these images are. */
 export const PREVIEW_DATA_NOTE =
-  "Every screen below is the real member app captured locally with illustrative example entries for a fictional member — not a real member's data, and not a promised result.";
+  "These are genuine DRM product screens shown with fictional example entries.";
+
+/** Second supporting line for the tour. */
+export const PREVIEW_DATA_NOTE_2 =
+  "Look through the tools before you pay so you know what the membership includes—and what it does not.";
+
+/** Persistent label shown on every preview. */
+export const PREVIEW_PERSISTENT_LABEL =
+  "Example member view · Illustrative data, not a member's results";
 
 export const PREVIEWS: PreviewItem[] = [
   {
@@ -38,7 +46,7 @@ export const PREVIEWS: PreviewItem[] = [
     height: 1400,
     alt: "The Today screen showing one action for the day, a short mindset reflection, and habit logging for water, meals and movement.",
     caption:
-      "Today: one clear daily action, plus water, meal and movement logging. Come back when you are ready for the next step.",
+      "See one guided daily action, the tools available today, and a clear place to start.",
   },
   {
     id: "meals",
@@ -49,17 +57,18 @@ export const PREVIEWS: PreviewItem[] = [
     height: 1400,
     alt: "The Meals screen showing meal ideas for the day with recipes and a shopping list that can be grouped by meal.",
     caption:
-      "Meals: a weekly plan with recipes and swaps, so you can build practical meal structure around your own preferences and save useful ideas.",
+      "Build a practical weekly meal plan, view recipes, and swap individual meals without rebuilding everything.",
   },
   {
     id: "meals-shopping",
-    label: "Shopping list",
+    label: "Shopping List",
     src: "/previews/meals-shopping.jpg",
     thumb: "/previews/meals-shopping-thumb.jpg",
     width: 1280,
     height: 1400,
     alt: "The shopping list generated from the week's meals, grouped by meal, with each ingredient listed as a check item.",
-    caption: "Shopping list: ingredients from your plan, grouped by meal or by category.",
+    caption:
+      "Turn selected meals into a by-meal or by-category shopping list you can check as you shop.",
   },
   {
     id: "progress",
@@ -70,7 +79,7 @@ export const PREVIEWS: PreviewItem[] = [
     height: 1400,
     alt: "The Progress screen showing entries a member has recorded, such as blood glucose readings, weight and measurements, with example values only.",
     caption:
-      "Progress: record the information you choose — glucose, A1C, weight and measurements — and view your own trends. The app does not diagnose them.",
+      "Record the information you choose and view your entries and trends without the app diagnosing them.",
   },
   {
     id: "workouts",
@@ -81,7 +90,7 @@ export const PREVIEWS: PreviewItem[] = [
     height: 1400,
     alt: "The Workouts screen showing four short guided sessions, each listing its length and number of exercises.",
     caption:
-      "Workouts: short guided sessions you can follow at home. Workouts unlock at Day 29; this preview shows a member who has reached that point.",
+      "Follow short guided movement sessions as they unlock from Day 29, with standard and knee-friendly options.",
   },
   {
     id: "learn",
@@ -92,7 +101,7 @@ export const PREVIEWS: PreviewItem[] = [
     height: 1400,
     alt: "The Learn screen showing the library of written educational guides.",
     caption:
-      "Learn: written educational guides, including mindset reflections. Educational only, not medical advice.",
+      "Read educational guides when you want additional context without being buried under another giant course.",
   },
   {
     id: "ask",
@@ -103,17 +112,17 @@ export const PREVIEWS: PreviewItem[] = [
     height: 1400,
     alt: "The Ask screen where a member can submit a question, alongside the optional community area.",
     caption:
-      "Ask: submit a question and read labeled educational answers with clear safety boundaries and guidance on when to contact a professional. Community participation is optional.",
+      "Ask educational questions, read published answers, and participate in the member community if you choose.",
   },
   {
     id: "report",
-    label: "Printable report",
+    label: "Printable Report",
     src: "/previews/report.jpg",
     thumb: "/previews/report-thumb.jpg",
     width: 1280,
     height: 1400,
     alt: "A printable summary report of a member's own recorded entries, prepared for a healthcare visit.",
     caption:
-      "Printable report: organize selected entries and questions into a report you can bring to a healthcare visit.",
+      "Turn selected entries and questions into a printable summary for a healthcare conversation.",
   },
 ];

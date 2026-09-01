@@ -5,7 +5,8 @@ import { useCheckout } from "./CheckoutContext";
 
 const NAV = [
   { label: "How it works", id: "how-it-works" },
-  { label: "Inside the membership", id: "inside-the-membership" },
+  { label: "See the app", id: "inside-the-membership" },
+  { label: "Who it’s for", id: "who-its-for" },
   { label: "Pricing", id: "pricing" },
   { label: "FAQ", id: "faq" },
 ];
@@ -44,7 +45,7 @@ const SiteHeader = () => {
             onClick={openCheckout}
             className="min-h-[44px] bg-primary hover:bg-primary-dark text-primary-foreground font-semibold"
           >
-            Start 14 days for $27
+            Start for $27
           </Button>
         </nav>
       </div>

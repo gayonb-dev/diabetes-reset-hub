@@ -2,34 +2,35 @@ import { Apple, BookOpen, ClipboardList, FileText, Sun } from "lucide-react";
 import ScrollReveal from "./ScrollReveal";
 
 /**
- * "What you can do on Day 1" — each item names the destination that actually
- * holds the action today, so nothing here sends a new member to the wrong tab.
+ * "This is what your $27 gives you from Day 1" — each item names the destination
+ * that actually holds the action today, so nothing here sends a new member to
+ * the wrong tab.
  */
 const DAY_ONE = [
   {
     icon: Sun,
-    title: "See one clear Today's Action",
-    body: "Your Today screen opens on a single action for the day, with the day's logging beneath it.",
+    title: "See today’s action",
+    body: "Open the app and know where to begin without facing another long checklist.",
   },
   {
     icon: Apple,
-    title: "Explore meals and recipes",
-    body: "Meals holds meal ideas, recipes and a shopping list you can view grouped by meal.",
+    title: "Build a practical meal plan",
+    body: "Use meal ideas, recipes, swaps, and shopping tools to organize the meals you choose.",
   },
   {
     icon: ClipboardList,
-    title: "Record health and habit information",
-    body: "Health entries such as blood glucose, A1C, weight and measurements live in Progress. Daily habits — water, meals, movement and the mindset reflection — are logged on Today.",
+    title: "Record what matters to you",
+    body: "Keep your selected readings, meals, water, movement, weight, measurements, and habits in one place.",
   },
   {
     icon: BookOpen,
-    title: "Review educational Guides",
-    body: "Learn holds the written guides and articles. They are educational, not medical advice.",
+    title: "Find educational support",
+    body: "Explore written guides and ask educational questions when you want more context.",
   },
   {
     icon: FileText,
-    title: "Prepare a printable report",
-    body: "Progress can produce a printable report of the entries you choose to bring to a healthcare visit.",
+    title: "Prepare for healthcare visits",
+    body: "Create a printable summary of selected entries and questions to bring to a conversation with your healthcare professional.",
   },
 ];
 
@@ -45,11 +46,11 @@ const DayOneSection = () => (
           id="day-one-heading"
           className="font-heading font-bold text-3xl sm:text-4xl text-center text-foreground mb-3"
         >
-          What you can do on Day 1
+          This is what your $27 gives you from Day 1.
         </h2>
         <p className="text-center text-muted-foreground max-w-2xl mx-auto mb-10">
-          Everything below is available as soon as your payment is confirmed. Nothing here
-          diagnoses, treats or monitors you.
+          You do not have to wait weeks for the membership to become useful. Open DRM and begin with
+          the tools available immediately.
         </p>
       </ScrollReveal>
 
@@ -66,6 +67,10 @@ const DayOneSection = () => (
           </li>
         ))}
       </ul>
+
+      <p className="text-center text-muted-foreground mt-8">
+        Open the app. See the next step. Start there.
+      </p>
     </div>
   </section>
 );
