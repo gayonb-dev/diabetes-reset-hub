@@ -17,14 +17,14 @@ export function getUnits(): UnitPrefs {
   try {
     const raw = localStorage.getItem(KEY);
     if (!raw) return defaultUnits;
-    return { ...defaultUnits...JSON.parse(raw) };
+    return { ...defaultUnits, ...JSON.parse(raw) };
   } catch {
     return defaultUnits;
   }
 }
 
 export function setUnits(u: Partial<UnitPrefs>) {
-  const next = { ...getUnits()...u };
+  const next = { ...getUnits(), ...u };
   localStorage.setItem(KEY, JSON.stringify(next));
   return next;
 }

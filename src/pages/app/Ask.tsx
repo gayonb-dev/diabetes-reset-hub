@@ -181,7 +181,7 @@ export default function Ask() {
           .maybeSingle();
         setVitaResponse({ kind: "verified", answer: ans?.content, question_id: data.question_id, similarity: data.similarity });
       } else {
-        setVitaResponse({ kind: "vita"...data });
+        setVitaResponse({ kind: "vita", ...data });
       }
     } catch (e) {
       const message = e instanceof Error ? e.message : "Try again";
@@ -306,7 +306,7 @@ export default function Ask() {
               <Input
                 value={vitaQ}
                 onChange={(e) => setVitaQ(e.target.value)}
-                placeholder="Ask VITA anything about your program..."
+                placeholder="Ask VITA anything about your program, ..."
                 onKeyDown={(e) => e.key === "Enter" && askVita()}
               />
               <Button onClick={askVita} disabled={vitaLoading || !vitaQ.trim()}>
@@ -686,7 +686,7 @@ function QuestionCard({
             </div>
           ))}
           <div className="flex gap-2">
-            <Input value={reply} onChange={(e) => setReply(e.target.value)} placeholder="Share your experience..." />
+            <Input value={reply} onChange={(e) => setReply(e.target.value)} placeholder="Share your experience, ..." />
             <Button size="sm" onClick={post} disabled={submitting || reply.trim().length < 3}>Reply</Button>
           </div>
         </div>

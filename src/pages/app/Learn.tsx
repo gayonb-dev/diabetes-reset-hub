@@ -159,7 +159,7 @@ export default function Learn() {
         );
         setGuides(
           DEFAULT_LEARN_GUIDES.map((g) =>
-            overrides.has(g.slug) ? { ...g...overrides.get(g.slug)! } : g,
+            overrides.has(g.slug) ? { ...g, ...overrides.get(g.slug)! } : g,
           ),
         );
       }

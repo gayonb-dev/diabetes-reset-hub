@@ -117,7 +117,7 @@ describe("chatSession, single shared token store", () => {
     });
     const m = await fresh();
     await m.startChatSession();
-    const dump = JSON.stringify({ ...localStorage...sessionStorage }) + document.cookie;
+    const dump = JSON.stringify({ ...localStorage, ...sessionStorage }) + document.cookie;
     expect(dump).not.toContain(TOKEN);
   });
 });

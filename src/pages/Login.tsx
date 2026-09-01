@@ -93,7 +93,7 @@ export default function Login() {
                 className="w-full h-11"
               >
                 {sending ? (
-                  <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Resending...</>
+                  <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Resending, ...</>
                 ) : (
                   "Resend login link"
                 )}
@@ -134,7 +134,7 @@ export default function Login() {
               {sending ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Sending link...
+                  Sending link, ...
                 </>
               ) : expired ? (
                 "Resend login link"

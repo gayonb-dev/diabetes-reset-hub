@@ -139,7 +139,7 @@ export default function Onboarding() {
       .eq("user_id", user.id)
       .maybeSingle();
     if (vp) {
-      const merged = { ...(vp.metadata as Record<string, unknown>)...meta } as never;
+      const merged = { ...(vp.metadata as Record<string, unknown>), ...meta } as never;
       await supabase
         .from("visitor_profiles")
         .update({ metadata: merged, date_of_birth: dob || null } as never)
@@ -377,7 +377,7 @@ export default function Onboarding() {
                 <Textarea
                   value={sixMonth}
                   onChange={(e) => setSixMonth(e.target.value.slice(0, 200))}
-                  placeholder="In 6 months I want to..."
+                  placeholder="In 6 months I want to, ..."
                   className="bg-muted/50 border-0 rounded-xl min-h-[88px]"
                   maxLength={200}
                 />

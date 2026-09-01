@@ -119,7 +119,7 @@ export default function AdminQaQueue() {
 
                 <Textarea
                   rows={4}
-                  placeholder="Type your answer..."
+                  placeholder="Type your answer, ..."
                   value={d.answer}
                   onChange={(e) =>
                     setDrafts({ ...drafts, [q.id]: { ...d, answer: e.target.value } })

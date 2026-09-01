@@ -147,7 +147,7 @@ const TRACK_B: Workout[] = [
   },
 ];
 
-export const ALL_WORKOUTS: Workout[] = [...TRACK_A...TRACK_B];
+export const ALL_WORKOUTS: Workout[] = [...TRACK_A, ...TRACK_B];
 
 export function getWorkoutsByTrack(track: "A" | "B"): Workout[] {
   return ALL_WORKOUTS.filter((w) => w.track === track);

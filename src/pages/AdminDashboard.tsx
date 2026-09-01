@@ -173,7 +173,7 @@ const AdminDashboard = () => {
         <div className="flex gap-3 mb-4">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} placeholder="Search..." className="pl-10" />
+            <Input value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} placeholder="Search, ..." className="pl-10" />
           </div>
           {activeTab === "orders" && (
             <Select value={statusFilter} onValueChange={setStatusFilter}>

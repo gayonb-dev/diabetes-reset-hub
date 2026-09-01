@@ -164,7 +164,7 @@ export default function Profile() {
           <Row label="Measurements logged" value={activity.measurements} />
           <Row label="Current program phase" value={phaseFor(currentProgramDay || 1).index} />
           <Row label="All-time longest streak" value={
-            Math.max(g.longest_streak, g.streak_count...g.streak_history.map((s) => s.length || 0), 0)
+            Math.max(g.longest_streak, g.streak_count, ...g.streak_history.map((s) => s.length || 0), 0)
           } />
         </dl>
       </Card>

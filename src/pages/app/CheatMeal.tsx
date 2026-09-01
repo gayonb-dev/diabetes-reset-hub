@@ -184,7 +184,7 @@ export default function CheatMeal() {
               <Textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                placeholder="e.g., jerk chicken with rice, a slice of cake..."
+                placeholder="e.g., jerk chicken with rice, a slice of cake, ..."
                 rows={2}
               />
             </div>

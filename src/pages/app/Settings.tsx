@@ -176,7 +176,7 @@ export default function Settings() {
         setInitialDisplayName(dn);
 
         const np = (data.notification_prefs as NotifPrefs) ?? {};
-        setNotifPrefs({ ...DEFAULT_NOTIF_PREFS...np });
+        setNotifPrefs({ ...DEFAULT_NOTIF_PREFS, ...np });
 
         const meta = (data.meal_preferences as Record<string, unknown>) ?? {};
         setProfileId(user.id);
@@ -417,7 +417,7 @@ export default function Settings() {
         const s = String(v);
         return /[",\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
       };
-      return [headers.join(",")...rows.map((r) => r.map(esc).join(","))].join("\n");
+      return [headers.join(","), ...rows.map((r) => r.map(esc).join(","))].join("\n");
     };
 
     const zip = new JSZip();

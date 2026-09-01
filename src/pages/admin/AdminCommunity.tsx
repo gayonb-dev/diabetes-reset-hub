@@ -192,7 +192,7 @@ export default function AdminCommunity() {
 
           <div className="flex gap-2">
             <Textarea
-              placeholder="Post as DRM team (auto-verified)..."
+              placeholder="Post as DRM team (auto-verified), ..."
               value={replyDraft[q.id] ?? ""}
               onChange={(e) => setReplyDraft((s) => ({ ...s, [q.id]: e.target.value }))}
               rows={2}

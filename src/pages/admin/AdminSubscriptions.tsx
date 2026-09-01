@@ -175,7 +175,7 @@ export default function AdminSubscriptions() {
       )}
 
       <Input
-        placeholder="Search subscriptions..."
+        placeholder="Search subscriptions, ..."
         value={search}
         onChange={(e) => setSearch(e.target.value)}
       />

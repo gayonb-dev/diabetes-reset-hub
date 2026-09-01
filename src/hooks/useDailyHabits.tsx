@@ -207,11 +207,11 @@ export function useDailyHabits(): DailyHabits {
   const writeMeal = useCallback(
     async (mt: MealLog["meal_type"], patch: Partial<MealLog>) => {
       if (!user) return;
-      const merged: MealLog = { ...mealDraft.current[mt]...patch, meal_type: mt };
+      const merged: MealLog = { ...mealDraft.current[mt], ...patch, meal_type: mt };
       mealDraft.current[mt] = merged;
       const seq = ++mealSeq.current[mt];
 
-      setMeals((prev) => ({ ...prev, [mt]: { ...prev[mt]...patch } }));
+      setMeals((prev) => ({ ...prev, [mt]: { ...prev[mt], ...patch } }));
       setMealSaveState((prev) => ({ ...prev, [mt]: "saving" }));
 
       const { data, error } = await supabase
