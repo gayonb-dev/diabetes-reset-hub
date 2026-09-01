@@ -1,4 +1,4 @@
-// B5 — membership lifecycle evaluator with a seven-day grace window.
+// B5, membership lifecycle evaluator with a seven-day grace window.
 //
 // One evaluator, used by the server (edge functions and, via a mirrored SQL
 // implementation, row-level security) and by the client for presentation. The
@@ -8,8 +8,8 @@
 //
 // GRACE SEMANTICS
 // ---------------
-// Grace begins at the FIRST VERIFIED PAYMENT FAILURE — the moment Stripe tells
-// us a charge failed — not when a human noticed, not when the row was last
+// Grace begins at the FIRST VERIFIED PAYMENT FAILURE, the moment Stripe tells
+// us a charge failed, not when a human noticed, not when the row was last
 // touched, and not at the period end. It runs for seven days. During grace the
 // member keeps full access and sees an honest notice. After grace expires,
 // access is withheld until payment succeeds.
@@ -49,7 +49,7 @@ export type AccessState =
 
 /**
  * Historical/internal values that predate the approved vocabulary. Mapped at
- * the read boundary only — nothing writes these names again.
+ * the read boundary only, nothing writes these names again.
  */
 export function mapLegacyAccessState(value: unknown): AccessState {
   switch (String(value ?? "").trim().toLowerCase()) {
@@ -287,7 +287,7 @@ export function evaluateMembership(
     case "past_due":
     case "unpaid":
       if (graceStart === null) {
-        // Past due, but no verified failure timestamp was recorded — an older
+        // Past due, but no verified failure timestamp was recorded, an older
         // row, or a status set by a subscription event rather than an invoice
         // failure. Fall back to the paid period end as the start of the clock,
         // so the member is never dropped on the first webhook.
@@ -342,7 +342,7 @@ function grant(
     reason,
     allowed_surfaces,
     // A restricted member may still reach their account, billing, support and
-    // export surfaces — withholding those would obstruct payment recovery and
+    // export surfaces, withholding those would obstruct payment recovery and
     // data rights. Restriction applies to programme content and writes.
     allowRead: allowed_surfaces.includes("programme"),
     allowWrite: state === "allowed" || state === "grace",

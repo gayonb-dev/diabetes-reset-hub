@@ -1,6 +1,6 @@
 // Edge function: notifications-cron
 // Runs hourly. Dispatches time-based notifications:
-//   - good_morning       (8am UTC — global fallback)
+//   - good_morning       (8am UTC, global fallback)
 //   - streak_at_risk     (local 20:00 per member timezone, when a ring is still open)
 //   - birthday           (00:00 UTC of user's DOB month/day)
 //   - community_mission  (random hour per day, UTC)
@@ -79,7 +79,7 @@ async function alreadySentOnLocalDate(
   });
 }
 
-// Program day is a member calendar-day computation — always timezone-aware.
+// Program day is a member calendar-day computation, always timezone-aware.
 function programDay(startDate: string | null, now: Date, tz: string): number {
   return programDayFor(startDate, now, tz);
 }
@@ -133,7 +133,7 @@ Deno.serve(async (req) => {
     const local = localParts(now, tz);
     const dayInProgram = programDay(p.program_start_date, now, tz);
 
-    // BIRTHDAY — UTC 00, unchanged
+    // BIRTHDAY, UTC 00, unchanged
     if (hourUtc === 0 && p.date_of_birth) {
       const dob = new Date(p.date_of_birth);
       const dobMd = `${String(dob.getUTCMonth() + 1).padStart(2, "0")}-${String(dob.getUTCDate()).padStart(2, "0")}`;
@@ -143,7 +143,7 @@ Deno.serve(async (req) => {
       }
     }
 
-    // GOOD MORNING — UTC 8, unchanged
+    // GOOD MORNING, UTC 8, unchanged
     if (hourUtc === 8 && !(await alreadySentTodayUtc(supabase, p.user_id, "good_morning"))) {
       await sendNotification(p.user_id, "good_morning", {
         streak: streak?.current_streak ?? 0,
@@ -152,7 +152,7 @@ Deno.serve(async (req) => {
       stats.good_morning++;
     }
 
-    // STREAK AT RISK — per-user local 20:00; evaluate member's local today.
+    // STREAK AT RISK, per-user local 20:00; evaluate member's local today.
     if (local.hour === 20 && (streak?.current_streak ?? 0) > 0) {
       // Log rows are written with the member's local calendar day, so the
       // member's local today is the only date we need to read.
@@ -187,7 +187,7 @@ Deno.serve(async (req) => {
       }
     }
 
-    // COMMUNITY MISSION — random UTC hour
+    // COMMUNITY MISSION, random UTC hour
     if (hourUtc === missionHour && (unansweredCount ?? 0) > 0) {
       if (!(await alreadySentTodayUtc(supabase, p.user_id, "community_mission"))) {
         await sendNotification(p.user_id, "community_mission", {

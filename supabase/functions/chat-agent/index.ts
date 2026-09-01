@@ -35,7 +35,7 @@ const SERVICE_ROLE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY")!;
 const MODEL = "google/gemini-2.5-flash";
 
-const SYSTEM_PROMPT = `You are the conversational guide for The Diabetes Reset Method — a self-guided educational membership for adults managing Type 2 diabetes or prediabetes. Not a coaching program. Not 1:1 coaching. Not a medical service.
+const SYSTEM_PROMPT = `You are the conversational guide for The Diabetes Reset Method, a self-guided educational membership for adults managing Type 2 diabetes or prediabetes. Not a coaching program. Not 1:1 coaching. Not a medical service.
 
 What it is: small daily actions, meal ideas, tracking tools, educational membership support and printable reports for health visits. It does not diagnose, treat, cure or promise to reverse diabetes, and you must never claim or imply otherwise. Members keep their own doctor; the membership supports daily execution only.
 
@@ -47,7 +47,7 @@ The offer (single path):
 - Cancel inside the first 14 days and there is no monthly charge
 
 
-VOICE — non-negotiable:
+VOICE, non-negotiable:
 - SHORT. Two to four sentences max unless they ask for detail. No essays.
 - Direct and sales-aware. You're guiding someone toward starting the $27 reset, not narrating a brochure.
 - Plainspoken. Never clinical, never "AI-ish" ("I'd be happy to assist you today!" → banned). Never corporate-warm ("That's a powerful goal" → banned).
@@ -57,26 +57,26 @@ VOICE — non-negotiable:
 HARD RULES:
 - Educational, not medical advice. Emergency symptoms (chest pain, very low/high blood sugar, fainting) → tell them to call their doctor or emergency services NOW.
 - Never diagnose. Never recommend medication changes. Medical decisions = "talk to your doctor."
-- Not for type 1 diabetes — say so plainly if asked.
+- Not for type 1 diabetes, say so plainly if asked.
 - Be honest about pricing. Never dodge.
-- We do NOT offer 1:1 coaching, Calendly sessions, a $497 program, WhatsApp broadcasts, supplements, fasting scheduling, automatic device syncing or personalized health AI. Never mention or imply any of those. If asked for human/1:1 support, say it's a self-guided app with an educational Q&A library and community support, and that's intentional — it's what keeps it affordable.
+- We do NOT offer 1:1 coaching, Calendly sessions, a $497 program, WhatsApp broadcasts, supplements, fasting scheduling, automatic device syncing or personalized health AI. Never mention or imply any of those. If asked for human/1:1 support, say it's a self-guided app with an educational Q&A library and community support, and that's intentional, it's what keeps it affordable.
 - Describe only what exists today: a daily action, meal ideas and recipes, tracking for blood glucose, A1C, weight, measurements and habits, progress trends, educational content, printable reports for health visits, and the member Ask and community tools.
-- Product-capability and navigation questions ("what are the features?", "can I track my A1C?", "where do I log my weight?") are NOT medical questions — answer them plainly. Only requests for interpretation, treatment, targets, medication changes or symptom help go to the medical protocol.
+- Product-capability and navigation questions ("what are the features?", "can I track my A1C?", "where do I log my weight?") are NOT medical questions, answer them plainly. Only requests for interpretation, treatment, targets, medication changes or symptom help go to the medical protocol.
 
 MEDICAL-QUESTION PROTOCOL (hard):
 If the user asks a medical question (dosage, "should I take X", "is this safe with my meds", "what does this lab number mean", interpreting symptoms), do NOT answer the medical part. Respond like:
-"That's one for your doctor — I'm here to support your lifestyle, not to replace your medical team. Want me to point you to how the reset would fit alongside what they've got you on?"
+"That's one for your doctor, I'm here to support your lifestyle, not to replace your medical team. Want me to point you to how the reset would fit alongside what they've got you on?"
 Always pivot back to lifestyle/program scope.
 
 When someone shares health info (A1C, meds, symptoms): acknowledge in ONE line, ask ONE clarifying question, then point back to what the membership actually provides. Never promise an outcome.
 
 MEMORY RULES (B1):
 - Only reference prior conversation details that appear in the MEMORY block below. Never invent past context.
-- Before referencing any PHI from memory (meds, A1C, conditions, symptoms), confirm identity first ("just so I'm not mixing you up — you're [name], right?"). One confirmation per session is enough.
+- Before referencing any PHI from memory (meds, A1C, conditions, symptoms), confirm identity first ("just so I'm not mixing you up, you're [name], right?"). One confirmation per session is enough.
 - If MEMORY says "no prior history", treat as a first-time visitor. NEVER fake continuity.
 
 CTA TRIGGER:
-When the conversation reaches a clear buying moment — they ask how to start, ask the price after you've explained value, say "okay let's do it" or similar — keep your reply SHORT. The server attaches its own approved membership link to your message. Never paste, invent or describe a link or button yourself, and never refer to "the button below".`;
+When the conversation reaches a clear buying moment, they ask how to start, ask the price after you've explained value, say "okay let's do it" or similar, keep your reply SHORT. The server attaches its own approved membership link to your message. Never paste, invent or describe a link or button yourself, and never refer to "the button below".`;
 
 interface ChatRequest {
   session_token?: string;
@@ -147,7 +147,7 @@ async function classifyMessage(content: string): Promise<Classifier> {
 
 /**
  * Structured, server-approved action. The path always comes from the
- * PUBLIC_CHAT_DESTINATIONS allow-list — model output never produces a link.
+ * PUBLIC_CHAT_DESTINATIONS allow-list, model output never produces a link.
  */
 function buildAction(action: FaqAction | null) {
   if (!action || !isApprovedChatPath(action.path)) return null;
@@ -366,7 +366,7 @@ Deno.serve(async (req) => {
       conversationId = conv.id;
     }
 
-    // Classify (non-health traffic only — health messages never reach the gateway)
+    // Classify (non-health traffic only, health messages never reach the gateway)
     const classifier = await classifyMessage(body.message);
 
     // Belt and braces: if the classifier still flags PHI while the gate is
@@ -399,7 +399,7 @@ Deno.serve(async (req) => {
     });
     if (msgErr) throw msgErr;
 
-    // Activity event — every chat_turn (drives ranking + retention)
+    // Activity event, every chat_turn (drives ranking + retention)
     await supabase.from("activity_events").insert({
       visitor_profile_id: profile.id,
       user_id: profile.user_id,
@@ -407,10 +407,10 @@ Deno.serve(async (req) => {
       metadata: { intent: classifier.intent, topic: classifier.topic },
     });
 
-    // Medical-question hard handoff — no LLM call needed
+    // Medical-question hard handoff, no LLM call needed
     if (classifier.intent === "medical_question") {
       const handoff =
-        "That's a question for your doctor — I'm not qualified to give medical advice. What I can help with is how the program works and whether it might be right for you.";
+        "That's a question for your doctor, I'm not qualified to give medical advice. What I can help with is how the program works and whether it might be right for you.";
       await supabase.from("messages").insert({
         conversation_id: conversationId,
         visitor_profile_id: profile.id,
@@ -456,7 +456,7 @@ Deno.serve(async (req) => {
 
     const hasPriorHistory = (priorConvos?.length ?? 0) > 0;
 
-    // B2.3 Pricing-objection return — did they object on price previously and never buy?
+    // B2.3 Pricing-objection return, did they object on price previously and never buy?
     let pricingObjectionReturn = false;
     if (hasPriorHistory && profile.user_id) {
       const { data: pastObjections } = await supabase
@@ -493,14 +493,14 @@ Deno.serve(async (req) => {
       memoryLines.push(
         summaries
           ? `Prior conversation summaries:\n${summaries}`
-          : "Prior conversations exist but no summary yet — speak as if briefly catching up, do not invent details.",
+          : "Prior conversations exist but no summary yet, speak as if briefly catching up, do not invent details.",
       );
     } else {
       memoryLines.push("No prior history.");
     }
     if (pricingObjectionReturn) {
       memoryLines.push(
-        "SIGNAL: This person previously hesitated on price and did not buy. Lead with value framing — what $27 actually unlocks today, the 14 days of access at US$27, and that cancelling inside those 14 days avoids the monthly charge. Do not discount.",
+        "SIGNAL: This person previously hesitated on price and did not buy. Lead with value framing, what $27 actually unlocks today, the 14 days of access at US$27, and that cancelling inside those 14 days avoids the monthly charge. Do not discount.",
       );
     }
 
@@ -509,7 +509,7 @@ Deno.serve(async (req) => {
     const greetingNote = isReturning
       ? authedName
         ? `\n\nCONTEXT: Returning authenticated visitor named ${authedName}. If this looks like the first message of a new session, greet by first name briefly ("Hey ${authedName.split(" ")[0]}, good to see you back").`
-        : `\n\nCONTEXT: Returning visitor (same browser). If this looks like the first message of a new session, greet like someone returning — brief, familiar, no re-introduction.`
+        : `\n\nCONTEXT: Returning visitor (same browser). If this looks like the first message of a new session, greet like someone returning, brief, familiar, no re-introduction.`
       : `\n\nCONTEXT: First time talking to this visitor.`;
 
     const memoryBlock = `\n\nMEMORY:\n${memoryLines.join("\n")}`;

@@ -1,4 +1,4 @@
-// Phase C2 — Compute engagement scores nightly.
+// Phase C2, Compute engagement scores nightly.
 // score = 0.30 spend + 0.25 content + 0.20 conversation + 0.15 recency + 0.10 consistency
 // All sub-scores normalized 0..1. Results upserted into visitor_engagement_scores
 // keyed by visitor_profile_id. Reads from activity_events + orders.
@@ -71,7 +71,7 @@ Deno.serve(async (req) => {
         }
       }
 
-      // Spend — sum paid orders by email-linked user OR by visitor.user_id
+      // Spend, sum paid orders by email-linked user OR by visitor.user_id
       let totalPaid = 0;
       let lastPurchaseAt: string | null = null;
       if (p.user_id) {
@@ -106,7 +106,7 @@ Deno.serve(async (req) => {
         0.15 * recency_score +
         0.10 * consistency_score;
 
-      // Last conversation theme — most recent message classifier.topic
+      // Last conversation theme, most recent message classifier.topic
       const { data: lastMsg } = await supabase
         .from("messages")
         .select("classifier, created_at")
@@ -117,7 +117,7 @@ Deno.serve(async (req) => {
         .maybeSingle();
       const theme = (lastMsg?.classifier as { topic?: string } | null)?.topic ?? null;
 
-      // Open questions — last 5 user turns with intent=question and no assistant follow-up
+      // Open questions, last 5 user turns with intent=question and no assistant follow-up
       const { data: openQ } = await supabase
         .from("messages")
         .select("content, classifier, created_at")

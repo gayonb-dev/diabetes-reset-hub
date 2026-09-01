@@ -1,4 +1,4 @@
-// MIRROR of src/lib/calendarDay.ts — do not edit directly.
+// MIRROR of src/lib/calendarDay.ts, do not edit directly.
 // Regenerate with: scripts/sync-calendar-day.sh
 //
 // One implementation of "what calendar day is it for THIS member?" shared by
@@ -10,7 +10,7 @@
 // Rules:
 //   * Every call takes an explicit instant and an explicit IANA zone.
 //   * An invalid, empty or unsupported zone falls back to FALLBACK_TIMEZONE.
-//   * Audit/security timestamps stay UTC — do NOT use this module for those.
+//   * Audit/security timestamps stay UTC, do NOT use this module for those.
 
 export const FALLBACK_TIMEZONE = "America/New_York";
 

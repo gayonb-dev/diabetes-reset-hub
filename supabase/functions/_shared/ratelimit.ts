@@ -6,7 +6,7 @@
 // rate-limit bucket is an HMAC of ONE value: `cf-connecting-ip`.
 //
 // `cf-connecting-ip` is the only header this platform sets itself and that a
-// caller provably cannot influence — empirically demonstrated on this
+// caller provably cannot influence, empirically demonstrated on this
 // deployment with the staging ingress probe: a request that supplies
 // `cf-connecting-ip: <spoof>` yields exactly the same keyed digest as a clean
 // request, while `x-forwarded-for`, `x-real-ip`, `true-client-ip`,

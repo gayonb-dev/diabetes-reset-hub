@@ -1,5 +1,5 @@
 /**
- * B3 — trusted checkout redirects.
+ * B3, trusted checkout redirects.
  *
  * Stripe success, cancel and portal-return URLs are derived from the
  * server-held canonical domain only. The browser `Origin` header is used for

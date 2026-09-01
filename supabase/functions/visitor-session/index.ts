@@ -55,7 +55,7 @@ Deno.serve(async (req) => {
     });
     if (!perCaller) return json(req, { error: "rate_limited" }, 429);
 
-    // SECONDARY abuse ceiling only — deliberately far above the per-caller
+    // SECONDARY abuse ceiling only, deliberately far above the per-caller
     // limit so it can never be the effective control for a single visitor.
     const ceiling = await consumeRateLimit(admin, {
       scope: "session_start_ceiling",

@@ -146,7 +146,7 @@ const FAQ_ANSWERS: Record<FaqKey, FaqAnswer> = {
   login: {
     key: "login",
     body:
-      "Sign in from the Login page. Enter the email address on your membership and we send a secure one-time sign-in link — there's no password to remember. If the link doesn't arrive, check your spam folder.",
+      "Sign in from the Login page. Enter the email address on your membership and we send a secure one-time sign-in link, there's no password to remember. If the link doesn't arrive, check your spam folder.",
     action: { label: "Go to Login", path: "/login" },
   },
   cancel: {
@@ -177,11 +177,11 @@ const FAQ_ANSWERS: Record<FaqKey, FaqAnswer> = {
  */
 const SIGNUP_CONTEXT_INTENTS = new Set(["faq_about", "faq_price", "faq_signup", "purchase_intent"]);
 
-/** Bare affirmatives / "how?" — only meaningful with signup context. */
+/** Bare affirmatives / "how?", only meaningful with signup context. */
 const AFFIRMATIVE_RE =
   /^(yes|yeah|yep|yup|ok|okay|sure|please|go on|yes please|how|how\?|yes how|yes how\?|yes,? how( do i)?\??|ok how\??)[.!?]*$/i;
 
-/** Explicit signup requests — always safe to answer with the pricing action. */
+/** Explicit signup requests, always safe to answer with the pricing action. */
 const EXPLICIT_SIGNUP_RE =
   /\b(send me the link|the link|how do i (join|sign ?up|start|get started|enroll)|where do i start|sign me up|i'?m ready|i am ready|how do i become a member|join now|get started)\b/i;
 

@@ -32,7 +32,7 @@ Deno.serve(async (req) => {
   const userId = await verifiedUserId(admin, req);
   if (!userId) return json(req, { error: "unauthenticated" }, 401);
 
-  // Part 7. Temporary throttle only — erasure is a right, so this pauses a
+  // Part 7. Temporary throttle only, erasure is a right, so this pauses a
   // burst of repeated clicks and expires on its own. It is never a denial.
   const delGuard = await guardRequest(admin, req, {
     scope: "request-account-deletion",

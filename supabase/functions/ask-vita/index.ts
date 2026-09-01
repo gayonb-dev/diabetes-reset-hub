@@ -79,7 +79,7 @@ and food that work with their hunger, medicines, activity and daily schedule.
 Blood sugar peaks at approximately 72 minutes post-meal and returns toward baseline
 after roughly two hours, so a later snack avoids stacking onto still-elevated blood sugar.
 When a member's meals are already spaced 4–5 hours apart, a snack is NOT needed and the
-app does not show snack rows that day — never tell a member to add one for the sake of it.
+app does not show snack rows that day, never tell a member to add one for the sake of it.
 Never state a fixed clock time for a snack; the member's own schedule is on the Fasting tab.
 Members on insulin or sulfonylureas should not skip snacks without their doctor's guidance.
 
@@ -93,7 +93,7 @@ INTERMITTENT FASTING:
 Fasting is optional and DRM scheduling tools are currently unavailable. Do not give a
 fasting protocol, window, or schedule.
 
-BLOOD SUGAR REFERENCE POINTS (general laboratory reference only — never interpret a member's own
+BLOOD SUGAR REFERENCE POINTS (general laboratory reference only, never interpret a member's own
 value, never label a person, and never state or imply a diagnosis):
 These are general laboratory reference points, not a diagnosis or personal target. A healthcare
 professional should interpret results in context. Targets are individualized; tell the member to use
@@ -220,7 +220,7 @@ Deno.serve(async (req) => {
 
     const admin = createClient(SUPABASE_URL, SERVICE_ROLE);
 
-    // 0) Deterministic medical safety layer — runs before any model call.
+    // 0) Deterministic medical safety layer, runs before any model call.
     const safety = classifyQuestion(question);
     if (safety.blocked) {
       await admin.from("vita_similarity_log").insert({

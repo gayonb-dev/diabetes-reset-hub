@@ -1,4 +1,4 @@
-// Batch 2 closeout — immutable order ownership.
+// Batch 2 closeout, immutable order ownership.
 //
 // `orders` RLS now grants a member read access only through an immutable,
 // server-established relationship (`orders.user_id`, or `orders.subscription_id`
@@ -9,7 +9,7 @@
 // This helper closes that gap. It is deliberately narrow:
 //
 //   * the email is taken from the SERVER-retrieved Stripe session or from the
-//     stored order row — never from a request body, URL, browser state or
+//     stored order row, never from a request body, URL, browser state or
 //     caller-supplied metadata;
 //   * the account is resolved through the shared admin resolver, so an account
 //     past the first Auth page is still found;

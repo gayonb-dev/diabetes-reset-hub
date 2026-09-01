@@ -56,7 +56,7 @@ async function countOf(
 /**
  * Builds the processor list for one member from observed data. Categories with
  * no data are recorded as `not_applicable` with the basis stated, rather than
- * omitted (so the receipt shows what was considered) — and never as a
+ * omitted (so the receipt shows what was considered), and never as a
  * fabricated completed revocation.
  */
 export async function buildProcessorItems(

@@ -1,4 +1,4 @@
-// dexcom-sync — verify_jwt = false; auth enforced in code via three explicit branches:
+// dexcom-sync, verify_jwt = false; auth enforced in code via three explicit branches:
 //   1) x-cron-secret header (constant-time compare) → cron mode: iterate every connection.
 //   2) Bearer JWT → sync ONLY the authenticated user's own connection; body.member_id is ignored.
 //   3) Neither → 401.
@@ -79,7 +79,7 @@ async function refreshIfNeeded(conn: ConnRow): Promise<string> {
   const soonMs = Date.now() + 120 * 1000;
   const expiresAt = parseDexcomTime(conn.expires_at);
   if (expiresAt === null) {
-    // An unparseable expires_at must never reach a Date comparison — treat the
+    // An unparseable expires_at must never reach a Date comparison, treat the
     // token as expired and refresh instead.
     console.warn("[dexcom-sync] invalid expires_at, forcing refresh");
   } else if (expiresAt.getTime() > soonMs) {
@@ -233,7 +233,7 @@ Deno.serve(async (req) => {
     if (!(await dexcomEnabled(admin))) {
       return json(503, { error: "dexcom_disabled" });
     }
-    // Three-branch auth — no fallthrough.
+    // Three-branch auth, no fallthrough.
     const cronHeader = req.headers.get("x-cron-secret");
     const authHeader = req.headers.get("Authorization");
     let mode: "cron" | "user";
@@ -268,7 +268,7 @@ Deno.serve(async (req) => {
         // Surface a member-actionable message instead of throwing.
         if (e instanceof TokenDecryptError) {
           const msg =
-            "Your Dexcom connection needs to be reconnected — please disconnect and connect again in Settings.";
+            "Your Dexcom connection needs to be reconnected, please disconnect and connect again in Settings.";
           console.error("sync skipped (undecryptable tokens)");
           await markError(conn.member_id, msg);
           results.push({ member_id: conn.member_id, ok: false, error: msg });

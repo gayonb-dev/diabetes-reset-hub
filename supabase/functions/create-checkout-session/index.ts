@@ -20,7 +20,7 @@ interface CheckoutRequest {
 }
 
 
-// Prompt 4 closeout — retired offer keys. These are rejected with HTTP 410
+// Prompt 4 closeout, retired offer keys. These are rejected with HTTP 410
 // BEFORE any Stripe client is constructed, any Stripe call is made, or any
 // order row is written. The retired $497 6-week program is permanently gone.
 const RETIRED_PRODUCTS = new Set([
@@ -132,7 +132,7 @@ serve(async (req) => {
     const isInstallment = paymentPlan === "installment" && product.installmentAmount;
     const amount = isInstallment ? product.installmentAmount! : product.amount;
     const productName = isInstallment
-      ? `${product.name} — Payment 1 of ${product.installmentCount}`
+      ? `${product.name}, Payment 1 of ${product.installmentCount}`
       : product.name;
 
     // Set redirect based on product

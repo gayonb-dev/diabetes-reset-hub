@@ -46,7 +46,7 @@ serve(async (req) => {
 
     const lowerEmail = email.toLowerCase();
 
-    // Only allow paid customers — prevents using this endpoint to spam the coach
+    // Only allow paid customers, prevents using this endpoint to spam the coach
     const { data: paidOrder } = await supabaseAdmin
       .from("orders")
       .select("id")

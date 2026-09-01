@@ -68,7 +68,7 @@ Deno.serve(async (req) => {
       });
     }
 
-    // 1. Find subscription id — prefer local row.
+    // 1. Find subscription id, prefer local row.
     const { data: subRow } = await supa
       .from("subscriptions")
       .select("stripe_subscription_id, stripe_customer_id")

@@ -7,7 +7,7 @@
 //
 // Staging lists its exact preview origin. Production lists the DRM production
 // origin plus any additional owner-approved exact origin. Nothing else is
-// accepted — an unrelated Lovable project, a lookalike domain, localhost, and
+// accepted, an unrelated Lovable project, a lookalike domain, localhost, and
 // a missing Origin are all rejected.
 
 function normalize(value: string): string | null {
@@ -73,7 +73,7 @@ export function preflight(req: Request): Response | null {
 /**
  * Browser-facing guard. Rejects BEFORE any work is performed when the request
  * carries no Origin or an unapproved Origin. Omitting the response header is
- * not sufficient — a non-browser client would ignore it.
+ * not sufficient, a non-browser client would ignore it.
  *
  * Returns a 403 Response to return immediately, or null to continue.
  */

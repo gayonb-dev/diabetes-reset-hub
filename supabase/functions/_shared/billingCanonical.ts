@@ -1,4 +1,4 @@
-// B4 — canonical billing vocabulary, webhook idempotency and ordering.
+// B4, canonical billing vocabulary, webhook idempotency and ordering.
 //
 // ADDITIVE ONLY. Nothing here rewrites an existing `orders` or `subscriptions`
 // row. Stripe's raw vocabulary is preserved on those tables exactly as it
@@ -63,7 +63,7 @@ export const NO_CONDITIONS: SubscriptionConditions = {
 
 /**
  * Maps a raw Stripe (or legacy local) order/payment status onto the canonical
- * order vocabulary. Unknown values map to `pending`, never to `paid` — an
+ * order vocabulary. Unknown values map to `pending`, never to `paid`, an
  * unrecognised status must never be read as "money arrived".
  */
 export function canonicalOrderStatus(raw: unknown): CanonicalOrderStatus {
@@ -201,9 +201,9 @@ export interface EventOrderingFacts {
  * Stripe does not guarantee delivery order, and retries mean the same event
  * can arrive many times. Two protections, in this order:
  *
- *  1. Idempotency — a `stripe_event_id` is claimed exactly once (unique index),
+ *  1. Idempotency, a `stripe_event_id` is claimed exactly once (unique index),
  *     so a redelivery is a no-op rather than a second mutation.
- *  2. Ordering — if an older event overtakes a newer one, applying its payload
+ *  2. Ordering, if an older event overtakes a newer one, applying its payload
  *     would roll state backwards (classic symptom: a cancelled member flipping
  *     back to active). Instead of applying stale contents, the caller
  *     re-retrieves the object from Stripe.

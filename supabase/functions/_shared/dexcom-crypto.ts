@@ -1,6 +1,6 @@
 // Shared Dexcom token crypto helpers.
 // Single source of truth so the encode (write) and decode (read) sides can never
-// drift apart again — the previous inline duplicates caused raw Uint8Arrays to be
+// drift apart again, the previous inline duplicates caused raw Uint8Arrays to be
 // JSON-serialized into bytea columns, producing "iv length not equal to 12 or 16".
 
 const TOKEN_ENC_KEY = Deno.env.get("DEXCOM_TOKEN_ENC_KEY") ?? "";
@@ -13,7 +13,7 @@ export function hexToBytes(hex: string): Uint8Array {
 
 /**
  * Postgres bytea hex input format. MUST be used for every write of encrypted
- * bytes through PostgREST — a raw Uint8Array serializes to {"0":12,...}.
+ * bytes through PostgREST, a raw Uint8Array serializes to {"0":12,...}.
  */
 export function bytesToPgHex(bytes: Uint8Array): string {
   return "\\x" + [...bytes].map((b) => b.toString(16).padStart(2, "0")).join("");

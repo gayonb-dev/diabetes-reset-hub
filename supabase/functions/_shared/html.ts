@@ -1,6 +1,6 @@
 /**
  * Escape untrusted text (AI output, member text, stored summaries) at the final
- * HTML render boundary. Never escape before storage — that double-encodes and
+ * HTML render boundary. Never escape before storage, that double-encodes and
  * does not protect other output contexts.
  */
 export function escapeHtml(value: unknown): string {

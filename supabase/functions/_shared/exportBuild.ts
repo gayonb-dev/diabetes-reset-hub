@@ -153,7 +153,7 @@ export async function buildSnapshot(
 
 export function snapshotReadme(snap: Snapshot): string {
   const lines = [
-    "The Diabetes Reset Method — your data export",
+    "The Diabetes Reset Method, your data export",
     "",
     `Exported at: ${snap.meta.exported_at} (UTC)`,
     "",

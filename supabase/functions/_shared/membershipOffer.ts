@@ -90,7 +90,7 @@ export function decideCheckoutState(
   const expectLive = config.stripeMode === "live";
   if (session.livemode !== expectLive) return "unverified";
 
-  // 2. Offer structure — server-held values only.
+  // 2. Offer structure, server-held values only.
   if (session.mode !== MEMBERSHIP_OFFER.checkoutMode) return "unverified";
   if ((session.currency || "").toLowerCase() !== MEMBERSHIP_OFFER.currency) return "unverified";
 
