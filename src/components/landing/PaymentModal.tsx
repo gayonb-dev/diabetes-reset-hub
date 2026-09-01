@@ -147,26 +147,29 @@ const PaymentModal = forwardRef<HTMLDivElement, PaymentModalProps>(
                 id="checkout-modal-title"
                 className="font-heading font-bold text-2xl text-center text-foreground mb-4 pr-8"
               >
-                Start 14 days for $27
+                Start your first 14 days
               </h2>
 
               <div className="rounded-lg border border-border bg-muted/40 p-4 mb-5 text-sm">
-                <p className="text-foreground font-medium">
-                  $27 today, then $67/month after 14 days until canceled.
-                </p>
+                <p className="text-foreground font-medium">Diabetes Reset Method membership</p>
+                <p className="text-foreground font-medium mt-1 tabular-nums">$27 charged today</p>
                 <p className="text-muted-foreground mt-1">
-                  Cancel inside the app at any time. Access continues through the period you already
-                  paid for.
+                  Your membership continues at $67/month after 14 days unless you cancel.
                 </p>
-                <p className="mt-2">
-                  <Link to="/refunds" className="text-primary underline underline-offset-4">
-                    Refund Terms
-                  </Link>
-                  {" · "}
-                  <Link to="/terms" className="text-primary underline underline-offset-4">
-                    Terms
-                  </Link>
-                </p>
+                <ul className="mt-3 space-y-1.5 text-muted-foreground">
+                  {[
+                    "Immediate access after payment confirmation",
+                    "Cancel directly in Settings or Billing",
+                    "No cancellation phone call or retention survey",
+                    "30-day refund-request window on each charge",
+                    "Your healthcare professional stays in charge",
+                  ].map((item) => (
+                    <li key={item} className="flex items-start gap-2">
+                      <Check className="h-3.5 w-3.5 mt-1 text-primary flex-shrink-0" aria-hidden="true" />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
 
               {errors.general && (
@@ -238,12 +241,28 @@ const PaymentModal = forwardRef<HTMLDivElement, PaymentModalProps>(
                       Processing…
                     </>
                   ) : (
-                    "Continue to secure checkout"
+                    "Pay $27 and start my membership"
                   )}
                 </Button>
               </form>
 
-              <div className="flex items-center justify-center gap-2 mt-4 text-xs text-muted-foreground">
+              <p className="text-center text-xs text-muted-foreground mt-4">
+                By continuing, you agree to the{" "}
+                <Link to="/terms" className="underline underline-offset-4">
+                  Terms
+                </Link>
+                ,{" "}
+                <Link to="/privacy" className="underline underline-offset-4">
+                  Privacy Policy
+                </Link>
+                , and{" "}
+                <Link to="/refunds" className="underline underline-offset-4">
+                  Refund Terms
+                </Link>
+                .
+              </p>
+
+              <div className="flex items-center justify-center gap-2 mt-3 text-xs text-muted-foreground">
                 <Lock className="h-3 w-3" aria-hidden="true" />
                 <span>Secure payment processing by Stripe</span>
               </div>
