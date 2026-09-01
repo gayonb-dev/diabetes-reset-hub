@@ -1,23 +1,22 @@
-import { Check, Lock, Shield, Zap } from "lucide-react";
+import { Check } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import ScrollReveal from "./ScrollReveal";
 import { useCheckout } from "./CheckoutContext";
 
 const INCLUDED = [
-  "Guided Today actions",
-  "Meal-planning tools and recipes",
-  "Movement and habit tools",
-  "Progress tracking",
-  "Ask/VITA educational support",
-  "Community features",
-  "Printable healthcare-visit report",
-];
-
-const TRUST_BADGES = [
-  { icon: Lock, text: "Secure checkout" },
-  { icon: Zap, text: "Access begins after your payment is confirmed" },
-  { icon: Shield, text: "Cancel in the app" },
+  "One guided daily action",
+  "Meal planning, recipes, and meal swaps",
+  "Shopping-list tools",
+  "Water, meal, movement, mindset, and progress logging",
+  "Blood sugar, A1C, weight, and measurement records",
+  "Educational guides",
+  "Ask VITA and published educational answers",
+  "Optional member-community participation",
+  "Printable progress reports",
+  "Guided workouts as they unlock from Day 29",
+  "In-app support",
+  "Cancellation through Settings or Billing",
 ];
 
 const PricingSection = () => {
@@ -31,7 +30,7 @@ const PricingSection = () => {
             Simple membership pricing
           </p>
           <h2 className="font-heading font-bold text-3xl sm:text-4xl text-center text-foreground mb-8">
-            Start with 14 days for $27
+            Start with 14 days for $27.
           </h2>
         </ScrollReveal>
 
@@ -42,21 +41,28 @@ const PricingSection = () => {
                 <p className="text-5xl font-heading font-bold text-primary tabular-nums">
                   $27 charged today
                 </p>
-                <p className="text-muted-foreground mt-2">Your first 14 days</p>
-                <p className="text-foreground font-medium mt-1 tabular-nums">
-                  Then $67/month until canceled
+                <p className="text-muted-foreground mt-3 tabular-nums">
+                  That works out to approximately $1.93 per day for the initial 14-day period.
+                </p>
+                <p className="text-xs text-muted-foreground mt-2">
+                  Equivalent daily cost only. You are billed once at $27.
                 </p>
               </div>
 
-              <div className="px-8 py-6 border-b border-border">
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  Your membership renews automatically at $67 per month after day 14 unless you
-                  cancel. Cancel inside the app at any time. When you cancel, access continues
-                  through the period you already paid for.
+              <div className="px-8 py-6 border-b border-border text-center">
+                <p className="text-foreground font-medium tabular-nums">
+                  Then $67/month until canceled
+                </p>
+                <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
+                  The $67 monthly membership begins after your first 14 days unless you cancel
+                  beforehand.
                 </p>
               </div>
 
               <div className="px-8 py-6">
+                <p className="font-heading font-semibold text-foreground mb-4">
+                  Your membership includes:
+                </p>
                 <ul className="space-y-3">
                   {INCLUDED.map((feature) => (
                     <li key={feature} className="flex items-start gap-3">
@@ -69,38 +75,27 @@ const PricingSection = () => {
                 </ul>
               </div>
 
-              <div className="px-8 pb-4">
+              <div className="px-8 pb-8">
                 <Button
                   onClick={openCheckout}
                   className="w-full min-h-[44px] bg-primary hover:bg-primary-dark text-primary-foreground py-5 text-lg font-bold rounded-xl h-auto shadow-lg"
                 >
-                  Start 14 days for $27
+                  Continue to secure checkout — $27 today
                 </Button>
                 <p className="text-center text-xs text-muted-foreground mt-3">
-                  Secure payment processing by Stripe. Full renewal terms appear before payment.
+                  You will be charged $27 today. Your membership renews at $67/month after 14 days
+                  unless you cancel.
                 </p>
                 <p className="text-center text-xs text-muted-foreground mt-2">
-                  Access begins after your payment is confirmed. The confirmation page shows whether
-                  your payment is confirmed or still processing.
-                </p>
-                <p className="text-center text-xs text-muted-foreground mt-2">
-                  30-day refund guarantee on each charge. Request it within 30 days under the{" "}
+                  Each charge has a 30-day refund-request window.{" "}
                   <Link to="/refunds" className="underline underline-offset-4">
                     Refund Terms
-                  </Link>
-                  .
+                  </Link>{" "}
+                  apply.
                 </p>
-              </div>
-
-              <div className="px-8 pb-8 pt-2">
-                <div className="grid grid-cols-3 gap-4">
-                  {TRUST_BADGES.map(({ icon: Icon, text }) => (
-                    <div key={text} className="text-center">
-                      <Icon className="h-5 w-5 text-muted-foreground mx-auto mb-1" aria-hidden="true" />
-                      <p className="text-xs text-muted-foreground">{text}</p>
-                    </div>
-                  ))}
-                </div>
+                <p className="text-center text-xs text-muted-foreground mt-2">
+                  Access begins after payment is confirmed.
+                </p>
               </div>
             </div>
 
