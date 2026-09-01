@@ -5,59 +5,56 @@ import ScrollReveal from "./ScrollReveal";
 
 export const FAQS = [
   {
-    question: "What do I receive during the first 14 days?",
+    question: "What am I charged today?",
     answer:
-      "You can use the Today actions, meal tools and recipes, movement and habit tools, progress tracking, Ask/VITA educational support, community features, and the printable report. Onboarding introduces the tools gradually so you do not need to learn everything at once.",
+      "You are charged $27 when your payment is confirmed. That payment gives you access to DRM for your first 14 days.",
   },
   {
-    question: "What does the membership cost?",
+    question: "What happens after the first 14 days?",
     answer:
-      "You are charged $27 at checkout for your first 14 days. Unless you cancel before renewal, the membership then renews automatically at $67 per month until canceled. Prices are in U.S. dollars.",
+      "Unless you cancel, your membership automatically continues at $67 per month until canceled.",
   },
   {
     question: "How do I cancel?",
     answer:
-      "Sign in and open Settings or Billing, then choose Cancel membership. Cancellation stops future renewal charges. You keep access through the period you already paid for. You do not need to call, email, or complete a retention survey to cancel.",
+      "Sign in and open Settings or Billing. You can cancel in the app without calling, emailing, completing a retention survey, or reviewing another offer.\n\nCancellation prevents the next renewal. Your access continues through the period you already paid for.",
   },
   {
-    question: "What is the refund policy?",
+    question: "Does canceling automatically give me a refund?",
     answer:
-      "Each $27 or $67 membership charge has a 30-day refund-request window. Submit the request from the email on your account through in-app Support or info@diabetesresetmethod.com. An approved refund cancels the membership and ends access when the refund is processed. Cancellation by itself does not request a refund, and account deletion is not a refund request. Read the complete Refund Terms before joining.",
+      "No. Cancellation and refunds are separate.\n\nEach $27 and $67 charge has a 30-day refund-request window. Use in-app Support or the contact method listed in the Refund Terms to submit a request. Refund Terms apply.",
   },
   {
-    question: "Does DRM replace my doctor or another healthcare professional?",
+    question: "Does DRM provide medical advice?",
     answer:
-      "No. DRM is a self-guided educational membership. It does not diagnose, treat, prescribe, monitor emergencies, or replace care from a doctor, pharmacist, dietitian, diabetes educator, or other qualified professional.",
+      "No. DRM provides self-guided educational tools. It does not diagnose conditions, prescribe treatment, change medication, or replace your healthcare professional.",
   },
   {
-    question: "Will DRM tell me to change medication?",
+    question: "Will DRM lower my glucose, A1C, weight, or medication needs?",
     answer:
-      "No. Never start, stop, or change medication based on DRM. Medication decisions belong with your qualified prescriber or pharmacist.",
+      "DRM does not promise any medical or weight outcome.\n\nIt provides educational tools for daily actions, meals, movement, logging, learning, and preparing for healthcare conversations. Individual health decisions remain between you and your qualified healthcare professional.",
   },
   {
-    question: "Are fasting or supplements required?",
-    answer:
-      "No. Fasting scheduling is unavailable, and supplements are not required. DRM does not sell a required supplement pack or use either one as a condition of progress.",
+    question: "Do I have to complete every daily action and use every tool?",
+    answer: "No. DRM is self-guided. Use the tools that fit your needs and routine.",
   },
   {
     question: "Is DRM for Type 1 diabetes?",
-    answer:
-      "No. The current membership was not designed or reviewed for Type 1 diabetes. Do not use DRM to make insulin or other treatment decisions.",
+    answer: "No. DRM is designed for adults managing Type 2 diabetes or prediabetes.",
   },
   {
-    question: "Does DRM use AI or share health information?",
+    question: "When do workouts become available?",
     answer:
-      "DRM stores the information you choose to enter to provide the membership. Health-sensitive AI processing is currently disabled. AI-generated content is labeled and educational only. Before any feature sends health information to an outside AI provider, DRM must show a separate consent choice. You can download or delete your data in Settings. Read the Privacy Notice, Consumer Health Data Privacy Policy, and AI Use Notice for details.",
+      "Guided workouts begin unlocking from Day 29. The membership includes other daily actions, meal tools, tracking, educational content, and reporting tools before then.",
   },
   {
-    question: "How much time does it take?",
-    answer:
-      "Many Today actions are designed to take about 10 minutes. You can use only the tools that are useful to you; you do not need to complete a large course or maintain a perfect streak.",
+    question: "When does my access begin?",
+    answer: "Your access begins after your payment is confirmed.",
   },
   {
     question: "What should I do in an emergency?",
     answer:
-      "Do not use DRM for emergency help. Contact local emergency services or a qualified healthcare professional. Follow your healthcare professional's existing safety plan for urgent glucose or other symptoms.",
+      "Do not use DRM for emergency help. Contact your local emergency services or an appropriate healthcare professional.",
   },
 ];
 
@@ -114,7 +111,9 @@ const FAQSection = () => {
                         className="overflow-hidden"
                       >
                         <div className="px-6 pb-6">
-                          <p className="text-muted-foreground leading-relaxed">{faq.answer}</p>
+                          <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
+                            {faq.answer}
+                          </p>
                         </div>
                       </motion.div>
                     )}
