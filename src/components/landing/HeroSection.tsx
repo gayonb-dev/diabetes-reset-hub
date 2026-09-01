@@ -1,4 +1,5 @@
 import { ArrowRight, Compass, ListChecks, Stethoscope, XCircle } from "lucide-react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { goToSection } from "@/lib/landingNav";
@@ -6,10 +7,10 @@ import { PREVIEWS } from "./previewManifest";
 import { useCheckout } from "./CheckoutContext";
 
 const TRUST_ROW = [
-  { icon: Compass, label: "Self-guided membership" },
-  { icon: ListChecks, label: "Clear daily actions" },
-  { icon: Stethoscope, label: "Keep your healthcare professional in charge" },
-  { icon: XCircle, label: "Cancel in the app" },
+  { icon: Compass, label: "One clear action each day" },
+  { icon: ListChecks, label: "Practical tools in one place" },
+  { icon: Stethoscope, label: "Your healthcare professional stays in charge" },
+  { icon: XCircle, label: "Cancel directly in the app" },
 ];
 
 const HeroSection = () => {
@@ -28,24 +29,31 @@ const HeroSection = () => {
             transition={{ duration: 0.7, ease: [0.25, 0.4, 0.25, 1] }}
           >
             <p className="text-sm font-bold tracking-widest uppercase text-primary">
-              A self-guided Type 2 diabetes membership
+              Self-guided support for adults with Type 2 diabetes or prediabetes
             </p>
 
             <h1 className="font-heading font-bold text-4xl sm:text-5xl lg:text-6xl text-foreground leading-tight">
-              A simpler daily system for managing Type 2 diabetes
+              Stop wondering what to focus on for your diabetes today.
             </h1>
 
-            <p className="font-body text-lg sm:text-xl text-muted-foreground leading-relaxed">
-              Use guided daily actions, practical meal tools, progress tracking, and printable
-              reports to build habits between healthcare visits.
-            </p>
+            <div className="font-body text-lg sm:text-xl text-muted-foreground leading-relaxed space-y-3">
+              <p>
+                You have already heard the advice: think about your meals, move more, track your
+                numbers, prepare for appointments.
+              </p>
+              <p>The hard part is turning all of that into a day you can actually follow.</p>
+              <p>
+                Diabetes Reset Method gives you one clear daily action—plus practical meal,
+                movement, tracking, educational, and reporting tools—all in one membership.
+              </p>
+            </div>
 
             <div className="flex flex-col sm:flex-row gap-3">
               <Button
                 onClick={openCheckout}
                 className="w-full sm:w-auto min-h-[44px] bg-primary hover:bg-primary-dark text-primary-foreground px-8 py-5 text-lg font-bold rounded-xl h-auto shadow-lg"
               >
-                Start 14 days for $27
+                Start my first 14 days — $27
                 <ArrowRight className="ml-2 h-5 w-5" aria-hidden="true" />
               </Button>
               <Button
@@ -53,15 +61,23 @@ const HeroSection = () => {
                 onClick={() => goToSection("inside-the-membership")}
                 className="w-full sm:w-auto min-h-[44px] px-8 py-5 text-lg font-semibold rounded-xl h-auto border-primary/40"
               >
-                See inside the membership
+                See exactly what’s inside
               </Button>
             </div>
 
             <p className="text-sm text-foreground font-medium">
-              $27 today for the first 14 days. Then $67/month until canceled. Cancel in the app.
+              $27 charged today for your first 14 days. Then $67/month until canceled. Cancel in the
+              app.
             </p>
             <p className="text-sm text-muted-foreground">
-              Educational support—not diagnosis, treatment, or emergency care.
+              Each charge has a 30-day refund-request window.{" "}
+              <Link to="/refunds" className="underline underline-offset-4">
+                Refund Terms
+              </Link>{" "}
+              apply.
+            </p>
+            <p className="text-sm text-muted-foreground">
+              Self-guided education—not diagnosis, treatment, prescriptions, or emergency care.
             </p>
           </motion.div>
 
@@ -86,14 +102,14 @@ const HeroSection = () => {
             </div>
             <figcaption className="p-3 flex flex-wrap items-center justify-between gap-2">
               <span className="text-xs text-muted-foreground">
-                The actual Today screen · illustrative example entries
+                Actual DRM app screen · Illustrative example entries
               </span>
               <button
                 type="button"
                 onClick={() => goToSection("product-tour")}
                 className="min-h-[44px] text-sm font-semibold text-primary underline"
               >
-                See the full tour
+                See more real app screens
               </button>
             </figcaption>
           </motion.figure>
