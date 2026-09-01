@@ -11,7 +11,7 @@ interface Props {
 }
 
 /**
- * Section 36 — Phase 1 Extension trigger.
+ * Section 36, Phase 1 Extension trigger.
  * On Day 15 morning, if fewer than 10 qualifying Phase 1 days were logged
  * (all 3 plate items + water target), present the bonus-round VITA card
  * and flip `phase_1_extension_active` to true.
@@ -38,7 +38,7 @@ export default function Phase1ExtensionPrompt({ currentProgramDay, enabled }: Pr
       if (cancelled) return;
 
       if (vp?.phase_1_extension_active) {
-        // Already activated — no need to re-prompt
+        // Already activated, no need to re-prompt
         return;
       }
 
@@ -97,7 +97,7 @@ export default function Phase1ExtensionPrompt({ currentProgramDay, enabled }: Pr
             Your bonus round
           </h2>
           <p className="text-[15px] text-secondary-fg leading-relaxed mb-6">
-            Before we unlock the next phase, we want your foundation solid — not because you're
+            Before we unlock the next phase, we want your foundation solid, not because you're
             behind, but because everything that comes next works better when the basics are second
             nature. Here are 7 more days. Think of this as your bonus round.
           </p>

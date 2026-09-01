@@ -3,7 +3,7 @@
 // Authentication and entitlement are separate decisions. This module answers
 // only the second half of the second one: "which surface does this path belong
 // to?". Whether that surface is reachable is decided exclusively by the shared
-// evaluator's `allowed_surfaces` — no component re-derives a status list.
+// evaluator's `allowed_surfaces`, no component re-derives a status list.
 
 import type { Surface } from "@/lib/membership";
 

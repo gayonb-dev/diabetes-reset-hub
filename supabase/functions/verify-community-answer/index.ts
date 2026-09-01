@@ -70,7 +70,7 @@ Deno.serve(async (req) => {
     // Mark verified
     await admin.from("community_answers").update({ is_verified: true }).eq("id", answer_id);
 
-    // Upsert embedding (delete + insert to keep it simple — no unique constraint on answer_id)
+    // Upsert embedding (delete + insert to keep it simple, no unique constraint on answer_id)
     await admin.from("community_answer_embeddings").delete().eq("answer_id", answer_id);
     const { error: ie } = await admin.from("community_answer_embeddings").insert({
       answer_id,

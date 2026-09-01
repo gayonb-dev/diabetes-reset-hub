@@ -43,8 +43,8 @@ const HeroSection = () => {
               </p>
               <p>The hard part is turning all of that into a day you can actually follow.</p>
               <p>
-                Diabetes Reset Method gives you one clear daily action—plus practical meal,
-                movement, tracking, educational, and reporting tools—all in one membership.
+                Diabetes Reset Method gives you one clear daily action, plus practical meal,
+                movement, tracking, educational, and reporting tools, all in one membership.
               </p>
             </div>
 
@@ -53,7 +53,7 @@ const HeroSection = () => {
                 onClick={openCheckout}
                 className="w-full sm:w-auto min-h-[44px] bg-primary hover:bg-primary-dark text-primary-foreground px-8 py-5 text-lg font-bold rounded-xl h-auto shadow-lg"
               >
-                Start my first 14 days — $27
+                Start my first 14 days, $27
                 <ArrowRight className="ml-2 h-5 w-5" aria-hidden="true" />
               </Button>
               <Button
@@ -77,7 +77,7 @@ const HeroSection = () => {
               apply.
             </p>
             <p className="text-sm text-muted-foreground">
-              Self-guided education—not diagnosis, treatment, prescriptions, or emergency care.
+              Self-guided education, not diagnosis, treatment, prescriptions, or emergency care.
             </p>
           </motion.div>
 

@@ -5,7 +5,7 @@
 // After processing, if streak is a positive multiple of 7 and no freeze held →
 // award one freeze. Dedupe by user_streaks.last_rollover_date == local yesterday.
 //
-// verify_jwt = false — gated by x-internal-secret header. Service-role client.
+// verify_jwt = false, gated by x-internal-secret header. Service-role client.
 
 import { createClient } from "npm:@supabase/supabase-js@2.57.2";
 
@@ -90,7 +90,7 @@ Deno.serve(async (req) => {
 
     processed++;
 
-    // Already logged yesterday? Then it was a clean day — set last_rollover and
+    // Already logged yesterday? Then it was a clean day, set last_rollover and
     // check milestone award.
     if (s.last_active_date === yesterdayISO) {
       const cur = Number(s.current_streak ?? 0);

@@ -1,5 +1,5 @@
 /**
- * Prompt 6 Stage 0 — public VITA membership answers and safe CTA rendering.
+ * Prompt 6 Stage 0, public VITA membership answers and safe CTA rendering.
  */
 import { describe, it, expect } from "vitest";
 import {
@@ -68,7 +68,7 @@ describe("follow-up handling", () => {
     expect(matchFaq("ok", null)).toBeNull();
   });
 
-  it("does not restart the sales script — the follow-up is short and single-action", () => {
+  it("does not restart the sales script, the follow-up is short and single-action", () => {
     const a = matchFaq("yes", "faq_about")!;
     expect(a.body).not.toMatch(/\?/);
     expect(a.action).not.toBeNull();

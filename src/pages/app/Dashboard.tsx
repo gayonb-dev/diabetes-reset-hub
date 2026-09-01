@@ -51,7 +51,7 @@ type ProfileMeta = {
   blood_sugar_unit?: "mgdl" | "mmoll";
 };
 
-// startOfDay removed — program day now comes from useProgramDay.
+// startOfDay removed, program day now comes from useProgramDay.
 
 
 function DashboardSkeleton() {
@@ -150,7 +150,7 @@ export default function Dashboard() {
         setUpcoming(next2);
       }
 
-      // Catch up — incomplete days before today (three most recent).
+      // Catch up, incomplete days before today (three most recent).
       const { data: pastActions } = await supabase
         .from("daily_actions")
         .select("id, day_number, phase_number, action_title, action_description, sub_tasks")
@@ -182,7 +182,7 @@ export default function Dashboard() {
         if (!cancelled) setProgress(prog as Progress | null);
       }
 
-      // Latest health logs (separate queries — newest non-null per metric)
+      // Latest health logs (separate queries, newest non-null per metric)
       const { data: bs } = await supabase
         .from("health_logs")
         .select("blood_sugar, log_date")
@@ -267,7 +267,7 @@ export default function Dashboard() {
     return "Good evening";
   })();
 
-  // Habit rings — driven by today's logs (Section 9).
+  // Habit rings, driven by today's logs (Section 9).
   const mealsDone = (["breakfast", "lunch", "dinner"] as const).filter(
     (mt) => habits.meals[mt].vegetables && habits.meals[mt].protein && habits.meals[mt].complex_carbs,
   ).length;
@@ -368,7 +368,7 @@ export default function Dashboard() {
           enabled={!gam.phase_1_extension_active}
         />
 
-        {/* Prompt 6 A3 — calm greeting with one combined streak/level line.
+        {/* Prompt 6 A3, calm greeting with one combined streak/level line.
             Desktop and mobile now show the same single summary instead of two
             competing copies of the same numbers. */}
         <div>
@@ -407,7 +407,7 @@ export default function Dashboard() {
         />
 
 
-        {/* Row 3 — Today's action card */}
+        {/* Row 3, Today's action card */}
         {action ? (
           <div
             className={`rounded-xl border-[1.5px] p-4 lg:p-6 shadow-warm transition-colors ${
@@ -458,7 +458,7 @@ export default function Dashboard() {
           </div>
         )}
 
-        {/* Prompt 6 A3 — logging shortcuts. Links only: these reuse the existing
+        {/* Prompt 6 A3, logging shortcuts. Links only: these reuse the existing
             blood-glucose, meal and habit surfaces and add no new data fields. */}
         <nav aria-label="Logging shortcuts" className="grid grid-cols-3 gap-2">
           {[
@@ -491,7 +491,7 @@ export default function Dashboard() {
           </button>
         </nav>
 
-        {/* Prompt 6 A3 — one compact progress summary. The rings stay as
+        {/* Prompt 6 A3, one compact progress summary. The rings stay as
             supporting detail below Today's Action rather than competing with it. */}
         <section aria-label="Today's habit rings" className="flex gap-[10px] lg:gap-4">
           {(
@@ -513,14 +513,14 @@ export default function Dashboard() {
           ))}
         </section>
 
-        {/* Catch up — Prompt 6 A3: collapsed by default, neutral count, never
+        {/* Catch up, Prompt 6 A3: collapsed by default, neutral count, never
             competes with or blocks Today's Action, no shame or urgency wording. */}
         {catchUp.length > 0 && (
           <details className="bg-card border border-border rounded-xl shadow-warm group">
             <summary className="flex items-center justify-between gap-3 min-h-11 px-4 lg:px-6 py-3 cursor-pointer list-none rounded-xl">
               <span className="text-sm text-secondary-fg">
                 <span className="tabular-nums font-medium text-foreground">{catchUp.length}</span>{" "}
-                earlier {catchUp.length === 1 ? "day is" : "days are"} still open — pick them up
+                earlier {catchUp.length === 1 ? "day is" : "days are"} still open, pick them up
                 whenever you like.
               </span>
               <ChevronDown
@@ -549,7 +549,7 @@ export default function Dashboard() {
         )}
 
 
-        {/* Row 4 — Journey track */}
+        {/* Row 4, Journey track */}
         <JourneyTrack
           currentDay={currentDayInPhase}
           totalDays={phase.total}
@@ -558,11 +558,11 @@ export default function Dashboard() {
           phaseTotal={PHASE_TOTAL}
         />
 
-        {/* Row 5 — Quick stats */}
+        {/* Row 5, Quick stats */}
         <QuickStats stats={stats} />
 
-        {/* Row 6 — Right-rail content (in-column below lg; moves to right rail at lg).
-            Prompt 6 A3: the streak mini-widget is gone from here — the streak is
+        {/* Row 6, Right-rail content (in-column below lg; moves to right rail at lg).
+            Prompt 6 A3: the streak mini-widget is gone from here, the streak is
             already summarised once at the top and its history opens from there. */}
         <div className="lg:hidden space-y-4">
           <VitaQuoteCard quotes={quoteItems} />
@@ -578,11 +578,11 @@ export default function Dashboard() {
         <GettingStartedChecklist currentProgramDay={currentProgramDay} />
 
         <p className="text-[11px] text-tertiary-fg text-center pt-2">
-          Educational only — not medical advice. Always consult your healthcare provider.
+          Educational only, not medical advice. Always consult your healthcare provider.
         </p>
       </div>
 
-      {/* Right rail — xl only, sticky */}
+      {/* Right rail, xl only, sticky */}
       <aside className="hidden lg:block">
         <div className="sticky top-6 space-y-4">
           <VitaQuoteCard quotes={quoteItems} />

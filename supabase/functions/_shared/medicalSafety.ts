@@ -2,7 +2,7 @@
 // Runs BEFORE any model call. Returns the exact approved handoff message for
 // the most relevant path, or null when the question can be answered normally.
 //
-// Dependency-free TypeScript — shared by every edge function that answers
+// Dependency-free TypeScript, shared by every edge function that answers
 // member questions.
 
 export type SafetyPath =

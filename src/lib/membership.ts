@@ -1,4 +1,4 @@
-// B5 — the client's view of membership state.
+// B5, the client's view of membership state.
 //
 // This re-exports the SAME evaluator the server uses. There is deliberately no
 // second implementation: two copies of a lifecycle rule drift, and the drift
@@ -86,7 +86,7 @@ export function membershipNotice(
         tone: "restricted",
         title: "Your membership is paused",
         body:
-          "We couldn't take payment, so your programme is on hold. Update your payment method to pick up exactly where you left off — nothing has been deleted.",
+          "We couldn't take payment, so your programme is on hold. Update your payment method to pick up exactly where you left off, nothing has been deleted.",
       };
     case "period_ended":
       return {
@@ -112,7 +112,7 @@ export function membershipNotice(
         tone: "restricted",
         title: "Your membership is on hold",
         body:
-          "Your bank has raised a formal dispute on a payment, so your programme is paused while it's resolved. Your billing, account settings, data export and support are all still available — contact us and we'll help sort it out.",
+          "Your bank has raised a formal dispute on a payment, so your programme is paused while it's resolved. Your billing, account settings, data export and support are all still available, contact us and we'll help sort it out.",
       };
     case "deletion_pending":
       return {
@@ -126,7 +126,7 @@ export function membershipNotice(
         tone: "restricted",
         title: "Your membership is paused",
         body:
-          "The payment covering this period was refunded, so your programme is on hold. Nothing has been deleted — restart any time and pick up where you left off.",
+          "The payment covering this period was refunded, so your programme is on hold. Nothing has been deleted, restart any time and pick up where you left off.",
       };
 
     default:

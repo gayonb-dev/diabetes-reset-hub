@@ -48,7 +48,7 @@ export default function AuthCallback() {
       try {
         window.sessionStorage.setItem("drm_auth_callback_completed_at", String(Date.now()));
       } catch {
-        /* sessionStorage unavailable (private browsing) — non-fatal. */
+        /* sessionStorage unavailable (private browsing), non-fatal. */
       }
     };
 
@@ -104,7 +104,7 @@ export default function AuthCallback() {
     };
 
     (async () => {
-      // New flow: token_hash in query string — verify via POST so email
+      // New flow: token_hash in query string, verify via POST so email
       // scanners that prefetch the GET link can't consume the token.
       if (token_hash && type) {
         const { error } = await supabase.auth.verifyOtp({ token_hash, type });
@@ -115,7 +115,7 @@ export default function AuthCallback() {
         });
         if (error) {
           // A "used token" error with a live session means this login already
-          // succeeded — treat it as success rather than expiring it.
+          // succeeded, treat it as success rather than expiring it.
           const { data: sessionData } = await supabase.auth.getSession();
           if (sessionData.session) {
             markCallbackComplete();
@@ -151,7 +151,7 @@ export default function AuthCallback() {
     <div className="min-h-dvh flex items-center justify-center">
       <div className="text-center">
         <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto mb-3" />
-        <p className="text-muted-foreground">Logging you in...</p>
+        <p className="text-muted-foreground">Logging you in, ...</p>
       </div>
     </div>
   );

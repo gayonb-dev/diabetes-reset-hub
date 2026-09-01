@@ -25,7 +25,7 @@ describe("eligibility gate", () => {
     expect(canFast(null)).toBe(false);
   });
 
-  it("needs_doctor cannot fast — scheduling is disabled release-wide", () => {
+  it("needs_doctor cannot fast, scheduling is disabled release-wide", () => {
     expect(canFast(base({ fasting_eligibility: "needs_doctor" }))).toBe(false);
     // Even a doctor-confirmed member cannot fast while FASTING_SCHEDULING_ENABLED is false.
     expect(

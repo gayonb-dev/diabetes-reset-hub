@@ -87,8 +87,7 @@ export function stripeKeyClassMismatch(mode: string, key: string): string | null
 /**
  * Whether outbound AUTOMATED/MARKETING mail may be delivered to this address.
  *
- * Authentication email (magic-link sign-in) does NOT pass through this gate —
- * see `authEmailEnabled` / `sendAuthEmail`. A member-requested sign-in link is
+ * Authentication email (magic-link sign-in) does NOT pass through this gate, * see `authEmailEnabled` / `sendAuthEmail`. A member-requested sign-in link is
  * not an automated member email.
  */
 export async function emailAllowed(

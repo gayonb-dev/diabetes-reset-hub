@@ -14,7 +14,7 @@ const FirstWeekBridgeSection = () => (
           <div className="space-y-3 text-muted-foreground leading-relaxed">
             <p>
               You will have seen the daily-action structure, explored the practical tools, and
-              experienced how the membership fits—or does not fit—into your routine.
+              experienced how the membership fits, or does not fit, into your routine.
             </p>
             <p>That is the decision your first 14 days are designed to help you make.</p>
             <p>No inflated promises. No mystery product. No need to commit blindly.</p>

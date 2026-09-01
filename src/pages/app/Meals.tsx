@@ -52,7 +52,7 @@ function ingredientItemName(ing: Ingredient): string {
   // Structured ingredients already separate the item from its quantity.
   if (typeof ing !== "string") return ing.item;
   // Free-text lines go through the shared parser, which only strips a leading
-  // quantity/unit when it is unambiguous — "2 large eggs" keeps "large eggs".
+  // quantity/unit when it is unambiguous, "2 large eggs" keeps "large eggs".
   return ingredientDisplayName(ing);
 }
 
@@ -101,7 +101,7 @@ const SHOPPING_DAY_LABEL: Record<string, string> = {
   friday: "Friday", saturday: "Saturday", sunday: "Sunday",
 };
 
-const PLAN_PENDING_TIMEOUT_MS = 4 * 60 * 1000; // 4-min ceiling — AI gen often needs 60–120s per week
+const PLAN_PENDING_TIMEOUT_MS = 4 * 60 * 1000; // 4-min ceiling, AI gen often needs 60–120s per week
 
 function isStalePending(plan: PlanRow | null) {
   if (!plan || plan.status !== "pending" || !plan.created_at) return false;
@@ -127,7 +127,7 @@ const CATEGORY_RULES: Array<{ category: string; tip: string; match: (item: strin
   },
   {
     category: "Pantry Staples",
-    tip: "Check every label — if sugar appears in the first three ingredients, put it back.",
+    tip: "Check every label, if sugar appears in the first three ingredients, put it back.",
     match: (s) => /\b(rice|oat|quinoa|bulgur|pasta|bread|flour|oil|vinegar|spice|salt|pepper|stock|broth|soy|tamari|seed|nut|cinnamon)\b/i.test(s),
   },
 ];
@@ -286,7 +286,7 @@ export default function Meals() {
   const [cuisines, setCuisines] = useState<string[]>([]);
   const [shoppingChecked, setShoppingChecked] = useState<Record<string, boolean>>({});
   const [shoppingView, setShoppingView] = useState<"category" | "meal">("meal");
-  // Batch 2 task 7 — the shopping list opens scoped to one day. A whole-week
+  // Batch 2 task 7, the shopping list opens scoped to one day. A whole-week
   // list is a deliberate, separate action, never the default render.
   const [shoppingScope, setShoppingScope] = useState<"day" | "week">("day");
   const [excludedMeals, setExcludedMeals] = useState<Record<string, boolean>>({});
@@ -506,7 +506,7 @@ export default function Meals() {
     toast({ title: "Swap removed", description: original.name });
   }
 
-  // ----- Shopping list (client-side) — current week only -----
+  // ----- Shopping list (client-side), current week only -----
   const shopping = useMemo(() => {
     const { plan, key } = current;
     const wk = plan?.plan_data?.[key];
@@ -586,9 +586,9 @@ export default function Meals() {
     return { groups, ingredientCount: unique.size, mealCount: included.length };
   }, [scoped.meals, excludedMeals]);
 
-  // Shopping list print/share (M9) — same underlying data, presentational entry points only.
+  // Shopping list print/share (M9), same underlying data, presentational entry points only.
   const shoppingText = useMemo(() => {
-    const lines: string[] = [`Shopping list — Week ${weekIdx}`];
+    const lines: string[] = [`Shopping list, Week ${weekIdx}`];
     if (shoppingView === "meal") {
       for (const g of byMeal.groups) {
         lines.push(`\n${g.name}`);
@@ -617,7 +617,7 @@ export default function Meals() {
         toast({ title: "Copied to clipboard" });
       }
     } catch {
-      // user cancelled share — no-op
+      // user cancelled share, no-op
     }
   }
 
@@ -724,7 +724,7 @@ export default function Meals() {
       <div>
         <h1 className="font-heading font-semibold text-2xl text-foreground">My Meals</h1>
         <p className="text-sm text-muted-foreground">
-          4-week plan, personalized for you. Swap any meal — no waiting. To regenerate the full plan,
+          4-week plan, personalized for you. Swap any meal, no waiting. To regenerate the full plan,
           update your preferences in{" "}
           <Link to="/app/settings" className="text-primary underline">
             Settings

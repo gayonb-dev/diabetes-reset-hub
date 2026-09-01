@@ -6,7 +6,7 @@ const FIT = [
   "You want help deciding what to focus on today.",
   "You prefer self-guided support you can use on your own schedule.",
   "You want meal, movement, tracking, educational, and reporting tools in one place.",
-  "You want your healthcare professional—not an app—to remain in charge of medical decisions.",
+  "You want your healthcare professional, not an app, to remain in charge of medical decisions.",
   "You want to see the real product before deciding whether to join.",
 ];
 
@@ -31,7 +31,7 @@ const AudienceFitSection = () => {
             id="fit-heading"
             className="font-heading font-bold text-3xl sm:text-4xl text-center text-foreground mb-8"
           >
-            DRM may fit your routine—but it is not for everyone.
+            DRM may fit your routine, but it is not for everyone.
           </h2>
         </ScrollReveal>
 

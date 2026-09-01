@@ -6,7 +6,7 @@ import { canonicalUrl } from "../_shared/canonicalUrl.ts";
 import { guardRequest, LIMITS } from "../_shared/abuseGuard.ts";
 
 
-// Prompt 4 §7.2 — checkout collects name and email only. A phone number is not
+// Prompt 4 §7.2, checkout collects name and email only. A phone number is not
 // required to buy the membership, so it is no longer collected or stored.
 interface ReqBody {
   customerName: string;

@@ -6,8 +6,8 @@
 // while `stripe_deletion_enabled` is false when local evidence positively
 // proves the account was never connected to the payment processor.
 //
-// Anything else — evidence present, conflicting, or a lookup that could not be
-// completed — fails closed.
+// Anything else, evidence present, conflicting, or a lookup that could not be
+// completed, fails closed.
 
 import type { SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
 

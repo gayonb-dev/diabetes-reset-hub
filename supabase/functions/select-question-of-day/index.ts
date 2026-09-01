@@ -102,7 +102,7 @@ Deno.serve(async (req) => {
     }
 
     if (!chosen) {
-      console.log("[select-qotd] no candidate — skipping the day");
+      console.log("[select-qotd] no candidate, skipping the day");
       return new Response(
         JSON.stringify({ ok: true, source: "step4_skip", question_id: null }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" } },

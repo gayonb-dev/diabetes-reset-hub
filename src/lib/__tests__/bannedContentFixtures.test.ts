@@ -3,7 +3,7 @@ import { execFileSync } from "node:child_process";
 import path from "node:path";
 
 /**
- * Batch 1 POST-v2 — permanent false-negative regression fixtures.
+ * Batch 1 POST-v2, permanent false-negative regression fixtures.
  *
  * These exact strings escaped an earlier content scan and shipped to members.
  * Each one must be detected by scripts/doctor-review/banned.py forever, and the

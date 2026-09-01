@@ -5,7 +5,7 @@ import {
   parseIngredient,
 } from "@/lib/ingredients";
 
-// Batch 2 Part D — the parser fixtures. Each case is a member-visible string
+// Batch 2 Part D, the parser fixtures. Each case is a member-visible string
 // that previously rendered incorrectly, or a shape the audit named explicitly.
 describe("ingredient parser", () => {
   it("does not eat the first letter of a word that starts with a unit letter", () => {
@@ -54,7 +54,7 @@ describe("ingredient parser", () => {
   });
 
   it("keeps numeric prefixes that belong to the name", () => {
-    // "2% milk" — the % is not a unit, so nothing is stripped mid-token.
+    // "2% milk", the % is not a unit, so nothing is stripped mid-token.
     expect(ingredientDisplayName("2% milk")).toBe("2% milk");
     expect(ingredientDisplayName("7-spice blend")).toBe("7-spice blend");
   });

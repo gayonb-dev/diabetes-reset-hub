@@ -23,7 +23,7 @@ const Terms = () => (
       Type 1 diabetes or emergency use.
     </p>
 
-    <h2>Educational service—not medical care</h2>
+    <h2>Educational service, not medical care</h2>
     <p>
       DRM provides self-guided educational and organizational tools. It does not provide diagnosis,
       treatment, prescriptions, emergency monitoring, or a clinician-patient relationship. Never

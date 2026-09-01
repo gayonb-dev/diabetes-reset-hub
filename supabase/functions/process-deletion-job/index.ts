@@ -470,11 +470,11 @@ Deno.serve(async (req) => {
   // ---- step 5: auth identity LAST ----
   // "Last" means after every other category AND after every processor is
   // verified. While any processor is unverified the job stays waiting and the
-  // login — and therefore the lifecycle lock — is deliberately kept.
+  // login, and therefore the lifecycle lock, is deliberately kept.
   const processorsPre = (job.processor_items as ProcessorItem[]) ?? [];
   // A processor item in a TERMINAL disposition (including an owner-approved
   // retention) does not block local account deletion. Only an unresolved item
-  // does — and it never leaves the member without a visible status.
+  // does, and it never leaves the member without a visible status.
   const unverifiedPre = processorsPre.filter((p) => !isTerminal(p.status));
   let authDeleted = false;
   const dbClean = !hardFailure && Object.keys(remaining).length === 0;
@@ -531,8 +531,8 @@ Deno.serve(async (req) => {
         verified_at: new Date().toISOString(),
       };
     }
-    // Outstanding: keep the exact object ids on the item so a later run — and
-    // the member reading the receipt — knows precisely what is still owed.
+    // Outstanding: keep the exact object ids on the item so a later run, and
+    // the member reading the receipt, knows precisely what is still owed.
     return {
       ...p,
       status: "tracked_not_verified" as const,

@@ -184,7 +184,7 @@ export default function CheatMeal() {
               <Textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                placeholder="e.g., jerk chicken with rice, a slice of cake..."
+                placeholder="e.g., jerk chicken with rice, a slice of cake, ..."
                 rows={2}
               />
             </div>
@@ -209,7 +209,7 @@ export default function CheatMeal() {
         ) : meals.length === 0 ? (
           <EmptyState
             title="No off-plan meals logged yet"
-            description={isUnlocked ? "Log your first when you're ready — one per week, evening only." : `Unlocks on Day 21. You're on Day ${currentProgramDay}.`}
+            description={isUnlocked ? "Log your first when you're ready, one per week, evening only." : `Unlocks on Day 21. You're on Day ${currentProgramDay}.`}
             posture="encouraging"
             vitaSize={56}
           />

@@ -1,4 +1,4 @@
-// Part 7 — abuse-control RUNTIME.
+// Part 7, abuse-control RUNTIME.
 //
 // This half touches Deno and the database. All wording and every numeric
 // limit lives in `abusePolicy.ts`, which is pure and directly unit-tested;

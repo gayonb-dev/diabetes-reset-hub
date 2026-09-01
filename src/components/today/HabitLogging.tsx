@@ -197,7 +197,7 @@ export default function HabitLogging({ currentProgramDay }: Props) {
   // Wire gamify pipeline: fires log_water once per member-day the first time
   // any water is logged (logging, not a target); log_meal each time a
   // plate-method meal transitions to fully-complete. The ref only suppresses
-  // duplicate calls inside this render session — the ledger's per-member-day
+  // duplicate calls inside this render session, the ledger's per-member-day
   // idempotency key in `award_points` is the authoritative safeguard.
   const waterAwardedRef = useRef(false);
   const mealsAwardedRef = useRef<Set<string>>(new Set());
@@ -256,7 +256,7 @@ export default function HabitLogging({ currentProgramDay }: Props) {
           onToggle={() => toggle("water")}
         >
           <p className="text-sm text-foreground font-medium mt-3 tabular-nums">
-            Water logged today — {formatVolume(h.waterOz)}
+            Water logged today, {formatVolume(h.waterOz)}
           </p>
           <WaterEntry addWater={h.addWater} />
         </Section>
@@ -383,7 +383,7 @@ export default function HabitLogging({ currentProgramDay }: Props) {
           </button>
           {snackOverflow === "snack_3" && (
             <p className="text-xs text-accent-ink bg-accent-muted border border-accent/40 rounded-md p-2 mt-2">
-              VITA says: You're at your two-snack limit for today. Worth knowing — the timing matters more than
+              VITA says: You're at your two-snack limit for today. Worth knowing, the timing matters more than
               you think.
             </p>
           )}
@@ -463,7 +463,7 @@ export default function HabitLogging({ currentProgramDay }: Props) {
                 </Link>
               </Button>
               <p className="text-xs text-muted-foreground">
-                Aim for 3 sessions/week. Standard or Knee-Friendly track — pick what fits.
+                Aim for 3 sessions/week. Standard or Knee-Friendly track, pick what fits.
               </p>
             </div>
           )}
@@ -505,7 +505,7 @@ export default function HabitLogging({ currentProgramDay }: Props) {
   );
 }
 
-// Batch 2 task 5 — the reflection is a plain disclosure. The control says
+// Batch 2 task 5, the reflection is a plain disclosure. The control says
 // exactly what it does ("Read reflection" / "Hide reflection"), exposes its
 // expanded state to assistive technology, and the reflection text itself is
 // the region it controls. The 20-second read timer only gates the *logging*
@@ -536,7 +536,7 @@ function MindsetCard({ read, onRead }: { read: boolean; onRead: () => void }) {
       <div id="mindset-reflection" hidden={!expanded}>
         <p className="text-sm text-foreground leading-relaxed italic mt-3">
           "Progress is not linear. Trust the trend, not the day. The body you're rebuilding doesn't care about a
-          single reading — it responds to consistency."
+          single reading, it responds to consistency."
         </p>
         <Button
           size="sm"
@@ -620,7 +620,7 @@ function MealCard({
             onClick={onRetry}
             className="text-[11px] text-destructive underline min-h-11 px-1"
           >
-            Not saved — retry
+            Not saved, retry
           </button>
         )}
       </div>

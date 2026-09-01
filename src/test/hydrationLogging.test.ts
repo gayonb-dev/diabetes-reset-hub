@@ -5,7 +5,7 @@ import { waterLoggedLabel, waterAwardIdempotencyKey } from "@/lib/hydration";
 import { calendarDayKey } from "@/lib/calendarDay";
 
 /**
- * Batch 1 closeout correction — hydration (appendix C10/H1).
+ * Batch 1 closeout correction, hydration (appendix C10/H1).
  *
  * DRM publishes no universal fluid target. Member surfaces show only what was
  * logged; the once-daily "logged water" award is idempotent per member calendar

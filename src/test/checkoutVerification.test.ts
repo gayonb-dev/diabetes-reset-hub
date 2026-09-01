@@ -9,7 +9,7 @@ import {
 } from "../../supabase/functions/_shared/membershipOffer";
 
 /**
- * Prompt 4 payment-truth matrix. Mocks and synthetic fixtures only — no Stripe
+ * Prompt 4 payment-truth matrix. Mocks and synthetic fixtures only, no Stripe
  * call, no database, no real member.
  */
 

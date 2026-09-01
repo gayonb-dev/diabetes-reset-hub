@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-// The real canonical manifest is imported — never mirrored — so evidence and
+// The real canonical manifest is imported, never mirrored, so evidence and
 // runtime cannot drift apart again.
 import {
   INVENTORY,

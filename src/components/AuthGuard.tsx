@@ -92,7 +92,7 @@ export default function AuthGuard({ children, requireAdmin, requireActiveSub = t
         try {
           window.sessionStorage.removeItem("drm_auth_callback_completed_at");
         } catch {
-          // sessionStorage unavailable (private mode) — nothing to clean up.
+          // sessionStorage unavailable (private mode), nothing to clean up.
         }
         setAuthRecheck("idle");
         return;

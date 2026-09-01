@@ -83,7 +83,7 @@ export default function StreakHistoryModal({
               </>
             ) : (
               <span className="text-tertiary-fg">
-                No freeze saved — earn one in {nextFreezeIn} day{nextFreezeIn === 1 ? "" : "s"}
+                No freeze saved, earn one in {nextFreezeIn} day{nextFreezeIn === 1 ? "" : "s"}
               </span>
             )}
           </div>

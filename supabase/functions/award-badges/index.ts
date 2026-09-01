@@ -110,7 +110,7 @@ async function evaluateSlugs(admin: SB, uid: string): Promise<string[]> {
     .eq("member_id", uid).eq("vegetables", true).eq("protein", true).eq("complex_carbs", true);
   add("full-plate", (fullPlate ?? 0) > 0);
 
-  // hydrated — any day ≥ 64 oz total water
+  // hydrated, any day ≥ 64 oz total water
   const { data: waterRows } = await admin
     .from("water_logs").select("log_date, ounces").eq("member_id", uid);
   const waterByDay = new Map<string, number>();
@@ -161,7 +161,7 @@ async function evaluateSlugs(admin: SB, uid: string): Promise<string[]> {
     add("weight-milestone", weightRows!.some((r: { weight: number }) => baseline - Number(r.weight) >= 5));
   }
 
-  // full-house — 7 consecutive log dates where all 4 rings closed.
+  // full-house, 7 consecutive log dates where all 4 rings closed.
   // Rings per date:
   //   water:  SUM(water_logs.ounces) ≥ round(weight_lb / 2), min floor 64
   //   meals:  3 fully-compliant meal_logs (breakfast/lunch/dinner)
@@ -299,7 +299,7 @@ async function awardMissingBadges(admin: SB, uid: string, notify = true) {
       await admin.from("notifications").insert({
         user_id: uid, template_key: "badge_unlocked",
         title: "Badge unlocked",
-        body: `${b.name} — ${b.description ?? ""}`.trim(),
+        body: `${b.name}, ${b.description ?? ""}`.trim(),
         payload: { slug: b.slug, category: b.category },
       });
     }

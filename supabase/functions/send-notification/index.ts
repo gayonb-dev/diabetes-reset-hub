@@ -73,7 +73,7 @@ const TEMPLATES: Record<string, Template> = {
   measurement_7d: {
     title: "VITA",
     prefKey: "measurement",
-    body: "VITA says: {first_name}, your Month {n} check-in is in seven days. Use it to review what you recorded—without judging a single number.",
+    body: "VITA says: {first_name}, your Month {n} check-in is in seven days. Use it to review what you recorded, without judging a single number.",
   },
   measurement_1d: {
     title: "VITA",

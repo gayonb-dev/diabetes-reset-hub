@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 
 /**
- * Prompt 4 §10 — neutral cancelled-checkout page.
+ * Prompt 4 §10, neutral cancelled-checkout page.
  * No guarantee claims, no urgency, no health-outcome language.
  */
 const PaymentCancelled = () => {

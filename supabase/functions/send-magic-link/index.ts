@@ -2,7 +2,7 @@
 //
 // Authentication email is gated ONLY by `auth_email_enabled` (default true).
 // It is independent of `email_delivery_enabled`, `transactional_automation_enabled`
-// and `marketing_email_enabled` — a member-requested sign-in link is not an
+// and `marketing_email_enabled`, a member-requested sign-in link is not an
 // automated member email.
 //
 // Enumeration safety: every accepted request returns the SAME neutral body,
@@ -111,7 +111,7 @@ serve(async (req) => {
     // ── ACCESS GATE ─────────────────────────────────────────────
     // Only an existing user who is EITHER an admin OR has an active
     // subscription may receive a login link. Identity is resolved server-side
-    // from the normalized email — a client-supplied user id is never accepted.
+    // from the normalized email, a client-supplied user id is never accepted.
     // No auth user is ever created here.
     let allowedUserId: string | null = null;
     try {
@@ -164,7 +164,7 @@ serve(async (req) => {
       const result = await sendAuthEmail(sb, {
         from: "The Diabetes Reset Method <hello@diabetesresetmethod.com>",
         to: cleanEmail,
-        subject: "Your login link — Diabetes Reset Method",
+        subject: "Your login link, Diabetes Reset Method",
         html: `
         <div style="font-family:Inter,Arial,sans-serif;max-width:600px;margin:0 auto;padding:32px 24px;background:#FAF7F2;color:#1a1a1a;">
           <p style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#085041;margin:0 0 8px;">The Diabetes Reset Method</p>
@@ -181,7 +181,7 @@ serve(async (req) => {
         </div>`,
       });
       if (!result.sent) {
-        // Recorded internally only — reason/status carry no email or token data,
+        // Recorded internally only, reason/status carry no email or token data,
         // and the public response stays identical so nothing is disclosed.
         console.error("magic link delivery failed:", result.reason, result.status ?? "");
       }

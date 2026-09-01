@@ -4,7 +4,7 @@ import type { ToastActionElement, ToastProps } from "@/components/ui/toast";
 
 const TOAST_LIMIT = 1;
 /**
- * Batch 2 Part C — how long a CLOSED toast lingers in state before it is
+ * Batch 2 Part C, how long a CLOSED toast lingers in state before it is
  * dropped. This is the exit-animation window, not the visible lifetime.
  */
 const TOAST_REMOVE_DELAY = 1000;

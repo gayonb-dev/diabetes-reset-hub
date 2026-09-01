@@ -1,5 +1,5 @@
 /**
- * Batch 2 Part D — ingredient name normalisation for the shopping list.
+ * Batch 2 Part D, ingredient name normalisation for the shopping list.
  *
  * The previous inline regex stripped a leading quantity together with an
  * OPTIONAL unit that was matched without a word boundary, so "2 large eggs"
@@ -7,7 +7,7 @@
  * deliberately conservative: a token is only removed when it is unambiguously
  * a quantity or a known unit followed by a word boundary. If normalisation
  * would empty the string or leave something shorter than a word, the original
- * text is returned unchanged — a legitimate ingredient name is never silently
+ * text is returned unchanged, a legitimate ingredient name is never silently
  * damaged.
  */
 
@@ -139,7 +139,7 @@ export function parseIngredient(raw: string): ParsedIngredient {
 
   const m = trimmed.match(LEADING);
   if (!m) {
-    // No quantity at all — quantity-less ingredients stay fully readable.
+    // No quantity at all, quantity-less ingredients stay fully readable.
     return { name: trimmed, quantity: null, unit: null, raw: original };
   }
 
@@ -191,7 +191,7 @@ export function ingredientDisplayName(raw: string): string {
   return parseIngredient(raw).name;
 }
 
-/** Key used for de-duplication — case and whitespace insensitive. */
+/** Key used for de-duplication, case and whitespace insensitive. */
 export function ingredientKey(raw: string): string {
   return ingredientDisplayName(raw).toLowerCase().replace(/\s+/g, " ").trim();
 }
@@ -249,7 +249,7 @@ export function mergeIngredients(lines: string[]): MergedIngredient[] {
     }
 
 
-    // Incompatible units — show the ingredient once, never a fabricated total.
+    // Incompatible units, show the ingredient once, never a fabricated total.
     out.push({ key, label: name, combined: false });
   }
   return out;

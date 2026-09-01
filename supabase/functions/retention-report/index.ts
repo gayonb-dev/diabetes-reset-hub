@@ -1,4 +1,4 @@
-// P3: retention worker — REPORT ONLY.
+// P3: retention worker, REPORT ONLY.
 //
 // This function calculates what WOULD be eligible under the retention policy
 // and writes nothing. It performs no delete, no update, and no purge, including

@@ -1,7 +1,7 @@
 import ProductTourSection from "./ProductTourSection";
 
 /**
- * Prompt 4 §5 — product proof.
+ * Prompt 4 §5, product proof.
  *
  * One coherent product area. The interactive tour is the single source of
  * product description here, so this wrapper carries no duplicate heading copy.

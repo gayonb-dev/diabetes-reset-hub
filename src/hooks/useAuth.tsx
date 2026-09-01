@@ -151,7 +151,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           loadUserData(s.user).finally(() => setLoading(false));
         }
 
-        // Activity event: login — only once per real sign-in
+        // Activity event: login, only once per real sign-in
         if (event === "SIGNED_IN" && !loginLogged) {
           loginLogged = true;
           setTimeout(async () => {
@@ -184,7 +184,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(s?.user ?? null);
       if (s?.user) {
         lastUserId = s.user.id;
-        loginLogged = true; // existing session — don't log a new login
+        loginLogged = true; // existing session, don't log a new login
         await loadUserData(s.user);
       }
       setLoading(false);

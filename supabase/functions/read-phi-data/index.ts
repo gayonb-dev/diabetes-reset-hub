@@ -10,7 +10,7 @@ const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY")!;
 const SERVICE_ROLE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
-// Allowlist — only these tables can be read through this function.
+// Allowlist, only these tables can be read through this function.
 const PHI_TABLES = new Set([
   "qa_submissions",
   "coaching_waitlist",
@@ -98,7 +98,7 @@ Deno.serve(async (req) => {
     const { data: rows, error: qErr } = await q;
     if (qErr) throw qErr;
 
-    // 5. Audit log — one row per read call, plus row_ids in metadata.
+    // 5. Audit log, one row per read call, plus row_ids in metadata.
     await admin.from("phi_access_log").insert({
       actor_kind: "admin",
       actor_user_id: userId,

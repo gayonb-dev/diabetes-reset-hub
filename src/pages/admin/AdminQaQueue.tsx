@@ -27,7 +27,7 @@ export default function AdminQaQueue() {
 
   const load = async () => {
     setLoading(true);
-    // Audited PHI read — questions often contain meds, A1C, symptoms.
+    // Audited PHI read, questions often contain meds, A1C, symptoms.
     const { data, error } = await supabase.functions.invoke("read-phi-data", {
       body: {
         table: "qa_submissions",
@@ -119,7 +119,7 @@ export default function AdminQaQueue() {
 
                 <Textarea
                   rows={4}
-                  placeholder="Type your answer..."
+                  placeholder="Type your answer, ..."
                   value={d.answer}
                   onChange={(e) =>
                     setDrafts({ ...drafts, [q.id]: { ...d, answer: e.target.value } })

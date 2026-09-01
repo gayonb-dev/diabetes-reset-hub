@@ -1,4 +1,4 @@
-// Part B — one canonical, honest statement of where the member is in the
+// Part B, one canonical, honest statement of where the member is in the
 // 180-day programme. Used on the dashboard so the day number, the phase and
 // the phase position always agree with each other.
 import { phaseFor, dayInPhase, PROGRAM_TOTAL_DAYS } from "@/lib/phase";

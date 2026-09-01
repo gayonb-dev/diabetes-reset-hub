@@ -1,5 +1,5 @@
 /**
- * Landing-page anchor navigation — one shared implementation.
+ * Landing-page anchor navigation, one shared implementation.
  *
  * Every in-page control (header nav, hero, product tour, footer) routes
  * through `goToSection` so behaviour is identical everywhere:

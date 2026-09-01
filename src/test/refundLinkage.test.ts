@@ -1,4 +1,4 @@
-// Prompt 5 correction — proof of the trusted refund relationship.
+// Prompt 5 correction, proof of the trusted refund relationship.
 //
 // A refund only moves entitlement when the whole chain is demonstrable.
 // Everything else becomes an owner-review item and changes nothing.

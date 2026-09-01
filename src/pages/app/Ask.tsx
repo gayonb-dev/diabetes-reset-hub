@@ -295,7 +295,7 @@ export default function Ask() {
         <p className="text-sm text-muted-foreground">VITA, the DRM team, and your community.</p>
       </div>
 
-      {/* Layer 1 — VITA Quick Answer */}
+      {/* Layer 1, VITA Quick Answer */}
       <Card className="p-4 bg-accent-muted border-accent/40">
         <div className="flex items-start gap-3">
           <div className="h-10 w-10 rounded-full bg-accent flex items-center justify-center text-accent-foreground shrink-0">
@@ -306,7 +306,7 @@ export default function Ask() {
               <Input
                 value={vitaQ}
                 onChange={(e) => setVitaQ(e.target.value)}
-                placeholder="Ask VITA anything about your program..."
+                placeholder="Ask VITA anything about your program, ..."
                 onKeyDown={(e) => e.key === "Enter" && askVita()}
               />
               <Button onClick={askVita} disabled={vitaLoading || !vitaQ.trim()}>
@@ -391,7 +391,7 @@ export default function Ask() {
                 <div className="flex-1">
                   <p className="font-semibold text-foreground">{w.milestone_label}</p>
                   <p className="text-xs text-muted-foreground">
-                    {w.is_anonymous ? "DRM Member" : (w.display_name ?? "DRM Member")} · Day {w.author_day_in_program ?? "—"}
+                    {w.is_anonymous ? "DRM Member" : (w.display_name ?? "DRM Member")} · Day {w.author_day_in_program ?? ", "}
                   </p>
                   {w.share_stat && w.stat_improvement && (
                     <p className="text-sm text-status-normal font-medium mt-2">{w.stat_improvement}</p>
@@ -438,7 +438,7 @@ export default function Ask() {
         </div>
       )}
 
-      {/* Compose — full-screen sheet on mobile, dialog on desktop */}
+      {/* Compose, full-screen sheet on mobile, dialog on desktop */}
       {isMobile ? (
         composeOpen && (
           <div className="fixed inset-0 z-50 bg-background flex flex-col">
@@ -470,7 +470,7 @@ export default function Ask() {
                 Post anonymously (as "DRM Member")
               </label>
             </div>
-            {/* Tag chips — horizontal scroll row, pinned above the compose action / keyboard */}
+            {/* Tag chips, horizontal scroll row, pinned above the compose action / keyboard */}
             <div className="shrink-0 border-t border-border px-4 py-2 overflow-x-auto whitespace-nowrap">
               <div className="inline-flex gap-1.5">
                 {TAGS.map((t) => {
@@ -686,7 +686,7 @@ function QuestionCard({
             </div>
           ))}
           <div className="flex gap-2">
-            <Input value={reply} onChange={(e) => setReply(e.target.value)} placeholder="Share your experience..." />
+            <Input value={reply} onChange={(e) => setReply(e.target.value)} placeholder="Share your experience, ..." />
             <Button size="sm" onClick={post} disabled={submitting || reply.trim().length < 3}>Reply</Button>
           </div>
         </div>

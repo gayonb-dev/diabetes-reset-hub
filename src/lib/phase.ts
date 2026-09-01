@@ -1,20 +1,20 @@
-// Program phase map — DRM 180-day, 5-phase spec (Section 7).
+// Program phase map, DRM 180-day, 5-phase spec (Section 7).
 // Single source of truth for Dashboard, JourneyTrack, HabitLogging.
 
 export interface PhaseInfo {
   index: number;   // 1..5
-  name: string;    // "Phase 1 — Reset"
+  name: string;    // "Phase 1, Reset"
   start: number;   // first day of phase (inclusive)
   end: number;     // last day of phase (inclusive)
   total: number;   // days in phase
 }
 
 export const PHASES: PhaseInfo[] = [
-  { index: 1, name: "Phase 1 — Reset",         start: 1,   end: 14,  total: 14 },
-  { index: 2, name: "Phase 2 — Momentum",      start: 15,  end: 28,  total: 14 },
-  { index: 3, name: "Phase 3 — Build Your Routine",      start: 29,  end: 60,  total: 32 },
-  { index: 4, name: "Phase 4 — Recalibration", start: 61,  end: 120, total: 60 },
-  { index: 5, name: "Phase 5 — Freedom",       start: 121, end: 180, total: 60 },
+  { index: 1, name: "Phase 1, Reset",         start: 1,   end: 14,  total: 14 },
+  { index: 2, name: "Phase 2, Momentum",      start: 15,  end: 28,  total: 14 },
+  { index: 3, name: "Phase 3, Build Your Routine",      start: 29,  end: 60,  total: 32 },
+  { index: 4, name: "Phase 4, Recalibration", start: 61,  end: 120, total: 60 },
+  { index: 5, name: "Phase 5, Freedom",       start: 121, end: 180, total: 60 },
 ];
 
 export const PHASE_TOTAL = PHASES.length;

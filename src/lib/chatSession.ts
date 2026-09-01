@@ -1,10 +1,9 @@
 // P1: opaque chat session held in memory only.
 //
 // The browser holds one random token issued by the server. It is not a visitor
-// UUID, not a database key, and it is never used as authorization by itself —
-// the server resolves it to a session row and checks that the session is
-// active. It is held in memory only — never in localStorage, sessionStorage,
-// IndexedDB, a cookie or a URL — and it disappears on reload or chat deletion.
+// UUID, not a database key, and it is never used as authorization by itself, // the server resolves it to a session row and checks that the session is
+// active. It is held in memory only, never in localStorage, sessionStorage,
+// IndexedDB, a cookie or a URL, and it disappears on reload or chat deletion.
 
 import { supabase } from "@/integrations/supabase/client";
 
@@ -47,8 +46,8 @@ let inflight: Promise<ChatSessionStart> | null = null;
 let lastStart: ChatSessionStart | null = null;
 
 /**
- * Single source of truth for the chat session. Every caller — the widget, the
- * privacy page, the consent grant — goes through here, so "Delete this chat"
+ * Single source of truth for the chat session. Every caller, the widget, the
+ * privacy page, the consent grant, goes through here, so "Delete this chat"
  * can always see the live token. Concurrent callers share one request.
  */
 export async function startChatSession(): Promise<ChatSessionStart> {

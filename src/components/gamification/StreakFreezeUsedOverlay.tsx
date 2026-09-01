@@ -9,7 +9,7 @@ interface Props {
 }
 
 /**
- * Section 11 — streak-freeze auto-consume overlay.
+ * Section 11, streak-freeze auto-consume overlay.
  * Shown the next app open after a freeze was used.
  */
 export default function StreakFreezeUsedOverlay({ open, protectedStreak, onDismiss }: Props) {

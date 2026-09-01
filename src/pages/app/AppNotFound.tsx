@@ -4,7 +4,7 @@ import { Vita } from "@/components/vita/Vita";
 import { Home, LineChart, UtensilsCrossed, MessageCircleQuestion } from "lucide-react";
 
 /**
- * In-app 404 — keeps the AppLayout chrome and offers recovery paths
+ * In-app 404, keeps the AppLayout chrome and offers recovery paths
  * that make sense for a signed-in member (not "Back to marketing site").
  */
 export default function AppNotFound() {

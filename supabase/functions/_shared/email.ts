@@ -1,8 +1,8 @@
 // Central outbound-email gate (audit finding 3).
 //
 // EVERY Resend path in this project must go through `sendEmail`. With
-// `email_delivery_enabled` false in app_config — or the recipient absent from
-// `email_test_allowlist` — no request is made to Resend at all, even when a
+// `email_delivery_enabled` false in app_config, or the recipient absent from
+// `email_test_allowlist`, no request is made to Resend at all, even when a
 // RESEND_API_KEY is present in the environment.
 //
 // No message body, subject, or recipient address is logged.

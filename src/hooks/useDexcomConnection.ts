@@ -27,7 +27,7 @@ async function readFunctionError(error: unknown): Promise<string> {
           const msg = parsed?.error ?? parsed?.message;
           if (msg) return typeof msg === "string" ? msg : JSON.stringify(msg);
         } catch {
-          // not JSON — fall through to the raw text
+          // not JSON, fall through to the raw text
         }
         return raw.slice(0, 400);
       }
@@ -70,7 +70,7 @@ export function useDexcomConnection() {
       toast({
         variant: "destructive",
         title: "Couldn't connect Dexcom",
-        description: "Could not start Dexcom connection — please contact support.",
+        description: "Could not start Dexcom connection, please contact support.",
       });
     } catch (e) {
       toast({

@@ -90,7 +90,7 @@ export default function WorkoutLibrary() {
         if (row) setResuming({ slug: row.workout_slug, name: row.workout_name });
       });
 
-    // F. Recent Workouts reads the completion receipts — the same records the
+    // F. Recent Workouts reads the completion receipts, the same records the
     // completion RPC writes, so history can never disagree with what happened.
     supabase
       .from("workout_completion_receipts")
@@ -103,7 +103,7 @@ export default function WorkoutLibrary() {
       });
   }, [user, unlocked]);
 
-  // Loading: render a neutral skeleton — NEVER the locked panel — so a
+  // Loading: render a neutral skeleton, NEVER the locked panel, so a
   // Day-29+ member never sees "Workouts unlock at Day 29" flash for one frame
   // while useProgramDay is still resolving.
   if (loading) {
@@ -141,7 +141,7 @@ export default function WorkoutLibrary() {
         </h1>
         <p className="text-sm text-muted-foreground leading-relaxed max-w-md mx-auto">
           Days 1–14 are diet foundation. Days 15–28 add post-meal walks. Structured workouts begin
-          Day 29 — your body will be ready.
+          Day 29, your body will be ready.
         </p>
         <Card className="p-4 border border-dashed inline-flex flex-col mx-auto">
           <p className="text-sm text-foreground">
@@ -167,7 +167,7 @@ export default function WorkoutLibrary() {
       <div>
         <h1 className="font-heading font-semibold text-2xl text-foreground">Workouts</h1>
         <p className="text-sm text-muted-foreground">
-          Phase 3 unlocked. Aim for 3 sessions this week — your pick.
+          Phase 3 unlocked. Aim for 3 sessions this week, your pick.
         </p>
       </div>
 
@@ -196,8 +196,8 @@ export default function WorkoutLibrary() {
         <TabsContent value="A" className="mt-4 space-y-4">
           <p className="text-xs text-muted-foreground">
             {kneeFriendly
-              ? "Standard track — choose this if you'd like to test a higher-impact session today."
-              : "Standard track — based on your profile, no knee modifications needed. Switch to Knee-Friendly anytime."}
+              ? "Standard track, choose this if you'd like to test a higher-impact session today."
+              : "Standard track, based on your profile, no knee modifications needed. Switch to Knee-Friendly anytime."}
           </p>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
             {getWorkoutsByTrack("A").map((w) => (
@@ -209,7 +209,7 @@ export default function WorkoutLibrary() {
         <TabsContent value="B" className="mt-4 space-y-4">
           <p className="text-xs text-muted-foreground inline-flex items-center gap-1.5">
             <Shield className="h-3.5 w-3.5 text-primary" />
-            Knee-Friendly — zero high-impact movements. Every skip and jumping jack is replaced.
+            Knee-Friendly, zero high-impact movements. Every skip and jumping jack is replaced.
           </p>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
             {getWorkoutsByTrack("B").map((w) => (

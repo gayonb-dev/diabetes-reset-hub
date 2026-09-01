@@ -1,5 +1,5 @@
 /**
- * Prompt 6 PRE-PART A — public VITA feature/tracking routing correction.
+ * Prompt 6 PRE-PART A, public VITA feature/tracking routing correction.
  *
  * Product-capability questions must be answered truthfully and deterministically
  * even when they mention diabetes, A1C or weight. Requests for interpretation,

@@ -18,7 +18,7 @@ export function safeNext(raw: string | null | undefined, fallback = ""): string 
     return fallback;
   }
 
-  // Normalise backslashes — browsers treat them like forward slashes.
+  // Normalise backslashes, browsers treat them like forward slashes.
   const normalised = value.replace(/\\/g, "/");
 
   if (!normalised.startsWith("/")) return fallback;

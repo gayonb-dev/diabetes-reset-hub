@@ -12,7 +12,7 @@ interface PaymentModalProps {
 }
 
 /**
- * Prompt 4 §7.2 — checkout minimization.
+ * Prompt 4 §7.2, checkout minimization.
  * Collects only the name and email needed to create the account and payment.
  * No phone, no health context, no bundled marketing consent.
  */

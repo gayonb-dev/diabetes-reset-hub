@@ -1,5 +1,5 @@
 /**
- * Batch 2 Part A — route chunk prefetching.
+ * Batch 2 Part A, route chunk prefetching.
  *
  * Every authenticated destination maps to the same dynamic import the router
  * uses, so warming a chunk here means the router's later import resolves from
@@ -8,7 +8,7 @@
  * duplicate requests.
  *
  * Prefetching loads CODE only. It performs no data fetch and therefore cannot
- * bypass an authentication, billing or deletion access decision — those are
+ * bypass an authentication, billing or deletion access decision, those are
  * still evaluated by AuthGuard when the route actually renders.
  */
 

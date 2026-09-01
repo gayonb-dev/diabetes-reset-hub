@@ -1,4 +1,4 @@
-// Prompt 5 correction — executable proof of webhook secret isolation.
+// Prompt 5 correction, executable proof of webhook secret isolation.
 //
 // The handler verifies the signature BEFORE it constructs a database client or
 // writes anything: an unverified request cannot reach a mutation because the

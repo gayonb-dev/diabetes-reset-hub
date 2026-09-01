@@ -1,4 +1,4 @@
-// Snack Library tab — reads from public.snack_library and gates by member day_number.
+// Snack Library tab, reads from public.snack_library and gates by member day_number.
 // Phase 9, Section 13. Locked snacks render dimmed with a lock + "Unlocks at Day X."
 
 import { useEffect, useState } from "react";

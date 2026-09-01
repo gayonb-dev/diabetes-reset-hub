@@ -35,7 +35,7 @@ const COOKING_TIMES = [
 
 const DEFAULT_CUISINE = "International (balanced)";
 const DEFAULT_COOKING = "20–45 min";
-const MAX_WAIT_MS = 4 * 60 * 1000; // up to 4 minutes — meal-plan AI gen runs 60–120s per week
+const MAX_WAIT_MS = 4 * 60 * 1000; // up to 4 minutes, meal-plan AI gen runs 60–120s per week
 const TOTAL_WEEKS = 4;
 
 type WeekKey = "plan1" | "plan2" | "plan3" | "plan4";
@@ -176,7 +176,7 @@ export default function MealSetupTransition() {
 
   // Auto-advance only when all 4 are complete. On 90s timeout, show VitaErrorCard
   // with a retry button instead of forcing a navigation away.
-  // Prompt 6 A4 — onboarding always finishes on Today, the single starting screen.
+  // Prompt 6 A4, onboarding always finishes on Today, the single starting screen.
   useEffect(() => {
     if (completedCount >= TOTAL_WEEKS) {
       navigate("/app", { replace: true });
@@ -236,7 +236,7 @@ export default function MealSetupTransition() {
           This usually takes 60–120 seconds per week. You can pick your cuisine while VITA works.
         </p>
         <p className="text-[11px] text-primary-foreground/60 pt-2">
-          You get 2 fresh meal plans per month — you can regenerate later from Settings.
+          You get 2 fresh meal plans per month, you can regenerate later from Settings.
         </p>
 
       </div>

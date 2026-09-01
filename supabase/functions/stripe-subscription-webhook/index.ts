@@ -65,7 +65,7 @@ function welcomeHtml(name: string, magicLink: string) {
     <hr style="border:none;border-top:1px solid #eee;margin:24px 0;">
     <p style="font-size:13px;color:#666;">
       <strong>Heads up about billing:</strong> Your 14-day trial ends on day 15, when your membership
-      auto-renews at $67/month. Cancel anytime from your billing settings — no questions, no fees.
+      auto-renews at $67/month. Cancel anytime from your billing settings, no questions, no fees.
     </p>
     <p style="font-size:12px;color:#999;margin-top:24px;">
       Coaching content only, not medical advice. Always consult your healthcare provider.
@@ -77,7 +77,7 @@ function adminNotifHtml(name: string, email: string, phone: string) {
   return `
   <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:24px;">
     <h2 style="color:#085041;">🎉 New Member: ${esc(name)}</h2>
-    <p>Email: ${esc(email)}<br>Phone: ${esc(phone) || "—"}<br>Plan: $27 trial → $67/mo</p>
+    <p>Email: ${esc(email)}<br>Phone: ${esc(phone) || ", "}<br>Plan: $27 trial → $67/mo</p>
     <p><a href="${Deno.env.get("APP_URL") || "https://diabetesresetmethod.com"}/admin">View admin</a></p>
   </div>`;
 }
@@ -193,8 +193,8 @@ serve(async (req) => {
     // -----------------------------------------------------------------
     // Refund and dispute resolution.
     //
-    // The chain is always followed in full — refund -> charge ->
-    // payment_intent -> order -> member — and never guessed. A refund or a
+    // The chain is always followed in full, refund -> charge ->
+    // payment_intent -> order -> member, and never guessed. A refund or a
     // dispute touches ONLY the order it resolves to; unrelated orders,
     // subscriptions and members are never written.
     // -----------------------------------------------------------------

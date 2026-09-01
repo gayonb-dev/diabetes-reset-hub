@@ -1,4 +1,4 @@
-// Prompt 6 closeout — fasting scheduling stays disabled and unreachable.
+// Prompt 6 closeout, fasting scheduling stays disabled and unreachable.
 //
 // This is a safety gate, not a feature toggle: enabling it requires a recorded
 // clinical approval. The test fails the build if either the client flag, the

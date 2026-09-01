@@ -204,7 +204,7 @@ export default function DayDetail() {
           </div>
           <h3 className="font-heading font-bold text-lg">Today's action is being prepared.</h3>
           <p className="text-sm text-muted-foreground">
-            Check back shortly — new days are added regularly.
+            Check back shortly, new days are added regularly.
           </p>
         </Card>
       ) : (
@@ -243,7 +243,7 @@ export default function DayDetail() {
               </ul>
               {!completed && subTasks.length > 0 && (
                 <p className="text-xs text-muted-foreground mt-3">
-                  {checked.size} of {subTasks.length} done — finishing all will mark today complete.
+                  {checked.size} of {subTasks.length} done, finishing all will mark today complete.
                 </p>
               )}
             </Card>
@@ -289,7 +289,7 @@ export default function DayDetail() {
                   >
                     {saving ? (
                       <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Saving...
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Saving, ...
                       </>
                     ) : (
                       "Mark Day Complete"
@@ -303,7 +303,7 @@ export default function DayDetail() {
       )}
 
       <p className="text-xs text-muted-foreground text-center">
-        Educational only — not medical advice.
+        Educational only, not medical advice.
       </p>
     </div>
   );

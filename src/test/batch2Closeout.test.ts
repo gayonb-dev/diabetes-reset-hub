@@ -1,5 +1,5 @@
 /**
- * Batch 2 closeout — focused regressions for every change made while executing
+ * Batch 2 closeout, focused regressions for every change made while executing
  * the approved 24-task matrix, plus the new/changed RLS policies.
  *
  * These are deliberately source-level assertions: the matrix already proved the

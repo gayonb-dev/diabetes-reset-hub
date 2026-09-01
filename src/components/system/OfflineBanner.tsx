@@ -49,7 +49,7 @@ export function OfflineBanner() {
       {offline ? (
         <>
           <WifiOff className="h-3.5 w-3.5 shrink-0" />
-          <span>You're offline — changes will save once you reconnect.</span>
+          <span>You're offline, changes will save once you reconnect.</span>
         </>
       ) : (
         <>

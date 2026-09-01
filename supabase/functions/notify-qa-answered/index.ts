@@ -102,7 +102,7 @@ serve(async (req) => {
                   Read the full answer →
                 </a>
               </p>
-              <p style="font-size:12px;color:#999;">Educational coaching — not medical advice.</p>
+              <p style="font-size:12px;color:#999;">Educational coaching, not medical advice.</p>
             </div>`,
       });
     }

@@ -1,4 +1,4 @@
-// Prompt 4 (final) — strict, read-only checkout verification for /payment-success.
+// Prompt 4 (final), strict, read-only checkout verification for /payment-success.
 //
 // This function NEVER provisions. The signed Stripe webhook remains the only
 // provisioning path. Here we only read Stripe + local state and report one of

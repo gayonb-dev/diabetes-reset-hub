@@ -3,7 +3,7 @@
  *
  * Replaces first-page-only `listUsers({ page: 1, perPage: 200 })` lookups: a
  * member whose account sits beyond the first page is still found. Identity is
- * always resolved server-side from the normalized email — a browser-supplied
+ * always resolved server-side from the normalized email, a browser-supplied
  * user id is never accepted anywhere in this path.
  *
  * No email address is ever logged.

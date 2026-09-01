@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ArrowLeft, Users, ShoppingCart, ClipboardList, RefreshCw, Search, Eye, Trophy } from "lucide-react";
 import { toast } from "sonner";
 
-// Batch 2 task 22 — Intake Forms and Challenge Progress are retired surfaces
+// Batch 2 task 22, Intake Forms and Challenge Progress are retired surfaces
 // and are no longer part of active Admin.
 type Tab = "orders" | "leads";
 
@@ -100,7 +100,7 @@ const AdminDashboard = () => {
 
   const moodEmoji = (rating: number | null) => {
     const map: Record<number, string> = { 1: "😫", 2: "😕", 3: "😐", 4: "😊", 5: "🔥" };
-    return rating ? map[rating] || "—" : "—";
+    return rating ? map[rating] || ", " : ", ";
   };
 
   return (
@@ -173,7 +173,7 @@ const AdminDashboard = () => {
         <div className="flex gap-3 mb-4">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} placeholder="Search..." className="pl-10" />
+            <Input value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} placeholder="Search, ..." className="pl-10" />
           </div>
           {activeTab === "orders" && (
             <Select value={statusFilter} onValueChange={setStatusFilter}>
@@ -199,7 +199,7 @@ const AdminDashboard = () => {
                 {Object.entries(selectedItem).map(([key, value]) => (
                   <div key={key} className="flex justify-between gap-4 text-sm border-b border-border pb-2">
                     <span className="text-muted-foreground font-medium min-w-[120px]">{key.replace(/_/g, " ")}</span>
-                    <span className="text-foreground text-right break-all">{String(value ?? "—")}</span>
+                    <span className="text-foreground text-right break-all">{String(value ?? ", ")}</span>
                   </div>
                 ))}
               </div>

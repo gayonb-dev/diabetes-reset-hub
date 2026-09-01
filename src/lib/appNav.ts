@@ -19,7 +19,7 @@ export type MoreNavItem = {
 };
 
 /**
- * Prompt 6 A2 — the single source of truth for the grouped "More" destinations.
+ * Prompt 6 A2, the single source of truth for the grouped "More" destinations.
  * The desktop sidebar renders the same groups in the same order with the same
  * labels, so a member who learns one surface already knows the other. Every
  * entry points at an existing route: nothing here creates a duplicate.

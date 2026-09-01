@@ -39,7 +39,7 @@ describe("production bundle has no payment bypass", () => {
   it("no built asset contains the fixture, a bypass token, or a forced state", () => {
     const files = walk(resolve(root, "dist"));
     if (files.length === 0) {
-      console.warn("[bundle-scan] dist/ not built — source-level assertions only");
+      console.warn("[bundle-scan] dist/ not built, source-level assertions only");
       return;
     }
     const forbidden = ["state_fixture", "readDevFixture", "devPaymentFixture"];
@@ -57,7 +57,7 @@ describe("production bundle has no payment bypass", () => {
   it("no built asset contains a synthetic auth fixture or mock session marker", () => {
     const files = walk(resolve(root, "dist"));
     if (files.length === 0) {
-      console.warn("[bundle-scan] dist/ not built — skipping fixture scan");
+      console.warn("[bundle-scan] dist/ not built, skipping fixture scan");
       return;
     }
     // Markers used by the Prompt 6 verification harness, which lives entirely

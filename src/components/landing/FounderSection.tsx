@@ -32,7 +32,7 @@ const FounderSection = () => {
                   not want to forget.
                 </p>
                 <p>
-                  I wanted to put those practical pieces into one calmer place—somewhere you can
+                  I wanted to put those practical pieces into one calmer place, somewhere you can
                   open the app, see the next useful action, and use the tools that fit your life.
                 </p>
                 <p>

@@ -23,13 +23,13 @@ const RULES: Rule[] = [
     id: "meal-plan-location",
     all: [["meal plan", "meal-plan", "meals"], ["where", "find", "regenerate", "new", "see"]],
     answer:
-      "Your meal plan lives on the **Meals** tab. Open Meals from the bottom bar (or the sidebar on desktop) — your current week's plan, swaps and shopping list are all there.",
+      "Your meal plan lives on the **Meals** tab. Open Meals from the bottom bar (or the sidebar on desktop), your current week's plan, swaps and shopping list are all there.",
   },
   {
     id: "log-water",
     all: [["water"], ["log", "track", "add", "how"]],
     answer:
-      "Log water on **Today**. In the daily habits section, tap the water control to add a glass — it saves as you tap.",
+      "Log water on **Today**. In the daily habits section, tap the water control to add a glass, it saves as you tap.",
   },
   {
     id: "log-blood-sugar",
@@ -76,7 +76,7 @@ const RULES: Rule[] = [
     id: "program-day",
     all: [["day", "program day"], ["wrong", "behind", "missed", "catch up", "catch-up"]],
     answer:
-      "Your program day advances at local midnight. If you missed days, open **Today** — the catch-up section lists days still open so you can complete them in order.",
+      "Your program day advances at local midnight. If you missed days, open **Today**, the catch-up section lists days still open so you can complete them in order.",
   },
 ];
 

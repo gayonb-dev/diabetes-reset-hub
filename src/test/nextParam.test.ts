@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { safeNext } from "@/lib/safeNext";
 
-describe("safeNext — allowed same-site destinations", () => {
+describe("safeNext, allowed same-site destinations", () => {
   it.each([
     ["/app/progress", "/app/progress"],
     ["/app/onboarding", "/app/onboarding"],
@@ -13,7 +13,7 @@ describe("safeNext — allowed same-site destinations", () => {
   });
 });
 
-describe("safeNext — rejects open-redirect and malformed destinations", () => {
+describe("safeNext, rejects open-redirect and malformed destinations", () => {
   it.each([
     "https://evil.com",
     "http://evil.com/app",

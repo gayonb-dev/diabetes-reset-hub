@@ -1,4 +1,4 @@
-// Part 7 — abuse-control POLICY (pure).
+// Part 7, abuse-control POLICY (pure).
 //
 // Deliberately free of Deno and network types so it can be unit-tested in the
 // same suite as the rest of the app. The runtime half lives in
@@ -11,7 +11,7 @@
 //
 // PROPORTIONALITY
 // ---------------
-// Rights endpoints — data export and account deletion — get a TEMPORARY limit
+// Rights endpoints, data export and account deletion, get a TEMPORARY limit
 // only. A person exercising a legal right must never be permanently refused
 // because they clicked twice, so those buckets are short, generous, and always
 // expire on their own. They are throttles, not denials, and the wording says
@@ -33,7 +33,7 @@ export function rateLimitedBody(opts: {
   return {
     error: "rate_limited",
     message: opts.rightsEndpoint
-      ? "You've made several requests in a row. This is a short, temporary pause — " +
+      ? "You've made several requests in a row. This is a short, temporary pause, " +
         "your request has not been refused. Please try again shortly, or email " +
         `${SUPPORT_EMAIL} and we'll complete it for you.`
       : "Too many requests in a short time. Please wait a moment and try again.",
@@ -49,13 +49,13 @@ export const LIMITS = {
   checkoutVerify: { windowSeconds: 300, limit: 30 },
   /** Billing portal / cancel / reactivate. */
   billingAction: { windowSeconds: 300, limit: 12 },
-  /** Free text to a human inbox — the classic spam target. */
+  /** Free text to a human inbox, the classic spam target. */
   support: { windowSeconds: 3600, limit: 6 },
   /** Model-backed answers. Bounded because each call has real cost. */
   assistant: { windowSeconds: 300, limit: 20 },
   /** Ordinary member writes. Generous; only stops runaway loops. */
   memberWrite: { windowSeconds: 60, limit: 60 },
-  /** Rights endpoints. TEMPORARY throttle only — never a denial. */
+  /** Rights endpoints. TEMPORARY throttle only, never a denial. */
   rights: { windowSeconds: 900, limit: 5 },
 } as const;
 

@@ -58,8 +58,7 @@ const READING_TYPES: { k: ReadingType; label: string }[] = [
   { k: "other", label: "Other" },
 ];
 
-// Reference geometry, bands and labels all come from src/lib/glucose.ts —
-// the shared S1 source of truth — keyed to the selected reading type.
+// Reference geometry, bands and labels all come from src/lib/glucose.ts, // the shared S1 source of truth, keyed to the selected reading type.
 
 
 export default function BloodSugarTab() {
@@ -97,7 +96,7 @@ export default function BloodSugarTab() {
     return unit === "mmoll" ? mmollToMgdl(v) : v;
   }, [value, unit]);
 
-  // Entry-time validation — nothing is written until the entry is valid.
+  // Entry-time validation, nothing is written until the entry is valid.
   const entryStatus: GlucoseStatus | null =
     parsedMgdl != null && isPlausible(parsedMgdl) ? classifyGlucose(parsedMgdl, type) : null;
   const implausible = parsedMgdl != null && !isPlausible(parsedMgdl);
@@ -194,7 +193,7 @@ export default function BloodSugarTab() {
               )}
             </p>
           </Card>
-          {/* Saved reading — accessible text + icon, no assertive announcement on load. */}
+          {/* Saved reading, accessible text + icon, no assertive announcement on load. */}
           {isLowStatus(latestStatus) && <GlucoseSafetyCard status={latestStatus} />}
         </>
       )}
@@ -203,7 +202,7 @@ export default function BloodSugarTab() {
       {/* Top info bar */}
       <div className="rounded-lg bg-primary-muted px-4 py-3">
         <p className="text-[13px] text-primary">
-          Track your readings consistently — even when the numbers aren't where you want them. The trend is
+          Track your readings consistently, even when the numbers aren't where you want them. The trend is
           what matters, not any single reading.
         </p>
       </div>
@@ -290,7 +289,7 @@ export default function BloodSugarTab() {
 
         {implausible && <p className="text-xs text-destructive mt-2">{GLUCOSE_IMPLAUSIBLE_MESSAGE}</p>}
 
-        {/* Newly entered low reading — announced assertively, focus not moved. */}
+        {/* Newly entered low reading, announced assertively, focus not moved. */}
         {entryStatus && isLowStatus(entryStatus) && (
           <GlucoseSafetyCard status={entryStatus} announce className="mt-3" />
         )}
@@ -446,7 +445,7 @@ function BloodSugarHistory({
               ]}
               labelFormatter={(l) => `Date: ${l}`}
             />
-            {/* Shaded in-range band — below 100 mg/dL / 5.6 mmol/L */}
+            {/* Shaded in-range band, below 100 mg/dL / 5.6 mmol/L */}
             <ReferenceArea y1={conv(GLUCOSE_LOW_THRESHOLDS.low)} y2={inRangeRef} fill="hsl(var(--status-normal))" fillOpacity={0.12} strokeOpacity={0} />
             <ReferenceLine y={inRangeRef} stroke="hsl(var(--status-normal))" strokeDasharray="4 4" />
             <ReferenceLine y={highRef} stroke="hsl(var(--status-warning))" strokeDasharray="4 4" />
@@ -469,21 +468,21 @@ function BloodSugarHistory({
       <div className="grid grid-cols-3 gap-3 mt-3 text-center">
         <div>
           <p className="text-[11px] text-tertiary-fg">7-day avg</p>
-          <p className="text-sm font-semibold">{last7.length ? fmt(avg(last7.map((r) => r.value_mgdl))) : "—"}</p>
+          <p className="text-sm font-semibold">{last7.length ? fmt(avg(last7.map((r) => r.value_mgdl))) : ", "}</p>
         </div>
         <div>
           <p className="text-[11px] text-tertiary-fg">30-day avg</p>
-          <p className="text-sm font-semibold">{last30.length ? fmt(avg(last30.map((r) => r.value_mgdl))) : "—"}</p>
+          <p className="text-sm font-semibold">{last30.length ? fmt(avg(last30.map((r) => r.value_mgdl))) : ", "}</p>
         </div>
         <div>
           <p className="text-[11px] text-tertiary-fg">Change since first reading</p>
           <p className="text-sm font-semibold tabular-nums">
-            {trendDelta == null ? "—" : `${trendDelta > 0 ? "+" : "−"}${Math.abs(trendDelta)}%`}
+            {trendDelta == null ? ", " : `${trendDelta > 0 ? "+" : "−"}${Math.abs(trendDelta)}%`}
           </p>
         </div>
       </div>
 
-      {/* Text equivalent of the chart — same data, readable without the graph. */}
+      {/* Text equivalent of the chart, same data, readable without the graph. */}
       <details className="mt-4">
         <summary className="text-[12px] text-secondary-fg cursor-pointer min-h-11 flex items-center">
           View readings as a table

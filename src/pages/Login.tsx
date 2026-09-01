@@ -55,7 +55,7 @@ export default function Login() {
 
         {inactive && !sent && (
           <div className="bg-accent-muted border border-accent/30 rounded-lg p-3 mb-4 text-sm text-foreground">
-            Your membership isn't active right now. If you just paid, request a fresh login link below — it can take a moment to sync. Otherwise, <Link to="/#pricing" className="text-primary font-semibold underline">start your membership</Link>.
+            Your membership isn't active right now. If you just paid, request a fresh login link below, it can take a moment to sync. Otherwise, <Link to="/#pricing" className="text-primary font-semibold underline">start your membership</Link>.
           </div>
         )}
 
@@ -93,7 +93,7 @@ export default function Login() {
                 className="w-full h-11"
               >
                 {sending ? (
-                  <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Resending...</>
+                  <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Resending, ...</>
                 ) : (
                   "Resend login link"
                 )}
@@ -134,7 +134,7 @@ export default function Login() {
               {sending ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Sending link...
+                  Sending link, ...
                 </>
               ) : expired ? (
                 "Resend login link"

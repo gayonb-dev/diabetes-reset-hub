@@ -1,4 +1,4 @@
-// Daily digest — local, structured counts only.
+// Daily digest, local, structured counts only.
 //
 // H. This function MUST NOT send conversation transcripts, message content or
 // any member text to an external model. The previous map-reduce design did and
@@ -97,7 +97,7 @@ Deno.serve(async (req) => {
     const reduced: DigestReduction = {
       actions_today: [],
       what_agent_heard: topics.length
-        ? `Message topics by classifier — ${topics.join(", ")}.`
+        ? `Message topics by classifier, ${topics.join(", ")}.`
         : "No conversation activity yesterday.",
       anomalies: [],
     };
@@ -122,7 +122,7 @@ Deno.serve(async (req) => {
         <p style="color:#666;margin:0 0 24px;font-size:13px;">All names and health details redacted.</p>
 
         <h2 style="font-size:16px;color:#333;border-bottom:2px solid #F4E3B2;padding-bottom:6px;margin-top:24px;">Topic counts</h2>
-        <p style="font-size:15px;line-height:1.7;">${reduced.what_agent_heard || "—"}</p>
+        <p style="font-size:15px;line-height:1.7;">${reduced.what_agent_heard || ", "}</p>
 
         <h2 style="font-size:16px;color:#333;border-bottom:2px solid #F4E3B2;padding-bottom:6px;margin-top:24px;">Numbers</h2>
         <table style="font-size:14px;">

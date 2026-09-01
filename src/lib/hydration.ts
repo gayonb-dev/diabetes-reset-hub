@@ -1,5 +1,5 @@
 /**
- * Hydration — logging only.
+ * Hydration, logging only.
  *
  * Batch 1 clinical appendix (C10/H1): DRM publishes NO universal fluid target.
  * There is deliberately no default ounce value in this module: no body-weight

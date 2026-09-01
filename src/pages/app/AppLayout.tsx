@@ -58,7 +58,7 @@ function navClass({ isActive }: { isActive: boolean }) {
 }
 
 function mobileNavClass({ isActive }: { isActive: boolean }) {
-  // Prompt 6 B — every bottom-nav destination is a 44x44 touch target.
+  // Prompt 6 B, every bottom-nav destination is a 44x44 touch target.
   return `flex flex-col items-center justify-center text-[10px] gap-0.5 p-2 min-h-11 min-w-11 ${
     isActive ? "text-primary" : "text-tertiary-fg"
   }`;
@@ -73,8 +73,7 @@ export default function AppLayout() {
   const navigate = useNavigate();
   const location = useLocation();
   const skeletonVariant = skeletonVariantFor(location.pathname);
-  // Warm the common destination chunks once the browser is idle. Code only —
-  // access is still decided by AuthGuard when the route renders.
+  // Warm the common destination chunks once the browser is idle. Code only, // access is still decided by AuthGuard when the route renders.
   useEffect(() => prefetchOnIdle(), []);
   const [levelName, setLevelName] = useState("Level 1: Getting Started");
   const [moreOpen, setMoreOpen] = useState(false);
@@ -119,7 +118,7 @@ export default function AppLayout() {
       return (
         <div className="bg-accent-muted border-b border-accent/30 text-foreground px-4 py-2 flex items-center justify-center gap-3 text-xs">
           <span className="tabular-nums">
-            Trial ends in <strong className="font-semibold">{days}d {hours}h</strong> — renews at $67/mo.
+            Trial ends in <strong className="font-semibold">{days}d {hours}h</strong>, renews at $67/mo.
           </span>
           <Button asChild size="sm" className="h-7 px-3 text-xs">
             <Link to="/app/billing">Manage</Link>
@@ -175,7 +174,7 @@ export default function AppLayout() {
 
   return (
     <div className="min-h-dvh bg-background flex flex-col">
-      {/* Prompt 6 B1 — keyboard users can jump straight past the navigation. */}
+      {/* Prompt 6 B1, keyboard users can jump straight past the navigation. */}
       <a
         href="#app-main"
         className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:m-2 focus:rounded-lg focus:bg-card focus:px-4 focus:py-2 focus:text-sm focus:ring-2 focus:ring-primary"
@@ -187,7 +186,7 @@ export default function AppLayout() {
 
       {pastDueBanner}
       <div className="flex flex-1">
-        {/* Sidebar — dark green */}
+        {/* Sidebar, dark green */}
         <aside className="hidden lg:flex w-[240px] flex-col bg-sidebar text-sidebar-foreground p-4 shrink-0 pb-[calc(env(safe-area-inset-bottom)+1rem)]">
           <div className="flex items-center justify-between mb-4">
             <Link to="/app" className="flex items-center gap-3">
@@ -202,7 +201,7 @@ export default function AppLayout() {
 
 
 
-          {/* Prompt 6 A2 — one hierarchy on desktop and mobile.
+          {/* Prompt 6 A2, one hierarchy on desktop and mobile.
               Primary: Today, Meals, Progress, Ask. Everything else is grouped
               exactly as the mobile "More" sheet groups it, so the two surfaces
               share a single mental model and identical naming. */}
@@ -296,7 +295,7 @@ export default function AppLayout() {
               <SheetHeader className="text-left">
                 <SheetTitle>More</SheetTitle>
               </SheetHeader>
-              {/* Prompt 6 A2 — same groups, same names as the desktop sidebar. */}
+              {/* Prompt 6 A2, same groups, same names as the desktop sidebar. */}
               {MORE_GROUPS.map((group) => (
                 <div key={group.title} className="pt-4">
                   <p className="label-caps text-tertiary-fg mb-2">{group.title}</p>
@@ -338,7 +337,7 @@ export default function AppLayout() {
 
         {/* Main */}
         <main id="app-main" tabIndex={-1} className="flex-1 px-4 lg:px-8 py-6 lg:py-8 pb-[calc(env(safe-area-inset-bottom)+5.5rem)] lg:pb-10 max-w-3xl lg:max-w-6xl xl:max-w-7xl mx-auto w-full safe-x">
-          {/* Mobile notifications entry point — the sidebar bell is lg-only. */}
+          {/* Mobile notifications entry point, the sidebar bell is lg-only. */}
           <div className="lg:hidden flex justify-end -mt-2 mb-2">
             <NotificationsBell />
           </div>

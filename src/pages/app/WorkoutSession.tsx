@@ -39,7 +39,7 @@ export default function WorkoutSession() {
   const isMobile = useIsMobile();
   const workout = useMemo(() => (slug ? getWorkoutBySlug(slug) : undefined), [slug]);
 
-  // Workouts unlock on Day 29 — redirect earlier days to the locked library view.
+  // Workouts unlock on Day 29, redirect earlier days to the locked library view.
   // Guard on `programDay > 0` so the sentinel-0 "loading" state never triggers
   // a redirect that would kick Day-29+ members back to the library.
   useEffect(() => {
@@ -128,7 +128,7 @@ export default function WorkoutSession() {
     return () => clearTimeout(t);
   }, [resting, restRemaining]);
 
-  // Loading: neutral skeleton — NEVER redirect to library and NEVER render a
+  // Loading: neutral skeleton, NEVER redirect to library and NEVER render a
   // "locked" state on the sentinel-0 program day.
   if (dayLoading) {
     return (
@@ -321,12 +321,12 @@ export default function WorkoutSession() {
                 <>Finish workout <Check className="h-4 w-4 ml-1" /></>
               )
             ) : (
-              <>Done — next <ChevronRight className="h-4 w-4 ml-1" /></>
+              <>Done, next <ChevronRight className="h-4 w-4 ml-1" /></>
             )}
           </Button>
           {finishError && (
             <p role="alert" className="text-[13px] text-destructive">
-              {finishError} Your progress is safe — nothing was logged twice.
+              {finishError} Your progress is safe, nothing was logged twice.
             </p>
           )}
         </Card>

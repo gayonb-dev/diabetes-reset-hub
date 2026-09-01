@@ -1,4 +1,4 @@
-// dexcom-auth — JWT-protected (verify_jwt default true).
+// dexcom-auth, JWT-protected (verify_jwt default true).
 // Actions:
 //   authorize_url : mint HMAC-signed single-use state, opportunistically purge expired nonces, return Dexcom login URL.
 //   exchange      : verify HMAC (constant-time), verify nonce not-used, exchange code for tokens, encrypt, upsert, delete nonce, fire an immediate sync.

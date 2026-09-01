@@ -1,4 +1,4 @@
-// Prompt 5 correction — executable proof of ledger claim idempotency.
+// Prompt 5 correction, executable proof of ledger claim idempotency.
 //
 // `public.claim_billing_event` does NOT decide idempotency by reading first and
 // writing second (two concurrent callers would both read "absent"). It relies

@@ -1,4 +1,4 @@
-// Shared blood-glucose classification (S1 — blood-glucose safety).
+// Shared blood-glucose classification (S1, blood-glucose safety).
 // Single source of truth for every surface that labels or colours a glucose reading.
 //
 // Low-safety thresholds apply FIRST for every reading type. Only at 70 mg/dL and
@@ -12,7 +12,7 @@ export type GlucoseReadingType = "fasting" | "post_meal" | "bedtime" | "other" |
 
 export type GlucoseStatus = "urgent_low" | "low" | "in_range" | "elevated" | "high";
 
-/** Low thresholds in canonical mg/dL — applied to every reading type. */
+/** Low thresholds in canonical mg/dL, applied to every reading type. */
 export const GLUCOSE_LOW_THRESHOLDS = {
   /** Below this value is urgent_low. */
   urgentLow: 54,
@@ -93,7 +93,7 @@ export function glucoseToneColor(status: GlucoseStatus): string {
 }
 
 /**
- * Tone for a raw mg/dL reading — used by dashboard-style summaries.
+ * Tone for a raw mg/dL reading, used by dashboard-style summaries.
  * Lives here so no consumer re-implements thresholds locally.
  */
 export function bloodSugarTone(mgdl: number, readingType: GlucoseReadingType = "other"): GlucoseTone {
@@ -117,7 +117,7 @@ export function isFutureTimestamp(value: string, now: Date = new Date()): boolea
   return t > now.getTime();
 }
 
-/** Local `datetime-local` string for "now" — used as the max attribute. */
+/** Local `datetime-local` string for "now", used as the max attribute. */
 export function localDateTimeValue(d: Date = new Date()): string {
   const off = d.getTimezoneOffset();
   return new Date(d.getTime() - off * 60000).toISOString().slice(0, 16);

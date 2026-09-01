@@ -7,7 +7,7 @@ interface StreakBadgeProps {
 }
 
 /**
- * Section 11 streak counter — flame gradient + count, all tokenized.
+ * Section 11 streak counter, flame gradient + count, all tokenized.
  * Day 7 thickens the font, Day 30 glows, Day 90 shimmers.
  */
 export default function StreakBadge({ streak, freezeAvailable, onClick }: StreakBadgeProps) {

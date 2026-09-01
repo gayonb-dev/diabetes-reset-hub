@@ -2,7 +2,7 @@ import { Apple, BookOpen, ClipboardList, FileText, Sun } from "lucide-react";
 import ScrollReveal from "./ScrollReveal";
 
 /**
- * "This is what your $27 gives you from Day 1" — each item names the destination
+ * "This is what your $27 gives you from Day 1", each item names the destination
  * that actually holds the action today, so nothing here sends a new member to
  * the wrong tab.
  */

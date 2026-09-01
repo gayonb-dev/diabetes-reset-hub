@@ -57,7 +57,7 @@ describe("PaymentSuccess renders only the server-reported state", () => {
     expect(invoke).not.toHaveBeenCalled();
   });
 
-  it("no query parameter can force success — only the server response decides", async () => {
+  it("no query parameter can force success, only the server response decides", async () => {
     invoke.mockResolvedValue({ data: { state: "unverified" }, error: null });
     renderAt("?session_id=cs_live_abcdefghij123456&state=verified&verified=true&status=paid");
     await waitFor(() => expect(screen.getByText(/couldn't verify this checkout/i)).toBeTruthy());

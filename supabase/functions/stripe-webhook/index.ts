@@ -59,8 +59,8 @@ function buildWelcomeEmail(name: string, origin: string) {
       <div style="background: #f0f7ef; border-radius: 12px; padding: 20px; margin: 20px 0;">
         <h2 style="color: #085041; font-size: 18px; margin-top: 0;">Your Next Steps:</h2>
         <ol style="color: #333; font-size: 15px; line-height: 2;">
-          <li><strong>Complete your intake form</strong> — so we can personalize your experience</li>
-          <li><strong>Review your Starter Kit</strong> — attached below</li>
+          <li><strong>Complete your intake form</strong>, so we can personalize your experience</li>
+          <li><strong>Review your Starter Kit</strong>, attached below</li>
           <li><strong>Reply with your preferred start date and time</strong></li>
           <li><strong>Watch for your Day 1 reminder on WhatsApp</strong></li>
         </ol>
@@ -254,7 +254,7 @@ serve(async (req) => {
             await sendEmail(
               RESEND_API_KEY,
               ADMIN_EMAIL,
-              `🎉 New Purchase: ${orderData.customer_name} — $${(orderData.amount / 100).toFixed(2)}`,
+              `🎉 New Purchase: ${orderData.customer_name}, $${(orderData.amount / 100).toFixed(2)}`,
               buildAdminNotificationEmail(
                 orderData.customer_name,
                 orderData.customer_email,

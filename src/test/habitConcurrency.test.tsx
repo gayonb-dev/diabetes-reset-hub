@@ -1,4 +1,4 @@
-// Part D — durable habit logging under concurrency.
+// Part D, durable habit logging under concurrency.
 // Proves: functional optimistic updates, out-of-order response safety,
 // no lost writes during rapid input, and an honest retry state.
 import { describe, it, expect, vi, beforeEach } from "vitest";
@@ -70,7 +70,7 @@ const meal = (over: Record<string, unknown> = {}) => ({
   ...over,
 });
 
-describe("useDailyHabits — meal write concurrency", () => {
+describe("useDailyHabits, meal write concurrency", () => {
   it("applies the toggle optimistically before the server responds", async () => {
     const { result } = renderHook(() => useDailyHabits());
     await waitFor(() => expect(result.current.loading).toBe(false));

@@ -24,7 +24,7 @@ beforeEach(() => {
   invoke.mockReset();
 });
 
-describe("chatSession — single shared token store", () => {
+describe("chatSession, single shared token store", () => {
   it("startChatSession issues a token and exposes the server gate", async () => {
     invoke.mockResolvedValue({
       data: { session_token: TOKEN, ai_health_available: false, notice_version: "2026-08-07.1" },

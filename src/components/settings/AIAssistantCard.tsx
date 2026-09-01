@@ -110,9 +110,9 @@ export function AIAssistantCard() {
               <li>Open your assistant's settings and find Connectors (or MCP servers).</li>
               <li>Choose to add a custom connector / remote MCP server.</li>
               <li>Paste the server URL above.</li>
-              <li>Your assistant opens a sign-in page — log in with this same account.</li>
+              <li>Your assistant opens a sign-in page, log in with this same account.</li>
               <li>Review what the assistant is asking for and approve it.</li>
-              <li>Come back here — the assistant appears in the list below.</li>
+              <li>Come back here, the assistant appears in the list below.</li>
             </ol>
           </CollapsibleContent>
         </Collapsible>

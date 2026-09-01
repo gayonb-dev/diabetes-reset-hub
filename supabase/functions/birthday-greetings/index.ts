@@ -1,4 +1,4 @@
-// Phase B2.2 — Birthday recognition
+// Phase B2.2, Birthday recognition
 // Cron-invokable (run nightly). Finds visitor_profiles whose date_of_birth's
 // month+day matches today, joins to auth.users for email, sends a warm
 // brand email via Resend. Idempotency: writes an activity_events row of type
@@ -77,9 +77,9 @@ Deno.serve(async (req) => {
       const html = `
         <div style="font-family:'Inter',Arial,sans-serif;max-width:560px;margin:0 auto;padding:32px 24px;color:#1a1a1a;">
           <h1 style="font-family:'Inter',Arial,sans-serif;color:#085041;font-size:28px;margin:0 0 16px;">Happy birthday, ${firstName}.</h1>
-          <p style="font-size:16px;line-height:1.6;">Just a quick note — no offer, no ask. Today's yours. Enjoy the people, eat the cake, take the walk after if you can.</p>
+          <p style="font-size:16px;line-height:1.6;">Just a quick note, no offer, no ask. Today's yours. Enjoy the people, eat the cake, take the walk after if you can.</p>
           <p style="font-size:16px;line-height:1.6;">We're glad you're here.</p>
-          <p style="font-size:16px;line-height:1.6;margin-top:24px;">— Gayon &amp; the Diabetes Reset team</p>
+          <p style="font-size:16px;line-height:1.6;margin-top:24px;">, Gayon &amp; the Diabetes Reset team</p>
           <p style="font-size:12px;color:#888;margin-top:32px;">The Diabetes Reset Method · Educational, not medical advice.</p>
         </div>
       `;
