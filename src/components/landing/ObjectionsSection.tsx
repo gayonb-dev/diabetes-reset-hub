@@ -31,14 +31,16 @@ const ObjectionsSection = () => (
       </h2>
       <ul className="grid sm:grid-cols-2 gap-4">
         {OBJECTIONS.map(({ question, answer }, i) => (
-          <ScrollReveal key={question} delay={i * 0.05}>
-            <li className="h-full bg-card border border-border rounded-xl p-5">
-              <h3 className="font-heading font-semibold text-base text-foreground mb-2">
-                {question}
-              </h3>
-              <p className="text-muted-foreground text-sm leading-relaxed">{answer}</p>
-            </li>
-          </ScrollReveal>
+          <li key={question} className="h-full">
+            <ScrollReveal delay={i * 0.05}>
+              <div className="h-full bg-card border border-border rounded-xl p-5">
+                <h3 className="font-heading font-semibold text-base text-foreground mb-2">
+                  {question}
+                </h3>
+                <p className="text-muted-foreground text-sm leading-relaxed">{answer}</p>
+              </div>
+            </ScrollReveal>
+          </li>
         ))}
       </ul>
     </div>
