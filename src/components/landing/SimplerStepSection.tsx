@@ -4,18 +4,18 @@ import ScrollReveal from "./ScrollReveal";
 const CARDS = [
   {
     icon: Sparkles,
-    title: "Start with Today",
-    body: "Open one guided daily action instead of facing a long checklist.",
+    title: "Stop starting from a blank page",
+    body: "Open Today and see the action in front of you instead of rebuilding your plan every morning.",
   },
   {
     icon: CalendarCheck,
-    title: "Use the tools you need",
-    body: "Plan meals, record trends, or prepare questions without completing every feature.",
+    title: "Keep the practical tools together",
+    body: "Plan meals, record the information you choose, explore educational guides, and follow your progress without juggling disconnected tools.",
   },
   {
     icon: FileText,
-    title: "Bring the summary to your visit",
-    body: "Create a printable report to support a conversation with your healthcare professional.",
+    title: "Bring something useful to your next visit",
+    body: "Turn selected entries and questions into a printable report you can discuss with your healthcare professional.",
   },
 ];
 
@@ -28,13 +28,20 @@ const SimplerStepSection = () => {
             id="simpler-step-heading"
             className="font-heading font-bold text-3xl sm:text-4xl text-center text-foreground mb-4"
           >
-            One useful next step—not another overwhelming plan
+            Diabetes advice is everywhere. A clear plan for today is harder to find.
           </h2>
-          <p className="text-center text-muted-foreground max-w-2xl mx-auto mb-10">
-            Diabetes management can involve meals, movement, readings, appointments, and more. DRM
-            brings practical tools into one place so you can focus on the next action that feels
-            useful today.
-          </p>
+          <div className="text-center text-muted-foreground max-w-2xl mx-auto mb-10 space-y-3">
+            <p>
+              Meals. Movement. Readings. Appointments. Questions. The list can follow you through
+              the entire day.
+            </p>
+            <p>
+              When everything feels important, it is easy to finish the day still wondering whether
+              you focused on the right thing.
+            </p>
+            <p>You do not need another pile of information. You need a simple place to begin.</p>
+            <p>DRM turns the daily diabetes to-do list into one useful next step at a time.</p>
+          </div>
         </ScrollReveal>
 
         <div className="grid md:grid-cols-3 gap-6">
@@ -50,6 +57,10 @@ const SimplerStepSection = () => {
             </ScrollReveal>
           ))}
         </div>
+
+        <p className="text-center text-muted-foreground mt-8">
+          You should not have to carry the whole diabetes to-do list in your head.
+        </p>
       </div>
     </section>
   );
