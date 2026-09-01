@@ -3,7 +3,13 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import ScrollReveal from "./ScrollReveal";
 import PreviewLightbox from "./PreviewLightbox";
-import { PREVIEWS, PREVIEW_DATA_NOTE, type PreviewItem } from "./previewManifest";
+import {
+  PREVIEWS,
+  PREVIEW_DATA_NOTE,
+  PREVIEW_DATA_NOTE_2,
+  PREVIEW_PERSISTENT_LABEL,
+  type PreviewItem,
+} from "./previewManifest";
 import { useCheckout } from "./CheckoutContext";
 
 /**
@@ -25,11 +31,12 @@ const ProductTourSection = () => {
     <div id="product-tour" className="scroll-mt-24 mt-14">
       <ScrollReveal>
         <h3 className="font-heading font-bold text-2xl sm:text-3xl text-center text-foreground mb-3">
-          Real screens from the member app
+          Don’t buy blind. See the actual membership first.
         </h3>
-        <p className="text-center text-muted-foreground max-w-2xl mx-auto mb-8">
-          {PREVIEW_DATA_NOTE} Select a screen to view it, or enlarge it for detail.
-        </p>
+        <div className="text-center text-muted-foreground max-w-2xl mx-auto mb-8 space-y-2">
+          <p>{PREVIEW_DATA_NOTE}</p>
+          <p>{PREVIEW_DATA_NOTE_2}</p>
+        </div>
       </ScrollReveal>
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)] items-start">
@@ -53,10 +60,7 @@ const ProductTourSection = () => {
           <figcaption className="p-4 border-t border-border">
             <p className="font-heading font-semibold text-foreground">{active.label}</p>
             <p className="text-sm text-muted-foreground mt-1">{active.caption}</p>
-            <p className="text-xs text-muted-foreground mt-2">
-              Actual app screen · illustrative example entries. Showing the top of this screen —
-              enlarge for the full page.
-            </p>
+            <p className="text-xs text-muted-foreground mt-2">{PREVIEW_PERSISTENT_LABEL}</p>
             <Button
               variant="outline"
               className="mt-3 min-h-[44px] rounded-lg"
@@ -116,11 +120,10 @@ const ProductTourSection = () => {
           onClick={openCheckout}
           className="min-h-[44px] bg-primary hover:bg-primary-dark text-primary-foreground font-bold px-8 py-4 h-auto rounded-lg"
         >
-          Start 14 days for $27
+          Use these tools for 14 days — $27
         </Button>
         <p className="text-sm text-muted-foreground mt-3">
-          $27 for the first 14 days, then $67 per month until canceled. Cancel in the app. Access
-          begins after your payment is confirmed.
+          $27 today. Then $67/month until canceled. Access begins after payment is confirmed.
         </p>
       </div>
 
