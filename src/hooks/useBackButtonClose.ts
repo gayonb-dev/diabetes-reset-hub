@@ -11,7 +11,7 @@ function currentLocationKey() {
  * The dummy entry is only unwound on cleanup when no navigation happened while
  * the overlay was open. If a link inside the overlay navigated (React Router
  * pushes the new route before this cleanup runs), calling history.back() would
- * pop the *new* route and cancel the navigation — so we leave it alone.
+ * pop the *new* route and cancel the navigation, so we leave it alone.
  */
 export function useBackButtonClose(open: boolean, onClose: () => void) {
   const pushedRef = useRef(false);
@@ -42,11 +42,11 @@ export function useBackButtonClose(open: boolean, onClose: () => void) {
       const recorded = locationAtPushRef.current;
       locationAtPushRef.current = null;
 
-      // Navigation happened while the overlay was open — the dummy entry has
+      // Navigation happened while the overlay was open, the dummy entry has
       // been superseded by the new route. Unwinding it would cancel the nav.
       if (recorded !== null && recorded !== currentLocationKey()) return;
 
-      // Closed by UI (X, outside click, Escape) with no navigation — remove
+      // Closed by UI (X, outside click, Escape) with no navigation, remove
       // the dummy entry so back-stack entries cannot accumulate.
       window.history.back();
     };

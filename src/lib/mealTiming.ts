@@ -1,5 +1,5 @@
 // Single source of truth for every meal and snack time in the app.
-// Pure functions only — no React, no Supabase, fully unit-testable.
+// Pure functions only, no React, no Supabase, fully unit-testable.
 //
 // The implementation lives in supabase/functions/_shared/fastingTarget.ts so
 // that the browser bundle and the generate-meal-plan edge function compile the
@@ -111,7 +111,7 @@ export function rampStatus(
       chosen,
       ramping: false,
       daysUntilNext: 0,
-      description: `You're on ${TARGET_LABEL[current]} — your chosen target. Nothing changes unless you change it.`,
+      description: `You're on ${TARGET_LABEL[current]}, your chosen target. Nothing changes unless you change it.`,
     };
   }
 

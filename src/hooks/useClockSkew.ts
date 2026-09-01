@@ -14,8 +14,8 @@ let loggedOnce = false;
  * response header. A wrong device clock silently invalidates auth tokens, which
  * surfaces to members as an unexplainable "it won't let me log in".
  *
- * The request must never be served from cache — a stale `Date` header would
- * produce a false positive — so it uses `cache: 'no-store'` plus a cache-busting
+ * The request must never be served from cache, a stale `Date` header would
+ * produce a false positive, so it uses `cache: 'no-store'` plus a cache-busting
  * query param. Any failure (network error, non-2xx, missing header) is treated
  * as "unknown" and shows nothing.
  */

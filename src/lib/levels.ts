@@ -1,4 +1,4 @@
-// Level system per Section 11 — levels unlock by program day, not points.
+// Level system per Section 11, levels unlock by program day, not points.
 // Names and messages are the approved S3 content-appendix table.
 
 export interface LevelInfo {

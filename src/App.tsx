@@ -11,7 +11,7 @@ import RetiredOfferRoute from "@/components/RetiredOfferRoute";
 import ClockSkewBanner from "@/components/ClockSkewBanner";
 import Index from "./pages/Index";
 
-// Lazy-loaded routes — keep the landing page bundle small.
+// Lazy-loaded routes, keep the landing page bundle small.
 
 
 const PaymentSuccess = lazy(() => import("./pages/PaymentSuccess"));
@@ -105,7 +105,7 @@ const App = () => (
               <Route path="/" element={<Index />} />
               <Route path="/payment-success" element={<PaymentSuccess />} />
               <Route path="/payment-cancelled" element={<PaymentCancelled />} />
-              {/* Prompt 4 closeout — retired routes. Client-side replacements
+              {/* Prompt 4 closeout, retired routes. Client-side replacements
                   (Lovable hosting has no server 301/308); no retired funnel,
                   coaching, booking, or $497 content is rendered. */}
               <Route
@@ -141,7 +141,7 @@ const App = () => (
                 }
               >
                 <Route index element={<AdminDashboard />} />
-                {/* Batch 2 F — Top Customers retired from active Admin. The
+                {/* Batch 2 F, Top Customers retired from active Admin. The
                     route redirects; historical data is retained in the DB. */}
                 <Route path="top-customers" element={<Navigate to="/admin/subscriptions" replace />} />
                 <Route path="coaching-interest" element={<AdminCoachingInterest />} />
@@ -171,7 +171,7 @@ const App = () => (
               <Route path="/.lovable/oauth/consent" element={<OAuthConsent />} />
 
 
-              {/* Doctor-shareable progress report — plain page, no AppLayout */}
+              {/* Doctor-shareable progress report, plain page, no AppLayout */}
               <Route
                 path="/app/progress/report"
                 element={
@@ -181,7 +181,7 @@ const App = () => (
                 }
               />
 
-              {/* Dexcom OAuth callback — plain page, no AppLayout */}
+              {/* Dexcom OAuth callback, plain page, no AppLayout */}
               <Route
                 path="/app/settings/dexcom/callback"
                 element={
@@ -241,7 +241,7 @@ const App = () => (
                 <Route path="cheat-meal" element={<Navigate to="/app/meals?tab=off-plan" replace />} />
                 <Route path="support" element={<Support />} />
                 <Route path="settings/billing" element={<Billing />} />
-                {/* Prompt 6 A6 — /app/coaching-waitlist retired: one-to-one coaching
+                {/* Prompt 6 A6, /app/coaching-waitlist retired: one-to-one coaching
                     is not part of the membership, so the surface is not routed. */}
                 <Route path="*" element={<AppNotFound />} />
               </Route>

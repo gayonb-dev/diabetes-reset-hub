@@ -149,7 +149,7 @@ export default function OAuthConsent() {
         </h1>
         <p className="text-sm text-muted-foreground">
           This lets <span className="font-medium text-foreground">{clientName}</span> use The Diabetes
-          Reset Method as you — reading your program status, blood sugar, and health logs, and letting
+          Reset Method as you, reading your program status, blood sugar, and health logs, and letting
           you log entries or mark days complete on your behalf.
         </p>
         <ul className="text-sm text-foreground space-y-1 list-disc pl-5">

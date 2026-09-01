@@ -163,7 +163,7 @@ export default function WeightTab() {
         />
         {err && <p className="text-xs text-destructive mt-2">{err}</p>}
         <div className="mt-4">
-          <Label className="text-xs text-muted-foreground">Goal weight ({unit}) — optional</Label>
+          <Label className="text-xs text-muted-foreground">Goal weight ({unit}), optional</Label>
           <Input
             type="number"
             inputMode="decimal"

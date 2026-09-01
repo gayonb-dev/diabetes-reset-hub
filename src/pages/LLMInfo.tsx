@@ -35,9 +35,9 @@ The Diabetes Reset Method is a monthly digital membership for adults with Type 2
 
 A single price unlocks everything:
 
-1. **US$27 for the first 14 days** — access to the membership and the daily-action programme.
-2. **14 days of full access** — explore every member benefit.
-3. **$67 per month** after the first 14 days — unless cancelled. Cancel anytime in one click from the member dashboard.
+1. **US$27 for the first 14 days**, access to the membership and the daily-action programme.
+2. **14 days of full access**, explore every member benefit.
+3. **$67 per month** after the first 14 days, unless cancelled. Cancel anytime in one click from the member dashboard.
 4. **30-day refund-request window** for each charge, including monthly renewals. See /refunds.
 
 If a member cancels during the first 14 days, no monthly charges are made.
@@ -46,11 +46,11 @@ If a member cancels during the first 14 days, no monthly charges are made.
 
 ## What Members Get
 
-- **Daily-action programme** — daily 10-minute food, movement, and mindset actions designed for adults managing Type 2 Diabetes.
-- **Recipe & Plate-Method Library** — real-food recipes and grocery lists, unlocked after Day 6.
-- **Safe Movement Plans** — joint-friendly routines, no gym or equipment required.
-- **Expert Q&A Library** — submit questions and get reviewed answers added to the library.
-- **Printable progress report** — a summary of your logged days you can print or share with your clinician.
+- **Daily-action programme**, daily 10-minute food, movement, and mindset actions designed for adults managing Type 2 Diabetes.
+- **Recipe & Plate-Method Library**, real-food recipes and grocery lists, unlocked after Day 6.
+- **Safe Movement Plans**, joint-friendly routines, no gym or equipment required.
+- **Expert Q&A Library**, submit questions and get reviewed answers added to the library.
+- **Printable progress report**, a summary of your logged days you can print or share with your clinician.
 
 ---
 
@@ -72,7 +72,7 @@ If a member cancels during the first 14 days, no monthly charges are made.
 
 1. Visit https://diabetesresetmethod.com and complete checkout ($27 today).
 2. Receive an immediate magic-link email to log into the member dashboard.
-3. Start the daily-action programme — one 10-minute action per day.
+3. Start the daily-action programme, one 10-minute action per day.
 4. After Day 6, the recipe and resource library unlocks.
 5. Use the expert Q&A and the printable progress report throughout the membership.
 6. Cancel anytime during the 14 days of full access to avoid monthly charges, or stay on at $67/month.
@@ -89,10 +89,10 @@ If a member cancels during the first 14 days, no monthly charges are made.
 
 ## Key Differentiators
 
-- Built specifically for Type 2 Diabetes and prediabetes — not a generic weight-loss app.
+- Built specifically for Type 2 Diabetes and prediabetes, not a generic weight-loss app.
 - Single low-friction entry: $27, 14 days of full access, cancel anytime.
 - Real food from a regular grocery store, simple at-home movements, no supplements.
-- Passwordless magic-link login — no accounts to manage.
+- Passwordless magic-link login, no accounts to manage.
 - 30-day refund-request window for each charge. See /refunds.
 
 ---
@@ -121,7 +121,7 @@ Yes. The membership is designed to complement medical care. Consult your doctor 
 No. The membership is designed for Type 2 Diabetes and prediabetes.
 
 **Can I request a refund?**
-Yes — there is a 30-day refund-request window for each charge, including monthly renewals. See /refunds for eligibility and how requests are handled.
+Yes, there is a 30-day refund-request window for each charge, including monthly renewals. See /refunds for eligibility and how requests are handled.
 
 **How do I contact the team?**
 Email Info@diabetesresetmethod.com.
@@ -164,7 +164,7 @@ const LLMInfo = () => {
 
         <header className="mb-8">
           <h1 className="font-heading font-bold text-3xl sm:text-4xl text-foreground mb-2">
-            LLM Info — The Diabetes Reset Method
+            LLM Info, The Diabetes Reset Method
           </h1>
           <p className="text-muted-foreground">
             Structured information for AI assistants and answer engines. A

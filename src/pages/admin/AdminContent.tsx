@@ -376,7 +376,7 @@ function DailyActionEditor({
 
         <div>
           <Label>
-            Action Description (max 200 chars) —{" "}
+            Action Description (max 200 chars), {" "}
             <span className={(editing.action_description?.length ?? 0) > 200 ? "text-destructive" : "text-muted-foreground"}>
               {editing.action_description?.length ?? 0}/200
             </span>
@@ -468,7 +468,7 @@ function DailyActionEditor({
 
         {/* Preview */}
         <div>
-          <Label>Preview — dashboard card</Label>
+          <Label>Preview, dashboard card</Label>
           <div className="mt-2 rounded-2xl border-[1.5px] border-accent/60 bg-accent-muted p-5">
             <p className="label-caps text-accent-ink mb-2">Today's Action</p>
             <h4 className="font-heading text-xl font-bold text-foreground">
@@ -590,10 +590,10 @@ function ContentItemsTab({ type, label }: { type: "blog" | "guide"; label: strin
                 </td>
                 {type === "blog" && (
                   <td className="p-3 text-xs text-muted-foreground">
-                    {r.metadata?.source ?? "—"}
+                    {r.metadata?.source ?? ", "}
                   </td>
                 )}
-                <td className="p-3">{r.is_active ? "✓" : "—"}</td>
+                <td className="p-3">{r.is_active ? "✓" : ", "}</td>
                 <td className="p-3 text-right whitespace-nowrap">
                   <Button variant="ghost" size="sm" onClick={() => setEditing(r)}>
                     <Edit className="h-4 w-4" />
@@ -681,7 +681,7 @@ function ContentItemsTab({ type, label }: { type: "blog" | "guide"; label: strin
 
             {type === "guide" && (
               <div>
-                <Label>Body (markdown — overrides default in-app copy for this slug)</Label>
+                <Label>Body (markdown, overrides default in-app copy for this slug)</Label>
                 <Textarea
                   value={editing.body || ""}
                   onChange={(e) => setEditing({ ...editing, body: e.target.value })}
@@ -729,7 +729,7 @@ const NOTIFICATION_TEMPLATES: { name: string; template: string }[] = [
   { name: "30-day streak", template: "VITA says: 30 days, [First name]. You have a month of practice to learn from." },
   { name: "Streak broken", template: "VITA says: Your [N]-day streak reset, [First name]. Your past work still counts. Choose one useful action when you're ready." },
   { name: "Blood sugar not logged", template: "VITA says: [First name], no blood-sugar reading is logged today. Log one only if it is part of your usual care plan." },
-  { name: "Measurement due in 7 days", template: "VITA says: [First name], your Month [N] check-in is in seven days. Use it to review what you recorded—without judging a single number." },
+  { name: "Measurement due in 7 days", template: "VITA says: [First name], your Month [N] check-in is in seven days. Use it to review what you recorded, without judging a single number." },
   { name: "Good morning", template: "VITA says: Good morning, [First name]. [Today's action name] is ready when you are." },
   { name: "Level up", template: "VITA says: [First name], you reached [Level Name]. [Level significance message]" },
 

@@ -134,7 +134,7 @@ export default function MeasurementsTab() {
                 step="0.1"
                 value={values[s.k] ?? ""}
                 onChange={(e) => setValues((v) => ({ ...v, [s.k]: e.target.value }))}
-                placeholder="—"
+                placeholder=", "
               />
             </div>
           ))}

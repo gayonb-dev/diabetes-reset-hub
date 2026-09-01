@@ -1,5 +1,5 @@
 /**
- * Batch 2 Part F — minimal coaching-interest surface.
+ * Batch 2 Part F, minimal coaching-interest surface.
  *
  * Collects authenticated identity/email, explicit consent and a timestamp only.
  * No health narrative, no free-text field, no urgency, deposit, checkout,

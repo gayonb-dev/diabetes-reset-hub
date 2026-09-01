@@ -9,7 +9,7 @@ import {
 /**
  * Low / urgent-low safety card.
  *
- * `announce` is true ONLY for a reading the member has just entered — that card
+ * `announce` is true ONLY for a reading the member has just entered, that card
  * gets role="alert" so it is announced without moving focus. Previously saved
  * readings render the same card with icon + text but no assertive announcement.
  */

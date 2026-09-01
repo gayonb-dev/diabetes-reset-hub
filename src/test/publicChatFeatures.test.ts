@@ -1,5 +1,5 @@
 /**
- * Prompt 6 PRE-PART A — public VITA feature/tracking routing correction.
+ * Prompt 6 PRE-PART A, public VITA feature/tracking routing correction.
  *
  * Product-capability questions must be answered truthfully and deterministically
  * even when they mention diabetes, A1C or weight. Requests for interpretation,
@@ -57,7 +57,7 @@ describe("deterministic feature answer", () => {
   it("never advertises retired or non-operational features", () => {
     const banned =
       /whatsapp|broadcast|coaching|1:1|sprint|7[-\s]?day reset|supplement|fasting schedule|automatic (device )?sync|personalized health/i;
-    for (const q of [...FEATURE_QUESTIONS, ...TRACKING_QUESTIONS]) {
+    for (const q of [...FEATURE_QUESTIONS...TRACKING_QUESTIONS]) {
       expect(banned.test(matchFaq(q)!.body), q).toBe(false);
     }
   });

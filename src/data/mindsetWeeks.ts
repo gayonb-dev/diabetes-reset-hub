@@ -1,4 +1,4 @@
-// Section 15 — Mindset and Psychology Module.
+// Section 15, Mindset and Psychology Module.
 // Full verbatim copy from the approved S3 content appendix (person-centered,
 // non-stigmatizing, no predicted outcomes). Week numbers, titles, unlock days,
 // card counts, and postures are preserved; Week 6 intentionally has no assignment.
@@ -18,7 +18,7 @@ export type MindsetWeek = {
 export const MINDSET_WEEKS: MindsetWeek[] = [
   {
     weekNumber: 1,
-    title: "Week 1 — Hope",
+    title: "Week 1, Hope",
     unlockDay: 1,
     cards: [
       {
@@ -39,7 +39,7 @@ export const MINDSET_WEEKS: MindsetWeek[] = [
   },
   {
     weekNumber: 2,
-    title: "Week 2 — Agency",
+    title: "Week 2, Agency",
     unlockDay: 8,
     cards: [
       {
@@ -60,7 +60,7 @@ export const MINDSET_WEEKS: MindsetWeek[] = [
   },
   {
     weekNumber: 3,
-    title: "Week 3 — Evidence",
+    title: "Week 3, Evidence",
     unlockDay: 15,
     cards: [
       {
@@ -81,7 +81,7 @@ export const MINDSET_WEEKS: MindsetWeek[] = [
   },
   {
     weekNumber: 4,
-    title: "Week 4 — Identity",
+    title: "Week 4, Identity",
     unlockDay: 22,
     cards: [
       {
@@ -102,7 +102,7 @@ export const MINDSET_WEEKS: MindsetWeek[] = [
   },
   {
     weekNumber: 5,
-    title: "Week 5 — Resilience",
+    title: "Week 5, Resilience",
     unlockDay: 29,
     cards: [
       {
@@ -123,12 +123,12 @@ export const MINDSET_WEEKS: MindsetWeek[] = [
   },
   {
     weekNumber: 6,
-    title: "Week 6 — Momentum",
+    title: "Week 6, Momentum",
     unlockDay: 36,
     cards: [
       {
         posture: "celebrating",
-        body: "You have spent six weeks practicing. Pause and notice which tools you actually used—not which ones you think you should have used.",
+        body: "You have spent six weeks practicing. Pause and notice which tools you actually used, not which ones you think you should have used.",
       },
       {
         posture: "encouraging",

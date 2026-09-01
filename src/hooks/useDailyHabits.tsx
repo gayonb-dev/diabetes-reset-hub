@@ -39,7 +39,7 @@ export interface WalkLog {
   slot: "after_breakfast" | "after_lunch" | "after_dinner";
 }
 
-/** Honest per-surface write state — no silent failures. */
+/** Honest per-surface write state, no silent failures. */
 export type SaveState = "idle" | "saving" | "error";
 
 export interface DailyHabits {
@@ -107,7 +107,7 @@ export function useDailyHabits(): DailyHabits {
   // stale values during rapid typing or tapping.
   const mealSeq = useRef<Record<MealLog["meal_type"], number>>({ breakfast: 0, lunch: 0, dinner: 0 });
   const mealApplied = useRef<Record<MealLog["meal_type"], number>>({ breakfast: 0, lunch: 0, dinner: 0 });
-  // Last locally-intended meal values — the source for a retry.
+  // Last locally-intended meal values, the source for a retry.
   const mealDraft = useRef<Record<MealLog["meal_type"], MealLog>>({
     breakfast: blankMeal("breakfast"),
     lunch: blankMeal("lunch"),
@@ -185,7 +185,7 @@ export function useDailyHabits(): DailyHabits {
     async (oz: number): Promise<boolean> => {
       if (!user) return false;
       if (!Number.isFinite(oz) || oz <= 0) return false;
-      // Optimistic — the amount moves immediately, then reconciles.
+      // Optimistic, the amount moves immediately, then reconciles.
       setWaterOz((prev) => prev + oz);
       const { error } = await supabase
         .from("water_logs")
@@ -207,11 +207,11 @@ export function useDailyHabits(): DailyHabits {
   const writeMeal = useCallback(
     async (mt: MealLog["meal_type"], patch: Partial<MealLog>) => {
       if (!user) return;
-      const merged: MealLog = { ...mealDraft.current[mt], ...patch, meal_type: mt };
+      const merged: MealLog = { ...mealDraft.current[mt]...patch, meal_type: mt };
       mealDraft.current[mt] = merged;
       const seq = ++mealSeq.current[mt];
 
-      setMeals((prev) => ({ ...prev, [mt]: { ...prev[mt], ...patch } }));
+      setMeals((prev) => ({ ...prev, [mt]: { ...prev[mt]...patch } }));
       setMealSaveState((prev) => ({ ...prev, [mt]: "saving" }));
 
       const { data, error } = await supabase
@@ -231,7 +231,7 @@ export function useDailyHabits(): DailyHabits {
         .select()
         .maybeSingle();
 
-      // Stale response — a newer write already superseded this one.
+      // Stale response, a newer write already superseded this one.
       if (seq !== mealSeq.current[mt]) return;
       mealApplied.current[mt] = seq;
 

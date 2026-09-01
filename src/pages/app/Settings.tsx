@@ -1,4 +1,4 @@
-// /app/settings — full member settings (units, notifications, account, data, sign out)
+// /app/settings, full member settings (units, notifications, account, data, sign out)
 // Spec sections 19/21 highlights: unit toggles, data export & delete,
 // destructive sign-out at bottom of page (green, not red), confirmation dialog.
 
@@ -29,7 +29,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
 import VitaErrorCard from "@/components/vita/VitaErrorCard";
 import { getUnits, setUnits, WeightUnit, GlucoseUnit } from "@/lib/units";
-// PARKED 2026-07-31 — Dexcom US partner applications are closed (Stelo only),
+// PARKED 2026-07-31, Dexcom US partner applications are closed (Stelo only),
 // so production access isn't available and members can't complete a connection.
 // Reactivate by uncommenting this import + the mount below, and rescheduling the
 // dexcom-sync-every-30-min cron job.
@@ -93,7 +93,7 @@ export default function Settings() {
   const [deleting, setDeleting] = useState(false);
   const [showAdvanced, setShowAdvanced] = useState(false);
 
-  // Profile — community display name (defaults to first_name, editable independently)
+  // Profile, community display name (defaults to first_name, editable independently)
   const [firstName, setFirstName] = useState<string>("");
   const [displayName, setDisplayName] = useState<string>("");
   const [displayNameSaving, setDisplayNameSaving] = useState(false);
@@ -115,7 +115,7 @@ export default function Settings() {
   };
   const [notifPrefs, setNotifPrefs] = useState<NotifPrefs>(DEFAULT_NOTIF_PREFS);
 
-  // Meal Plan Preferences (Section 5 — Section 20 of spec)
+  // Meal Plan Preferences (Section 5, Section 20 of spec)
   const [profileId, setProfileId] = useState<string | null>(null);
   const [profileMetadata, setProfileMetadata] = useState<Record<string, unknown>>({});
   const [cuisines, setCuisines] = useState<string[]>(["International (balanced)"]);
@@ -155,7 +155,7 @@ export default function Settings() {
     if (!user) return;
 
 
-    // Load profile (display name, first name, notification prefs, meal prefs, timezone) — single source of truth.
+    // Load profile (display name, first name, notification prefs, meal prefs, timezone), single source of truth.
     supabase
       .from("profiles")
       .select("first_name, community_display_name, notification_prefs, meal_preferences, regenerations_this_month, regen_month, timezone")
@@ -176,7 +176,7 @@ export default function Settings() {
         setInitialDisplayName(dn);
 
         const np = (data.notification_prefs as NotifPrefs) ?? {};
-        setNotifPrefs({ ...DEFAULT_NOTIF_PREFS, ...np });
+        setNotifPrefs({ ...DEFAULT_NOTIF_PREFS...np });
 
         const meta = (data.meal_preferences as Record<string, unknown>) ?? {};
         setProfileId(user.id);
@@ -191,7 +191,7 @@ export default function Settings() {
         setCookingTime(ct);
         setInitialPrefs(JSON.stringify({ c, p, avoid, ct }));
 
-        // Regen cap accounting — reset if we've crossed into a new month.
+        // Regen cap accounting, reset if we've crossed into a new month.
         const nowMonthStart = new Date();
         nowMonthStart.setUTCDate(1);
         nowMonthStart.setUTCHours(0, 0, 0, 0);
@@ -284,7 +284,7 @@ export default function Settings() {
     // 4-min safety net: surface VitaErrorCard if generation hasn't kicked off by then.
     const timeoutId = window.setTimeout(() => {
       setRegenError(
-        "VITA is taking longer than usual to rebuild your plan. Try again, or open the Meals tab — partial weeks may already be ready.",
+        "VITA is taking longer than usual to rebuild your plan. Try again, or open the Meals tab, partial weeks may already be ready.",
       );
     }, 4 * 60 * 1000);
 
@@ -417,7 +417,7 @@ export default function Settings() {
         const s = String(v);
         return /[",\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
       };
-      return [headers.join(","), ...rows.map((r) => r.map(esc).join(","))].join("\n");
+      return [headers.join(",")...rows.map((r) => r.map(esc).join(","))].join("\n");
     };
 
     const zip = new JSZip();
@@ -665,7 +665,7 @@ export default function Settings() {
           <Clock className="h-4 w-4 text-primary" /> Timezone
         </h2>
         <p className="text-xs text-muted-foreground mb-3">
-          Your timezone — used for reminder timing.
+          Your timezone, used for reminder timing.
         </p>
         <Input
           list="tz-options"
@@ -724,7 +724,7 @@ export default function Settings() {
 
 
 
-      {/* Prompt 6 A6 — WhatsApp broadcast opt-in removed: no WhatsApp delivery
+      {/* Prompt 6 A6, WhatsApp broadcast opt-in removed: no WhatsApp delivery
           channel is enabled in production, so the app must not promise one. */}
 
       <InstallAppCard />
@@ -755,7 +755,7 @@ export default function Settings() {
         </div>
       </Card>
 
-      {/* Meal Plan Preferences — Section 5 (Section 20 of spec) */}
+      {/* Meal Plan Preferences, Section 5 (Section 20 of spec) */}
 
       <Card className="p-5 border-border rounded-xl shadow-warm">
         <h2 className="font-heading font-semibold text-base flex items-center gap-2 mb-1 max-lg:sticky max-lg:top-0 max-lg:z-10 max-lg:bg-card max-lg:py-1">
@@ -882,7 +882,7 @@ export default function Settings() {
           <div className="mt-3 flex items-start gap-2 rounded-md bg-primary-muted/60 border border-primary/15 p-3">
             <Loader2 className="h-4 w-4 text-primary animate-spin shrink-0 mt-0.5" />
             <p className="text-xs text-foreground">
-              <span className="font-medium text-primary">Heads up — this can take 2–3 minutes.</span>{" "}
+              <span className="font-medium text-primary">Heads up, this can take 2–3 minutes.</span>{" "}
               VITA is building all 4 weeks in parallel. You can leave this page; the Meals tab will
               update as each week finishes.
             </p>
@@ -901,14 +901,14 @@ export default function Settings() {
         )}
       </Card>
 
-      {/* Connected Devices — Dexcom CGM auto-sync.
-          PARKED 2026-07-31 — Dexcom US partner applications are closed (Stelo only),
+      {/* Connected Devices, Dexcom CGM auto-sync.
+          PARKED 2026-07-31, Dexcom US partner applications are closed (Stelo only),
           so production access isn't available and members can't complete a connection.
           Reactivate by uncommenting this mount (and its import above) and rescheduling
           the dexcom-sync-every-30-min cron job. */}
       {/* <ConnectedDevicesCard /> */}
 
-      {/* Batch 2 E — MCP/AI assistant connector stays behind an Advanced flag so
+      {/* Batch 2 E, MCP/AI assistant connector stays behind an Advanced flag so
           it is not part of the normal member journey. */}
       {!showAdvanced && (
         <button
@@ -974,7 +974,7 @@ export default function Settings() {
 
       <Separator />
 
-      {/* Sign out — green per spec (not destructive red) */}
+      {/* Sign out, green per spec (not destructive red) */}
       <div className="flex justify-center pb-8">
         <Button
           onClick={() => setSignOutOpen(true)}

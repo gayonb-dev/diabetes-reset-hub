@@ -24,7 +24,7 @@ import {
 } from "lucide-react";
 
 /**
- * Batch 2 Part F — active admin navigation.
+ * Batch 2 Part F, active admin navigation.
  * Top Customers, Intake Forms and Challenge Progress are retired from active
  * navigation; their historical records are retained in the database.
  */
@@ -69,7 +69,7 @@ export default function AdminLayout() {
         <div className="container mx-auto px-4 py-1.5 flex items-center justify-between">
           <span className="flex items-center gap-1.5 font-semibold">
             <ShieldCheck className="h-3.5 w-3.5 text-amber-400" />
-            Admin Console — Internal Use Only
+            Admin Console, Internal Use Only
           </span>
           <span className="hidden sm:inline text-slate-400 normal-case tracking-normal">
             Handle member data with care
@@ -91,7 +91,7 @@ export default function AdminLayout() {
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            {/* Batch 2 F19 — persistent, functional return to the member app. */}
+            {/* Batch 2 F19, persistent, functional return to the member app. */}
             <Button asChild variant="outline" size="sm" className="min-h-11">
               <Link to="/app">
                 <ArrowLeft className="h-4 w-4 mr-2" aria-hidden /> Back to member app
@@ -130,7 +130,7 @@ export default function AdminLayout() {
         </nav>
       </header>
       <main className="container mx-auto px-4 py-6">
-        {/* Admin pages are lazy too — show an admin-shaped skeleton, not blank. */}
+        {/* Admin pages are lazy too, show an admin-shaped skeleton, not blank. */}
         <Suspense fallback={<RouteSkeleton variant="admin" label="Loading admin page" />}>
           <Outlet />
         </Suspense>

@@ -27,7 +27,7 @@ export default function AdminQaQueue() {
 
   const load = async () => {
     setLoading(true);
-    // Audited PHI read — questions often contain meds, A1C, symptoms.
+    // Audited PHI read, questions often contain meds, A1C, symptoms.
     const { data, error } = await supabase.functions.invoke("read-phi-data", {
       body: {
         table: "qa_submissions",

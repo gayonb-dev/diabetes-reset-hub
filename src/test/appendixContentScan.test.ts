@@ -3,7 +3,7 @@ import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 
 /**
- * Batch 1 clinical appendix — section 11 content gate.
+ * Batch 1 clinical appendix, section 11 content gate.
  *
  * Scans active member-facing source for retired claim language. Test files,
  * this scanner, and the safety guards that deliberately name banned terms in

@@ -6,7 +6,7 @@ import { useEffect } from "react";
  * - Adds `keyboard-open` to <body> while the keyboard covers >120px of the
  *   layout viewport, so fixed chrome (bottom nav) can hide itself.
  * - Publishes the keyboard height as `--kb-inset` for sticky submit bars.
- * - Scrolls a newly focused field into view exactly once, on focusin — never
+ * - Scrolls a newly focused field into view exactly once, on focusin, never
  *   from the resize/scroll handler, so it cannot re-run while typing.
  *
  * Deliberately does nothing else: no preventDefault, no scroll locking, no

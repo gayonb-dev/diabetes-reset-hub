@@ -1,4 +1,4 @@
-// Part 7 — abuse-control proportionality.
+// Part 7, abuse-control proportionality.
 //
 // The point of these tests is not that limits exist, but that they are the
 // RIGHT SHAPE: money-movement endpoints are tight, rights endpoints are a

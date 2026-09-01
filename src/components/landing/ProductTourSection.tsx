@@ -120,7 +120,7 @@ const ProductTourSection = () => {
           onClick={openCheckout}
           className="min-h-[44px] bg-primary hover:bg-primary-dark text-primary-foreground font-bold px-8 py-4 h-auto rounded-lg"
         >
-          Use these tools for 14 days — $27
+          Use these tools for 14 days, $27
         </Button>
         <p className="text-sm text-muted-foreground mt-3">
           $27 today. Then $67/month until canceled. Access begins after payment is confirmed.

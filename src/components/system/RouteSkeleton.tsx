@@ -1,5 +1,5 @@
 /**
- * Batch 2 Part A — route-shaped Suspense fallbacks.
+ * Batch 2 Part A, route-shaped Suspense fallbacks.
  *
  * A lazy route must never blank the content region. Each variant mirrors the
  * rough shape of the page it stands in for, and every variant exposes an

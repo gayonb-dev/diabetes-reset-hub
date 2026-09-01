@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { MORE_GROUPS } from "@/lib/appNav";
 
 /**
- * Prompt 6 A1/A2 — the member app keeps one hierarchy. Primary navigation is
+ * Prompt 6 A1/A2, the member app keeps one hierarchy. Primary navigation is
  * Today, Meals, Progress and Ask; everything else lives in exactly one grouped
  * "More" entry. These tests fail if a duplicate or retired destination returns.
  */

@@ -126,10 +126,10 @@ export default function Learn() {
   const headingRefs = useRef<Record<string, HTMLSpanElement | null>>({});
   const guidesHeadingRef = useRef<HTMLHeadingElement | null>(null);
   // Focus/scroll only when the requested guide actually changes (a real
-  // navigation or redirect) — never on background data refreshes.
+  // navigation or redirect), never on background data refreshes.
   const lastFocusedGuide = useRef<string | null>(null);
 
-  /** Batch 2 E10 — collapse the article, clear the deep link, restore focus. */
+  /** Batch 2 E10, collapse the article, clear the deep link, restore focus. */
   const returnToGuides = () => {
     setOpenGuide("");
     lastFocusedGuide.current = null;
@@ -159,7 +159,7 @@ export default function Learn() {
         );
         setGuides(
           DEFAULT_LEARN_GUIDES.map((g) =>
-            overrides.has(g.slug) ? { ...g, ...overrides.get(g.slug)! } : g,
+            overrides.has(g.slug) ? { ...g...overrides.get(g.slug)! } : g,
           ),
         );
       }
@@ -182,7 +182,7 @@ export default function Learn() {
   useEffect(() => {
     if (!requestedGuide) return;
     const exists = guides.some((g) => g.slug === requestedGuide);
-    if (!exists) return; // unknown slug — fall back to the normal Guides list
+    if (!exists) return; // unknown slug, fall back to the normal Guides list
     setTab("learn");
     setOpenGuide(requestedGuide);
     if (lastFocusedGuide.current === requestedGuide) return;
@@ -238,7 +238,7 @@ export default function Learn() {
                         Week {w.weekNumber}
                       </p>
                       <h3 className="font-heading font-semibold text-foreground mt-0.5">
-                        {w.title.split("—")[1]?.trim() || w.title}
+                        {w.title.split(", ")[1]?.trim() || w.title}
                       </h3>
                       <p className="text-xs text-tertiary-fg mt-1">
                         {w.cards.length} cards
@@ -256,7 +256,7 @@ export default function Learn() {
           </div>
         </TabsContent>
 
-        {/* LEARN TAB — accordion */}
+        {/* LEARN TAB, accordion */}
         <TabsContent value="learn" className="mt-5">
           <div className="flex items-center justify-between gap-3 mb-3">
             <h2
@@ -266,7 +266,7 @@ export default function Learn() {
             >
               Guides
             </h2>
-            {/* Batch 2 E10 — returning clears the open article, restores the
+            {/* Batch 2 E10, returning clears the open article, restores the
                 list, drops ?guide= from the URL and focuses the Guides heading. */}
             {openGuide && (
               <Button
@@ -364,11 +364,11 @@ export default function Learn() {
 
         </TabsContent>
 
-        {/* RESOURCES TAB — the material that used to live on /app/library. */}
+        {/* RESOURCES TAB, the material that used to live on /app/library. */}
 
         <TabsContent value="resources" className="mt-5 space-y-6">
           <p className="text-sm text-secondary-fg">
-            Recipes, movement notes and printable resources. Educational only — not medical
+            Recipes, movement notes and printable resources. Educational only, not medical
             advice.
           </p>
           {RESOURCE_GROUPS.map((group) => {
@@ -410,7 +410,7 @@ export default function Learn() {
           })}
         </TabsContent>
 
-        {/* BLOG TAB — only when posts exist */}
+        {/* BLOG TAB, only when posts exist */}
         {blogPosts.length > 0 && (
         <TabsContent value="blog" className="mt-5 space-y-3">
 
@@ -511,7 +511,7 @@ function MindsetReader({
       toast.error(error.message);
     } else {
       toast.success(
-        "Mindset ring closed for today ✓ — you can revisit any card, any time.",
+        "Mindset ring closed for today ✓, you can revisit any card, any time.",
       );
       recordAction("complete_lesson").catch(() => {});
     }

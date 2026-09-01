@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import { safeNext } from "@/lib/safeNext";
 
 /**
- * Prompt 6 evidence correction — GHSA-wrjc-x8rr-h8h6.
+ * Prompt 6 evidence correction, GHSA-wrjc-x8rr-h8h6.
  * The magic-link callback is the only navigation sink that consumes a
  * user-controlled `next` value. It must use the strict same-site validator,
  * not a local regex (the old `/^\/(?!\/)/` accepted "/\evil.com").

@@ -141,7 +141,7 @@ export default function Profile() {
         {/* G. The participation ledger is the only Activity Score authority.
             When the ledger cannot account for a number we show none rather
             than a legacy value that contradicts the ledger entries below. */}
-        <StatCard icon={<Sparkles className="h-4 w-4" />} value={ledgerTotal ?? "—"} label="activity score" color="text-primary" />
+        <StatCard icon={<Sparkles className="h-4 w-4" />} value={ledgerTotal ?? ", "} label="activity score" color="text-primary" />
         <StatCard icon={<Heart className="h-4 w-4" />} value={g.helpful_points} label="helpful pts" color="text-accent-ink" />
         <StatCard icon={<CalendarCheck className="h-4 w-4" />} value={compliantDays} label="days completed" color="text-primary" />
       </div>
@@ -164,7 +164,7 @@ export default function Profile() {
           <Row label="Measurements logged" value={activity.measurements} />
           <Row label="Current program phase" value={phaseFor(currentProgramDay || 1).index} />
           <Row label="All-time longest streak" value={
-            Math.max(g.longest_streak, g.streak_count, ...g.streak_history.map((s) => s.length || 0), 0)
+            Math.max(g.longest_streak, g.streak_count...g.streak_history.map((s) => s.length || 0), 0)
           } />
         </dl>
       </Card>

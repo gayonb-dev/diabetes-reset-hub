@@ -80,7 +80,7 @@ const PricingSection = () => {
                   onClick={openCheckout}
                   className="w-full min-h-[44px] bg-primary hover:bg-primary-dark text-primary-foreground py-5 text-lg font-bold rounded-xl h-auto shadow-lg"
                 >
-                  Continue to secure checkout — $27 today
+                  Continue to secure checkout, $27 today
                 </Button>
                 <p className="text-center text-xs text-muted-foreground mt-3">
                   You will be charged $27 today. Your membership renews at $67/month after 14 days

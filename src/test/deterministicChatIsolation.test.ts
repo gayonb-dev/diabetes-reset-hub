@@ -1,4 +1,4 @@
-// Prompt 6 closeout — deterministic VITA answers make zero external model calls.
+// Prompt 6 closeout, deterministic VITA answers make zero external model calls.
 //
 // The public chat answers membership questions from server-held approved copy.
 // This is a structural proof against the deployed source: the deterministic

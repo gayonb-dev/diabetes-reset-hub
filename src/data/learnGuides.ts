@@ -1,4 +1,4 @@
-// Section 19 — Learn accordion guides (default content; admin can override via content_items table type='guide').
+// Section 19, Learn accordion guides (default content; admin can override via content_items table type='guide').
 //
 // Guides removed in the S2/S3 clinical remediation phase (also deactivated in the
 // database by migration, not left as locked copies):
@@ -25,7 +25,7 @@ export type LearnGuide = {
   cta?: { label: string; to: string };
 };
 
-/** Slugs deactivated in this phase — never re-added to the default list. */
+/** Slugs deactivated in this phase, never re-added to the default list. */
 export const DEACTIVATED_GUIDE_SLUGS = [
   "intermittent-fasting",
   "fasting-and-meal-timing",
@@ -108,7 +108,7 @@ export const DEFAULT_LEARN_GUIDES: LearnGuide[] = [
       "",
       "Wash and dry carefully",
       "",
-      "Wash your feet with soap and warm—not hot—water. Do not soak your feet. Dry them well, especially between the toes.",
+      "Wash your feet with soap and warm, not hot, water. Do not soak your feet. Dry them well, especially between the toes.",
       "",
       "Protect your skin",
       "",

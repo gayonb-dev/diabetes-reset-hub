@@ -1,4 +1,4 @@
-// Prompt 5 closeout — refund and dispute lifecycle.
+// Prompt 5 closeout, refund and dispute lifecycle.
 //
 // Synthetic fixtures only. No Stripe object is touched, no member row exists
 // here: these exercise the pure mappers and the shared evaluator that the

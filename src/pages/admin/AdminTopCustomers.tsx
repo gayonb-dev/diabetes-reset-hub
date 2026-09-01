@@ -185,7 +185,7 @@ export default function AdminTopCustomers() {
       <Dialog open={phiOpen} onOpenChange={setPhiOpen}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
-            <DialogTitle>Read PHI — audited access</DialogTitle>
+            <DialogTitle>Read PHI, audited access</DialogTitle>
           </DialogHeader>
           {!phiData ? (
             <div className="space-y-3">

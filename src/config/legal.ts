@@ -34,7 +34,7 @@ export interface LegalIdentity {
 
 export const LEGAL: LegalIdentity = {
   entity_status: "pending_uk_incorporation",
-  // Pending UK incorporation — see reminder above.
+  // Pending UK incorporation, see reminder above.
   registered_company_name: "",
   company_number: "",
   registered_jurisdiction: "",

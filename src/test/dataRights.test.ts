@@ -1,4 +1,4 @@
-// Prompt 6 closeout — member export, chat deletion and account deletion.
+// Prompt 6 closeout, member export, chat deletion and account deletion.
 //
 // No real export, deletion or email is performed here. The inventory is the
 // single source of truth for both export and deletion, so these assertions are

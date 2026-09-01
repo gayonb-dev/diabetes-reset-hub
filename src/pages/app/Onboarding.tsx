@@ -87,7 +87,7 @@ export default function Onboarding() {
       if (isNaN(v)) return setS2Err("Blood sugar must be a number, or leave it blank."), false;
       const mg = glucoseUnit === "mmoll" ? mmollToMgdl(v) : v;
       if (mg < GLUCOSE_RANGE_MGDL.min || mg > GLUCOSE_RANGE_MGDL.max)
-        return setS2Err("That blood sugar reading seems off — double check."), false;
+        return setS2Err("That blood sugar reading seems off, double check."), false;
     }
     if (!dob) return setS2Err("Date of birth is required."), false;
     if (!diabetes) return setS2Err("Pick your diabetes status."), false;
@@ -139,7 +139,7 @@ export default function Onboarding() {
       .eq("user_id", user.id)
       .maybeSingle();
     if (vp) {
-      const merged = { ...(vp.metadata as Record<string, unknown>), ...meta } as never;
+      const merged = { ...(vp.metadata as Record<string, unknown>)...meta } as never;
       await supabase
         .from("visitor_profiles")
         .update({ metadata: merged, date_of_birth: dob || null } as never)
@@ -184,7 +184,7 @@ export default function Onboarding() {
           Your reset starts today.
         </h1>
         <p className="text-base mt-3 text-center text-primary-foreground/70 max-w-sm">
-          A program built to end diabetes — not manage it.
+          A program built to end diabetes, not manage it.
         </p>
         <div className="w-full max-w-md mt-10">
           <Button
@@ -207,7 +207,7 @@ export default function Onboarding() {
   return (
     <div className="min-h-dvh bg-background pt-10 px-4 pb-28 lg:pb-10 font-sans">
       <div className="max-w-xl mx-auto">
-        {/* Prompt 6 A4 — explicit step count alongside the dots so members always
+        {/* Prompt 6 A4, explicit step count alongside the dots so members always
             know how much is left and can never lose their place. */}
         <div className="flex flex-col items-center gap-2 mb-6">
           <div className="flex items-center justify-center gap-2" aria-hidden>
@@ -488,7 +488,7 @@ export default function Onboarding() {
                   ]}
                 />
                 <p className="text-[11px] text-muted-foreground/70 mt-2">
-                  This is your global unit — applied everywhere in the app.
+                  This is your global unit, applied everywhere in the app.
                 </p>
               </Field>
 

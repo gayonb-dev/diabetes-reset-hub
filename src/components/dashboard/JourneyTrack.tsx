@@ -12,7 +12,7 @@ interface JourneyTrackProps {
 export function JourneyTrack({
   currentDay,
   totalDays,
-  phaseName = "Phase 1 — Reset",
+  phaseName = "Phase 1, Reset",
   phaseIndex = 1,
   phaseTotal = 5,
   className,

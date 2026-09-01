@@ -1,4 +1,4 @@
-// Phase B2.4 — Paid-member routing
+// Phase B2.4, Paid-member routing
 // When an active paying member lands on a sales page, send them to their
 // member area instead of asking them to buy again.
 

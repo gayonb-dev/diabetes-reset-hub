@@ -1,5 +1,5 @@
 /**
- * Batch 2 Part F — admin view of the coaching-interest list.
+ * Batch 2 Part F, admin view of the coaching-interest list.
  *
  * Shows identity/email, consent timestamp, withdrawal state and status only.
  * There is no health narrative to display because none is collected.
@@ -33,7 +33,7 @@ const STATUSES = ["interested", "withdrawn", "contacted", "closed"];
  * The separate "Coaching Waitlist" admin page has been consolidated here.
  * The historical `coaching_waitlist` rows are no longer created by any live
  * surface (Settings writes to `coaching_interest`), so they are shown only on
- * request and still through the audited PHI read — `why_now` / `phone` are
+ * request and still through the audited PHI read, `why_now` / `phone` are
  * PHI-adjacent.
  */
 const LEGACY_STATUSES = ["pending", "contacted", "enrolled", "declined"];

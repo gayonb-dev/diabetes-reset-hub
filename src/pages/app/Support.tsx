@@ -80,7 +80,7 @@ export default function Support() {
         }
         throw new Error(detail);
       }
-      const reply = (data?.reply as string) || "Sorry — I didn't catch that. Try again.";
+      const reply = (data?.reply as string) || "Sorry, I didn't catch that. Try again.";
       setChat((prev) => [...prev, { role: "assistant", content: reply }]);
     } catch (e) {
       setChat((prev) => [
@@ -158,7 +158,7 @@ export default function Support() {
       setSent(true);
     } catch (e) {
       toast({
-        title: "Couldn't send — try emailing info@diabetesresetmethod.com",
+        title: "Couldn't send, try emailing info@diabetesresetmethod.com",
         description: (e as Error).message,
         variant: "destructive",
       });
@@ -259,7 +259,7 @@ export default function Support() {
         <p className="text-[11px] uppercase tracking-wider text-muted-foreground">Program Questions</p>
         <h2 className="font-heading text-base font-semibold">Have a question about how the program works?</h2>
         <p className="text-sm text-muted-foreground">
-          Questions about meals, workouts, tracking, or how a daily action works — ask the community and VITA
+          Questions about meals, workouts, tracking, or how a daily action works, ask the community and VITA
           for the fastest answer.
         </p>
         <Button

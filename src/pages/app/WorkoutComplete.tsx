@@ -101,7 +101,7 @@ export default function WorkoutComplete() {
             <Clock className="h-3.5 w-3.5" /> Time
           </p>
           <p className="text-lg font-semibold text-foreground tabular-nums">
-            {duration != null ? formatTime(duration) : "—"}
+            {duration != null ? formatTime(duration) : ", "}
           </p>
         </Card>
         <Card className="p-4 text-left">
@@ -117,7 +117,7 @@ export default function WorkoutComplete() {
       <Card className="p-5 text-left space-y-3">
         <h2 className="font-medium text-foreground">Cool-down</h2>
         <p className="text-xs text-muted-foreground">
-          Pick whichever of these feel good — you don't need to do them all.
+          Pick whichever of these feel good, you don't need to do them all.
         </p>
         <div className="space-y-2">
           {COOL_DOWN_ITEMS.map((item) => {
@@ -150,7 +150,7 @@ export default function WorkoutComplete() {
 
       {logged ? (
         <div className="space-y-3">
-          <p className="text-sm text-primary font-medium">Logged ✓ — exercise ring closed.</p>
+          <p className="text-sm text-primary font-medium">Logged ✓, exercise ring closed.</p>
           <Button
             asChild
             variant="outline"

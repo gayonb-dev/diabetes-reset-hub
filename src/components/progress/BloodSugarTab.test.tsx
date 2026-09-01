@@ -32,7 +32,7 @@ const reading = (value: number) => ({
   notes: null,
 });
 
-describe("BloodSugarTab — newly entered readings", () => {
+describe("BloodSugarTab, newly entered readings", () => {
   it("announces a low reading with role=alert and the medication warning", async () => {
     render(<BloodSugarTab />);
     fireEvent.change(screen.getByPlaceholderText("e.g. 98"), { target: { value: "60" } });
@@ -56,7 +56,7 @@ describe("BloodSugarTab — newly entered readings", () => {
   });
 });
 
-describe("BloodSugarTab — saved readings", () => {
+describe("BloodSugarTab, saved readings", () => {
   it("labels a saved low reading without an assertive announcement on load", async () => {
     readings = [reading(60)];
     render(<BloodSugarTab />);
@@ -74,7 +74,7 @@ describe("BloodSugarTab — saved readings", () => {
   });
 });
 
-describe("BloodSugarTab — validation blocks writes", () => {
+describe("BloodSugarTab, validation blocks writes", () => {
   it("blocks an implausible value and does not insert", async () => {
     render(<BloodSugarTab />);
     fireEvent.change(screen.getByPlaceholderText("e.g. 98"), { target: { value: "900" } });

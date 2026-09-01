@@ -9,7 +9,7 @@ import { resolve } from "node:path";
  * runner, so these assertions verify the exact guarantees the authority asks
  * for on the deployed source: the retired key is rejected with HTTP 410 before
  * any Stripe client is constructed, before any Stripe request, and before any
- * order row is created — and the live $27/$67 membership path is untouched.
+ * order row is created, and the live $27/$67 membership path is untouched.
  */
 const root = resolve(__dirname, "../..");
 const checkout = readFileSync(

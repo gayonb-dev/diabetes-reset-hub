@@ -183,7 +183,7 @@ export default function Privacy() {
       </ul>
       <p>
         A meaningful activity is a successful login, member-authored action/log/chat, or
-        purchase—not a background job, notification, email open, failed request, or admin view.
+        purchase, not a background job, notification, email open, failed request, or admin view.
         Retention automation remains report-only until separately approved.
       </p>
 

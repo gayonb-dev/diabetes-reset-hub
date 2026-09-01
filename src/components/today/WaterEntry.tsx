@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import { approxMl, formatVolume, toStoredFlOz, type VolumeUnit } from "@/lib/units";
 
 /**
- * Water entry — logging only.
+ * Water entry, logging only.
  *
  * DRM publishes no universal fluid target, so there is no denominator, no
  * percentage, no ring and no default amount here. Storage is whole US fluid
@@ -131,7 +131,7 @@ const WaterEntry = ({ addWater }: Props) => {
 
       {showsRoundingNotice && (
         <p className="text-xs text-tertiary-fg mt-2">
-          {`Saves ${formatVolume(willStore)} — this log stores whole fluid ounces.`}
+          {`Saves ${formatVolume(willStore)}, this log stores whole fluid ounces.`}
         </p>
       )}
 

@@ -1,5 +1,5 @@
 // Settings → Connected Devices. Currently: Dexcom (sandbox) auto-sync.
-// Apple Health / other meters are called out as coming with the mobile app — no promise here.
+// Apple Health / other meters are called out as coming with the mobile app, no promise here.
 
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";

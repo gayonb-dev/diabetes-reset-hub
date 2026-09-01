@@ -9,7 +9,7 @@ import { FASTING_SCHEDULING_ENABLED } from "@/lib/featureFlags";
  *
  * Fasting scheduling is gated behind FASTING_SCHEDULING_ENABLED (currently false,
  * with no clinical approval recorded). While the flag is false, this route renders
- * approved educational copy only — no timers, windows, screening questionnaire,
+ * approved educational copy only, no timers, windows, screening questionnaire,
  * logging controls, or writes of fasting-specific health data.
  *
  * All copy below is the approved S2 content-appendix wording.
@@ -98,7 +98,7 @@ export default function Fasting() {
           ADA Standards
           <ExternalLink className="h-3 w-3" />
         </a>{" "}
-        of Care in Diabetes—2026 and{" "}
+        of Care in Diabetes, 2026 and{" "}
         <a
           href="https://www.niddk.nih.gov/health-information/professionals/diabetes-discoveries-practice/fasting-safely-with-diabetes"
           target="_blank"

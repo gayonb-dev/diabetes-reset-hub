@@ -16,7 +16,7 @@ const FinalCTASection = () => {
           <div className="text-primary-foreground/90 text-lg mb-8 max-w-xl mx-auto space-y-3">
             <p>Tomorrow will still bring meals, readings, questions, movement, and decisions.</p>
             <p>
-              You can face them as another scattered list—or open DRM and see one clear place to
+              You can face them as another scattered list, or open DRM and see one clear place to
               begin.
             </p>
             <p>
@@ -29,7 +29,7 @@ const FinalCTASection = () => {
             onClick={openCheckout}
             className="min-h-[44px] bg-background text-primary hover:bg-background/90 px-8 py-5 text-lg font-bold rounded-xl h-auto shadow-2xl mb-5"
           >
-            Start my 14 days — $27
+            Start my 14 days, $27
           </Button>
 
           <p className="text-primary-foreground font-medium">
@@ -43,7 +43,7 @@ const FinalCTASection = () => {
             apply.
           </p>
           <p className="text-primary-foreground/80 text-sm mt-2">
-            Self-guided education—not diagnosis, treatment, prescriptions, or emergency care.
+            Self-guided education, not diagnosis, treatment, prescriptions, or emergency care.
           </p>
         </ScrollReveal>
       </div>

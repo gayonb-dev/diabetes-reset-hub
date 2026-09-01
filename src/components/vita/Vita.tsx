@@ -10,7 +10,7 @@ interface VitaProps {
 }
 
 /**
- * VITA — the DRM mascot. Warm amber form, four expressive states.
+ * VITA, the DRM mascot. Warm amber form, four expressive states.
  * Always rendered as inline SVG using currentColor-free fills so amber
  * stays consistent across light & dark mode.
  */
@@ -22,7 +22,7 @@ export function Vita({ posture = "neutral", size = 80, className, label }: VitaP
 
   const ariaLabel =
     label ??
-    `VITA, ${posture} state — the Diabetes Reset Method companion`;
+    `VITA, ${posture} state, the Diabetes Reset Method companion`;
 
   return (
     <svg

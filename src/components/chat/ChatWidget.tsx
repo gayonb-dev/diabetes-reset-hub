@@ -3,7 +3,7 @@
 // P1: authorization is an opaque server-issued session token. No visitor UUID
 // and no local consent flag exist any more.
 // P2: while the server AI-health gate is closed, the widget shows the approved
-// "unavailable" state — never the normal consent body with a missing button.
+// "unavailable" state, never the normal consent body with a missing button.
 // P3: Privacy options include "Delete this chat", which requires the active
 // session and revokes it afterwards.
 
@@ -88,7 +88,7 @@ export default function ChatWidget() {
   }, [open]);
 
 
-  // Prompt 4 §15 — only one fixed-bottom layer on mobile. While the chat panel
+  // Prompt 4 §15, only one fixed-bottom layer on mobile. While the chat panel
   // is open, `body.drm-chat-open` hides the sticky purchase CTA (see index.css).
   useEffect(() => {
     document.body.classList.toggle("drm-chat-open", open);
@@ -419,7 +419,7 @@ export default function ChatWidget() {
                     {safeCta(m.cta) && (
                       <div className="mt-3 w-full max-w-[85%] rounded-xl border border-accent bg-accent-muted p-3 space-y-1.5">
                         <p className="text-[15px] font-semibold text-primary">
-                          Membership — US$27 for your first 14 days
+                          Membership, US$27 for your first 14 days
                         </p>
                         <p className="text-[12px] text-muted-foreground">
                           Then US$67/month until canceled. Cancel anytime.

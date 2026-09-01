@@ -55,7 +55,7 @@ export default function Login() {
 
         {inactive && !sent && (
           <div className="bg-accent-muted border border-accent/30 rounded-lg p-3 mb-4 text-sm text-foreground">
-            Your membership isn't active right now. If you just paid, request a fresh login link below — it can take a moment to sync. Otherwise, <Link to="/#pricing" className="text-primary font-semibold underline">start your membership</Link>.
+            Your membership isn't active right now. If you just paid, request a fresh login link below, it can take a moment to sync. Otherwise, <Link to="/#pricing" className="text-primary font-semibold underline">start your membership</Link>.
           </div>
         )}
 

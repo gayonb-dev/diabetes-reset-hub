@@ -18,7 +18,7 @@ interface Props {
 }
 
 /**
- * G. Activity Score is derived from one ledger — the same rows the member can
+ * G. Activity Score is derived from one ledger, the same rows the member can
  * read. Nothing is displayed that the ledger cannot account for.
  */
 export default function ActivityScoreCard({ entries, total }: Props) {
@@ -29,7 +29,7 @@ export default function ActivityScoreCard({ entries, total }: Props) {
       <div className="flex items-baseline justify-between gap-3">
         <p className="text-sm font-medium text-foreground">Activity Score</p>
         <p className="text-2xl font-semibold text-primary tabular-nums">
-          {total == null ? "—" : total}
+          {total == null ? ", " : total}
         </p>
       </div>
 

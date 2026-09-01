@@ -17,7 +17,7 @@ export interface VitaQuote {
   category: VitaQuoteCategory;
 }
 
-// Weights per spec — 5 daily picks, seeded random per (member, day).
+// Weights per spec, 5 daily picks, seeded random per (member, day).
 const CATEGORY_WEIGHTS: Record<VitaQuoteCategory, number> = {
   program_tip: 0.30,
   mindset: 0.25,
@@ -80,7 +80,7 @@ function selectDaily(all: VitaQuote[], seedKey: string, count = 5): VitaQuote[] 
   while (chosen.length < count && guard < count * 20) {
     guard++;
     let cat = pickWeightedCategory(rand);
-    // Fallback if empty bucket — walk to any non-empty
+    // Fallback if empty bucket, walk to any non-empty
     if (buckets[cat].length === 0) {
       const alt = CATEGORIES.find((c) => buckets[c].length > 0);
       if (!alt) break;

@@ -209,7 +209,7 @@ export default function CheatMeal() {
         ) : meals.length === 0 ? (
           <EmptyState
             title="No off-plan meals logged yet"
-            description={isUnlocked ? "Log your first when you're ready — one per week, evening only." : `Unlocks on Day 21. You're on Day ${currentProgramDay}.`}
+            description={isUnlocked ? "Log your first when you're ready, one per week, evening only." : `Unlocks on Day 21. You're on Day ${currentProgramDay}.`}
             posture="encouraging"
             vitaSize={56}
           />

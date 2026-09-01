@@ -171,7 +171,7 @@ export default function HabitsTab() {
               onClick={() => setSelected(c.key)}
               className="aspect-square rounded-sm hover:ring-2 hover:ring-primary/40 transition-all"
               style={{ background: ringColor(c.count) }}
-              aria-label={`${c.date.toLocaleDateString()} — ${c.count} of 4 rings`}
+              aria-label={`${c.date.toLocaleDateString()}, ${c.count} of 4 rings`}
               title={`${c.date.toLocaleDateString()} · ${c.count}/4 rings`}
             />
           ))}

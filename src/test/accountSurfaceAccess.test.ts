@@ -1,4 +1,4 @@
-// Prompt 5 correction — account controls survive billing restriction.
+// Prompt 5 correction, account controls survive billing restriction.
 //
 // The route matrix below is the executable statement of the rule: a member
 // whose programme is restricted, disputed or being deleted stays SIGNED IN and

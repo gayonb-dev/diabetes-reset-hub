@@ -136,7 +136,7 @@ export default function AdminSupport() {
         </p>
       </div>
 
-      {/* Batch 2 F20 — accessible filters for status, category and reply state. */}
+      {/* Batch 2 F20, accessible filters for status, category and reply state. */}
       <div className="flex flex-wrap gap-3">
         <label className="text-sm text-muted-foreground">
           Status

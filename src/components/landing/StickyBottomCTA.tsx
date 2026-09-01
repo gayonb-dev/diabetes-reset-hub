@@ -14,7 +14,7 @@ const StickyBottomCTA = () => {
         onClick={openCheckout}
         className="w-full min-h-[44px] bg-primary hover:bg-primary-dark text-primary-foreground font-bold py-4 px-6 rounded-lg h-auto"
       >
-        Start my 14 days — $27
+        Start my 14 days, $27
       </Button>
       <p className="text-center text-[11px] text-muted-foreground mt-1.5">
         Then $67/month until canceled.

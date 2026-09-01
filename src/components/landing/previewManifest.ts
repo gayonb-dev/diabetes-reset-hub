@@ -30,7 +30,7 @@ export const PREVIEW_DATA_NOTE =
 
 /** Second supporting line for the tour. */
 export const PREVIEW_DATA_NOTE_2 =
-  "Look through the tools before you pay so you know what the membership includes—and what it does not.";
+  "Look through the tools before you pay so you know what the membership includes, and what it does not.";
 
 /** Persistent label shown on every preview. */
 export const PREVIEW_PERSISTENT_LABEL =

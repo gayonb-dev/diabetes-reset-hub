@@ -323,7 +323,7 @@ var mcp_default = defineMcp({
   name: "diabetes-reset-method",
   title: "The Diabetes Reset Method",
   version: "0.1.0",
-  instructions: "Tools for signed-in members of The Diabetes Reset Method. Read the member's current program day and streaks, view or log blood sugar readings and daily health entries (weight, energy, notes), fetch today's daily action, and mark program days complete. All calls act as the signed-in user under the app's RLS. This is educational \u2014 not medical advice.",
+  instructions: "Tools for signed-in members of The Diabetes Reset Method. Read the member's current program day and streaks, view or log blood sugar readings and daily health entries (weight, energy, notes), fetch today's daily action, and mark program days complete. All calls act as the signed-in user under the app's RLS. This is educational, not medical advice.",
   auth: auth.oauth.issuer({
     issuer: `https://${projectRef}.supabase.co/auth/v1`,
     acceptedAudiences: "authenticated"

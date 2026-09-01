@@ -3,7 +3,7 @@ import { Navigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 
 /**
- * Prompt 4 closeout — retired-route handling.
+ * Prompt 4 closeout, retired-route handling.
  *
  * Lovable hosting does not support server-side 301/308 redirects, so these are
  * client-side replacements (history.replace), NOT HTTP permanent redirects.

@@ -28,10 +28,10 @@ const statusColors: Record<string, string> = {
 };
 
 /**
- * Batch 2 F21 — billing metrics on the canonical order / subscription /
+ * Batch 2 F21, billing metrics on the canonical order / subscription /
  * billing-event model. Orders, active subscriptions, cancellations, refunds,
  * disputes and payment failures are counted separately, stamped with an
- * as-of time, and a backend failure renders an error — never a fabricated
+ * as-of time, and a backend failure renders an error, never a fabricated
  * zero. No Stripe identifiers are surfaced that the screen does not need.
  */
 type Metrics = {
@@ -206,10 +206,10 @@ export default function AdminSubscriptions() {
                 <td className="p-3">{r.tier}</td>
                 <td className="p-3">{r.day_number}</td>
                 <td className="p-3 text-xs">
-                  {r.trial_end_date ? new Date(r.trial_end_date).toLocaleDateString() : "—"}
+                  {r.trial_end_date ? new Date(r.trial_end_date).toLocaleDateString() : ", "}
                 </td>
                 <td className="p-3 text-xs">
-                  {r.current_period_end ? new Date(r.current_period_end).toLocaleDateString() : "—"}
+                  {r.current_period_end ? new Date(r.current_period_end).toLocaleDateString() : ", "}
                 </td>
                 <td className="p-3">{r.cancel_at_period_end ? "Yes" : "No"}</td>
                 <td className="p-3 text-xs">{new Date(r.created_at).toLocaleDateString()}</td>

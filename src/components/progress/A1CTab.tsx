@@ -127,7 +127,7 @@ export default function A1CTab() {
           </div>
           <div>
             <Label className="text-xs text-muted-foreground">Doctor / clinic (optional)</Label>
-            <Input value={source} onChange={(e) => setSource(e.target.value)} placeholder="—" />
+            <Input value={source} onChange={(e) => setSource(e.target.value)} placeholder=", " />
           </div>
         </div>
 

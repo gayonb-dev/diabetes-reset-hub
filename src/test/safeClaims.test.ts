@@ -1,4 +1,4 @@
-// Prompt 6 closeout — safe-claims scan over active member and public copy.
+// Prompt 6 closeout, safe-claims scan over active member and public copy.
 //
 // Scans real shipped sources (not a copy of them) for outcome, cure and
 // clinical-approval language that the approved copy authority forbids.

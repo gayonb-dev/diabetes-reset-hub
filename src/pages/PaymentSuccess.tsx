@@ -6,16 +6,16 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 
 /**
- * Prompt 4 §11.2 — server-verified payment success.
+ * Prompt 4 §11.2, server-verified payment success.
  *
  * Five states, never a claim of payment the server has not confirmed:
- *   checking    — "Confirming your membership." (verification in flight)
- *   verified    — payment verified and the account is ready
- *   processing  — payment verified, provisioning still pending (poll/retry)
- *   unverified  — missing, malformed, mismatched, unpaid, expired, wrong-mode,
+ *   checking, "Confirming your membership." (verification in flight)
+ *   verified, payment verified and the account is ready
+ *   processing, payment verified, provisioning still pending (poll/retry)
+ *   unverified, missing, malformed, mismatched, unpaid, expired, wrong-mode,
  *                 wrong-product, wrong-price, wrong-amount, or otherwise
  *                 unverified session
- *   error       — payment processor unavailable or timed out
+ *   error, payment processor unavailable or timed out
  */
 type State = "checking" | "verified" | "processing" | "unverified" | "error";
 
@@ -55,8 +55,8 @@ const PaymentSuccess = () => {
   const verify = useCallback(async () => {
     const params = new URLSearchParams(window.location.search);
 
-    // Development-only screenshot harness. The whole branch — including the
-    // imported module — is removed from production bundles by Vite, so no
+    // Development-only screenshot harness. The whole branch, including the
+    // imported module, is removed from production bundles by Vite, so no
     // published URL can render a state the payment processor has not confirmed.
     if (import.meta.env.DEV) {
       const { readDevFixture } = await import("@/lib/devPaymentFixture");
@@ -116,7 +116,7 @@ const PaymentSuccess = () => {
         </p>
         {state === "processing" && polls.current >= MAX_POLLS && (
           <p>
-            It's taking longer than usual. You can close this page — if the payment went through,
+            It's taking longer than usual. You can close this page, if the payment went through,
             your membership will be active when you sign in. If you have any doubt, email{" "}
             <a className="text-primary underline underline-offset-4" href={`mailto:${SUPPORT_EMAIL}`}>
               {SUPPORT_EMAIL}
@@ -142,8 +142,7 @@ const PaymentSuccess = () => {
         <div className="rounded-xl border border-border bg-card p-5 text-left space-y-3">
           <p className="font-heading font-semibold text-foreground">Next step</p>
           <p className="text-sm">
-            Sign in with the email you used at checkout. We'll send a sign-in link to that address —
-            no password to remember.
+            Sign in with the email you used at checkout. We'll send a sign-in link to that address, no password to remember.
           </p>
         </div>
         <div className="space-y-3">

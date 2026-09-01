@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Smartphone, CheckCircle2 } from "lucide-react";
 
 /**
- * Add to Home Screen — online-first installability.
+ * Add to Home Screen, online-first installability.
  * Manifest + icons only: no service worker, no offline cache, so nothing
  * member data related is ever stored by the browser for offline use.
  */
@@ -53,7 +53,7 @@ export function InstallAppCard() {
       </h2>
       <p className="text-sm text-muted-foreground mb-4">
         Install the membership as an app icon on your phone or desktop. It still needs an internet
-        connection — nothing is stored on your device for offline use.
+        connection, nothing is stored on your device for offline use.
       </p>
 
       {installed ? (

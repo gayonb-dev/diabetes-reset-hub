@@ -1,4 +1,4 @@
-// VITA Concerned error card — shown on AI generation failures and 90s timeouts.
+// VITA Concerned error card, shown on AI generation failures and 90s timeouts.
 // Wired by MealSetupTransition, Settings (Regenerate), and Meals.tsx (stale pending).
 
 import { Button } from "@/components/ui/button";
@@ -16,7 +16,7 @@ interface VitaErrorCardProps {
 
 export default function VitaErrorCard({
   title = "Something didn't work",
-  message = "VITA hit a snag. Try again — it usually clears right up.",
+  message = "VITA hit a snag. Try again, it usually clears right up.",
   retryLabel = "Try again",
   onRetry,
   retrying = false,

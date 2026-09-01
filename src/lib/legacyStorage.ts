@@ -23,7 +23,7 @@ export function purgeLegacyStorage(): string[] {
         if (!cleared.includes(key)) cleared.push(key);
       }
     } catch {
-      // storage unavailable (private mode / blocked) — nothing to clear
+      // storage unavailable (private mode / blocked), nothing to clear
     }
   }
   return cleared;

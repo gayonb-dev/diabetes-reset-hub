@@ -76,7 +76,7 @@ function messageForLevel(l: number) {
 
 
 function Confetti() {
-  // Lightweight CSS confetti — amber/white squares falling.
+  // Lightweight CSS confetti, amber/white squares falling.
   const pieces = Array.from({ length: 28 });
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden">

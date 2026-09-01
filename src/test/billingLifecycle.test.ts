@@ -1,10 +1,10 @@
-// B4 / B5 — synthetic-event tests for the canonical billing model, webhook
+// B4 / B5, synthetic-event tests for the canonical billing model, webhook
 // idempotency and ordering, and the seven-day grace lifecycle.
 //
 // Everything here is synthetic. No Stripe object is created, no live event is
 // replayed, and no member row is touched. These tests prove the DECISION
 // LOGIC. They do not, and cannot, prove that a given event type is actually
-// enabled on the live webhook destination — that remains an owner action and
+// enabled on the live webhook destination, that remains an owner action and
 // is reported separately as "implemented, awaiting live-event verification".
 
 import { describe, it, expect } from "vitest";

@@ -1,4 +1,4 @@
-// Workout library — Standard Track A and Knee-Friendly Track B.
+// Workout library, Standard Track A and Knee-Friendly Track B.
 // Track B contains zero high-impact movements (no jumping jacks, skips, jumps).
 
 export type RestStyle = "cardio" | "strength" | "compound";
@@ -31,7 +31,7 @@ const TRACK_A: Workout[] = [
     track: "A",
     exercises: [
       { name: "March in place", duration: "60 sec", modification: "Can't do this? Step side to side instead.", rest: "cardio" },
-      { name: "Jumping jacks", reps: "3 × 30 sec", modification: "Can't do this? Step jacks — tap one foot out at a time.", rest: "cardio" },
+      { name: "Jumping jacks", reps: "3 × 30 sec", modification: "Can't do this? Step jacks, tap one foot out at a time.", rest: "cardio" },
       { name: "Bodyweight squat", reps: "3 × 12", modification: "Can't do this? Sit-to-stand from a sturdy chair.", rest: "strength" },
       { name: "Wall push-up", reps: "3 × 10", modification: "Can't do this? Stand closer to the wall.", rest: "strength" },
       { name: "Standing knee lift", reps: "3 × 10 each side", modification: "Can't do this? Hold a chair for balance.", rest: "compound" },
@@ -118,7 +118,7 @@ const TRACK_B: Workout[] = [
   {
     slug: "upper-body-core-b",
     name: "Upper Body + Core",
-    focus: "Push, pull, brace — seated-friendly",
+    focus: "Push, pull, brace, seated-friendly",
     durationMin: 25,
     difficulty: 2,
     track: "B",
@@ -147,7 +147,7 @@ const TRACK_B: Workout[] = [
   },
 ];
 
-export const ALL_WORKOUTS: Workout[] = [...TRACK_A, ...TRACK_B];
+export const ALL_WORKOUTS: Workout[] = [...TRACK_A...TRACK_B];
 
 export function getWorkoutsByTrack(track: "A" | "B"): Workout[] {
   return ALL_WORKOUTS.filter((w) => w.track === track);

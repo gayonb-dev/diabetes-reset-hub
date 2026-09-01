@@ -9,7 +9,7 @@
 // Rules:
 //   * Every call takes an explicit instant and an explicit IANA zone.
 //   * An invalid, empty or unsupported zone falls back to FALLBACK_TIMEZONE.
-//   * Audit/security timestamps stay UTC — do NOT use this module for those.
+//   * Audit/security timestamps stay UTC, do NOT use this module for those.
 
 export const FALLBACK_TIMEZONE = "America/New_York";
 

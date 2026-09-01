@@ -68,7 +68,7 @@ export default function Billing() {
   // result into state whenever it happened to arrive. Three consequences:
   // a slow response could overwrite a newer one, an unmounted component was
   // still written to, and a failure was indistinguishable from "no invoices"
-  // — a member with a real billing history saw an empty state and no way to
+  //, a member with a real billing history saw an empty state and no way to
   // retry. Each request now carries a sequence number, and only the newest
   // one is allowed to land.
   const reqSeq = useRef(0);
@@ -157,7 +157,7 @@ export default function Billing() {
       } else {
         toast({
           title: "Subscription reactivated",
-          description: "Welcome back — your membership will renew as normal.",
+          description: "Welcome back, your membership will renew as normal.",
         });
       }
     } catch (e) {
@@ -200,7 +200,7 @@ export default function Billing() {
     <div className="max-w-2xl mx-auto space-y-5">
       <h1 className="font-heading font-semibold text-2xl text-primary">Your Subscription</h1>
 
-      {/* B5. Lifecycle notice — honest about access that is continuing. */}
+      {/* B5. Lifecycle notice, honest about access that is continuing. */}
       {notice && (
         <div
           role="status"
@@ -328,7 +328,7 @@ export default function Billing() {
         ) : (
           <div className="divide-y divide-border">
             {visibleInvoices.map((inv) => {
-              const st = INVOICE_STATUS[inv.status ?? ""] ?? { label: inv.status ?? "—", color: "text-muted-foreground" };
+              const st = INVOICE_STATUS[inv.status ?? ""] ?? { label: inv.status ?? ", ", color: "text-muted-foreground" };
               return (
                 <div key={inv.id} className="py-2.5 flex items-center justify-between text-sm">
                   <span className="text-muted-foreground w-28">

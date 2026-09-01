@@ -22,7 +22,7 @@ export default function DexcomCallback() {
     if (err || !code || !state) {
       toast({
         title: "Dexcom connection cancelled",
-        description: err ?? "Missing code or state — please try again.",
+        description: err ?? "Missing code or state, please try again.",
         variant: "destructive",
       });
       navigate("/app/settings", { replace: true });

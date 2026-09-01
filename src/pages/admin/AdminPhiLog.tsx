@@ -96,13 +96,13 @@ export default function AdminPhiLog() {
                         {r.actor_kind}
                       </span>
                       <span className="text-xs font-mono text-muted-foreground">
-                        {r.actor_user_id?.slice(0, 8) ?? "—"}
+                        {r.actor_user_id?.slice(0, 8) ?? ", "}
                       </span>
                     </td>
                     <td className="px-4 py-2 font-mono text-xs">{r.table_name}</td>
                     <td className="px-4 py-2">{r.reason}</td>
                     <td className="px-4 py-2 font-mono text-xs text-muted-foreground">
-                      {r.visitor_profile_id?.slice(0, 8) ?? "—"}
+                      {r.visitor_profile_id?.slice(0, 8) ?? ", "}
                     </td>
                   </tr>
                 ))}
