@@ -5,13 +5,13 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
-    "build:dev": "vite build --mode development",
+    "build": "rm -f supabase/functions/mcp/index.ts && vite build",
+    "build:dev": "rm -f supabase/functions/mcp/index.ts && vite build --mode development",
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
-    "build:production": "vite build --mode production"
+    "build:production": "rm -f supabase/functions/mcp/index.ts && vite build --mode production"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
