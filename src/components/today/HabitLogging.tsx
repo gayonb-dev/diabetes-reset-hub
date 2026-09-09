@@ -148,6 +148,7 @@ export default function HabitLogging({ currentProgramDay }: Props) {
       const { data } = await supabase
         .from("snack_library" as never)
         .select("name, description, unlock_day")
+        .eq("is_active", true)
         .order("sort_order", { ascending: true });
       const rows = (data as { name: string; description: string; unlock_day: number }[] | null) ?? [];
       setSnackOptions(

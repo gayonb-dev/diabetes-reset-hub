@@ -37,6 +37,7 @@ export function SnackLibrary({ dayNumber }: { dayNumber: number }) {
       const { data } = await supabase
         .from("snack_library" as never)
         .select("*")
+        .eq("is_active", true)
         .order("sort_order", { ascending: true });
       if (!active) return;
       setSnacks((data as Snack[] | null) ?? []);
