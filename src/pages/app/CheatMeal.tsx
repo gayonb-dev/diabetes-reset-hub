@@ -221,9 +221,6 @@ export default function CheatMeal() {
                   <span className="font-medium">
                     {new Date(m.logged_at).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })}
                   </span>
-                  {m.fast_start_at && (
-                    <span className="text-xs text-status-normal">Fast started</span>
-                  )}
                 </div>
                 {m.meal_description && (
                   <p className="text-xs text-muted-foreground mt-1">{m.meal_description}</p>

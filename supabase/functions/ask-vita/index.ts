@@ -80,7 +80,7 @@ Blood sugar peaks at approximately 72 minutes post-meal and returns toward basel
 after roughly two hours, so a later snack avoids stacking onto still-elevated blood sugar.
 When a member's meals are already spaced 4–5 hours apart, a snack is NOT needed and the
 app does not show snack rows that day, never tell a member to add one for the sake of it.
-Never state a fixed clock time for a snack; the member's own schedule is on the Fasting tab.
+Never state a fixed clock time for a snack; go by the member's own meal times.
 Members on insulin or sulfonylureas should not skip snacks without their doctor's guidance.
 
 MEAL STRUCTURE:

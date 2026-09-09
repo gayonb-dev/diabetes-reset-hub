@@ -71,7 +71,7 @@ describe("ramp", () => {
 });
 
 describe("buildSchedule", () => {
-  it("16:8 gives three meals at 4-hour spacing and zero snacks", () => {
+  it("an 8-hour window gives three meals at 4-hour spacing and zero snacks", () => {
     const s = buildSchedule({ windowStartHour: 8, windowHours: 8, bedtimeHour: 22 });
     const meals = s.filter((i) => i.kind === "meal");
     expect(meals.map((m) => m.hour)).toEqual([8, 12, 16]);

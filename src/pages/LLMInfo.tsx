@@ -79,11 +79,13 @@ If a member cancels during the first 14 days, no monthly charges are made.
 
 ---
 
-## Why It Works
+## What the Membership Includes
 
-- **Insulin & Inflammation:** Targeted food choices reduce post-meal glucose spikes and lower inflammation.
-- **Gut & Hormones:** Daily habits support gut health, which influences insulin sensitivity and hunger hormones.
-- **Accountability & Momentum:** Short, specific daily wins build belief and behavior change faster than long, abstract programs.
+- **Meals:** Meal-planning tools built around the plate method, with recipes and grocery lists.
+- **Daily actions:** One short, specific food, movement or mindset action each day, with logging.
+- **Tracking:** Blood sugar, habit and measurement logs, plus a printable progress report to share with a clinician.
+
+DRM is educational and organizational software. It does not diagnose or treat, and it makes no claim to lower, control, stabilize, prevent or reduce glucose, A1C, weight or medication needs.
 
 ---
 

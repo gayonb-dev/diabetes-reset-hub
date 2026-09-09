@@ -69,8 +69,9 @@ export interface RampStatus {
 }
 
 /**
- * Where the member is in the ramp, and what changes when. Uses the same day
- * arithmetic as effectiveTarget so the two can never disagree.
+ * Unreachable compatibility code. DRM does not prescribe, recommend, schedule
+ * or operationalize fasting: effectiveTarget always returns 0, so this helper
+ * can only ever report the not-fasting state. No screen calls it.
  */
 export function rampStatus(
   p: FastingProfileLike | null | undefined,

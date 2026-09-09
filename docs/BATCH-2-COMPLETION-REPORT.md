@@ -158,3 +158,71 @@ Batch 2 closes because:
 - No client publication.
 
 The only `BLOCKED` items are accepted historical/platform limitations that do not affect the correctness of the Batch 2 evidence correction.
+
+---
+
+# Final Fasting and Public-Claim Reconciliation
+
+Audited commit at start: `cb76ef0480ca572a843ee74ecb5f280d2e5e1183` (clean, later than snack-gate commit `23bc7695381adf0c932d272208fb9aa245e25130`).
+Final commit / build identity: `3a1f8008d8fafd381bfb7ae06e7a40bb1ef2480d`, production build PASS.
+Backend project: `wqennhjdojjqmmqzjhti` (shared by preview and published client).
+
+## Environment truth
+
+| Item | Status |
+| --- | --- |
+| Prior snack SQL applied to shared production database | YES (9 `nutritional_note` fields, earlier task) |
+| This task's database writes | Only a temporary verification profile change on the review account `ce55d7b0…`, restored to its exact prior values (`needs_doctor`, target `0`, `fasting_started_on` NULL). No snack rows, no member history rows, no schema changes. |
+| Client code changed | YES (source only) |
+| Client published | NO |
+| Published client build replaced | NO |
+| Edge Function source changed | YES (`award-badges`, `_shared/fastingTarget`, `ask-vita`, `support-assistant`) |
+| Edge Functions deployed | NO |
+
+## Changes
+
+- `supabase/functions/award-badges/index.ts`: removed awarding of retired `night-faster` and `cheat-and-fast` badges from `if_fasting_log`. Previously awarded rows preserved.
+- `supabase/functions/_shared/fastingTarget.ts`: all `TARGET_LABEL` values now render "Not fasting"; no window labels remain.
+- `src/pages/app/Meals.tsx`: always uses `STANDARD_SLOTS`; legacy `IF_SLOTS` branch removed.
+- `src/pages/app/CheatMeal.tsx`: removed the "Fast started" chip. The insert still writes `fast_start_at: null` only.
+- `src/lib/mealTiming.ts`, `src/lib/mealTiming.test.ts`: comments and a test title no longer reference fasting windows.
+- `supabase/functions/support-assistant/index.ts`: Fasting route described as education and safety only, explicitly no timer, schedule or target.
+- `supabase/functions/ask-vita/index.ts`: snack guidance no longer points members to a "schedule on the Fasting tab".
+- `src/pages/LLMInfo.tsx` and `public/llms.txt`: unsupported outcome claims (glucose spikes, gut health, insulin sensitivity, hunger hormones, comparative claims) replaced with descriptive feature copy and an explicit no-outcome statement.
+- `src/test/fastingOperationalGate.test.ts`: new behavioral gate (17 tests).
+
+## Acceptance gate results
+
+| Requirement | Result |
+| --- | --- |
+| No member control can start, schedule, select, extend, complete or reward a fast | PASS |
+| No onboarding/settings control records fasting eligibility, confirmation, target or window for operational use | PASS |
+| Cheat Meal writes no `if_fasting_log` row and no non-null `fast_start_at` | PASS |
+| No meal plan, slot layout, notification, badge or assistant response operationalizes fasting | PASS |
+| `/app/fasting` remains education only | PASS |
+| Historical rows preserved, no new rows | PASS (2 `if_fasting_log` rows, both `completed`, before and after) |
+| No calorie targets, goal weights or restrictive-eating features added | PASS |
+
+Synthetic verification: review account temporarily set to eligible, doctor-confirmed, target 3, prior history. `canFast()` false, `effectiveTarget()` 0, `getFastingWindow()` null, `/app/meals` rendered standard slots (Breakfast/Lunch/Dinner), no fasting control, countdown, target, start button or encouragement on `/app/fasting`, `/app/today`, `/app/meals`, off-plan meal or `/app/settings`. Row counts unchanged after the run. Screenshots: `docs/evidence/fasting-gate/`.
+
+## Verification
+
+| Check | Result |
+| --- | --- |
+| `src/test/fastingOperationalGate.test.ts` + `fastingDisabled` | PASS (23 tests) |
+| Safe-claims, content scan, public chat copy, inventory tests | PASS (32 tests) |
+| TypeScript (`tsgo --noEmit`) | PASS |
+| Touched-file lint | PASS (2 pre-existing warnings in `CheatMeal.tsx`) |
+| Production build | PASS |
+| `deno check` of `_shared/fastingTarget.ts` | PASS |
+| Bundle scan for `12:12` / `14:10` / `16:8` and glucose-spike claims | 0 matches |
+| Database content scan (`daily_actions`, `content_items`, `meal_plans`) | 0 fasting matches, 49 standard plans |
+| Snack assertions | 10 rows, 10 active, 0 inactive, 0 prohibited claims (no rows rewritten) |
+
+## Remaining classifications and limitations
+
+- Neutral fasting education and safety-detection terms retained by design in `src/pages/app/Fasting.tsx`, `src/data/learnGuides.ts`, `_shared/medicalSafety.ts`, feature-flag comments and `useFastingProfile`/`mealTiming` compatibility code. None instructs fasting.
+- One historical `cheat_meals` row retains a non-null `fast_start_at`. Preserved as member history; no code reads or displays it.
+- Active-only snack filters in `SnackLibrary.tsx` and `HabitLogging.tsx` remain unpublished until a client release.
+- NOT TESTED: full `deno check` of `award-badges` and `generate-meal-plan` (sandbox cannot resolve their `npm:` specifiers); `deno lint` reports only pre-existing style rules there. Edge Function behavior therefore verified by source review and client-side gate tests only.
+- Nothing published, no functions deployed, no emails, payments or external AI calls.

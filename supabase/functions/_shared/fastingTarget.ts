@@ -24,11 +24,17 @@ export interface FastingProfileLike {
   bedtime_hour?: number | null;
 }
 
+/**
+ * DRM does not prescribe, recommend, schedule or operationalize intermittent
+ * fasting, so no fasting window label exists here. The record shape is kept as
+ * inert compatibility for legacy stored values only; every target resolves to 0
+ * through the always-false gate below, so these labels are never rendered.
+ */
 export const TARGET_LABEL: Record<FastingTarget, string> = {
   0: "Not fasting",
-  1: "12:12",
-  2: "14:10",
-  3: "16:8",
+  1: "Not fasting",
+  2: "Not fasting",
+  3: "Not fasting",
 };
 
 /** Eating-window hours for a target. Target 0 (not fasting) defaults to 12. */
@@ -63,8 +69,8 @@ function daysSince(startISO: string | null | undefined, today: Date): number {
 
 /**
  * The target actually in force today, after the eligibility gate and the ramp.
- * Standard ramp: week one is always 12:12, chosen target from day 8.
- * needs_doctor (confirmed): 12:12 for two weeks, 14:10 for two weeks, then target.
+ * Unreachable compatibility arithmetic: the gate above returns false for every
+ * profile, so this function always returns 0 and no ramp step is reachable.
  */
 export function effectiveTarget(
   p: FastingProfileLike | null | undefined,
