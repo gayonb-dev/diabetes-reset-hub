@@ -84,7 +84,7 @@ function altDescription(alt: Alternative): string {
 
 // Day ordering now comes from the member's week-start preference (see useWeekStart).
 const STANDARD_SLOTS = ["breakfast", "lunch", "dinner", "snack_1", "snack_2"] as const;
-const IF_SLOTS = ["meal_1", "snack_1", "meal_2", "snack_2"] as const;
+
 
 const SLOT_LABEL: Record<string, string> = {
   breakfast: "Breakfast",
@@ -713,7 +713,9 @@ export default function Meals() {
   }
 
   const week = current.plan?.plan_data?.[current.key] as Week | undefined;
-  const slots = (current.plan?.plan_type ?? "standard") === "intermittent_fasting" ? IF_SLOTS : STANDARD_SLOTS;
+  // Meal slots are always the standard layout. DRM does not schedule or
+  // operationalize fasting, so a legacy plan_type value never changes the layout.
+  const slots = STANDARD_SLOTS;
   const weekOptions: (1 | 2 | 3 | 4)[] = [1, 2, 3, 4].filter((idx) => Boolean(resolveWeek(idx as 1 | 2 | 3 | 4).plan)) as (1 | 2 | 3 | 4)[];
 
 

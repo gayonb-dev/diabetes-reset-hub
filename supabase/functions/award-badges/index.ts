@@ -80,7 +80,8 @@ async function evaluateSlugs(admin: SB, uid: string): Promise<string[]> {
   add("first-drop", await existsRow("blood_sugar_readings", "member_id", uid));
   add("a1c-entry", await existsRow("a1c_logs", "member_id", uid));
   add("move-it", await existsRow("workout_sessions", "user_id", uid, { status: "completed" }));
-  add("night-faster", await existsRow("if_fasting_log", "member_id", uid, { status: "completed" }));
+  // night-faster is retired and is never awarded: DRM does not reward fasting.
+  // Existing awarded rows are left in place as member history.
   add("win-sharer", await existsRow("win_posts", "author_id", uid));
   add("first-question", await existsRow("community_questions", "author_id", uid));
 
@@ -119,10 +120,8 @@ async function evaluateSlugs(admin: SB, uid: string): Promise<string[]> {
   });
   add("hydrated", Array.from(waterByDay.values()).some((v) => v >= 64));
 
-  // cheat-and-fast
-  const cheat = await existsRow("cheat_meals", "member_id", uid);
-  const fast = await existsRow("if_fasting_log", "member_id", uid, { status: "completed" });
-  add("cheat-and-fast", cheat && fast);
+  // cheat-and-fast is retired and is never awarded: DRM does not reward fasting.
+  // Existing awarded rows are left in place as member history.
 
   // month-1-complete: any member_measurements + program day ≥ 30
   add("month-1-complete", programDay >= 30 && (await existsRow("member_measurements", "member_id", uid)));
