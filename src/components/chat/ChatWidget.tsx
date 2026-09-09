@@ -288,7 +288,7 @@ export default function ChatWidget() {
       <button
         aria-label={open ? "Close chat" : "Chat with VITA"}
         onClick={() => setOpen((o) => !o)}
-        style={{ bottom: `${bubbleOffset}px` }}
+        style={{ bottom: `calc(env(safe-area-inset-bottom, 0px) + ${bubbleOffset}px)` }}
         className={cn(
           "fixed right-6 z-50 h-14 w-14 rounded-full shadow-lg flex items-center justify-center",
           "bg-primary text-primary-foreground hover:bg-primary/90",
