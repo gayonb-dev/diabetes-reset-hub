@@ -46,7 +46,7 @@ const LandingBody = () => {
   }, []);
 
   return (
-    <main className="min-h-dvh pb-28 md:pb-0">
+    <main className="min-h-dvh">
       <Helmet>
         <title>{TITLE}</title>
         <meta name="description" content={DESCRIPTION} />

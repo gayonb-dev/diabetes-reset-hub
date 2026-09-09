@@ -7,7 +7,10 @@ const FinalCTASection = () => {
   const { openCheckout } = useCheckout();
 
   return (
-    <section className="relative bg-gradient-to-r from-primary via-primary-dark to-primary py-14 overflow-hidden">
+    <section
+      id="final-cta"
+      className="relative bg-gradient-to-r from-primary via-primary-dark to-primary py-14 overflow-hidden"
+    >
       <div className="container mx-auto px-4 text-center relative z-10">
         <ScrollReveal>
           <h2 className="font-heading font-bold text-3xl sm:text-4xl text-primary-foreground mb-4">

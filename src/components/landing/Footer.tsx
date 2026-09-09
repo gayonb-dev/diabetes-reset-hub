@@ -14,7 +14,7 @@ const Footer = () => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-foreground text-background py-12">
+    <footer className="bg-foreground text-background pt-12 pb-[calc(env(safe-area-inset-bottom)+6rem)] md:pb-12">
       <div className="container mx-auto px-4">
         <div className="text-center mb-8">
           <h2 className="font-heading font-bold text-2xl mb-2">The Diabetes Reset Method</h2>
