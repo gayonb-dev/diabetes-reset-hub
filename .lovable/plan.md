@@ -1,68 +1,102 @@
-# Private Clinical-Reviewer Access
+# Private Clinical-Reviewer Access (revised)
 
-## Audit result first: provisioning is blocked today
+Nothing in this plan runs until you approve it. No accounts, emails, migrations, deployments or publication happen at the approval step.
 
-I checked the live access model before touching anything.
+## 0. Private recipient input (status only)
 
-- Access is decided by one shared evaluator (`membershipLifecycle.ts`) reading the `subscriptions` row.
-- The `subscriptions` table requires a non-null Stripe subscription ID and Stripe customer ID, and its status must be one of trialing / active / past_due / cancelled / incomplete / unpaid.
-- There is no complimentary, review, comp-access or manual-access mechanism anywhere in the code or database. A search for those terms returns nothing.
+- Owner-controlled test recipient: received and retained (from your Sep 9 message).
+- Clinical-review recipients: three received and retained (same message).
+- Recipient categories: your later message contained only placeholders (`[USER TYPE]`, `[DOCTOR NAME]`, `[EMAIL]`), so no real categories or names have been supplied. The three real addresses from Sep 9 are retained; nothing is inferred or substituted. Please resend the real names and group categories before the invitation stage.
+- No invitation is sent until the owner-controlled journey passes AND you explicitly authorize the real invitations in a separate message.
 
-So the only way to give a reviewer access today is to invent Stripe identifiers and mark them as a paying or trialing customer. That is exactly what your brief forbids, and it would also pollute paid-member counts.
+## 1. Audit finding (unchanged)
 
-Therefore: no accounts are created and no invitations are sent in this plan. What follows is the smallest auditable entitlement change that makes truthful reviewer access possible, plus the verification run. Provisioning and the real invitations happen only after that passes.
+The only access record is `subscriptions`, which requires non-null Stripe subscription and customer IDs and a Stripe status. No complimentary or manual-access mechanism exists. Truthful reviewer access therefore needs a new, separate entitlement. Nothing fake is written to `subscriptions`, `orders` or Stripe.
 
-## What gets built
+## 2. Full dependency inventory (first implementation step, read-only)
 
-### 1. A separate complimentary-access record
+Before any change, produce a complete list of every place that decides access from subscription or membership state, with file/object and current rule:
 
-A new table holding one row per granted reviewer: who it is for, why it was granted, when the review period starts, when it expires, and whether it was revoked. It is not a subscription, it creates no Stripe object, and it is stored apart from billing so revenue and paying-member figures are untouched.
+- Client: `useAuth`, `AuthGuard`, `membership.ts`, `appSurfaces.ts`, `usePaidMemberRedirect`, Billing, Onboarding, Dashboard, day-lock UI.
+- Routes and loaders: every `/app/*` route guard and any prefetch.
+- Database: `membership_access_state`, `membership_write_allowed`, `member_access_allowed`, `member_write_allowed`, `current_program_day`, `enforce_member_progress_day_unlocked`, and every RLS policy calling them.
+- RPCs and Edge Functions: every function reading `subscriptions` (about 18 found: award-badges, member-checkin, mcp, export, deletion, support, magic-link, checkout verification, webhooks and others).
+- Storage policies touching member files.
 
-Access rule: 14 days beginning at first successful sign-in. The record starts with no start date; the first authenticated load stamps it and sets the expiry 14 days later. This is enforceable, so no substitute meaning is needed.
+Each entry is marked: must accept complimentary access / must ignore it / not affected. The proof step (section 8) tests every "must accept" entry and re-tests ordinary and anonymous restrictions.
 
-### 2. The evaluator learns one new state
+## 3. Entitlement record (hardened)
 
-The shared membership evaluator gains a "complimentary" input. When an active, unexpired, unrevoked grant exists, the member sees the full programme exactly like a paying member. Deletion holds and dispute holds keep priority as they do now. Everything else is unchanged, so ordinary paying and non-paying members behave identically to today.
+New table `complimentary_access`, one row per reviewer:
 
-### 3. Truthful billing display
+- `user_id` unique, cascade-deleted with the Auth user.
+- `purpose` constrained to exactly `clinical_review`.
+- `granted_at`, `granted_by`, `revoked_at`, `revoked_by`, `revocation_reason`.
+- `access_started_at`, `access_expires_at`: null until activation; a constraint enforces `access_expires_at = access_started_at + 14 days` exactly and `revoked_at >= granted_at`.
+- Explicit grants: authenticated may SELECT only its own row; no client INSERT, UPDATE or DELETE; service role for admin provisioning. RLS on.
+- Grants are created and revoked only by an owner-run server-side operation, never from the browser.
 
-The Billing screen shows, for these accounts only: "Complimentary clinical-review access, no charge and no automatic renewal", with the expiry date once the period has started. No card prompt, no checkout button, no Stripe portal link.
+## 4. Activation: one atomic self-activation database operation
 
-### 4. Metrics stay clean
+A single security-definer function `activate_my_complimentary_access()`:
 
-Admin subscription and revenue views count only real `subscriptions` and `orders` rows, which reviewers will not have. I will confirm this by inspection rather than assume it.
+- Takes no arguments. Derives the user solely from the verified session (`auth.uid()`); rejects anonymous callers.
+- One `UPDATE ... SET access_started_at = now(), access_expires_at = now() + interval '14 days' WHERE user_id = auth.uid() AND access_started_at IS NULL AND revoked_at IS NULL RETURNING ...`. Row-level locking makes concurrent calls, reloads and retries idempotent: only the first ever sets the clock; later calls change nothing and return the existing values.
+- Fixed `search_path`, `EXECUTE` revoked from `public` and `anon`, granted to `authenticated` only.
+- Called by the client on the first successful authenticated app load. No Edge Function is needed.
 
-### 5. Onboarding and Day 1
+## 5. Two separate clocks
 
-Reviewer accounts get no profile seeding: onboarding incomplete, no health data, programme day starts at 1 after onboarding, as with any new member.
+- Complimentary access: starts at first authenticated app load, lasts exactly 14 x 24 hours, never reset or extended by any path.
+- Programme Day 1: starts when onboarding completes, using the same code path real new members use (`program_start_date`). Never reset by activation, re-login or re-onboarding.
+- Reviewers get the same progressive day locking as ordinary members (`current_program_day` and the unlock trigger). They see Day 1 on day one, not all 180 days.
 
-## Invitation flow
+## 6. Precedence and ended states
 
-The existing transactional sign-in email flow is used. No passwords are emailed, no tokens or links appear in any report or screenshot, and the redirect target is the exact private review URL only, with no wildcard origins added.
+Evaluator order (client and SQL mirror):
 
-Wording is used exactly as you supplied it, with the access rule sentence stating that the 14 days begin at first sign-in.
+1. Disabled/banned Auth account: no access.
+2. Deletion restriction.
+3. Dispute suspension.
+4. Other existing higher-priority safety restrictions.
+5. Active, unexpired, unrevoked complimentary grant: `allowed`, reason `complimentary_review`.
+6. Existing subscription rules.
 
-## Verification before any doctor is contacted
+Expired or revoked grant with no subscription: new reason `complimentary_review_ended`, restricted to account surfaces, with copy "Your complimentary clinical-review access has ended." Never the failed-payment, grace or checkout screen. Billing while active shows "Complimentary clinical-review access, no charge and no automatic renewal" plus the exact expiry; no card, checkout or portal controls.
 
-Using only your own test address, end to end: invitation delivery, one-time link behaviour, onboarding on first entry, reaching Day 1, no checkout redirect, truthful billing text, zero Stripe or order or marketing records, no fasting controls, no admin rights, reviewer-to-reviewer isolation under row-level security, exclusion from paid metrics, expiry and revocation, and full deletion of the test identity with no residue.
+## 7. Personal-data governance
 
-Then focused tests, TypeScript, lint on touched files, production build, and the database checks the entitlement change requires. No unrelated browser or accessibility matrices.
+Add `complimentary_access` to the data inventory (classification, owner), member export, account-deletion worker, retention rules and synthetic-cleanup harness, with tests updated accordingly.
 
-## Preconditions I still need to state in the final report
+## 8. Metrics and automation populations
 
-- Final source commit: `9b09d23914acabaaa6c29f1c9b1e45f989ae498e`, working tree clean.
-- Backend project: the single shared Lovable Cloud instance serving preview and published app.
-- The fasting-badge correction exists in source but has not been deployed. The deployed backend can still award the retired fasting badges. I will deploy only that one checked function before any reviewer is invited, with no client publication.
-- The exact private review URL is the preview URL; I will record it verbatim in the report.
+Audit and, where needed, exclude reviewers from: Auth user counts, profiles, onboarding funnels, engagement scoring, active-member counts, conversions, revenue, admin subscription views, daily digest, notifications, birthday and progress emails, broadcast sends, and any marketing or lead table. Reviewers get only transactional, account-essential messages.
+
+## 9. Shared production backend: compatibility, deployment, rollback
+
+Preview and published client share one backend, so every migration and deployment is a production change even without publication.
+
+- Backward compatibility: the change is purely additive (new table, new function, new evaluator branch that only fires when a grant exists). The currently published client never calls the new function and sees identical results for every existing user. Proven by running the existing billing lifecycle, account surface, RLS matrix and day-guard tests against the migrated database, plus a before/after comparison of `membership_access_state` for all existing users (aggregate counts only).
+- Evidence: migration file path and apply result, function list with deployed versions, and an explicit statement of what was deployed versus source-only.
+- Fasting-badge correction: `award-badges` correction is in source but not deployed; the deployed backend can still award retired fasting badges. Deploy only that checked function before any reviewer is invited.
+- Rollback: documented SQL restoring the previous function bodies, disabling the evaluator branch, and revoking grants; table left in place (no data drop) until you decide.
+
+## 10. Owner-controlled test journey (after approval, before any doctor)
+
+Create the owner test identity, grant, send the real invitation email, then prove: delivery, link opens the exact review URL, one-time use and configured expiry, no card or checkout, onboarding first, Day 1 after onboarding, activation clock set once and not reset by reloads or concurrent calls, billing text truthful, zero Stripe/order/marketing records, no fasting controls, not admin, anonymous vs Reviewer A vs Reviewer B isolation, metrics exclusion, expiry and revocation producing the ended state, deletion removing all applicable rows, zero residue. Then delete the test identity and rows by exact ID.
+
+Checks: focused tests, TypeScript, touched-file lint, production build, SQL/RLS checks, Deno checks for changed functions.
+
+## 11. Doctor provisioning (only after your explicit authorization)
+
+One identity and one grant per authorized address, one transactional invitation each, private masked manifest (masked email, user ID, grant ID, invite time, access rule, expiry, revocation status). Doctors' links are never opened by me.
+
+## 12. Final report
+
+Separate lines for: source changed, migration applied, functions deployed, client unpublished, production reviewer records, invitations sent, marketing sent (zero), Stripe/payments (zero), owner test cleanup, expiry and later deletion responsibility, and every PASS / FAIL / BLOCKED / NOT TESTED.
 
 ## Technical notes
 
-- New table `complimentary_access` with `user_id`, `reason`, `granted_at`, `first_sign_in_at`, `expires_at`, `revoked_at`, plus explicit grants, row-level security allowing a member to read only their own row, and no client write path.
-- Security-definer function `complimentary_access_active(uuid)`, folded into `membership_access_state`, `membership_write_allowed` and `member_access_allowed` so server enforcement matches the client evaluator.
-- Client side: `membershipLifecycle.ts` facts gain `complimentaryUntil`; `useAuth` fetches the grant; `AuthGuard` and `Billing.tsx` consume it. No new surface list is derived anywhere else.
-- Stamping first sign-in happens server-side in an edge function called on first authenticated load, so the member cannot set their own start date.
-- Reviewer addresses live only in the private manifest I hand you, never in source, migrations, fixtures, tests or reports.
-
-## Not done in this plan
-
-No client publication, no pricing change, no admin role, no shared account, no Stripe object of any kind, and no invitation to the three doctors until your test journey passes.
+- Invitation uses the existing Auth invite / password-establishment flow; redirect restricted to the exact review origin, no wildcards.
+- Reviewer addresses stay out of source, migrations, fixtures, screenshots and public reports; retained only as private provisioning input.
+- The roadmap will be updated with this task when implementation starts (plan mode allows editing only the plan).
