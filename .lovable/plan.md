@@ -110,6 +110,24 @@ Retry-safe order per reviewer: look up or create the Auth identity (never a dupl
 
 Separate lines for: source changed, migration applied, functions deployed, client unpublished, production reviewer records, invitations sent, marketing sent (zero), Stripe/payments (zero), owner test cleanup, expiry and later deletion responsibility, and every PASS / FAIL / BLOCKED / NOT TESTED.
 
+## Final implementation clarifications (override earlier sections where they differ)
+
+A. Table has an immutable `id uuid PRIMARY KEY DEFAULT gen_random_uuid()` (update trigger rejects changes to `id`, `user_id`, `purpose`, `granted_at`, `granted_by`). `user_id` stays unique with cascade delete from the Auth identity.
+
+B. Duration is `interval '336 hours'` everywhere: the activation statement and the table constraint. No `'14 days'` anywhere.
+
+C. Activation and status return a single explicit shape: `{ state: 'absent' | 'pending_activation' | 'active' | 'expired' | 'revoked', grant_id, access_started_at, access_expires_at }`. Only `active` grants access; `expired` and `revoked` carry `state` set accordingly and the client treats anything but `active` as no complimentary access. Revoked rows are never activated. The function reads only `auth.uid()`'s row and cannot return another user's record.
+
+D. No direct table SELECT for authenticated users. Access is only through the self-status/activation function, which exposes state, grant ID, start and expiry. `granted_by`, `revoked_by` and `revocation_reason` are never client-visible. Export/deletion documentation classifies these as administrative audit fields separately from member data.
+
+E. Verified: canonical `ACCOUNT_SURFACES` in `membershipLifecycle.ts` is already `["billing", "settings", "support", "profile"]`, so Billing is canonical and no list change is needed. After expiry, Billing shows only the ended notice; the checkout button, Stripe portal and invoice controls are hidden for `complimentary_review_ended`, verified by test. No programme content or Admin.
+
+F. Cleanup reporting states: zero remaining deletable user-owned and synthetic application data; plus each retained security, authentication or email-delivery audit record listed separately with its purpose and retention rule. No absolute "zero residue" claim.
+
+G. Expiry test: an isolated, server-side synthetic method run only against the synthetic test grants (service-role SQL setting that grant's pair back by 336 hours, which satisfies the constraints), never exposed to the client and never touching real reviewer rows. Fixtures restored or deleted afterward.
+
+H. `granted_by` / `revoked_by`: grants and revocations run only through an owner-run admin operation that validates the caller's session and `has_role(auth.uid(), 'admin')`, and records that verified admin user ID. Never accepted from an ordinary client; the service-role credential alone is never recorded as the actor.
+
 ## Change log (this revision)
 
 1. Activation returns the stored entitlement on every call; concurrency test added.
