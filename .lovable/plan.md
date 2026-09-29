@@ -94,7 +94,7 @@ Preview and published client share one backend; every migration and deployment i
 
 ## 10. Owner-controlled test journey, including authorization and RLS proof
 
-Two owner-controlled synthetic reviewer identities (Reviewer A uses the owner test address; Reviewer B is a second owner-controlled synthetic identity). If a second owner-controlled identity cannot be created, cross-reviewer isolation is reported NOT TESTED.
+Two owner-controlled synthetic reviewer identities (Reviewer A uses the owner test address; Reviewer B is a second owner-controlled synthetic identity). Reviewer-to-reviewer RLS isolation must PASS using two genuinely separate authenticated synthetic identities. The second identity does not require an external invitation email if its authenticated session can be established through the authorized synthetic-test process. If two separate authenticated identities cannot be tested, the reviewer-access release is BLOCKED and no clinical-reviewer account may be provisioned or invited.
 
 Prove: invitation delivery, link opens the exact review URL, one-time use and configured expiry, no card or checkout, onboarding first, Day 1 after onboarding, activation clock set once, billing text truthful, zero Stripe/order/marketing records, no fasting controls, not admin, anonymous vs A vs B isolation under RLS, every must-accept inventory entry works, ordinary and anonymous restrictions unchanged, metrics exclusion, expiry and revocation producing the ended state, deletion removing all applicable rows. Then delete both identities and their owned records by exact ID, and confirm zero residue.
 
@@ -124,7 +124,7 @@ E. Verified: canonical `ACCOUNT_SURFACES` in `membershipLifecycle.ts` is already
 
 F. Cleanup reporting states: zero remaining deletable user-owned and synthetic application data; plus each retained security, authentication or email-delivery audit record listed separately with its purpose and retention rule. No absolute "zero residue" claim.
 
-G. Expiry test: an isolated, server-side synthetic method run only against the synthetic test grants (service-role SQL setting that grant's pair back by 336 hours, which satisfies the constraints), never exposed to the client and never touching real reviewer rows. Fixtures restored or deleted afterward.
+G. Expiry testing uses a synthetic grant created specifically with granted_at earlier than or equal to the synthetic access_started_at. Its start and expiry timestamps may then be set to an already-expired 336-hour interval while every production constraint remains enabled and satisfied. No constraint is disabled, deferred or bypassed; no real reviewer row is altered. The synthetic identity, grant and owned records are removed after evidence is captured, subject to the documented retained-audit exceptions.
 
 H. `granted_by` / `revoked_by`: grants and revocations run only through an owner-run admin operation that validates the caller's session and `has_role(auth.uid(), 'admin')`, and records that verified admin user ID. Never accepted from an ordinary client; the service-role credential alone is never recorded as the actor.
 
