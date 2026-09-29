@@ -39,16 +39,16 @@ Table `complimentary_access`, one row per reviewer:
 - `granted_at` (not null), `granted_by` (not null).
 - `access_started_at`, `access_expires_at`, with constraints:
   - both null or both non-null: `(access_started_at IS NULL) = (access_expires_at IS NULL)`;
-  - when present, `access_expires_at = access_started_at + interval '14 days'` and `access_started_at >= granted_at`.
+  - when present, `access_expires_at = access_started_at + interval '336 hours'` and `access_started_at >= granted_at`.
 - `revoked_at`, `revoked_by`, `revocation_reason`, with a constraint that all three are null together or all three non-null together, and `revoked_at >= granted_at`.
-- RLS on. Authenticated may SELECT only its own row. No client INSERT, UPDATE or DELETE. Service role for owner-run provisioning and revocation only.
+- RLS on. Authenticated users receive no direct table SELECT permission. They may retrieve only their own safe entitlement projection through the self-status/activation function. No client INSERT, UPDATE or DELETE. Service role for owner-run provisioning and revocation only.
 
 ## 4. Activation: one atomic self-activation operation
 
 Security-definer function `activate_my_complimentary_access()`:
 
 - No arguments. User derived only from `auth.uid()`; anonymous callers rejected.
-- Single atomic statement: `UPDATE ... SET access_started_at = COALESCE(access_started_at, now()), access_expires_at = COALESCE(access_expires_at, now() + interval '14 days') WHERE user_id = auth.uid() AND revoked_at IS NULL RETURNING id, access_started_at, access_expires_at`. The row lock serialises concurrent calls; the first sets the pair and every later or concurrent call rewrites the same stored values and returns them. If the grant is revoked or absent, the function returns the stored row via a read (or nothing) and never activates.
+- Single atomic statement: `UPDATE ... SET access_started_at = COALESCE(access_started_at, now()), access_expires_at = COALESCE(access_expires_at, now() + interval '336 hours') WHERE user_id = auth.uid() AND revoked_at IS NULL RETURNING id, access_started_at, access_expires_at`. The row lock serialises concurrent calls; the first sets the pair and every later or concurrent call rewrites the same stored values and returns them. The function returns the explicit status shape defined in Clarification C. Revoked and expired grants return their corresponding non-active state; an absent grant returns absent; none can be mistaken for active access.
 - Every call (first activation, reload, retry, concurrent) returns identical grant ID and timestamps; no call ever extends access.
 - Fixed `search_path`, `EXECUTE` revoked from `public` and `anon`, granted to `authenticated` only.
 - Concurrency test: many parallel calls for one synthetic reviewer, asserting exactly one timestamp pair exists, every response is identical, and a call after time passes returns the original expiry.
@@ -96,7 +96,7 @@ Preview and published client share one backend; every migration and deployment i
 
 Two owner-controlled synthetic reviewer identities (Reviewer A uses the owner test address; Reviewer B is a second owner-controlled synthetic identity). Reviewer-to-reviewer RLS isolation must PASS using two genuinely separate authenticated synthetic identities. The second identity does not require an external invitation email if its authenticated session can be established through the authorized synthetic-test process. If two separate authenticated identities cannot be tested, the reviewer-access release is BLOCKED and no clinical-reviewer account may be provisioned or invited.
 
-Prove: invitation delivery, link opens the exact review URL, one-time use and configured expiry, no card or checkout, onboarding first, Day 1 after onboarding, activation clock set once, billing text truthful, zero Stripe/order/marketing records, no fasting controls, not admin, anonymous vs A vs B isolation under RLS, every must-accept inventory entry works, ordinary and anonymous restrictions unchanged, metrics exclusion, expiry and revocation producing the ended state, deletion removing all applicable rows. Then delete both identities and their owned records by exact ID, and confirm zero residue.
+Prove: invitation delivery, link opens the exact review URL, one-time use and configured expiry, no card or checkout, onboarding first, Day 1 after onboarding, activation clock set once, billing text truthful, zero Stripe/order/marketing records, no fasting controls, not admin, anonymous vs A vs B isolation under RLS, every must-accept inventory entry works, ordinary and anonymous restrictions unchanged, metrics exclusion, expiry and revocation producing the ended state, deletion removing all applicable rows. Then delete both identities and their owned records by exact ID, and confirm zero remaining deletable user-owned and synthetic application data, while separately documenting any permitted retained security, authentication or email-delivery audit records.
 
 Checks: focused tests, TypeScript, touched-file lint, production build, SQL/RLS checks, Deno checks for changed functions.
 
@@ -135,7 +135,7 @@ H. `granted_by` / `revoked_by`: grants and revocations run only through an owner
 3. Programme-day source to be identified, not assumed.
 4. Post-expiry surfaces pinned to canonical `ACCOUNT_SURFACES`.
 5. Metrics wording corrected; raw Auth total unaltered.
-6. Two owner-controlled synthetic identities for A/B isolation, or NOT TESTED.
+6. Two separate authenticated synthetic identities are mandatory for A/B isolation; failure to complete this test blocks reviewer provisioning.
 7. Masked recipient/category confirmation; labels requested, not inferred.
 8. Explicit authorization boundary added.
 9. Retry-safe identity, grant, invitation order.
