@@ -120,7 +120,11 @@ export type AccessReason =
   | "no_subscription"
   | "dispute_hold"
   | "deletion_pending"
-  | "payment_refunded";
+  | "payment_refunded"
+  /** Active complimentary clinical-review access. No charge, no renewal. */
+  | "complimentary_review"
+  /** Complimentary clinical-review access expired or was revoked. */
+  | "complimentary_review_ended";
 
 
 /**
@@ -163,7 +167,20 @@ export interface MembershipFacts {
    * and only when no other valid paid period covers the moment.
    */
   paidPeriods?: PaidPeriod[] | null;
+  /**
+   * Complimentary clinical-review entitlement state, as returned by the
+   * server's self-status function. Only "active" grants access. It never
+   * outranks deletion or dispute restrictions.
+   */
+  complimentary?: ComplimentaryState | null;
 }
+
+export type ComplimentaryState =
+  | "absent"
+  | "pending_activation"
+  | "active"
+  | "expired"
+  | "revoked";
 
 
 /** True when a fully refunded period covers `nowMs` and nothing else does. */
@@ -262,6 +279,12 @@ export function evaluateMembership(
     }
   }
 
+  // Complimentary clinical-review access sits below deletion and dispute.
+  if (facts.complimentary === "active") {
+    return grant("allowed", "complimentary_review", base);
+  }
+  const compEnded = facts.complimentary === "expired" || facts.complimentary === "revoked";
+
   // A fully refunded payment revokes only the entitlement it funded.
   if (refundRevokesEntitlement(facts.paidPeriods, nowMs)) {
     return grant("restricted_billing", "payment_refunded", base);
@@ -323,7 +346,11 @@ export function evaluateMembership(
 
     case "none":
     default:
-      return grant("restricted_billing", "no_subscription", base);
+      return grant(
+        "restricted_billing",
+        compEnded ? "complimentary_review_ended" : "no_subscription",
+        base,
+      );
   }
 }
 

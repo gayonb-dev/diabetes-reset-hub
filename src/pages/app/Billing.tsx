@@ -51,7 +51,7 @@ const INVOICE_STATUS: Record<string, { label: string; color: string }> = {
 };
 
 export default function Billing() {
-  const { subscription, refreshSubscription } = useAuth();
+  const { subscription, refreshSubscription, complimentary } = useAuth();
   const isMobile = useIsMobile();
   const [loading, setLoading] = useState(false);
   const [cancelOpen, setCancelOpen] = useState(false);
@@ -175,8 +175,45 @@ export default function Billing() {
   const visibleInvoices = useMemo(() => (isMobile ? invoices.slice(0, 6) : invoices), [invoices, isMobile]);
 
   // B5. Same evaluator the server uses, for presentation only.
-  const evaluation = useMemo(() => evaluateSubscriptionRow(subscription), [subscription]);
+  const evaluation = useMemo(
+    () => evaluateSubscriptionRow(subscription, Date.now(), { complimentary: complimentary?.state ?? null }),
+    [subscription, complimentary],
+  );
   const notice = useMemo(() => membershipNotice(evaluation), [evaluation]);
+
+  // Complimentary clinical-review access: no card, checkout, portal or invoices.
+  if (!subscription && complimentary && complimentary.state !== "absent") {
+    const active = complimentary.state === "active" || complimentary.state === "pending_activation";
+    return (
+      <div className="max-w-2xl mx-auto space-y-5" data-testid="complimentary-billing">
+        <h1 className="font-heading font-semibold text-2xl text-primary">Your access</h1>
+        <Card className="p-6 border border-border">
+          {active ? (
+            <>
+              <p className="font-medium text-foreground">
+                Complimentary clinical-review access, no charge and no automatic renewal
+              </p>
+              <p className="text-sm text-secondary-fg mt-2">
+                {complimentary.access_expires_at
+                  ? `Access ends ${new Date(complimentary.access_expires_at).toLocaleString()}.`
+                  : "Your 14-day review period begins at your first sign-in."}
+              </p>
+            </>
+          ) : (
+            <>
+              <p className="font-medium text-foreground">
+                Your complimentary clinical-review access has ended
+              </p>
+              <p className="text-sm text-secondary-fg mt-2">
+                No payment was ever taken and nothing will be charged. Settings, data export,
+                account deletion and support remain available.
+              </p>
+            </>
+          )}
+        </Card>
+      </div>
+    );
+  }
 
   if (!subscription) {
     return (
