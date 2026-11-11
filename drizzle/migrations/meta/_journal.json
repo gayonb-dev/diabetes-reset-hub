@@ -50,6 +50,13 @@
       "when": 1794441289174,
       "tag": "0006_complimentary_clinical_review_access",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1794441306177,
+      "tag": "0007_complimentary_review_community_reads",
+      "breakpoints": true
     }
   ]
 }
