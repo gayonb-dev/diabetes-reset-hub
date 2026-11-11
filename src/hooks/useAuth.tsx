@@ -17,6 +17,13 @@ interface Subscription {
   created_at: string;
 }
 
+export interface ComplimentaryAccess {
+  state: "absent" | "pending_activation" | "active" | "expired" | "revoked";
+  grant_id: string | null;
+  access_started_at: string | null;
+  access_expires_at: string | null;
+}
+
 interface AuthCtx {
   user: User | null;
   session: Session | null;
@@ -25,6 +32,8 @@ interface AuthCtx {
   /** Member's IANA zone (profiles.timezone), already fallback-resolved. */
   timezone: string;
   subscription: Subscription | null;
+  /** Complimentary clinical-review entitlement, from the server self-status function. */
+  complimentary: ComplimentaryAccess | null;
   refreshAuthState: () => Promise<boolean>;
   refreshSubscription: () => Promise<void>;
   signOut: () => Promise<void>;
@@ -39,13 +48,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isAdmin, setIsAdmin] = useState(false);
   const [subscription, setSubscription] = useState<Subscription | null>(null);
   const [timezone, setTimezone] = useState<string>(FALLBACK_TIMEZONE);
+  const [complimentary, setComplimentary] = useState<ComplimentaryAccess | null>(null);
 
   const loadUserData = useCallback(async (u: User | null) => {
     if (!u) {
       setIsAdmin(false);
       setSubscription(null);
       setTimezone(FALLBACK_TIMEZONE);
+      setComplimentary(null);
       return;
+    }
+    // Idempotent: the first authenticated load starts a pending review period;
+    // every later call returns the same stored timestamps. Non-reviewers get
+    // { state: "absent" }. The server derives the user from the session.
+    try {
+      const { data: comp } = await supabase.rpc("activate_my_complimentary_access" as never);
+      setComplimentary((comp as ComplimentaryAccess | null) ?? null);
+    } catch {
+      setComplimentary(null);
     }
     const [{ data: roles }, { data: sub }, { data: prof }] = await Promise.all([
       supabase.from("user_roles").select("role").eq("user_id", u.id),
@@ -199,7 +219,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   return (
     <Ctx.Provider
-      value={{ user, session, loading, isAdmin, timezone, subscription, refreshAuthState, refreshSubscription, signOut }}
+      value={{ user, session, loading, isAdmin, timezone, subscription, complimentary, refreshAuthState, refreshSubscription, signOut }}
     >
       {children}
     </Ctx.Provider>

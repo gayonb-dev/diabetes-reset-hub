@@ -37,7 +37,7 @@ const CHALLENGES = [
 ];
 
 export default function Onboarding() {
-  const { user } = useAuth();
+  const { user, complimentary } = useAuth();
   const navigate = useNavigate();
   const initialUnits = getUnits();
 
@@ -154,6 +154,9 @@ export default function Onboarding() {
     }
 
     // Ensure profiles.program_start_date is set on onboarding completion.
+    // Clinical reviewers are anchored server-side, once, so a repeated
+    // onboarding can never reset their Day 1. Paid members are unchanged.
+    const isReviewer = complimentary?.state === "active";
     const today = new Date().toISOString().slice(0, 10);
     await supabase
       .from("profiles")
@@ -161,12 +164,15 @@ export default function Onboarding() {
         {
           user_id: user.id,
           first_name: firstName.trim(),
-          program_start_date: today,
+          ...(isReviewer ? {} : { program_start_date: today }),
           week_start_day: weekStartDay,
           bedtime_hour: bedtimeHour,
         } as never,
         { onConflict: "user_id" },
       );
+    if (isReviewer) {
+      await supabase.rpc("anchor_my_review_programme" as never);
+    }
 
     setSaving(false);
     // Meal plan generation happens on the next screen (VITA transition).

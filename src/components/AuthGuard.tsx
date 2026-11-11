@@ -13,7 +13,7 @@ interface Props {
 }
 
 export default function AuthGuard({ children, requireAdmin, requireActiveSub = true }: Props) {
-  const { user, loading, isAdmin, subscription, refreshAuthState } = useAuth();
+  const { user, loading, isAdmin, subscription, complimentary, refreshAuthState } = useAuth();
   const loc = useLocation();
   const [authRecheck, setAuthRecheck] = useState<"idle" | "checking" | "failed">("idle");
 
@@ -32,6 +32,7 @@ export default function AuthGuard({ children, requireAdmin, requireActiveSub = t
   // cancel, export data or close the account.
   const evaluation = evaluateSubscriptionRow(subscription, Date.now(), {
     deletionRestricted,
+    complimentary: complimentary?.state ?? null,
   });
   const surface = surfaceForPath(loc.pathname);
   const surfaceBlocked = needSubCheck && !surfaceAllowed(evaluation, surface);
