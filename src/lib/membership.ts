@@ -25,9 +25,10 @@ export {
   type Surface,
   type MembershipEvaluation,
   type MembershipFacts,
+  type ComplimentaryState,
 } from "../../supabase/functions/_shared/membershipLifecycle";
 
-import { evaluateMembership, type MembershipEvaluation } from "../../supabase/functions/_shared/membershipLifecycle";
+import { evaluateMembership, type MembershipEvaluation, type ComplimentaryState } from "../../supabase/functions/_shared/membershipLifecycle";
 
 /** Shape of the local `subscriptions` row as the client reads it. */
 export interface SubscriptionRow {
@@ -41,11 +42,14 @@ export interface SubscriptionRow {
 export function evaluateSubscriptionRow(
   row: SubscriptionRow | null | undefined,
   nowMs: number = Date.now(),
-  extra: { deletionRestricted?: boolean } = {},
+  extra: { deletionRestricted?: boolean; complimentary?: ComplimentaryState | null } = {},
 ): MembershipEvaluation {
   if (!row) {
+    const comp = extra.complimentary ?? null;
     return evaluateMembership(
-      extra.deletionRestricted ? { deletionRestricted: true } : null,
+      extra.deletionRestricted || (comp && comp !== "absent")
+        ? { deletionRestricted: extra.deletionRestricted === true, complimentary: comp }
+        : null,
       nowMs,
     );
   }
@@ -57,6 +61,7 @@ export function evaluateSubscriptionRow(
       currentPeriodEnd: row.current_period_end ?? null,
       trialEnd: row.trial_end_date ?? null,
       graceStartedAt: row.grace_started_at ?? null,
+      complimentary: extra.complimentary ?? null,
     },
     nowMs,
   );
@@ -129,6 +134,13 @@ export function membershipNotice(
           "The payment covering this period was refunded, so your programme is on hold. Nothing has been deleted, restart any time and pick up where you left off.",
       };
 
+    case "complimentary_review_ended":
+      return {
+        tone: "restricted",
+        title: "Your complimentary clinical-review access has ended",
+        body:
+          "Thank you for reviewing Diabetes Reset Method. No payment was ever taken and nothing will be charged. Your settings, data export, account deletion and support remain available.",
+      };
     default:
       return null;
   }
