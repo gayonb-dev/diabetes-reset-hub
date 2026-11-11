@@ -666,6 +666,45 @@ export type Database = {
         }
         Relationships: []
       }
+      complimentary_access: {
+        Row: {
+          access_expires_at: string | null
+          access_started_at: string | null
+          granted_at: string
+          granted_by: string
+          id: string
+          purpose: string
+          revocation_reason: string | null
+          revoked_at: string | null
+          revoked_by: string | null
+          user_id: string
+        }
+        Insert: {
+          access_expires_at?: string | null
+          access_started_at?: string | null
+          granted_at?: string
+          granted_by: string
+          id?: string
+          purpose?: string
+          revocation_reason?: string | null
+          revoked_at?: string | null
+          revoked_by?: string | null
+          user_id: string
+        }
+        Update: {
+          access_expires_at?: string | null
+          access_started_at?: string | null
+          granted_at?: string
+          granted_by?: string
+          id?: string
+          purpose?: string
+          revocation_reason?: string | null
+          revoked_at?: string | null
+          revoked_by?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       consent_records: {
         Row: {
           created_at: string
@@ -3233,6 +3272,16 @@ export type Database = {
       }
     }
     Functions: {
+      activate_my_complimentary_access: { Args: never; Returns: Json }
+      admin_grant_clinical_review: {
+        Args: { p_user_id: string }
+        Returns: string
+      }
+      admin_revoke_clinical_review: {
+        Args: { p_reason: string; p_user_id: string }
+        Returns: undefined
+      }
+      anchor_my_review_programme: { Args: never; Returns: string }
       award_helpful_points: {
         Args: { p_amount: number; p_user_id: string }
         Returns: number
@@ -3306,6 +3355,14 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      complimentary_access_active: {
+        Args: { p_user_id: string }
+        Returns: boolean
+      }
+      complimentary_status_row: {
+        Args: { c: Database["public"]["Tables"]["complimentary_access"]["Row"] }
+        Returns: Json
+      }
       consume_export_artifact: {
         Args: { p_token_hash: string }
         Returns: {
@@ -3357,6 +3414,7 @@ export type Database = {
         Args: { p_session_id: string; p_user_id: string }
         Returns: Json
       }
+      my_complimentary_access: { Args: never; Returns: Json }
       my_deletion_status: {
         Args: never
         Returns: {
