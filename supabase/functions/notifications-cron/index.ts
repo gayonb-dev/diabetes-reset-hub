@@ -13,6 +13,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
 
 import { corsFor } from "../_shared/cors.ts";
 import { calendarDayKey, calendarHour, programDayFor } from "../_shared/calendarDay.ts";
+import { reviewerIds, isBusinessMember } from "../_shared/reviewerPopulation.ts";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -100,9 +101,11 @@ Deno.serve(async (req) => {
   const todayMd = `${String(now.getUTCMonth() + 1).padStart(2, "0")}-${String(now.getUTCDate()).padStart(2, "0")}`;
   const stats = { good_morning: 0, streak_at_risk: 0, birthday: 0, community_mission: 0 };
 
-  const { data: profiles } = await supabase
+  const reviewers = await reviewerIds(supabase);
+  const { data: candidateProfiles } = await supabase
     .from("profiles")
     .select("user_id, first_name, date_of_birth, program_start_date, timezone");
+  const profiles = candidateProfiles?.filter((p) => isBusinessMember(p.user_id, reviewers));
 
   if (!profiles?.length) {
     return new Response(JSON.stringify({ ok: true, stats, note: "no profiles" }), {
