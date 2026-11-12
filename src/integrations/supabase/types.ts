@@ -3330,6 +3330,7 @@ export type Database = {
           last_applied_created: string
         }[]
       }
+      clinical_review_content_allowed: { Args: never; Returns: boolean }
       complete_workout_session: {
         Args: {
           p_duration_seconds?: number
