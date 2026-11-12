@@ -14,7 +14,10 @@ export async function reviewerIds(admin: ReviewerClient): Promise<Set<string>> {
     const { data, error } = await admin.from("complimentary_access")
       .select("user_id").range(offset, offset + 999);
     if (error) throw new Error("reviewer_population_unavailable");
-    for (const row of data ?? []) ids.add(row.user_id);
+    for (const row of data ?? []) {
+      if (typeof row.user_id !== "string") throw new Error("reviewer_population_invalid");
+      ids.add(row.user_id);
+    }
     if ((data?.length ?? 0) < 1000) return ids;
   }
 }

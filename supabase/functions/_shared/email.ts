@@ -26,9 +26,10 @@ export interface EmailResult {
 }
 
 export async function sendEmail(
-  admin: ReviewerClient,
+  client: unknown,
   payload: EmailPayload,
 ): Promise<EmailResult> {
+  const admin = client as ReviewerClient;
   const recipients = (Array.isArray(payload.to) ? payload.to : [payload.to])
     .map((r) => String(r ?? "").trim())
     .filter(Boolean);
@@ -79,9 +80,10 @@ export async function sendEmail(
  * Never logs the recipient, subject, body, link or token.
  */
 export async function sendAuthEmail(
-  admin: ReviewerClient,
+  client: unknown,
   payload: EmailPayload,
 ): Promise<EmailResult> {
+  const admin = client as ReviewerClient;
   const recipients = (Array.isArray(payload.to) ? payload.to : [payload.to])
     .map((r) => String(r ?? "").trim())
     .filter(Boolean);
