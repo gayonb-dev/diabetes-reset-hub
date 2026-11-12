@@ -226,3 +226,29 @@ Synthetic verification: review account temporarily set to eligible, doctor-confi
 - Active-only snack filters in `SnackLibrary.tsx` and `HabitLogging.tsx` remain unpublished until a client release.
 - NOT TESTED: full `deno check` of `award-badges` and `generate-meal-plan` (sandbox cannot resolve their `npm:` specifiers); `deno lint` reports only pre-existing style rules there. Edge Function behavior therefore verified by source review and client-side gate tests only.
 - Nothing published, no functions deployed, no emails, payments or external AI calls.
+
+---
+
+# Private clinical-review access continuation
+
+Status: PARTIAL IMPLEMENTATION. Reviewer provisioning is BLOCKED pending mandatory gates.
+
+## Preflight, 2026-11-12
+
+- Authoritative source: `b2024452ed195a82f26063e30a5004257a1cf54a`.
+- Hosted preview serves the same SHA, confirmed by `lovable build status`, run `br_16bffa0c-1dcc-4230-95c5-072f1e10244c`, succeeded 2026-11-11 23:57:29 UTC.
+- Exact review URL: https://id-preview--187534ee-b3c7-4a03-a061-621309d24e10.lovable.app . This is the preview entry, not a separate access-restricted hosting deployment; member pages require authentication.
+- Backend: `wqennhjdojjqmmqzjhti`, shared production instance.
+- Previously applied: `0006_complimentary_clinical_review_access.sql` and `0007_complimentary_review_community_reads.sql`. Catalogue inspection confirms the eight reviewer policies and current evaluator definition.
+- Existing-member identical-behavior claim: UNVERIFIED. No before/after per-member snapshot was captured.
+- Previous fasting correction was reported deployed; deployed version and controlled runtime verification are NOT TESTED in this continuation.
+- No synthetic grant or identity created in this continuation; no invitation, marketing, Stripe, payment, client publication or cleanup operation performed.
+- Recipient addresses are not available in the current working context as verified private inputs. Only placeholders and historical claims of retention are visible. No address will be inferred or reconstructed into source/evidence.
+
+## Deployment inventory and rollback
+
+Migration 0006 created `complimentary_access`, immutable-row trigger, `complimentary_access_active`, `complimentary_status_row`, `my_complimentary_access`, `activate_my_complimentary_access`, `anchor_my_review_programme`, and admin grant/revoke functions. It replaced `membership_access_state` and added reviewer SELECT policies on `content_items` and `daily_actions`. Migration 0007 added reviewer SELECT policies on `qa_submissions`, `community_questions`, `community_answers`, `community_votes`, `win_posts`, and `community_answer_embeddings`. Existing write gates call the modified evaluator indirectly through `membership_write_allowed`.
+
+Rollback is owner-authorized only, never executed as a test: remove just the eight named reviewer policies using a new migration; restore `membership_access_state` from the 0006 definition with only its complimentary-access branch removed; revoke authenticated EXECUTE on activation/anchor/admin grant/revoke functions to stop new reviewer operations. Keep the entitlement table and historical rows intact. Restore the unpublished client access consumers to the pre-review source using the platform's version controls, not by deploying an old evaluator into production. Capture exact function source/version before any function rollback; versions are not yet independently available. Do not roll back the approved fasting correction. No rollback has run.
+
+Initial policy audit: FAIL, the eight new permissive read policies checked deletion lock but not deletion restriction or dispute suspension. Correction and authenticated proof remain required. Existing content-visibility predicates must be retained.
