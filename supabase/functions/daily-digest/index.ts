@@ -8,7 +8,7 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
 import { sendEmail } from "../_shared/email.ts";
 import { corsFor, preflight } from "../_shared/cors.ts";
-import { reviewerIds, reviewerEmails, isBusinessMember } from "../_shared/reviewerPopulation.ts";
+import { reviewerIds, reviewerEmails } from "../_shared/reviewerPopulation.ts";
 
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;

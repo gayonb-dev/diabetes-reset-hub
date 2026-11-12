@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { isBusinessMember } from "../../supabase/functions/_shared/reviewerPopulation.ts";
+import { isBusinessMember } from "../../supabase/functions/_shared/reviewerRules.ts";
 
 describe("reviewer business population", () => {
   it("excludes every grant identity regardless of activation or expiry", () => {

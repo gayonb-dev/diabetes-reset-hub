@@ -9,7 +9,7 @@
 // the same template_key created today for that user before inserting.
 // For streak_at_risk, dedupe is scoped to the member's LOCAL date.
 
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
+import { createClient, type SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
 
 import { corsFor } from "../_shared/cors.ts";
 import { calendarDayKey, calendarHour, programDayFor } from "../_shared/calendarDay.ts";
@@ -38,7 +38,7 @@ async function sendNotification(
 }
 
 async function alreadySentTodayUtc(
-  supabase: ReturnType<typeof createClient>,
+  supabase: SupabaseClient,
   userId: string,
   templateKey: string,
 ): Promise<boolean> {
@@ -60,7 +60,7 @@ function localParts(now: Date, tz: string): { hour: number; dateISO: string } {
 }
 
 async function alreadySentOnLocalDate(
-  supabase: ReturnType<typeof createClient>,
+  supabase: SupabaseClient,
   userId: string,
   templateKey: string,
   tz: string,
