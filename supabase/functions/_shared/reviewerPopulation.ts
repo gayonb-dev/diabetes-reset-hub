@@ -1,6 +1,10 @@
-import type { SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
+import type { DataClient } from "./dataClient.ts";
 export { isBusinessMember } from "./reviewerRules.ts";
-export type ReviewerClient = Pick<SupabaseClient, "from" | "auth">;
+export interface ReviewerClient extends DataClient {
+  auth: { admin: { listUsers(options: { page: number; perPage: number }): Promise<{
+    data: { users: { id: string; email?: string }[] }; error: unknown;
+  }> } };
+}
 
 // All grants identify review populations, including pending, expired and revoked.
 // A failed classification must stop the job rather than contact a reviewer.

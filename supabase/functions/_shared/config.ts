@@ -4,8 +4,8 @@
 // which has no anon/authenticated grants and no RLS policies. Browser code
 // cannot read it and cannot change it. Missing rows fail closed.
 
-import type { SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
-export type ConfigClient = Pick<SupabaseClient, "from">;
+import type { DataClient } from "./dataClient.ts";
+export type ConfigClient = DataClient;
 
 export type ConfigKey =
   | "ai_health_enabled"
