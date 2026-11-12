@@ -23,3 +23,21 @@ export async function isClinicalReviewer(admin: SupabaseClient, userId: string):
   if (error) throw new Error("reviewer_population_unavailable");
   return data !== null;
 }
+
+export async function reviewerEmails(admin: SupabaseClient, reviewers: Set<string>): Promise<Set<string>> {
+  const emails = new Set<string>();
+  if (reviewers.size === 0) return emails;
+  const remaining = new Set(reviewers);
+  for (let page = 1; page <= 100; page++) {
+    const { data, error } = await admin.auth.admin.listUsers({ page, perPage: 200 });
+    if (error) throw new Error("reviewer_identity_unavailable");
+    for (const user of data.users) {
+      if (!remaining.has(user.id)) continue;
+      if (user.email) emails.add(user.email.trim().toLowerCase());
+      remaining.delete(user.id);
+    }
+    if (remaining.size === 0) return emails;
+    if (data.users.length < 200) break;
+  }
+  throw new Error("reviewer_identity_unavailable");
+}

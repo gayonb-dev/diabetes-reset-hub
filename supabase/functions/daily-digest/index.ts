@@ -8,6 +8,7 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
 import { sendEmail } from "../_shared/email.ts";
 import { corsFor, preflight } from "../_shared/cors.ts";
+import { reviewerIds, reviewerEmails, isBusinessMember } from "../_shared/reviewerPopulation.ts";
 
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
@@ -46,12 +47,22 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Conversations active yesterday
-    const { data: convos } = await supabase
+    const reviewers = await reviewerIds(supabase);
+    const excludedEmails = await reviewerEmails(supabase, reviewers);
+    const excludedVisitorIds = new Set<string>();
+    for (const userId of reviewers) {
+      const { data, error } = await supabase.from("visitor_profiles").select("id").eq("user_id", userId);
+      if (error) throw new Error("reviewer_visitor_population_unavailable");
+      for (const row of data ?? []) excludedVisitorIds.add(row.id);
+    }
+
+    // Conversations active yesterday, excluding reviewer-owned visitors.
+    const { data: candidates } = await supabase
       .from("conversations")
       .select("id, visitor_profile_id, summary, last_message_at")
       .gte("last_message_at", yStart)
       .lt("last_message_at", yEnd);
+    const convos = candidates?.filter((c) => !excludedVisitorIds.has(c.visitor_profile_id));
 
     // H. Structured, local aggregation. Message CONTENT is never read here and
     // never leaves the database.
@@ -72,15 +83,26 @@ Deno.serve(async (req) => {
     }
 
     // Counts
-    const { count: ordersCount } = await supabase
-      .from("orders").select("id", { count: "exact", head: true })
+    // Keep exact server counts, excluding immutable user IDs and legacy emails.
+    let ordersQuery = supabase.from("orders").select("id", { count: "exact", head: true })
       .eq("status", "paid").gte("created_at", yStart).lt("created_at", yEnd);
-    const { count: intakeCount } = await supabase
-      .from("intake_submissions").select("id", { count: "exact", head: true })
+    let intakeQuery = supabase.from("intake_submissions").select("id", { count: "exact", head: true })
       .gte("created_at", yStart).lt("created_at", yEnd);
-    const { count: leadCount } = await supabase
-      .from("leads").select("id", { count: "exact", head: true })
+    let leadQuery = supabase.from("leads").select("id", { count: "exact", head: true })
       .gte("created_at", yStart).lt("created_at", yEnd);
+    for (const userId of reviewers) {
+      ordersQuery = ordersQuery.or(`user_id.is.null,user_id.neq.${userId}`);
+    }
+    for (const email of excludedEmails) {
+      ordersQuery = ordersQuery.not("customer_email", "ilike", email.replace(/[%_]/g, "\\$&"));
+      intakeQuery = intakeQuery.not("email", "ilike", email.replace(/[%_]/g, "\\$&"));
+      leadQuery = leadQuery.not("email", "ilike", email.replace(/[%_]/g, "\\$&"));
+    }
+    const [ordersResult, intakeResult, leadResult] = await Promise.all([ordersQuery, intakeQuery, leadQuery]);
+    if (ordersResult.error || intakeResult.error || leadResult.error) throw new Error("digest_population_unavailable");
+    const ordersCount = ordersResult.count;
+    const intakeCount = intakeResult.count;
+    const leadCount = leadResult.count;
 
     const numbers = {
       conversations: convos?.length ?? 0,

@@ -9,6 +9,7 @@
 
 import type { SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
 import { authEmailEnabled, emailAllowed } from "./config.ts";
+import { reviewerIds, reviewerEmails } from "./reviewerPopulation.ts";
 
 export interface EmailPayload {
   to: string | string[];
@@ -21,7 +22,7 @@ export interface EmailPayload {
 
 export interface EmailResult {
   sent: boolean;
-  reason?: "gate_closed" | "no_api_key" | "provider_error" | "no_recipient";
+  reason?: "gate_closed" | "no_api_key" | "provider_error" | "no_recipient" | "clinical_review";
   status?: number;
 }
 
@@ -33,6 +34,13 @@ export async function sendEmail(
     .map((r) => String(r ?? "").trim())
     .filter(Boolean);
   if (recipients.length === 0) return { sent: false, reason: "no_recipient" };
+
+  // Non-essential outbound mail cannot target any review identity. Auth mail
+  // remains independent, below, so sign-in is not suppressed.
+  const excluded = await reviewerEmails(admin, await reviewerIds(admin));
+  if (recipients.some((r) => excluded.has(r.toLowerCase()))) {
+    return { sent: false, reason: "clinical_review" };
+  }
 
   // Gate is evaluated per recipient. One disallowed address blocks the send.
   for (const r of recipients) {
