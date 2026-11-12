@@ -7,9 +7,8 @@
 //
 // No message body, subject, or recipient address is logged.
 
-import type { SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
 import { authEmailEnabled, emailAllowed } from "./config.ts";
-import { reviewerIds, reviewerEmails } from "./reviewerPopulation.ts";
+import { reviewerIds, reviewerEmails, type ReviewerClient } from "./reviewerPopulation.ts";
 
 export interface EmailPayload {
   to: string | string[];
@@ -27,7 +26,7 @@ export interface EmailResult {
 }
 
 export async function sendEmail(
-  admin: SupabaseClient,
+  admin: ReviewerClient,
   payload: EmailPayload,
 ): Promise<EmailResult> {
   const recipients = (Array.isArray(payload.to) ? payload.to : [payload.to])
@@ -80,7 +79,7 @@ export async function sendEmail(
  * Never logs the recipient, subject, body, link or token.
  */
 export async function sendAuthEmail(
-  admin: SupabaseClient,
+  admin: ReviewerClient,
   payload: EmailPayload,
 ): Promise<EmailResult> {
   const recipients = (Array.isArray(payload.to) ? payload.to : [payload.to])

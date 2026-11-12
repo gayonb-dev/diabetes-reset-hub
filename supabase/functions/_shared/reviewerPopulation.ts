@@ -1,9 +1,10 @@
 import type { SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
 export { isBusinessMember } from "./reviewerRules.ts";
+export type ReviewerClient = Pick<SupabaseClient, "from" | "auth">;
 
 // All grants identify review populations, including pending, expired and revoked.
 // A failed classification must stop the job rather than contact a reviewer.
-export async function reviewerIds(admin: SupabaseClient): Promise<Set<string>> {
+export async function reviewerIds(admin: ReviewerClient): Promise<Set<string>> {
   const ids = new Set<string>();
   for (let offset = 0; ; offset += 1000) {
     const { data, error } = await admin.from("complimentary_access")
@@ -14,14 +15,14 @@ export async function reviewerIds(admin: SupabaseClient): Promise<Set<string>> {
   }
 }
 
-export async function isClinicalReviewer(admin: SupabaseClient, userId: string): Promise<boolean> {
+export async function isClinicalReviewer(admin: ReviewerClient, userId: string): Promise<boolean> {
   const { data, error } = await admin.from("complimentary_access")
     .select("id").eq("user_id", userId).maybeSingle();
   if (error) throw new Error("reviewer_population_unavailable");
   return data !== null;
 }
 
-export async function reviewerEmails(admin: SupabaseClient, reviewers: Set<string>): Promise<Set<string>> {
+export async function reviewerEmails(admin: ReviewerClient, reviewers: Set<string>): Promise<Set<string>> {
   const emails = new Set<string>();
   if (reviewers.size === 0) return emails;
   const remaining = new Set(reviewers);
