@@ -5,6 +5,7 @@
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
 import { corsFor, preflight } from "../_shared/cors.ts";
+import { reviewerIds, isBusinessMember } from "../_shared/reviewerPopulation.ts";
 
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
@@ -49,7 +50,9 @@ Deno.serve(async (req) => {
       .limit(2000);
 
     let updated = 0;
+    const reviewers = await reviewerIds(supabase);
     for (const p of profiles ?? []) {
+      if (!isBusinessMember(p.user_id, reviewers)) continue;
       // Events in last 90d
       const { data: events90 } = await supabase
         .from("activity_events")

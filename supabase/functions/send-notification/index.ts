@@ -10,6 +10,7 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
 
 import { corsFor } from "../_shared/cors.ts";
+import { isClinicalReviewer } from "../_shared/reviewerPopulation.ts";
 
 type Template = {
   /** Body template; supports {first_name}, {streak}, {day}, {action_name}, {water_have}, {water_need}, {n}, {hours}, {level_name}, {level_message}, {unlock_name}, {unlock_desc}, {day_name}, {milestone} */
@@ -210,6 +211,12 @@ Deno.serve(async (req) => {
           });
         }
       }
+    }
+
+    if (await isClinicalReviewer(supabase, userId)) {
+      return new Response(JSON.stringify({ ok: true, skipped: "clinical_review" }), {
+        headers: { ...corsFor(req), "Content-Type": "application/json" },
+      });
     }
 
     // Load profile (for first_name default + preference check)

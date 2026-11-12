@@ -4,7 +4,8 @@
 // which has no anon/authenticated grants and no RLS policies. Browser code
 // cannot read it and cannot change it. Missing rows fail closed.
 
-import type { SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
+import type { DataClient } from "./dataClient.ts";
+export type ConfigClient = DataClient;
 
 export type ConfigKey =
   | "ai_health_enabled"
@@ -23,7 +24,7 @@ const cache = new Map<string, { value: unknown; at: number }>();
 const TTL_MS = 30_000;
 
 export async function getConfig<T = unknown>(
-  admin: SupabaseClient,
+  admin: ConfigClient,
   key: ConfigKey,
   fallback: T,
 ): Promise<T> {
@@ -45,27 +46,27 @@ export async function getConfig<T = unknown>(
 }
 
 /** The AI-health gate. Defaults false and can only be changed server-side. */
-export async function aiHealthEnabled(admin: SupabaseClient): Promise<boolean> {
+export async function aiHealthEnabled(admin: ConfigClient): Promise<boolean> {
   return (await getConfig<boolean>(admin, "ai_health_enabled", false)) === true;
 }
 
 /** Current privacy-notice version consent must be captured against. */
-export async function noticeVersion(admin: SupabaseClient): Promise<string> {
+export async function noticeVersion(admin: ConfigClient): Promise<string> {
   return await getConfig<string>(admin, "phi_notice_version", "unset");
 }
 
 /** Dexcom integration gate. Defaults false; enforced before any credential read. */
-export async function dexcomEnabled(admin: SupabaseClient): Promise<boolean> {
+export async function dexcomEnabled(admin: ConfigClient): Promise<boolean> {
   return (await getConfig<boolean>(admin, "dexcom_enabled", false)) === true;
 }
 
 /** "test" | "live". Defaults to "test" so a mismatch fails closed in production. */
-export async function stripeMode(admin: SupabaseClient): Promise<string> {
+export async function stripeMode(admin: ConfigClient): Promise<string> {
   return await getConfig<string>(admin, "stripe_mode", "test");
 }
 
 /** Gate for Stripe cancellation performed by the account-deletion worker. */
-export async function stripeDeletionEnabled(admin: SupabaseClient): Promise<boolean> {
+export async function stripeDeletionEnabled(admin: ConfigClient): Promise<boolean> {
   return (await getConfig<boolean>(admin, "stripe_deletion_enabled", false)) === true;
 }
 
@@ -91,7 +92,7 @@ export function stripeKeyClassMismatch(mode: string, key: string): string | null
  * not an automated member email.
  */
 export async function emailAllowed(
-  admin: SupabaseClient,
+  admin: ConfigClient,
   to: string,
 ): Promise<boolean> {
   const enabled = await getConfig<boolean>(admin, "email_delivery_enabled", false);
@@ -107,7 +108,7 @@ export async function emailAllowed(
  * deliberately independent of `email_delivery_enabled`,
  * `transactional_automation_enabled` and `marketing_email_enabled`.
  */
-export async function authEmailEnabled(admin: SupabaseClient): Promise<boolean> {
+export async function authEmailEnabled(admin: ConfigClient): Promise<boolean> {
   return (await getConfig<boolean>(admin, "auth_email_enabled", true)) !== false;
 }
 

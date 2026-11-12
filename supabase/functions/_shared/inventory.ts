@@ -116,6 +116,7 @@ export const INVENTORY: InventoryEntry[] = [
   { table: "workout_completion_receipts", match: "user_id", column: "user_id", disposition: "export_and_delete", order: 20, category: "program" },
 
   // ---- notifications, consent, roles ----
+  { table: "complimentary_access", match: "user_id", column: "user_id", disposition: "export_redacted_and_delete", order: 24, category: "membership", redact: ["granted_by", "revoked_by", "revocation_reason"] },
   { table: "notifications", match: "user_id", column: "user_id", disposition: "export_and_delete", order: 24, category: "notifications" },
   { table: "consent_records", match: "user_id", column: "user_id", disposition: "export_and_delete", order: 24, category: "consent" },
   { table: "whatsapp_consent", match: "user_id", column: "user_id", disposition: "export_and_delete", order: 24, category: "consent" },

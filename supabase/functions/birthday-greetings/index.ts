@@ -7,6 +7,7 @@
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
 import { sendEmail } from "../_shared/email.ts";
+import { reviewerIds, isBusinessMember } from "../_shared/reviewerPopulation.ts";
 import { corsFor, preflight } from "../_shared/cors.ts";
 
 
@@ -37,7 +38,9 @@ Deno.serve(async (req) => {
       .not("date_of_birth", "is", null)
       .not("user_id", "is", null);
 
+    const reviewers = await reviewerIds(supabase);
     const matches = (profiles ?? []).filter((p) => {
+      if (!isBusinessMember(p.user_id, reviewers)) return false;
       if (!p.date_of_birth) return false;
       const s = String(p.date_of_birth); // YYYY-MM-DD
       return s.slice(5, 7) === mm && s.slice(8, 10) === dd;

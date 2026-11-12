@@ -57,6 +57,13 @@
       "when": 1794441306177,
       "tag": "0007_complimentary_review_community_reads",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1794446411664,
+      "tag": "0008_reviewer_read_safety_precedence",
+      "breakpoints": true
     }
   ]
 }

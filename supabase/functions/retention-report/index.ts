@@ -53,9 +53,11 @@ Deno.serve(async (req) => {
       await count("messages", "created_at"),
       await count("activity_events", "event_at"),
       await count("visitor_sessions", "expires_at"),
+      await count("complimentary_access", "access_expires_at"),
     ],
     note:
       "Report only. No rows were deleted, updated, or purged. Enforcement requires separate approval.",
+    reviewer_retention: "Entitlements expire after 336 hours, without automatic deletion. Grants are deleted by the account deletion inventory. Administrative actor fields and revocation reason are excluded from member exports. The owner must arrange later reviewer account deletion; this report does not schedule deletion.",
   };
 
   console.log("retention-report", JSON.stringify(report));

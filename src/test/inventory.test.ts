@@ -11,6 +11,14 @@ import {
 const byTable = (t: string) => INVENTORY.find((e) => e.table === t);
 
 describe("Prompt 3 inventory classification", () => {
+  it("exports reviewer member data without administrative audit fields and deletes the grant", () => {
+    const grant = byTable("complimentary_access");
+    expect(grant?.column).toBe("user_id");
+    expect(grant?.disposition).toBe("export_redacted_and_delete");
+    expect(grant?.redact).toEqual(["granted_by", "revoked_by", "revocation_reason"]);
+    expect(EXPORTABLE.map((e) => e.table)).toContain("complimentary_access");
+    expect(DELETABLE.map((e) => e.table)).toContain("complimentary_access");
+  });
   it("has no table in both the manifest and the reference list", () => {
     for (const e of INVENTORY) expect(REFERENCE_TABLES).not.toContain(e.table);
   });
