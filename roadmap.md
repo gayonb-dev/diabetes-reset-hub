@@ -2,10 +2,10 @@
 
 ## Private clinical-review access continuation
 
-- [ ] Record deployed changes and rollback, retain partial status.
+- [x] Record deployed changes and rollback, retain partial status.
 - [ ] Harden eight reviewer read policies and verify authenticated safety/isolation, writes, RPCs and Storage.
 - [ ] Complete export/deletion/retention and communication/metrics exclusions before synthetic grants.
-- [ ] Owner-admin supervised two-identity journey, invitation, expiry, revoke and cleanup.
+- [ ] Owner-admin supervised two-identity journey, invitation, expiry, revoke and cleanup. Blocked by personal admin sign-in and missing verified private owner test address.
 - [ ] Existing-member compatibility and deployed fasting-badge runtime evidence.
 - [ ] Final focused checks and existing completion report. Client publication and doctor invitations remain unauthorized.
 

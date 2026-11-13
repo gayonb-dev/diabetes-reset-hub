@@ -252,3 +252,66 @@ Migration 0006 created `complimentary_access`, immutable-row trigger, `complimen
 Rollback is owner-authorized only, never executed as a test: remove just the eight named reviewer policies using a new migration; restore `membership_access_state` from the 0006 definition with only its complimentary-access branch removed; revoke authenticated EXECUTE on activation/anchor/admin grant/revoke functions to stop new reviewer operations. Keep the entitlement table and historical rows intact. Restore the unpublished client access consumers to the pre-review source using the platform's version controls, not by deploying an old evaluator into production. Capture exact function source/version before any function rollback; versions are not yet independently available. Do not roll back the approved fasting correction. No rollback has run.
 
 Initial policy audit: FAIL, the eight new permissive read policies checked deletion lock but not deletion restriction or dispute suspension. Correction and authenticated proof remain required. Existing content-visibility predicates must be retained.
+
+## Continuation implementation and evidence
+
+- Applied `0008_reviewer_read_safety_precedence.sql` to the shared production database. All eight policies now call `clinical_review_content_allowed`, combining an active grant, canonical membership evaluation and member write safety (deletion lock and restriction). Existing active-content and anonymously-published-answer predicates remain. Catalogue readback confirms 8 hardened policies. Ordinary authenticated probes remain BLOCKED, not implied by catalogue inspection.
+- Shared inventory now exports and deletes the reviewer entitlement, redacting `granted_by`, `revoked_by`, and `revocation_reason`. The deletion worker consumes that inventory. Retention remains report-only at the existing 730-day cutoff; expiry is not automatic account deletion. Owner is responsible for arranging later deletion after review and documenting applicable retained audit records.
+- Shared reviewer population includes every grant, pending, active, expired or revoked. Lookup errors stop population processing. Notifications, birthdays, engagement-score generation, digest conversations and digest business counts exclude that population. Non-essential shared email excludes reviewer addresses server-side; authentication email remains separate. No scheduled jobs were invoked to prove suppression, because doing so could contact ordinary members.
+- Prior evaluator fixture is extracted from `d442f0fa66598f6ca13f8e8fbded50f761e37541^` and compared to current source for identical inputs in isolation. No production evaluator was restored. PASS for 19 compatibility inputs including grace boundary, cancellation, refunds, dispute/inquiry and deletion, plus reviewer dispute precedence. This is source-evaluator compatibility, not a production before/after snapshot or proof that every existing member is unchanged.
+- No client presentation was changed in this continuation. Existing unpublished reviewer UI is preserved. No pricing changes.
+
+### Function deployments
+
+Final checked function dependency state: source commit `615b4a7f0ee689cf3a6fc17613957db44caff211` (before this documentation update). Deployment tool confirmed submission of all affected consumers. Submitted source hashes identify code/settings, not independently inspected live revision IDs. No numeric deployed-version read is available in this evidence.
+
+| Function | Submitted source SHA-256 |
+| --- | --- |
+| notifications-cron | 858bb209521c238d3dee1cf9ef92654cc756006f84e5b823225f3be836b43ddd |
+| send-notification | 33a0854828733464d3ba24cc77559c58d05b28da8c28f74f690fe96e51268b2e |
+| birthday-greetings | 7d6a547a4ffce4429bce288dba4b6f57383624069fa859d4d8359e7d6fefd26a |
+| compute-engagement-scores | 3196a61f6a10bb54f72d139950ade1fda6b02b052ce71a63fa0917e123e20c98 |
+| daily-digest | 099c1a007e23eef4a4a1e10f8d60b3a6dab9f3e0828215aa6c848f7c545893eb |
+| retention-report | 53a1f6373cbd5e70323e7399643f16e2209d9eedfe2278689e2f5c39c939d24e |
+| export-my-data | 765628da84ee9271f62f1f5dfb9521f0adff3f0422a862930c7a8fbafa751710 |
+| process-deletion-job | db5215a2a3cc953325fefb5f65bce0f0d053acf44cd6a5cd68d642bc3f4fd020 |
+| award-badges | 993da6a8ee8ecc0cb5f4666cdcbd97e64f8a0fb9ba18359d28f6bda9700285f9 |
+| member-checkin | 311d2bfeb9ee54a0783064787a042a90599079c1228f729b6422e84156038297 |
+| notify-qa-answered | 5dc536fd55e9521f3ce145d295054bca4ce95e93f32aa42d0aea1b6eef248bc8 |
+| send-meal-plan | a74e2c4753e07d3a85f952b2489b4fde39e82d3f8861fec4d1bc5e01e3aa6c24 |
+| send-progress-summary | aa580bc13a898539ef76aa22cd1b5b348b0eec526baf85753337f6792db7b0a6 |
+| support-request | 6431d7f5a91254c83750054b47159a730883a9b350c44403cd9304ef74cb7190 |
+| stripe-webhook | b88cdee0dd31495dc53d94aadda8c3a18a61ba6aaa761845b162a1ae57b74f7d |
+| stripe-subscription-webhook | 5005e773e5d98685c7457d93fbb8912387ad4e8a7e03532210dc9013e95f26e1 |
+
+These additional email consumers were deployed because shared email/config code ships separately with each function. No webhook, payment or email-send endpoint was invoked. Rollback of these consumers requires restoring their pre-continuation shared dependencies plus entrypoints as one tested unit, then owner-authorized deployment. Do not remove reviewer exclusions while any review grants exist. Do not roll back the fasting reward correction.
+
+### Gates, honest current status
+
+| Gate | Result |
+| --- | --- |
+| Eight reviewer policy safety predicates and visibility, catalogue readback | PASS, not authenticated execution |
+| Ordinary authenticated A/B, deletion-restricted and dispute-suspended reviewer probes | BLOCKED, no disposable identities/grants created |
+| Intended writes, RPCs, Storage, complete must-accept dependency inventory | NOT TESTED, inventory coverage remains incomplete |
+| Focused access/lifecycle/compatibility/inventory tests | PASS, 90 tests |
+| Deno classification tests | PASS, 5 tests |
+| Deno checks on 16 deployed consumers | PASS on final source with temporary auto npm resolution; no project dependency configuration changed |
+| Touched-file lint | PASS |
+| Automatic preview compiler checks | PASS, latest local log 2026-11-13 01:14:43 UTC, build OK |
+| Final hosted production build identity | NOT TESTED for final source; hosted status still reports `8df5cb8da662e8aaac8189ec3c603ddc5f12bdc0`, run `br_e9ddfd4c-9608-4ae4-825f-2056de62da00`. Do not equate this with final checked source SHA |
+| Direct routes, signed out | PASS: fasting, billing, onboarding redirect to login with intended path; zero page errors |
+| Invitation delivery/redemption/security | BLOCKED, verified private owner test address unavailable |
+| First authenticated load, concurrency and unchanged 336-hour timestamps | NOT TESTED live |
+| Onboarding, Day 1, progression, payment-free journey and ended account surfaces | NOT TESTED live |
+| Export/deletion/retention synthetic runtime cleanup | NOT TESTED; inventory implementation only |
+| Non-essential communication exclusion | PASS source/classification tests, NOT TESTED scheduled runtime |
+| All business metrics and admin population exclusion | NOT TESTED comprehensively; existing subscription/order dashboards have no reviewer purchase records, but this is not full exclusion proof |
+| Fasting-badge correction deployment | PASS, checked source submitted |
+| Fasting-badge controlled synthetic runtime | BLOCKED, synthetic identity not established |
+| Client publication / clinical invitations | PASS, neither authorized nor performed |
+
+No new synthetic accounts, grants, owned data or audit metadata were created, so cleanup has not begun. No synthetic residue claim is made. Eventual cleanup must list security/authentication/email-delivery records retained by the providers and their verified retention rule; provider retention remains NOT TESTED.
+
+Prior snack database correction: YES, shared production backend, unchanged by this task. This continuation database change: YES, policy/helper migration 0008, no snack rows or reviewer data rows. Client publication: NO. Function deployments: YES, listed above. Invitations: zero. Marketing messages: zero. Payments/Stripe objects: zero.
+
+Next boundary: owner must sign in personally through the trusted preview admin interface; no password, MFA code, token or service-role credential requested. Private owner test address must be supplied again because current retained-input availability cannot be confirmed. Two group category labels are required only before real reviewer provisioning, followed by masked confirmation and separate explicit invitation authorization. Doctor provisioning remains BLOCKED until every mandatory runtime gate passes.
