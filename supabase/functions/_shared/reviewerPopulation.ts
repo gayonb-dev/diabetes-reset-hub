@@ -8,7 +8,8 @@ export interface ReviewerClient extends DataClient {
 
 // All grants identify review populations, including pending, expired and revoked.
 // A failed classification must stop the job rather than contact a reviewer.
-export async function reviewerIds(admin: ReviewerClient): Promise<Set<string>> {
+export async function reviewerIds(client: unknown): Promise<Set<string>> {
+  const admin = client as ReviewerClient;
   const ids = new Set<string>();
   for (let offset = 0; ; offset += 1000) {
     const { data, error } = await admin.from("complimentary_access")
@@ -22,14 +23,16 @@ export async function reviewerIds(admin: ReviewerClient): Promise<Set<string>> {
   }
 }
 
-export async function isClinicalReviewer(admin: ReviewerClient, userId: string): Promise<boolean> {
+export async function isClinicalReviewer(client: unknown, userId: string): Promise<boolean> {
+  const admin = client as ReviewerClient;
   const { data, error } = await admin.from("complimentary_access")
     .select("id").eq("user_id", userId).maybeSingle();
   if (error) throw new Error("reviewer_population_unavailable");
   return data !== null;
 }
 
-export async function reviewerEmails(admin: ReviewerClient, reviewers: Set<string>): Promise<Set<string>> {
+export async function reviewerEmails(client: unknown, reviewers: Set<string>): Promise<Set<string>> {
+  const admin = client as ReviewerClient;
   const emails = new Set<string>();
   if (reviewers.size === 0) return emails;
   const remaining = new Set(reviewers);
