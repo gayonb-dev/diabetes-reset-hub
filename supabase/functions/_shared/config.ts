@@ -24,10 +24,11 @@ const cache = new Map<string, { value: unknown; at: number }>();
 const TTL_MS = 30_000;
 
 export async function getConfig<T = unknown>(
-  admin: ConfigClient,
+  client: unknown,
   key: ConfigKey,
   fallback: T,
 ): Promise<T> {
+  const admin = client as ConfigClient;
   const hit = cache.get(key);
   if (hit && Date.now() - hit.at < TTL_MS) return hit.value as T;
 
